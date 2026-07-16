@@ -1,0 +1,12 @@
+# Xcode
+DerivedData/
+build/
+*.xcuserstate
+xcuserdata/
+
+# macOS
+.DS_Store
+__pycache__/
+
+# Generated local tooling
+.xcodegen/

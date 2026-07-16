@@ -1,0 +1,686 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		02BEA69849B6B0F0F66C2F31 /* TodayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 216D690271856ADBE1EB9D57 /* TodayView.swift */; };
+		123E3355F4EB008CBB93FF86 /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0A14C31574087316905BD39 /* LibraryView.swift */; };
+		1BBA35AEA8881CABB7565ECC /* DomainEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6628CDB82F795F2C641F577A /* DomainEnums.swift */; };
+		3647D268C134DA5DF36F38FE /* PreviewSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35DDE3ACB1FCD48A7B450933 /* PreviewSupport.swift */; };
+		3F76649A88333A976CBA313A /* ExerciseCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = F15FA22680EDF85603E77C79 /* ExerciseCatalog.swift */; };
+		532E5F20696097525E6A8AB5 /* TrainoteUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4682246A3C7BD7BA2BF52CA5 /* TrainoteUITests.swift */; };
+		5C4D0DA77B99DFBF0E2332E3 /* NutritionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43CC86A782E50C221F5B653C /* NutritionView.swift */; };
+		76339E757DD7BAFC9E2CC45A /* RoutineViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DCB4C604700EA7C2BD07B98 /* RoutineViews.swift */; };
+		87029459148998CAAA53D61A /* RoutineFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2877E662BC6B709088E9E1A9 /* RoutineFactory.swift */; };
+		90149B9EEAF49CA813408618 /* WorkoutModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85CC5490582AE8F4F5C1B7B2 /* WorkoutModels.swift */; };
+		99DCCC01E53E5680837AB22F /* NutritionModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1856DDF7D2EBFEE9AFD1FA2 /* NutritionModels.swift */; };
+		A921B691D8BEDAD822B9EBA1 /* TrainoteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75A716841CBA0C07DC0AF122 /* TrainoteTests.swift */; };
+		B52C7E5892C829C8EC1A24D8 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E40DDCF1717FCB7E708D7F2 /* SettingsView.swift */; };
+		B6DB6C94270C1C13AF48703D /* FoodLibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D4529ABD34D2C66FE107BC7 /* FoodLibraryView.swift */; };
+		BC01549540673C549648620A /* TrainingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B26083D46F1AA72F9C88A0F6 /* TrainingView.swift */; };
+		CC92CE0DD0A3FC9DF5A595FC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0560F190AE7D988893501104 /* Assets.xcassets */; };
+		CE82798ADA947943ECD4E92D /* NutritionSummary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 109FA723E6E7CDE633E1D1FC /* NutritionSummary.swift */; };
+		D126D7DCA4CF58410D085DF7 /* ExerciseCatalog.json in Resources */ = {isa = PBXBuildFile; fileRef = F5395F24438996CDBEBF92C4 /* ExerciseCatalog.json */; };
+		DC0B81A6C3C27BB844D619F1 /* AppShell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E753264FCE568A126404149B /* AppShell.swift */; };
+		DDE226E964F8DFCFB86C75A2 /* ActiveWorkoutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED5D39A73AA6FB27104C3236 /* ActiveWorkoutView.swift */; };
+		F2963E2E3D545A72ACA165A5 /* TrainoteApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 490FFA844AB42EA8BD546B33 /* TrainoteApp.swift */; };
+		F6791105EC06F96AEA9170DD /* ExerciseViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = F35D7FA87E70C56CD3C37752 /* ExerciseViews.swift */; };
+		F6B845965B90C02FAEBCF9CC /* THIRD_PARTY_NOTICES.md in Resources */ = {isa = PBXBuildFile; fileRef = A41C2E7C39A2181CD564FFDC /* THIRD_PARTY_NOTICES.md */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		6FA444A6795499B356602896 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8CCAC18B3ACE6AB51F467821 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 47111B31744A7FA21248E615;
+			remoteInfo = Trainote;
+		};
+		F0B74D1E1F8AF02F397465F1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8CCAC18B3ACE6AB51F467821 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 47111B31744A7FA21248E615;
+			remoteInfo = Trainote;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		0560F190AE7D988893501104 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		109FA723E6E7CDE633E1D1FC /* NutritionSummary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NutritionSummary.swift; sourceTree = "<group>"; };
+		216D690271856ADBE1EB9D57 /* TodayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayView.swift; sourceTree = "<group>"; };
+		2877E662BC6B709088E9E1A9 /* RoutineFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoutineFactory.swift; sourceTree = "<group>"; };
+		35DDE3ACB1FCD48A7B450933 /* PreviewSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewSupport.swift; sourceTree = "<group>"; };
+		3E40DDCF1717FCB7E708D7F2 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		43CC86A782E50C221F5B653C /* NutritionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NutritionView.swift; sourceTree = "<group>"; };
+		4682246A3C7BD7BA2BF52CA5 /* TrainoteUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainoteUITests.swift; sourceTree = "<group>"; };
+		490FFA844AB42EA8BD546B33 /* TrainoteApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainoteApp.swift; sourceTree = "<group>"; };
+		5D4529ABD34D2C66FE107BC7 /* FoodLibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodLibraryView.swift; sourceTree = "<group>"; };
+		6628CDB82F795F2C641F577A /* DomainEnums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DomainEnums.swift; sourceTree = "<group>"; };
+		75600386D2FB9FD472A74C72 /* TrainoteTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = TrainoteTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		75A716841CBA0C07DC0AF122 /* TrainoteTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainoteTests.swift; sourceTree = "<group>"; };
+		85CC5490582AE8F4F5C1B7B2 /* WorkoutModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutModels.swift; sourceTree = "<group>"; };
+		8DCB4C604700EA7C2BD07B98 /* RoutineViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoutineViews.swift; sourceTree = "<group>"; };
+		A41C2E7C39A2181CD564FFDC /* THIRD_PARTY_NOTICES.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = THIRD_PARTY_NOTICES.md; sourceTree = "<group>"; };
+		A6F493253C000F2133D51F3A /* TrainoteUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = TrainoteUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		B26083D46F1AA72F9C88A0F6 /* TrainingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainingView.swift; sourceTree = "<group>"; };
+		E0A14C31574087316905BD39 /* LibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryView.swift; sourceTree = "<group>"; };
+		E1856DDF7D2EBFEE9AFD1FA2 /* NutritionModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NutritionModels.swift; sourceTree = "<group>"; };
+		E753264FCE568A126404149B /* AppShell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppShell.swift; sourceTree = "<group>"; };
+		ED5D39A73AA6FB27104C3236 /* ActiveWorkoutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveWorkoutView.swift; sourceTree = "<group>"; };
+		EEA047039A1DBDB52852017B /* Trainote.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Trainote.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F15FA22680EDF85603E77C79 /* ExerciseCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseCatalog.swift; sourceTree = "<group>"; };
+		F35D7FA87E70C56CD3C37752 /* ExerciseViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseViews.swift; sourceTree = "<group>"; };
+		F5395F24438996CDBEBF92C4 /* ExerciseCatalog.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ExerciseCatalog.json; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		114FD2898F4093CE2AC4D973 /* TrainoteTests */ = {
+			isa = PBXGroup;
+			children = (
+				75A716841CBA0C07DC0AF122 /* TrainoteTests.swift */,
+			);
+			path = TrainoteTests;
+			sourceTree = "<group>";
+		};
+		18C7C2B68931D3A9AE337D41 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				F15FA22680EDF85603E77C79 /* ExerciseCatalog.swift */,
+				109FA723E6E7CDE633E1D1FC /* NutritionSummary.swift */,
+				2877E662BC6B709088E9E1A9 /* RoutineFactory.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		2052F1F7CA501D53D01D149A /* App */ = {
+			isa = PBXGroup;
+			children = (
+				E753264FCE568A126404149B /* AppShell.swift */,
+				490FFA844AB42EA8BD546B33 /* TrainoteApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		3CFBD97E08FE389AB1E06293 = {
+			isa = PBXGroup;
+			children = (
+				965420E926F88EBD150CC9C2 /* Trainote */,
+				114FD2898F4093CE2AC4D973 /* TrainoteTests */,
+				AF9A28F99CBFDAAFDFBE6C35 /* TrainoteUITests */,
+				CE6491D3A062EB7FA0C67021 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		3E592AA07C33704B83E6316B /* Library */ = {
+			isa = PBXGroup;
+			children = (
+				5D4529ABD34D2C66FE107BC7 /* FoodLibraryView.swift */,
+				E0A14C31574087316905BD39 /* LibraryView.swift */,
+				8DCB4C604700EA7C2BD07B98 /* RoutineViews.swift */,
+			);
+			path = Library;
+			sourceTree = "<group>";
+		};
+		71ED8314A94879BE1D78F12C /* Today */ = {
+			isa = PBXGroup;
+			children = (
+				216D690271856ADBE1EB9D57 /* TodayView.swift */,
+			);
+			path = Today;
+			sourceTree = "<group>";
+		};
+		8164AD270F7291127122FBF9 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				6628CDB82F795F2C641F577A /* DomainEnums.swift */,
+				E1856DDF7D2EBFEE9AFD1FA2 /* NutritionModels.swift */,
+				85CC5490582AE8F4F5C1B7B2 /* WorkoutModels.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		930B6C28B4A9C5618AB21F46 /* Nutrition */ = {
+			isa = PBXGroup;
+			children = (
+				43CC86A782E50C221F5B653C /* NutritionView.swift */,
+			);
+			path = Nutrition;
+			sourceTree = "<group>";
+		};
+		93D6F5814A9DC4F67DE42538 /* Features */ = {
+			isa = PBXGroup;
+			children = (
+				3E592AA07C33704B83E6316B /* Library */,
+				930B6C28B4A9C5618AB21F46 /* Nutrition */,
+				EC89C1C0EB7179978BFF9215 /* Settings */,
+				AA50E37EF2E89A60B30F4DFD /* Shared */,
+				71ED8314A94879BE1D78F12C /* Today */,
+				B42087DBBF5C09036489F9F4 /* Training */,
+			);
+			path = Features;
+			sourceTree = "<group>";
+		};
+		965420E926F88EBD150CC9C2 /* Trainote */ = {
+			isa = PBXGroup;
+			children = (
+				0560F190AE7D988893501104 /* Assets.xcassets */,
+				2052F1F7CA501D53D01D149A /* App */,
+				93D6F5814A9DC4F67DE42538 /* Features */,
+				8164AD270F7291127122FBF9 /* Models */,
+				CCA02B512DBFE23E239EF47D /* Previews */,
+				9E6027A637F6B078E2C6012B /* Resources */,
+				18C7C2B68931D3A9AE337D41 /* Services */,
+			);
+			path = Trainote;
+			sourceTree = "<group>";
+		};
+		9E6027A637F6B078E2C6012B /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				F5395F24438996CDBEBF92C4 /* ExerciseCatalog.json */,
+				A41C2E7C39A2181CD564FFDC /* THIRD_PARTY_NOTICES.md */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		AA50E37EF2E89A60B30F4DFD /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				F35D7FA87E70C56CD3C37752 /* ExerciseViews.swift */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		AF9A28F99CBFDAAFDFBE6C35 /* TrainoteUITests */ = {
+			isa = PBXGroup;
+			children = (
+				4682246A3C7BD7BA2BF52CA5 /* TrainoteUITests.swift */,
+			);
+			path = TrainoteUITests;
+			sourceTree = "<group>";
+		};
+		B42087DBBF5C09036489F9F4 /* Training */ = {
+			isa = PBXGroup;
+			children = (
+				ED5D39A73AA6FB27104C3236 /* ActiveWorkoutView.swift */,
+				B26083D46F1AA72F9C88A0F6 /* TrainingView.swift */,
+			);
+			path = Training;
+			sourceTree = "<group>";
+		};
+		CCA02B512DBFE23E239EF47D /* Previews */ = {
+			isa = PBXGroup;
+			children = (
+				35DDE3ACB1FCD48A7B450933 /* PreviewSupport.swift */,
+			);
+			path = Previews;
+			sourceTree = "<group>";
+		};
+		CE6491D3A062EB7FA0C67021 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				EEA047039A1DBDB52852017B /* Trainote.app */,
+				75600386D2FB9FD472A74C72 /* TrainoteTests.xctest */,
+				A6F493253C000F2133D51F3A /* TrainoteUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		EC89C1C0EB7179978BFF9215 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				3E40DDCF1717FCB7E708D7F2 /* SettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		172081599F492DF898FF8A06 /* TrainoteTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1F67CC7494044F5DBD8774AC /* Build configuration list for PBXNativeTarget "TrainoteTests" */;
+			buildPhases = (
+				761DFA0F9E7AAB56DEA4277E /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D9E372C9A218A0147734EF38 /* PBXTargetDependency */,
+			);
+			name = TrainoteTests;
+			packageProductDependencies = (
+			);
+			productName = TrainoteTests;
+			productReference = 75600386D2FB9FD472A74C72 /* TrainoteTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		47111B31744A7FA21248E615 /* Trainote */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D137DADC18787C0ED4DE210E /* Build configuration list for PBXNativeTarget "Trainote" */;
+			buildPhases = (
+				CA21410C706A448EB2B80AFA /* Sources */,
+				7367BF6D60461287C2BA3128 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Trainote;
+			packageProductDependencies = (
+			);
+			productName = Trainote;
+			productReference = EEA047039A1DBDB52852017B /* Trainote.app */;
+			productType = "com.apple.product-type.application";
+		};
+		B17EDB36C7484639EBB4858B /* TrainoteUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 269A8E5EFB24A2305405FCE5 /* Build configuration list for PBXNativeTarget "TrainoteUITests" */;
+			buildPhases = (
+				176C40DC1D74AD7CCB37C423 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				8D31928B569D5A6F37D40871 /* PBXTargetDependency */,
+			);
+			name = TrainoteUITests;
+			packageProductDependencies = (
+			);
+			productName = TrainoteUITests;
+			productReference = A6F493253C000F2133D51F3A /* TrainoteUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		8CCAC18B3ACE6AB51F467821 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					B17EDB36C7484639EBB4858B = {
+						TestTargetID = 47111B31744A7FA21248E615;
+					};
+				};
+			};
+			buildConfigurationList = DACA404372366FBEF50DCC62 /* Build configuration list for PBXProject "Trainote" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 3CFBD97E08FE389AB1E06293;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = CE6491D3A062EB7FA0C67021 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				47111B31744A7FA21248E615 /* Trainote */,
+				172081599F492DF898FF8A06 /* TrainoteTests */,
+				B17EDB36C7484639EBB4858B /* TrainoteUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		7367BF6D60461287C2BA3128 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CC92CE0DD0A3FC9DF5A595FC /* Assets.xcassets in Resources */,
+				D126D7DCA4CF58410D085DF7 /* ExerciseCatalog.json in Resources */,
+				F6B845965B90C02FAEBCF9CC /* THIRD_PARTY_NOTICES.md in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		176C40DC1D74AD7CCB37C423 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				532E5F20696097525E6A8AB5 /* TrainoteUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		761DFA0F9E7AAB56DEA4277E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A921B691D8BEDAD822B9EBA1 /* TrainoteTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CA21410C706A448EB2B80AFA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DDE226E964F8DFCFB86C75A2 /* ActiveWorkoutView.swift in Sources */,
+				DC0B81A6C3C27BB844D619F1 /* AppShell.swift in Sources */,
+				1BBA35AEA8881CABB7565ECC /* DomainEnums.swift in Sources */,
+				3F76649A88333A976CBA313A /* ExerciseCatalog.swift in Sources */,
+				F6791105EC06F96AEA9170DD /* ExerciseViews.swift in Sources */,
+				B6DB6C94270C1C13AF48703D /* FoodLibraryView.swift in Sources */,
+				123E3355F4EB008CBB93FF86 /* LibraryView.swift in Sources */,
+				99DCCC01E53E5680837AB22F /* NutritionModels.swift in Sources */,
+				CE82798ADA947943ECD4E92D /* NutritionSummary.swift in Sources */,
+				5C4D0DA77B99DFBF0E2332E3 /* NutritionView.swift in Sources */,
+				3647D268C134DA5DF36F38FE /* PreviewSupport.swift in Sources */,
+				87029459148998CAAA53D61A /* RoutineFactory.swift in Sources */,
+				76339E757DD7BAFC9E2CC45A /* RoutineViews.swift in Sources */,
+				B52C7E5892C829C8EC1A24D8 /* SettingsView.swift in Sources */,
+				02BEA69849B6B0F0F66C2F31 /* TodayView.swift in Sources */,
+				BC01549540673C549648620A /* TrainingView.swift in Sources */,
+				F2963E2E3D545A72ACA165A5 /* TrainoteApp.swift in Sources */,
+				90149B9EEAF49CA813408618 /* WorkoutModels.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		8D31928B569D5A6F37D40871 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 47111B31744A7FA21248E615 /* Trainote */;
+			targetProxy = 6FA444A6795499B356602896 /* PBXContainerItemProxy */;
+		};
+		D9E372C9A218A0147734EF38 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 47111B31744A7FA21248E615 /* Trainote */;
+			targetProxy = F0B74D1E1F8AF02F397465F1 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		27B57867632EEDA022A1DD0F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.jerryszz.trainote.uitests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Trainote;
+			};
+			name = Debug;
+		};
+		2A89A25C5CFB6B860D76C7DB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.jerryszz.trainote.uitests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Trainote;
+			};
+			name = Release;
+		};
+		2D50B9755C89F3E3E3232961 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "";
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Trainote;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.jerryszz.trainote;
+				PRODUCT_NAME = Trainote;
+				SDKROOT = iphoneos;
+				SUPPORTS_MACCATALYST = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		3415969F3E7CFB60B87B2DEF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.jerryszz.trainote.tests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Trainote.app/Trainote";
+			};
+			name = Release;
+		};
+		5060B9D24063ABA59558468D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "";
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Trainote;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.jerryszz.trainote;
+				PRODUCT_NAME = Trainote;
+				SDKROOT = iphoneos;
+				SUPPORTS_MACCATALYST = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		8BB78AB8E2B2F02A2CE41C9D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		A7501A031AB6FBABAF54D4BE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.jerryszz.trainote.tests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Trainote.app/Trainote";
+			};
+			name = Debug;
+		};
+		C6BE0927FD712A7229F77930 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1F67CC7494044F5DBD8774AC /* Build configuration list for PBXNativeTarget "TrainoteTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A7501A031AB6FBABAF54D4BE /* Debug */,
+				3415969F3E7CFB60B87B2DEF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		269A8E5EFB24A2305405FCE5 /* Build configuration list for PBXNativeTarget "TrainoteUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				27B57867632EEDA022A1DD0F /* Debug */,
+				2A89A25C5CFB6B860D76C7DB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		D137DADC18787C0ED4DE210E /* Build configuration list for PBXNativeTarget "Trainote" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5060B9D24063ABA59558468D /* Debug */,
+				2D50B9755C89F3E3E3232961 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		DACA404372366FBEF50DCC62 /* Build configuration list for PBXProject "Trainote" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8BB78AB8E2B2F02A2CE41C9D /* Debug */,
+				C6BE0927FD712A7229F77930 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 8CCAC18B3ACE6AB51F467821 /* Project object */;
+}
