@@ -49,17 +49,26 @@
 
 ## 执行命令
 
-完整 Xcode 安装后先运行：
+当前机器已激活 Xcode 26.6。先执行不依赖具体设备的无签名 Simulator 构建：
 
 ```sh
 xcodebuild -project Trainote.xcodeproj -scheme Trainote -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build
 ```
 
-再选择已安装的 iPhone Simulator 运行：
+再使用当前已安装的 `iPhone 17`（iOS 26.5）运行单元测试和 UI 测试：
 
 ```sh
-xcodebuild -project Trainote.xcodeproj -scheme Trainote -destination 'platform=iOS Simulator,name=<已安装的 iPhone>,OS=latest' test
+xcodebuild -project Trainote.xcodeproj -scheme Trainote -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5' test
 ```
+
+## 当前验证记录
+
+| 日期 | 检查 | 结果 |
+| --- | --- | --- |
+| 2026-07-16 | `xcodebuild -version` | Xcode 26.6（Build 17F113） |
+| 2026-07-16 | generic iOS Simulator 无签名构建 | `BUILD SUCCEEDED` |
+| 2026-07-16 | 单元测试与 UI 测试 | 尚未运行 |
+| 2026-07-16 | 人工检查 | 尚未运行 |
 
 ## 验收标准
 
@@ -69,5 +78,5 @@ xcodebuild -project Trainote.xcodeproj -scheme Trainote -destination 'platform=i
 
 ## 已知未覆盖风险
 
-- 当前本机没有完整 Xcode，暂时无法确认 Simulator 和 SwiftData 的真实运行结果。
+- generic Simulator 构建只证明工程可以编译，尚未覆盖 Simulator 启动、SwiftData 持久化、UI 交互和辅助功能行为。
 - App Store 签名、TestFlight 和正式设备测试不在 v1 本地实现验收范围内。

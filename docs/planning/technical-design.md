@@ -7,6 +7,7 @@
 ## 技术栈
 
 - SwiftUI，最低 iOS 17。
+- `project.yml` 使用 Swift 5.9 language mode；当前验证工具链为 Xcode 26.6、Apple Swift 6.3.3。
 - SwiftData 只保存用户创建和修改的数据。
 - Observation：共享只读动作目录使用根部持有的 `@Observable` 服务并通过 Environment 注入。
 - XCTest/XCUITest；不引入第三方 Package。
@@ -48,15 +49,19 @@
 - 不把用户饮食或训练内容写入控制台。
 - 不复制上游 `images/`、`videos/`、`image` 或 `gif_url` 字段，因为仓库许可证明确说明媒体需要单独授权。
 
-## 实现顺序
+## 当前实现状态
 
-1. 完成规划文档和原生 Xcode 工程。
-2. 实现并验证动作导入资源。
-3. 实现 SwiftData 模型和纯业务计算。
-4. 实现 App 壳层、动作资料库和设置。
-5. 实现训练/routine 流程。
-6. 实现饮食/目标/今日汇总。
-7. 补齐测试、预览、辅助功能和许可证页面。
+- 原生 Xcode 工程、App 壳层、SwiftData 模型、动作目录、训练/routine、饮食/目标/今日汇总均已有对应源码。
+- 单元测试、UI 测试、Preview 和第三方许可证文件已纳入工程。
+- 2026-07-16 已在 Xcode 26.6 下通过 generic iOS Simulator 无签名构建；完整测试和人工验收状态以 [test-plan.md](test-plan.md) 为准。
+
+## 维护顺序
+
+1. 先同步 PRD、技术设计和数据库设计中的行为或数据约束。
+2. 修改模型或纯业务服务，并补齐对应单元测试。
+3. 修改依赖这些模型和服务的 SwiftUI 功能页面。
+4. 涉及动作目录时重新运行导入校验，并复核媒体字段与许可证边界。
+5. 最后执行构建、单元测试、UI 测试和人工辅助功能检查。
 
 ## 验收标准
 
@@ -67,5 +72,4 @@
 
 ## 待确认
 
-- 本机完整 Xcode 安装后确认实际可用的 Simulator 名称和 Xcode/Swift 版本。
-
+- 正式发布用 Bundle ID、签名 Team 和目标设备验证要在进入 App Store/TestFlight 阶段确认。

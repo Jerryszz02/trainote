@@ -15,21 +15,29 @@ Trainote 是一个中文优先、完全离线的 iPhone 健身与饮食记录 Ap
 ## 开发环境
 
 - macOS
-- 完整 Xcode（当前机器尚未安装/激活）
-- iOS 17+ Simulator
+- Xcode 26.6（Build 17F113）；当前已激活 `/Applications/Xcode.app/Contents/Developer`
+- 项目使用 Swift 5.9 language mode；当前工具链为 Apple Swift 6.3.3
+- 最低支持 iOS 17；当前已安装 iOS 26.5 Simulator runtime
 - Python 3.9+，仅用于手动重建动作目录
 
 项目没有第三方 Swift Package。`Trainote.xcodeproj` 由仓库根目录的 `project.yml` 生成并提交；普通开发不需要重新生成。
 
 ## 开始开发
 
-1. 安装完整 Xcode，并激活开发目录：
+1. 确认当前使用完整 Xcode：
+
+   ```sh
+   xcode-select -p
+   xcodebuild -version
+   ```
+
+   如果开发目录不是 `/Applications/Xcode.app/Contents/Developer`，运行：
 
    ```sh
    sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
    ```
 
-2. 打开 `Trainote.xcodeproj`，选择 `Trainote` Scheme 和任意 iOS 17+ iPhone Simulator。
+2. 打开 `Trainote.xcodeproj`，选择 `Trainote` Scheme 和任意 iOS 17+ iPhone Simulator；当前机器可使用 iOS 26.5 的 `iPhone 17`。
 3. 运行 App 或测试。
 
 命令行构建：
@@ -39,6 +47,19 @@ xcodebuild -project Trainote.xcodeproj -scheme Trainote \
   -destination 'generic/platform=iOS Simulator' \
   CODE_SIGNING_ALLOWED=NO build
 ```
+
+在当前已安装的 Simulator 上运行单元测试和 UI 测试：
+
+```sh
+xcodebuild -project Trainote.xcodeproj -scheme Trainote \
+  -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5' \
+  test
+```
+
+## 当前验证状态
+
+- 2026-07-16：在 Xcode 26.6 下完成 generic iOS Simulator 无签名构建，结果为 `BUILD SUCCEEDED`。
+- 单元测试、UI 测试和人工验收尚未在当前环境执行；范围与验收项见 [测试计划](docs/planning/test-plan.md)。
 
 ## 动作目录
 
@@ -66,4 +87,3 @@ python3 Scripts/import_exercises.py --translate-missing
 - `docs/planning`：PRD、技术设计、数据库设计和测试计划。
 
 后续开发先从 [规划索引](docs/planning/README.md) 开始。
-
