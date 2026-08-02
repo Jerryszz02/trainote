@@ -133,11 +133,27 @@ struct NutritionGoalEditor: View {
 struct AboutView: View {
   @Environment(ExerciseCatalog.self) private var catalog
 
+  private let privacyURL = URL(string: "https://jerryszz02.github.io/trainote/privacy/")!
+  private let supportURL = URL(string: "https://jerryszz02.github.io/trainote/support/")!
+
+  private var versionText: String {
+    let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
+    let build = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String
+    return [version, build.map { "(\($0))" }].compactMap { $0 }.joined(separator: " ")
+  }
+
   var body: some View {
     List {
       Section("Trainote") {
-        LabeledContent("版本", value: "1.0")
+        LabeledContent("版本", value: versionText)
         Text("训练和饮食记录只保存在本机。Trainote 不上传内容，也不提供医疗或专业训练建议。")
+      }
+
+      Section("隐私与支持") {
+        Link("隐私政策", destination: privacyURL)
+          .accessibilityIdentifier("about.privacy")
+        Link("帮助与反馈", destination: supportURL)
+          .accessibilityIdentifier("about.support")
       }
 
       Section("动作数据") {

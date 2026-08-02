@@ -135,6 +135,16 @@ final class TrainoteUITests: XCTestCase {
     XCTAssertTrue(app.buttons["已保存"].exists)
   }
 
+  func testAboutShowsPrivacyAndSupportLinks() {
+    app.buttons["today.settings"].tap()
+    XCTAssertTrue(app.navigationBars["设置"].waitForExistence(timeout: 3))
+    app.buttons["Trainote 与数据来源"].tap()
+
+    XCTAssertTrue(app.navigationBars["关于"].waitForExistence(timeout: 3))
+    XCTAssertTrue(app.descendants(matching: .any)["about.privacy"].exists)
+    XCTAssertTrue(app.descendants(matching: .any)["about.support"].exists)
+  }
+
   private func startBlankWorkout() {
     app.tabBars.buttons["训练"].tap()
     app.buttons["training.start"].tap()

@@ -66,9 +66,10 @@ xcodebuild -project Trainote.xcodeproj -scheme Trainote -destination 'platform=i
 | 日期 | 检查 | 结果 |
 | --- | --- | --- |
 | 2026-07-16 | `xcodebuild -version` | Xcode 26.6（Build 17F113） |
-| 2026-07-16 | generic iOS Simulator 无签名构建 | `BUILD SUCCEEDED` |
-| 2026-07-16 | 单元测试与 UI 测试 | 尚未运行 |
-| 2026-07-16 | 人工检查 | 尚未运行 |
+| 2026-08-03 | generic iOS Simulator 无签名构建 | `BUILD SUCCEEDED` |
+| 2026-08-03 | 单元测试 | 13 项通过，0 失败 |
+| 2026-08-03 | UI 测试 | 10 项通过，0 失败 |
+| 2026-08-03 | 人工检查 | 真机、辅助功能和发布截图检查尚未运行 |
 
 ## 验收标准
 
@@ -78,5 +79,5 @@ xcodebuild -project Trainote.xcodeproj -scheme Trainote -destination 'platform=i
 
 ## 已知未覆盖风险
 
-- generic Simulator 构建只证明工程可以编译，尚未覆盖 Simulator 启动、SwiftData 持久化、UI 交互和辅助功能行为。
+- Simulator 自动化已覆盖启动、SwiftData 持久化与核心 UI 交互，但尚未覆盖真机、最大 Dynamic Type、VoiceOver 和长时间使用。
 - App Store 签名、TestFlight 和正式设备测试不在 v1 本地实现验收范围内。

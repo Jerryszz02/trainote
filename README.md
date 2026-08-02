@@ -58,8 +58,13 @@ xcodebuild -project Trainote.xcodeproj -scheme Trainote \
 
 ## 当前验证状态
 
-- 2026-07-16：在 Xcode 26.6 下完成 generic iOS Simulator 无签名构建，结果为 `BUILD SUCCEEDED`。
-- 单元测试、UI 测试和人工验收尚未在当前环境执行；范围与验收项见 [测试计划](docs/planning/test-plan.md)。
+- 2026-08-03：在 Xcode 26.6 下完成 generic iOS Simulator 无签名构建，结果为 `BUILD SUCCEEDED`。
+- 2026-08-03：在 iPhone 17（iOS 26.5）Simulator 上通过 13 个单元测试和 10 个 UI 测试，共 23 项、0 失败。
+- 真机与辅助功能人工验收尚未执行；范围与验收项见 [测试计划](docs/planning/test-plan.md)。
+
+## App Store 准备
+
+App Icon、隐私政策、支持页、简体中文商店元数据、审核说明和截图规划已在本地准备。发布资料索引见 [App Store 发布清单](docs/app-store/release-checklist.md)。
 
 ## 动作目录
 
