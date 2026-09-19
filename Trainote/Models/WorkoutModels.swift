@@ -10,6 +10,7 @@ final class Workout {
   var statusRaw: String
   var notes: String
   var routineNameSnapshot: String?
+  var restEndsAt: Date?
 
   @Relationship(deleteRule: .cascade, inverse: \WorkoutExercise.workout)
   var exercises: [WorkoutExercise]
@@ -46,18 +47,33 @@ final class Workout {
     }
   }
 
-  var hasValidResult: Bool {
-    exercises.contains { exercise in
-      switch exercise.trackingMode {
-      case .strength:
-        exercise.strengthSets.contains {
-          $0.isCompleted && $0.repetitions > 0 && $0.weightKilograms.isValidNonnegativeNumber
+  /// A valid completed item is required; every completed item must be valid.
+  var hasValidResult: Bool { validationMessage == nil }
+
+  var validationMessage: String? {
+    guard !title.trimmed.isEmpty else { return "请输入训练名称。" }
+    var hasResult = false
+    for exercise in exercises {
+      if exercise.trackingMode.usesSets {
+        for set in exercise.strengthSets where set.isCompleted {
+          guard set.isValid(for: exercise.trackingMode) else {
+            return "请检查「\(exercise.nameZhSnapshot)」第 \(set.orderIndex + 1) 组的数值。"
+          }
+          hasResult = true
         }
-      case .cardio:
-        exercise.cardioEntries.contains { $0.isValid }
+      } else {
+        for cardio in exercise.cardioEntries {
+          if cardio.durationSeconds == 0 && cardio.distanceKilometers == 0 && cardio.calories == 0 {
+            continue
+          }
+          guard cardio.isValid else { return "请检查「\(exercise.nameZhSnapshot)」的时长、距离和热量。" }
+          hasResult = true
+        }
       }
     }
+    return hasResult ? nil : "请至少完成一组，或填写一条有效有氧记录。"
   }
+
 }
 
 @Model
@@ -100,7 +116,8 @@ final class WorkoutExercise {
   }
 
   var trackingMode: TrackingMode {
-    TrackingMode(rawValue: trackingModeRaw) ?? .strength
+    get { TrackingMode(rawValue: trackingModeRaw) ?? .strength }
+    set { trackingModeRaw = newValue.rawValue }
   }
 
   var sortedStrengthSets: [StrengthSet] {
@@ -117,6 +134,7 @@ final class StrengthSet {
   var orderIndex: Int
   var weightKilograms: Double
   var repetitions: Int
+  var durationSeconds: Int = 0
   var isCompleted: Bool
   var exercise: WorkoutExercise?
 
@@ -125,13 +143,26 @@ final class StrengthSet {
     orderIndex: Int,
     weightKilograms: Double = 0,
     repetitions: Int = 8,
+    durationSeconds: Int = 0,
     isCompleted: Bool = false
   ) {
     self.id = id
     self.orderIndex = orderIndex
     self.weightKilograms = weightKilograms
     self.repetitions = repetitions
+    self.durationSeconds = durationSeconds
     self.isCompleted = isCompleted
+  }
+
+  func isValid(for mode: TrackingMode) -> Bool {
+    switch mode {
+    case .strength:
+      return weightKilograms.isFinite && (0...10_000).contains(weightKilograms)
+        && (1...100_000).contains(repetitions)
+    case .repetitions: return (1...100_000).contains(repetitions)
+    case .duration: return (1...604_800).contains(durationSeconds)
+    case .cardio: return false
+    }
   }
 }
 
@@ -156,9 +187,9 @@ final class CardioEntry {
   }
 
   var isValid: Bool {
-    durationSeconds > 0
-      && distanceKilometers.isValidNonnegativeNumber
-      && calories.isValidNonnegativeNumber
+    (1...604_800).contains(durationSeconds)
+      && distanceKilometers.isFinite && (0...10_000).contains(distanceKilometers)
+      && calories.isFinite && (0...100_000).contains(calories)
   }
 }
 
@@ -239,18 +270,24 @@ final class RoutineExercise {
   }
 
   var trackingMode: TrackingMode {
-    TrackingMode(rawValue: trackingModeRaw) ?? .strength
+    get { TrackingMode(rawValue: trackingModeRaw) ?? .strength }
+    set { trackingModeRaw = newValue.rawValue }
   }
 
   var hasValidDefaults: Bool {
     switch trackingMode {
     case .strength:
-      defaultSetCount > 0
-        && defaultRepetitions > 0
-        && defaultWeightKilograms.isValidNonnegativeNumber
+      (1...100).contains(defaultSetCount)
+        && (1...100_000).contains(defaultRepetitions)
+        && defaultWeightKilograms.isFinite && (0...10_000).contains(defaultWeightKilograms)
+    case .repetitions:
+      defaultSetCount > 0 && defaultSetCount <= 100 && (1...100_000).contains(defaultRepetitions)
+    case .duration:
+      defaultSetCount > 0 && defaultSetCount <= 100
+        && (0...604_800).contains(defaultDurationSeconds)
     case .cardio:
-      defaultDurationSeconds >= 0
-        && defaultDistanceKilometers.isValidNonnegativeNumber
+      (0...604_800).contains(defaultDurationSeconds)
+        && defaultDistanceKilometers.isFinite && (0...10_000).contains(defaultDistanceKilometers)
     }
   }
 }

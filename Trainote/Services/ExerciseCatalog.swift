@@ -25,6 +25,7 @@ struct ExerciseCatalogItem: Codable, Identifiable, Hashable {
   let instructionsZh: String
   let stepsEn: [String]
   let stepsZh: [String]
+  var recommendedTrackingMode: TrackingMode? = nil
 
   var displayName: String { nameZh.trimmed.isEmpty ? nameEn : nameZh }
 
@@ -34,7 +35,7 @@ struct ExerciseCatalogItem: Codable, Identifiable, Hashable {
       .folding(options: [.caseInsensitive, .diacriticInsensitive], locale: .current)
   }
 
-  var defaultTrackingMode: TrackingMode { bodyPart == "cardio" ? .cardio : .strength }
+  var defaultTrackingMode: TrackingMode { recommendedTrackingMode ?? (bodyPart == "cardio" ? .cardio : .strength) }
 }
 
 @MainActor
@@ -80,7 +81,18 @@ final class ExerciseCatalog {
       guard Set(document.exercises.map(\.id)).count == document.exercises.count else {
         throw CatalogError.duplicateIDs
       }
-      items = document.exercises
+      guard let modesURL = bundle.url(forResource: "ExerciseTrackingModes", withExtension: "json") else {
+        throw CatalogError.resourceMissing
+      }
+      let modes = try JSONDecoder().decode([String: TrackingMode].self, from: Data(contentsOf: modesURL))
+      guard Set(modes.keys) == Set(document.exercises.map(\.id)) else {
+        throw CatalogError.trackingModesIncomplete
+      }
+      items = document.exercises.map { item in
+        var result = item
+        result.recommendedTrackingMode = modes[item.id]
+        return result
+      }
       source = document.source
       errorMessage = nil
     } catch {
@@ -117,6 +129,7 @@ enum CatalogError: LocalizedError {
   case resourceMissing
   case unexpectedCount(Int)
   case duplicateIDs
+  case trackingModesIncomplete
 
   var errorDescription: String? {
     switch self {
@@ -126,6 +139,8 @@ enum CatalogError: LocalizedError {
       "动作目录应包含 1,324 条记录，实际为 \(count) 条。"
     case .duplicateIDs:
       "动作目录包含重复 ID。"
+    case .trackingModesIncomplete:
+      "动作记录方式目录不完整，请更新 App。"
     }
   }
 }

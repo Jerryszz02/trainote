@@ -3,6 +3,7 @@ import SwiftUI
 
 private struct RoutinePresentation: Identifiable {
   let routine: Routine
+  let original: Routine?
   let isNew: Bool
   var id: UUID { routine.id }
 }
@@ -15,19 +16,21 @@ struct RoutinesView: View {
 
   @State private var presentation: RoutinePresentation?
   @State private var pendingDeletion: Routine?
+  @State private var deletionError: String?
 
   var body: some View {
     List {
       if routines.isEmpty {
         ContentUnavailableView(
-          "还没有 Routine",
+          "还没有训练模板",
           systemImage: "list.bullet.rectangle",
           description: Text("把常用动作和默认训练参数保存成一套模板。")
         )
       } else {
         ForEach(routines) { routine in
           Button {
-            presentation = RoutinePresentation(routine: routine, isNew: false)
+            presentation = RoutinePresentation(
+              routine: draft(of: routine), original: routine, isNew: false)
           } label: {
             HStack {
               VStack(alignment: .leading, spacing: 4) {
@@ -52,23 +55,34 @@ struct RoutinesView: View {
     }
     .toolbar {
       ToolbarItem(placement: .topBarTrailing) {
-        Button("新建 Routine", systemImage: "plus") { createRoutine() }
+        Button("新建训练模板", systemImage: "plus") { createRoutine() }
           .accessibilityIdentifier("routine.create")
       }
     }
     .sheet(item: $presentation) { value in
-      RoutineEditorView(routine: value.routine, isNew: value.isNew)
+      RoutineEditorView(routine: value.routine, original: value.original, isNew: value.isNew)
     }
-    .alert("删除这个 Routine？", isPresented: deletionAlertBinding, presenting: pendingDeletion) {
+    .alert("删除这个训练模板？", isPresented: deletionAlertBinding, presenting: pendingDeletion) {
       routine in
       Button("删除", role: .destructive) {
         modelContext.delete(routine)
-        try? modelContext.save()
+        do { try modelContext.save() } catch {
+          modelContext.rollback()
+          deletionError = error.localizedDescription
+        }
         pendingDeletion = nil
       }
       Button("取消", role: .cancel) { pendingDeletion = nil }
     } message: { _ in
       Text("已经完成或正在进行的训练不会受到影响。")
+    }
+    .alert(
+      "删除失败",
+      isPresented: Binding(get: { deletionError != nil }, set: { if !$0 { deletionError = nil } })
+    ) {
+      Button("知道了", role: .cancel) {}
+    } message: {
+      Text(deletionError ?? "请重试。")
     }
   }
 
@@ -77,9 +91,27 @@ struct RoutinesView: View {
   }
 
   private func createRoutine() {
-    let routine = Routine(name: "新 Routine")
-    modelContext.insert(routine)
-    presentation = RoutinePresentation(routine: routine, isNew: true)
+    let routine = Routine(name: "新训练模板")
+    presentation = RoutinePresentation(routine: routine, original: nil, isNew: true)
+  }
+
+  private func draft(of source: Routine) -> Routine {
+    let draft = Routine(
+      id: source.id, name: source.name, notes: source.notes, createdAt: source.createdAt,
+      updatedAt: source.updatedAt)
+    draft.exercises = source.sortedExercises.map { value in
+      let item = RoutineExercise(
+        id: value.id, sourceExerciseID: value.sourceExerciseID,
+        nameEnSnapshot: value.nameEnSnapshot, nameZhSnapshot: value.nameZhSnapshot,
+        orderIndex: value.orderIndex, trackingMode: value.trackingMode,
+        defaultSetCount: value.defaultSetCount, defaultRepetitions: value.defaultRepetitions,
+        defaultWeightKilograms: value.defaultWeightKilograms,
+        defaultDurationSeconds: value.defaultDurationSeconds,
+        defaultDistanceKilometers: value.defaultDistanceKilometers)
+      item.routine = draft
+      return item
+    }
+    return draft
   }
 }
 
@@ -93,20 +125,23 @@ private struct RoutineEditorView: View {
   @Environment(\.modelContext) private var modelContext
 
   @Bindable var routine: Routine
+  let original: Routine?
   let isNew: Bool
 
   @State private var presentedSheet: RoutineEditorSheet?
   @State private var showCancelConfirmation = false
+  @State private var saveError: String?
 
   private var canSave: Bool {
-    !routine.name.trimmed.isEmpty && routine.exercises.allSatisfy(\.hasValidDefaults)
+    !routine.name.trimmed.isEmpty && !routine.exercises.isEmpty
+      && routine.exercises.allSatisfy(\.hasValidDefaults)
   }
 
   var body: some View {
     NavigationStack {
       List {
         Section("基本信息") {
-          TextField("Routine 名称", text: $routine.name)
+          TextField("模板名称", text: $routine.name)
             .accessibilityIdentifier("routine.name")
           TextField("备注（可选）", text: $routine.notes, axis: .vertical)
         }
@@ -130,7 +165,7 @@ private struct RoutineEditorView: View {
         }
       }
       .environment(\.editMode, .constant(.active))
-      .navigationTitle(isNew ? "新建 Routine" : "编辑 Routine")
+      .navigationTitle(isNew ? "新建训练模板" : "编辑训练模板")
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
         ToolbarItem(placement: .cancellationAction) {
@@ -144,19 +179,27 @@ private struct RoutineEditorView: View {
             .accessibilityIdentifier("routine.save")
         }
       }
+      .toolbar { NutritionKeyboardDoneToolbar() }
       .sheet(item: $presentedSheet) { sheet in
         switch sheet {
         case .exercisePicker:
-          ExercisePickerView(title: "添加 Routine 动作") { item in
+          ExercisePickerView(title: "添加模板动作") { item in
             add(item)
           }
         }
       }
+      .alert(
+        "无法保存训练模板",
+        isPresented: Binding(get: { saveError != nil }, set: { if !$0 { saveError = nil } })
+      ) {
+        Button("知道了", role: .cancel) {}
+      } message: {
+        Text(saveError ?? "请稍后重试。")
+      }
       .confirmationDialog(
-        "放弃新 Routine？", isPresented: $showCancelConfirmation, titleVisibility: .visible
+        "放弃新训练模板？", isPresented: $showCancelConfirmation, titleVisibility: .visible
       ) {
         Button("放弃", role: .destructive) {
-          modelContext.delete(routine)
           dismiss()
         }
         Button("继续编辑", role: .cancel) {}
@@ -175,8 +218,8 @@ private struct RoutineEditorView: View {
   }
 
   private func delete(_ exercise: RoutineExercise) {
-    modelContext.delete(exercise)
-    for (index, item) in routine.sortedExercises.filter({ $0.id != exercise.id }).enumerated() {
+    routine.exercises.removeAll { $0.id == exercise.id }
+    for (index, item) in routine.sortedExercises.enumerated() {
       item.orderIndex = index
     }
     routine.updatedAt = .now
@@ -193,8 +236,46 @@ private struct RoutineEditorView: View {
     guard canSave else { return }
     routine.name = routine.name.trimmed
     routine.updatedAt = .now
-    try? modelContext.save()
-    dismiss()
+    if let original {
+      original.name = routine.name
+      original.notes = routine.notes
+      original.updatedAt = routine.updatedAt
+      original.exercises.forEach { modelContext.delete($0) }
+      original.exercises = routine.sortedExercises.map { value in
+        let item = RoutineExercise(
+          sourceExerciseID: value.sourceExerciseID, nameEnSnapshot: value.nameEnSnapshot,
+          nameZhSnapshot: value.nameZhSnapshot, orderIndex: value.orderIndex,
+          trackingMode: value.trackingMode, defaultSetCount: value.defaultSetCount,
+          defaultRepetitions: value.defaultRepetitions,
+          defaultWeightKilograms: value.defaultWeightKilograms,
+          defaultDurationSeconds: value.defaultDurationSeconds,
+          defaultDistanceKilometers: value.defaultDistanceKilometers)
+        item.routine = original
+        return item
+      }
+    } else {
+      let saved = Routine(name: routine.name, notes: routine.notes)
+      saved.exercises = routine.sortedExercises.map { value in
+        let item = RoutineExercise(
+          sourceExerciseID: value.sourceExerciseID, nameEnSnapshot: value.nameEnSnapshot,
+          nameZhSnapshot: value.nameZhSnapshot, orderIndex: value.orderIndex,
+          trackingMode: value.trackingMode, defaultSetCount: value.defaultSetCount,
+          defaultRepetitions: value.defaultRepetitions,
+          defaultWeightKilograms: value.defaultWeightKilograms,
+          defaultDurationSeconds: value.defaultDurationSeconds,
+          defaultDistanceKilometers: value.defaultDistanceKilometers)
+        item.routine = saved
+        return item
+      }
+      modelContext.insert(saved)
+    }
+    do {
+      try modelContext.save()
+      dismiss()
+    } catch {
+      modelContext.rollback()
+      saveError = error.localizedDescription
+    }
   }
 }
 
@@ -214,10 +295,10 @@ private struct RoutineExerciseEditor: View {
           .labelStyle(.iconOnly)
       }
 
-      LabeledContent("记录方式") {
-        Label(exercise.trackingMode.title, systemImage: exercise.trackingMode.systemImage)
-          .foregroundStyle(.secondary)
+      Picker("记录方式", selection: $exercise.trackingMode) {
+        ForEach(TrackingMode.allCases) { Text($0.title).tag($0) }
       }
+      .accessibilityIdentifier("routine.mode.\(exercise.id.uuidString)")
 
       if exercise.trackingMode == .strength {
         HStack {
@@ -233,6 +314,12 @@ private struct RoutineExerciseEditor: View {
             .frame(maxWidth: 70)
           }
         }
+      } else if exercise.trackingMode == .repetitions {
+        numberField("组数", value: $exercise.defaultSetCount)
+        numberField("次数", value: $exercise.defaultRepetitions)
+      } else if exercise.trackingMode == .duration {
+        numberField("组数", value: $exercise.defaultSetCount)
+        numberField("每组秒数", value: $exercise.defaultDurationSeconds)
       } else {
         LabeledContent("默认时长") {
           HStack {
@@ -263,7 +350,9 @@ private struct RoutineExerciseEditor: View {
   private var durationMinutes: Binding<Double> {
     Binding(
       get: { Double(exercise.defaultDurationSeconds) / 60 },
-      set: { exercise.defaultDurationSeconds = max(Int($0 * 60), 0) }
+      set: {
+        if $0.isFinite { exercise.defaultDurationSeconds = Int(min(max($0, 0), 10_080) * 60) }
+      }
     )
   }
 

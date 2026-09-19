@@ -19,12 +19,11 @@ final class TrainoteUITests: XCTestCase {
 
   func testCanStartBlankWorkoutAndResumeIt() {
     startBlankWorkout()
-    XCTAssertTrue(app.buttons["training.activeWorkout"].waitForExistence(timeout: 3))
+    XCTAssertTrue(app.navigationBars["进行中"].waitForExistence(timeout: 5))
   }
 
   func testCanCompleteStrengthWorkout() {
     startBlankWorkout()
-    app.buttons["training.activeWorkout"].tap()
     app.buttons["workout.addExercise"].tap()
     app.buttons["exercisePicker.item.0001"].tap()
     XCTAssertFalse(app.textFields["cardio.duration"].exists)
@@ -37,7 +36,6 @@ final class TrainoteUITests: XCTestCase {
 
   func testCanCompleteCardioWorkout() {
     startBlankWorkout()
-    app.buttons["training.activeWorkout"].tap()
     app.buttons["workout.addExercise"].tap()
     replaceText(in: app.searchFields.firstMatch, with: "跑步")
     app.buttons["exercisePicker.item.0685"].tap()
@@ -53,7 +51,7 @@ final class TrainoteUITests: XCTestCase {
 
   func testCanCreateAndStartRoutine() {
     app.tabBars.buttons["资料库"].tap()
-    app.buttons["Routine"].tap()
+    app.buttons["训练模板"].tap()
     app.buttons["routine.create"].tap()
     app.buttons["routine.addExercise"].tap()
     app.buttons["exercisePicker.item.0001"].tap()
@@ -64,7 +62,7 @@ final class TrainoteUITests: XCTestCase {
     app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH 'training.startRoutine.'"))
       .firstMatch.tap()
 
-    XCTAssertTrue(app.buttons["training.activeWorkout"].waitForExistence(timeout: 3))
+    XCTAssertTrue(app.navigationBars["进行中"].waitForExistence(timeout: 5))
   }
 
   func testFoodEntryCanBeAddedEditedAndDeleted() {
@@ -91,13 +89,18 @@ final class TrainoteUITests: XCTestCase {
   func testCommonFoodCanBeReused() {
     openDirectFoodEditor()
     replaceText(in: app.textFields["nutrition.entry.name"], with: "测试香蕉")
-    app.switches["同时保存为常用食物"].tap()
+    let savePreset = app.switches["nutrition.entry.savePreset"]
+    reveal(savePreset)
+    savePreset.coordinate(withNormalizedOffset: CGVector(dx: 0.94, dy: 0.5)).tap()
+    XCTAssertEqual(savePreset.value as? String, "1")
     app.buttons["nutrition.entry.save"].tap()
 
     app.buttons["nutrition.add"].tap()
-    app.buttons["从常用食物记录"].tap()
+    app.buttons["nutrition.add.preset"].tap()
     app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH 'foodPreset.log.'"))
       .firstMatch.tap()
+    reveal(app.buttons["nutrition.preset.log"])
+    app.buttons["nutrition.preset.log"].tap()
 
     XCTAssertEqual(
       app.buttons.matching(NSPredicate(format: "label CONTAINS '测试香蕉'")).count,
@@ -154,13 +157,52 @@ final class TrainoteUITests: XCTestCase {
   private func openDirectFoodEditor() {
     app.tabBars.buttons["饮食"].tap()
     app.buttons["nutrition.add"].tap()
-    app.buttons["直接记录"].tap()
+    app.buttons["nutrition.add.direct"].tap()
+  }
+
+  private func reveal(_ element: XCUIElement) {
+    for _ in 0..<8 {
+      if element.exists && element.isHittable { return }
+      app.swipeUp()
+    }
   }
 
   private func replaceText(in field: XCUIElement, with value: String) {
     XCTAssertTrue(field.waitForExistence(timeout: 3))
-    field.tap()
-    field.typeKey("a", modifierFlags: .command)
+    reveal(field)
+    field.coordinate(withNormalizedOffset: CGVector(dx: 0.98, dy: 0.5)).tap()
+    let current = field.value as? String ?? ""
+    if Double(current.replacingOccurrences(of: ",", with: "")) != nil {
+      field.press(forDuration: 1.1)
+      let selectAll = app.buttons.matching(NSPredicate(format: "label IN {'Select All', '全选'}"))
+        .firstMatch
+      let menuSelectAll = app.menuItems.matching(
+        NSPredicate(format: "label IN {'Select All', '全选'}")
+      ).firstMatch
+      if selectAll.waitForExistence(timeout: 1) {
+        selectAll.tap()
+      } else if menuSelectAll.exists {
+        menuSelectAll.tap()
+      } else {
+        field.doubleTap()
+      }
+    } else {
+      field.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: current.count + 1))
+    }
     field.typeText(value)
+    if let expected = Double(value),
+      let actual = Double((field.value as? String ?? "").replacingOccurrences(of: ",", with: ""))
+    {
+      XCTAssertEqual(actual, expected, accuracy: 0.000_001)
+    } else {
+      XCTAssertEqual(field.value as? String, value)
+    }
+    if app.buttons["收起键盘"].exists {
+      app.buttons["收起键盘"].tap()
+    } else if field.identifier.hasPrefix("nutrition."), app.keyboards.count > 0,
+      app.buttons["完成"].exists
+    {
+      app.buttons["完成"].firstMatch.tap()
+    }
   }
 }

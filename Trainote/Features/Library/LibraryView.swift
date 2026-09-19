@@ -3,13 +3,14 @@ import SwiftUI
 
 private enum LibrarySection: String, CaseIterable, Identifiable {
   case exercises = "动作"
-  case routines = "Routine"
+  case routines = "训练模板"
   case foods = "饮食"
 
   var id: Self { self }
 }
 
 struct LibraryView: View {
+  var templatesRequest: Int = 0
   @State private var selectedSection: LibrarySection = .exercises
 
   var body: some View {
@@ -33,6 +34,9 @@ struct LibraryView: View {
       }
     }
     .navigationTitle("资料库")
+    .onChange(of: templatesRequest, initial: true) { _, request in
+      if request > 0 { selectedSection = .routines }
+    }
   }
 }
 

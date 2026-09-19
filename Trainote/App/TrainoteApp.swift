@@ -11,7 +11,20 @@ struct TrainoteApp: App {
   init() {
     _catalog = State(initialValue: ExerciseCatalog())
     let inMemory = ProcessInfo.processInfo.arguments.contains("-ui-testing")
-    containerResult = Result { try PersistenceController.makeContainer(inMemory: inMemory) }
+    containerResult = Result {
+      #if DEBUG
+        if ProcessInfo.processInfo.arguments.contains("-ui-testing-readonly") {
+          let url = FileManager.default.temporaryDirectory.appendingPathComponent(
+            "readonly-\(UUID().uuidString).store")
+          try autoreleasepool {
+            let initial = try PersistenceController.makeContainer(storeURL: url)
+            try initial.mainContext.save()
+          }
+          return try PersistenceController.makeContainer(storeURL: url, allowsSave: false)
+        }
+      #endif
+      return try PersistenceController.makeContainer(inMemory: inMemory)
+    }
   }
 
   var body: some Scene {
@@ -43,7 +56,9 @@ enum PersistenceController {
     NutritionGoal.self,
   ]
 
-  static func makeContainer(inMemory: Bool = false) throws -> ModelContainer {
+  static func makeContainer(inMemory: Bool = false, storeURL: URL? = nil, allowsSave: Bool = true)
+    throws -> ModelContainer
+  {
     if !inMemory {
       try FileManager.default.createDirectory(
         at: URL.applicationSupportDirectory,
@@ -51,8 +66,18 @@ enum PersistenceController {
       )
     }
 
-    let schema = Schema(modelTypes)
-    let configuration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: inMemory)
+    // 1.1 adds only optional/defaulted attributes; SwiftData performs a lightweight migration.
+    // The legacy on-disk fixture is opened by PersistenceUpgradeTests before each release.
+    let schema = Schema(modelTypes, version: Schema.Version(1, 1, 0))
+    let configuration: ModelConfiguration
+    if let storeURL {
+      configuration = ModelConfiguration(
+        schema: schema, url: storeURL, allowsSave: allowsSave, cloudKitDatabase: .none)
+    } else {
+      configuration = ModelConfiguration(
+        schema: schema, isStoredInMemoryOnly: inMemory, allowsSave: allowsSave,
+        cloudKitDatabase: .none)
+    }
     return try ModelContainer(for: schema, configurations: [configuration])
   }
 }

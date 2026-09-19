@@ -127,6 +127,10 @@ final class MealTemplateItem {
       && carbohydratesPerServing.isValidNonnegativeNumber
       && proteinPerServing.isValidNonnegativeNumber
       && fatPerServing.isValidNonnegativeNumber
+      && (caloriesPerServing * quantity).isValidNonnegativeNumber
+      && (carbohydratesPerServing * quantity).isValidNonnegativeNumber
+      && (proteinPerServing * quantity).isValidNonnegativeNumber
+      && (fatPerServing * quantity).isValidNonnegativeNumber
   }
 }
 
@@ -215,7 +219,7 @@ final class NutritionGoal {
   }
 
   var isValid: Bool {
-    calories.isFinite && calories > 0
+    calories.isValidNonnegativeNumber && calories > 0
       && carbohydrates.isValidNonnegativeNumber
       && protein.isValidNonnegativeNumber
       && fat.isValidNonnegativeNumber
