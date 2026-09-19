@@ -42,6 +42,7 @@
 		0931F9274F4F5D72833E712E /* BackupArchiveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97B4181FF11A815DCBD3DC97 /* BackupArchiveTests.swift */; };
 		4ABC63C229575989DCD13DBA /* NutritionUpgradeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EA4C89A7E94035CA8393D21 /* NutritionUpgradeTests.swift */; };
 		FDE6261E29EC7194927DA70B /* DailyUseUpgradeUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8931BCA9BB59559C3F3068B7 /* DailyUseUpgradeUITests.swift */; };
+		2B37B52D91C135BED6FAB1DA /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 6B7A4536367476D0105B1F65 /* PrivacyInfo.xcprivacy */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -100,6 +101,7 @@
 		97B4181FF11A815DCBD3DC97 /* BackupArchiveTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupArchiveTests.swift; sourceTree = "<group>"; };
 		8EA4C89A7E94035CA8393D21 /* NutritionUpgradeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NutritionUpgradeTests.swift; sourceTree = "<group>"; };
 		8931BCA9BB59559C3F3068B7 /* DailyUseUpgradeUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyUseUpgradeUITests.swift; sourceTree = "<group>"; };
+		6B7A4536367476D0105B1F65 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -216,6 +218,7 @@
 		9E6027A637F6B078E2C6012B /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				6B7A4536367476D0105B1F65 /* PrivacyInfo.xcprivacy */,
 				3DC5D3AA4F7372DCF5F44D77 /* ExerciseTrackingModes.json */,
 				F5395F24438996CDBEBF92C4 /* ExerciseCatalog.json */,
 				A41C2E7C39A2181CD564FFDC /* THIRD_PARTY_NOTICES.md */,
@@ -373,6 +376,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CC92CE0DD0A3FC9DF5A595FC /* Assets.xcassets in Resources */,
+				2B37B52D91C135BED6FAB1DA /* PrivacyInfo.xcprivacy in Resources */,
 				45D83D9B0CAF1EBD7E950806 /* ExerciseTrackingModes.json in Resources */,
 				D126D7DCA4CF58410D085DF7 /* ExerciseCatalog.json in Resources */,
 				F6B845965B90C02FAEBCF9CC /* THIRD_PARTY_NOTICES.md in Resources */,
