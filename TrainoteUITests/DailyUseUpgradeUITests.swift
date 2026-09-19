@@ -64,6 +64,48 @@ final class DailyUseUpgradeUITests: XCTestCase {
     XCTAssertTrue(app.staticTexts["已完成"].waitForExistence(timeout: 3))
   }
 
+  func testReusedCardioRequiresExplicitCompletion() {
+    app.tabBars.buttons["训练"].tap()
+    app.buttons["training.start"].tap()
+    app.buttons["training.startBlank"].tap()
+    app.buttons["workout.addExercise"].tap()
+    fill(app.searchFields.firstMatch, "跑步")
+    app.buttons["exercisePicker.item.0685"].tap()
+    fill(app.textFields["cardio.duration"], "10")
+    fill(app.textFields["cardio.distance"], "2")
+    fill(app.textFields["cardio.calories"], "100")
+    app.buttons["workout.finish"].tap()
+    historyRow.tap()
+    app.buttons["training.repeat"].tap()
+    prefix("exercise.history.apply.").tap()
+    XCTAssertTrue(app.navigationBars["确认本次有氧成绩"].waitForExistence(timeout: 3))
+    capture("有氧历史成绩确认")
+    app.buttons["cardio.history.cancel"].tap()
+    XCTAssertEqual(app.textFields["cardio.duration"].value as? String, "0")
+    XCTAssertEqual(app.textFields["cardio.distance"].value as? String, "0")
+    XCTAssertEqual(app.textFields["cardio.calories"].value as? String, "0")
+    app.buttons["workout.finish"].tap()
+    XCTAssertTrue(app.alerts["请检查记录"].waitForExistence(timeout: 3))
+    app.alerts.buttons["知道了"].tap()
+
+    // Cancelling also preserves a result the user already entered for this session.
+    fill(app.textFields["cardio.duration"], "4")
+    prefix("exercise.history.apply.").tap()
+    app.buttons["cardio.history.cancel"].tap()
+    XCTAssertEqual(app.textFields["cardio.duration"].value as? String, "4")
+
+    prefix("exercise.history.apply.").tap()
+    app.buttons["cardio.history.confirm"].tap()
+    XCTAssertEqual(app.textFields["cardio.duration"].value as? String, "10")
+    XCTAssertEqual(app.textFields["cardio.distance"].value as? String, "2")
+    XCTAssertEqual(app.textFields["cardio.calories"].value as? String, "100")
+    app.buttons["workout.finish"].tap()
+    XCTAssertTrue(app.buttons["training.repeat"].waitForExistence(timeout: 3))
+    app.navigationBars.buttons.element(boundBy: 0).tap()
+    waitForCount(
+      app.buttons.matching(NSPredicate(format: "label CONTAINS '已完成' AND label CONTAINS '自由训练'")), 2)
+  }
+
   func testFoodPortionRecentAndWeeklyReport() {
     app.tabBars.buttons["饮食"].tap()
     app.buttons["nutrition.add"].tap()

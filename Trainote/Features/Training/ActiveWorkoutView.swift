@@ -216,6 +216,7 @@ private struct WorkoutExerciseEditor: View {
   @State private var confirmingMode = false
   @State private var confirmingPrevious = false
   @State private var confirmingDelete = false
+  @State private var previousCardioDraft: CardioEntry?
 
   private var previous: WorkoutExercise? {
     WorkoutInsights.previousExercise(for: exercise, before: workout, history: history)
@@ -253,8 +254,44 @@ private struct WorkoutExerciseEditor: View {
             Text("\(cardio.durationSeconds / 60) 分钟 · \(cardio.distanceKilometers.formatted()) km")
               .font(.caption)
           }
-          Button("沿用上次完成数据") { confirmingPrevious = true }
-            .accessibilityIdentifier("exercise.history.apply.\(exercise.id.uuidString)")
+          Button("沿用上次完成数据") {
+            if exercise.trackingMode.usesSets {
+              confirmingPrevious = true
+            } else {
+              copyPrevious()
+            }
+          }
+          .accessibilityIdentifier("exercise.history.apply.\(exercise.id.uuidString)")
+          .sheet(item: $previousCardioDraft) { draft in
+            NavigationStack {
+              Form {
+                Section {
+                  LabeledContent(
+                    "时长", value: "\(draft.durationSeconds / 60) 分 \(draft.durationSeconds % 60) 秒")
+                  LabeledContent("距离", value: "\(draft.distanceKilometers.formatted()) km")
+                  LabeledContent("消耗", value: "\(draft.calories.formatted()) kcal")
+                } footer: {
+                  Text("这是上次的成绩。只有本次已完成相同训练时才确认；需要调整时，请取消并填写本次实际成绩。")
+                }
+                Button("确认本次已完成") {
+                  guard let cardio = exercise.cardioEntries.first else { return }
+                  cardio.durationSeconds = draft.durationSeconds
+                  cardio.distanceKilometers = draft.distanceKilometers
+                  cardio.calories = draft.calories
+                  previousCardioDraft = nil
+                }
+                .accessibilityIdentifier("cardio.history.confirm")
+              }
+              .navigationTitle("确认本次有氧成绩")
+              .navigationBarTitleDisplayMode(.inline)
+              .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                  Button("取消") { previousCardioDraft = nil }
+                    .accessibilityIdentifier("cardio.history.cancel")
+                }
+              }
+            }
+          }
         }
       }
       if exercise.trackingMode.usesSets {
@@ -344,12 +381,11 @@ private struct WorkoutExerciseEditor: View {
         return set
       }
       if !isDraft { oldSets.forEach { modelContext.delete($0) } }
-    } else if let old = previous.cardioEntries.first(where: { $0.isValid }),
-      let cardio = exercise.cardioEntries.first
-    {
-      cardio.durationSeconds = old.durationSeconds
-      cardio.distanceKilometers = old.distanceKilometers
-      cardio.calories = old.calories
+    } else if let old = previous.cardioEntries.first(where: { $0.isValid }) {
+      // Keep copied values detached from the current result until explicitly confirmed.
+      previousCardioDraft = CardioEntry(
+        durationSeconds: old.durationSeconds, distanceKilometers: old.distanceKilometers,
+        calories: old.calories)
     }
   }
 }
@@ -433,10 +469,12 @@ private struct CardioEntryEditor: View {
         "0", value: $cardio.distanceKilometers, format: .number.precision(.fractionLength(0...2))
       )
       .keyboardType(.decimalPad).multilineTextAlignment(.trailing).accessibilityLabel("距离公里")
+      .accessibilityIdentifier("cardio.distance")
     }
     LabeledContent("消耗（kcal，可选）") {
       TextField("0", value: $cardio.calories, format: .number.precision(.fractionLength(0...1)))
         .keyboardType(.decimalPad).multilineTextAlignment(.trailing).accessibilityLabel("消耗千卡")
+        .accessibilityIdentifier("cardio.calories")
     }
   }
   private var durationMinutes: Binding<Double> {
