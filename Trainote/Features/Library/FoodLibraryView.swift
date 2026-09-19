@@ -7,14 +7,16 @@ private enum FoodLibrarySection: String, CaseIterable, Identifiable {
   var id: Self { self }
 }
 
-private struct FoodPresetPresentation: Identifiable {
-  let id = UUID()
-  let preset: FoodPreset?
-}
+private enum FoodLibraryPresentation: Identifiable {
+  case preset(FoodPreset?)
+  case meal(MealTemplate?)
 
-private struct MealTemplatePresentation: Identifiable {
-  let id = UUID()
-  let template: MealTemplate?
+  var id: String {
+    switch self {
+    case .preset(let preset): "preset-\(preset?.id.uuidString ?? "new")"
+    case .meal(let template): "meal-\(template?.id.uuidString ?? "new")"
+    }
+  }
 }
 
 struct FoodLibraryView: View {
@@ -27,8 +29,7 @@ struct FoodLibraryView: View {
   private var templates: [MealTemplate]
 
   @State private var selectedSection: FoodLibrarySection = .presets
-  @State private var presetPresentation: FoodPresetPresentation?
-  @State private var mealPresentation: MealTemplatePresentation?
+  @State private var presentation: FoodLibraryPresentation?
   @State private var pendingPresetDeletion: FoodPreset?
   @State private var pendingMealDeletion: MealTemplate?
   @State private var actionErrorMessage: String?
@@ -52,19 +53,19 @@ struct FoodLibraryView: View {
       ToolbarItem(placement: .topBarTrailing) {
         Button("新建", systemImage: "plus") {
           if selectedSection == .presets {
-            presetPresentation = FoodPresetPresentation(preset: nil)
+            presentation = .preset(nil)
           } else {
-            mealPresentation = MealTemplatePresentation(template: nil)
+            presentation = .meal(nil)
           }
         }
         .accessibilityIdentifier("foodLibrary.create")
       }
     }
-    .sheet(item: $presetPresentation) { value in
-      FoodPresetEditor(preset: value.preset)
-    }
-    .sheet(item: $mealPresentation) { value in
-      MealTemplateEditor(template: value.template)
+    .sheet(item: $presentation) { value in
+      switch value {
+      case .preset(let preset): FoodPresetEditor(preset: preset)
+      case .meal(let template): MealTemplateEditor(template: template)
+      }
     }
     .alert("删除常用食物？", isPresented: presetDeletionBinding, presenting: pendingPresetDeletion) {
       preset in
@@ -99,7 +100,7 @@ struct FoodLibraryView: View {
       } else {
         ForEach(presets) { preset in
           Button {
-            presetPresentation = FoodPresetPresentation(preset: preset)
+            presentation = .preset(preset)
           } label: {
             HStack {
               VStack(alignment: .leading, spacing: 3) {
@@ -133,7 +134,7 @@ struct FoodLibraryView: View {
       } else {
         ForEach(templates) { template in
           Button {
-            mealPresentation = MealTemplatePresentation(template: template)
+            presentation = .meal(template)
           } label: {
             HStack {
               VStack(alignment: .leading, spacing: 3) {
@@ -242,6 +243,7 @@ private struct FoodPresetEditor: View {
           Picker("营养基准", selection: $inputMode) {
             ForEach(PortionInputMode.allCases) { Text($0.title).tag($0) }
           }
+          .pickerStyle(.segmented)
           .accessibilityIdentifier("foodPreset.basis")
           if inputMode == .perServing {
             TextField("每份说明", text: $servingDescription)

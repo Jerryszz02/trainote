@@ -80,6 +80,13 @@ final class TrainoteUITests: XCTestCase {
     let editedRow = app.buttons.matching(NSPredicate(format: "label CONTAINS '测试早午餐'"))
       .firstMatch
     XCTAssertTrue(editedRow.waitForExistence(timeout: 3))
+    // On a small screen the row can extend underneath the floating tab bar.
+    // Scroll it fully into the list before performing a horizontal gesture.
+    for _ in 0..<3 {
+      if editedRow.frame.maxY < app.tabBars.firstMatch.frame.minY { break }
+      app.swipeUp()
+    }
+    XCTAssertLessThan(editedRow.frame.maxY, app.tabBars.firstMatch.frame.minY)
     editedRow.swipeLeft()
     app.buttons["删除"].tap()
     app.alerts.buttons["删除"].tap()

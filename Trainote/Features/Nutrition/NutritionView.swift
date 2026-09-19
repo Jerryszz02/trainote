@@ -367,6 +367,7 @@ private struct FoodEntryEditor: View {
           ) {
             ForEach(PortionInputMode.allCases) { Text($0.title).tag($0) }
           }
+          .pickerStyle(.segmented)
           .accessibilityIdentifier("nutrition.entry.basis")
           if draft.inputMode == .perServing {
             TextField("份量说明", text: $draft.servingDescription)
@@ -627,6 +628,22 @@ private struct FoodPortionFields: View {
   }
 }
 
+/// Search belongs to food selection; the quantity editor keeps its primary action visible.
+private struct FoodSelectionSearch: ViewModifier {
+  @Binding var query: String
+  let isSelecting: Bool
+  let prompt: String
+
+  @ViewBuilder
+  func body(content: Content) -> some View {
+    if isSelecting {
+      content.searchable(text: $query, prompt: prompt)
+    } else {
+      content
+    }
+  }
+}
+
 private struct FoodPresetLogSheet: View {
   @Environment(\.dismiss) private var dismiss
   @Environment(\.modelContext) private var modelContext
@@ -670,10 +687,6 @@ private struct FoodPresetLogSheet: View {
           }
           FoodPortionFields(draft: $draft, mealType: $mealType, loggedAt: $loggedAt)
           Section {
-            Button("记录这条食物") { log(preset) }
-              .disabled(!draft.isValid)
-              .accessibilityIdentifier("nutrition.preset.log")
-          } footer: {
             Text(
               FoodPortionMath.isPer100g(preset.servingDescription)
                 ? "该常用食物按每 100 克记录，请输入实际克数。"
@@ -711,13 +724,22 @@ private struct FoodPresetLogSheet: View {
           }
         }
       }
-      .searchable(text: $searchText, prompt: "搜索常用食物")
+      .modifier(
+        FoodSelectionSearch(query: $searchText, isSelecting: activePreset == nil, prompt: "搜索常用食物")
+      )
       .accessibilityIdentifier("nutrition.preset.search")
       .navigationTitle(activePreset == nil ? "常用食物" : "记录常用食物")
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
         ToolbarItem(placement: .cancellationAction) {
           Button("取消") { dismiss() }
+        }
+        if let preset = activePreset {
+          ToolbarItem(placement: .confirmationAction) {
+            Button("记录") { log(preset) }
+              .disabled(!draft.isValid)
+              .accessibilityIdentifier("nutrition.preset.log")
+          }
         }
         NutritionKeyboardDoneToolbar()
       }
@@ -793,10 +815,6 @@ private struct RecentFoodPickerSheet: View {
           }
           FoodPortionFields(draft: $draft, mealType: $mealType, loggedAt: $loggedAt)
           Section {
-            Button("记录这条食物") { log(item) }
-              .disabled(!draft.isValid)
-              .accessibilityIdentifier("nutrition.recent.log")
-          } footer: {
             Text("保存时会生成新的独立记录，不会修改原来的历史。")
           }
         } else {
@@ -827,13 +845,22 @@ private struct RecentFoodPickerSheet: View {
           }
         }
       }
-      .searchable(text: $searchText, prompt: "搜索最近记录")
+      .modifier(
+        FoodSelectionSearch(query: $searchText, isSelecting: activeItem == nil, prompt: "搜索最近记录")
+      )
       .accessibilityIdentifier("nutrition.recent.search")
       .navigationTitle(activeItem == nil ? "最近记录" : "记录最近食物")
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
         ToolbarItem(placement: .cancellationAction) {
           Button("取消") { dismiss() }
+        }
+        if let item = activeItem {
+          ToolbarItem(placement: .confirmationAction) {
+            Button("记录") { log(item) }
+              .disabled(!draft.isValid)
+              .accessibilityIdentifier("nutrition.recent.log")
+          }
         }
         NutritionKeyboardDoneToolbar()
       }

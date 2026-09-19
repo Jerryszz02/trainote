@@ -70,6 +70,7 @@ final class DailyUseUpgradeUITests: XCTestCase {
     app.buttons["nutrition.add.direct"].tap()
     fill(app.textFields["nutrition.entry.name"], "验收燕麦")
     selectPer100g("nutrition.entry.basis")
+    XCTAssertEqual(app.textFields["nutrition.entry.name"].value as? String, "验收燕麦")
     fill(app.textFields["nutrition.entry.amount"], "150")
     fill(app.textFields["nutrition.entry.perUnit.calories"], "380")
     app.buttons["nutrition.entry.save"].tap()
@@ -153,6 +154,7 @@ final class DailyUseUpgradeUITests: XCTestCase {
     app.buttons["foodLibrary.create"].tap()
     fill(app.textFields["foodPreset.name"], "固定餐燕麦")
     selectPer100g("foodPreset.basis")
+    XCTAssertEqual(app.textFields["foodPreset.name"].value as? String, "固定餐燕麦")
     fill(app.textFields["foodPreset.nutrient.卡路里"], "100")
     app.buttons["foodPreset.save"].tap()
     app.segmentedControls.buttons["固定餐"].tap()
@@ -210,11 +212,8 @@ final class DailyUseUpgradeUITests: XCTestCase {
     XCTAssertEqual(query.count, expected)
   }
   private func selectPer100g(_ identifier: String) {
-    let picker = app.buttons[identifier]
-    reveal(picker)
-    // Tap the trailing menu value, not the Form row's label or empty space.
-    picker.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
-    let option = app.buttons["按每 100 克"]
+    let option = app.segmentedControls[identifier].buttons["按每 100 克"]
+    reveal(option)
     XCTAssertTrue(option.waitForExistence(timeout: 5))
     option.tap()
   }
