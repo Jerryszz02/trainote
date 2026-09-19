@@ -1,0 +1,46 @@
+name: iOS verification
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+concurrency:
+  group: ios-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  test:
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check exercise recording modes
+        run: python3 Scripts/audit_tracking_modes.py
+      - name: Select an available iPhone simulator
+        run: |
+          xcodebuild -version
+          xcrun simctl list devices available --json > /tmp/trainote-devices.json
+          python3 - <<'PY'
+          import json, os
+          devices = json.load(open('/tmp/trainote-devices.json'))['devices']
+          candidates = [(runtime, d) for runtime, values in devices.items() if 'iOS' in runtime for d in values if d['name'].startswith('iPhone')]
+          if not candidates:
+              raise SystemExit('No available iPhone simulator')
+          runtime, device = candidates[0]
+          print('Selected simulator:', runtime, device['name'], device['udid'])
+          with open(os.environ['GITHUB_ENV'], 'a') as output:
+              output.write('TRAINOTE_SIMULATOR=' + device['udid'] + '\n')
+          PY
+      - name: Build and test
+        run: |
+          xcodebuild -project Trainote.xcodeproj -scheme Trainote \
+            -destination "platform=iOS Simulator,id=$TRAINOTE_SIMULATOR" \
+            -resultBundlePath TestResults.xcresult \
+            CODE_SIGNING_ALLOWED=NO test
+      - name: Upload test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-test-results
+          path: TestResults.xcresult
+          if-no-files-found: ignore

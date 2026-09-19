@@ -7,15 +7,16 @@ private enum FoodLibrarySection: String, CaseIterable, Identifiable {
   var id: Self { self }
 }
 
-private struct FoodPresetPresentation: Identifiable {
-  let id = UUID()
-  let preset: FoodPreset?
-}
+private enum FoodLibraryPresentation: Identifiable {
+  case preset(FoodPreset?)
+  case meal(MealTemplate?)
 
-private struct MealTemplatePresentation: Identifiable {
-  let template: MealTemplate
-  let isNew: Bool
-  var id: UUID { template.id }
+  var id: String {
+    switch self {
+    case .preset(let preset): "preset-\(preset?.id.uuidString ?? "new")"
+    case .meal(let template): "meal-\(template?.id.uuidString ?? "new")"
+    }
+  }
 }
 
 struct FoodLibraryView: View {
@@ -28,10 +29,10 @@ struct FoodLibraryView: View {
   private var templates: [MealTemplate]
 
   @State private var selectedSection: FoodLibrarySection = .presets
-  @State private var presetPresentation: FoodPresetPresentation?
-  @State private var mealPresentation: MealTemplatePresentation?
+  @State private var presentation: FoodLibraryPresentation?
   @State private var pendingPresetDeletion: FoodPreset?
   @State private var pendingMealDeletion: MealTemplate?
+  @State private var actionErrorMessage: String?
 
   var body: some View {
     List {
@@ -52,26 +53,24 @@ struct FoodLibraryView: View {
       ToolbarItem(placement: .topBarTrailing) {
         Button("新建", systemImage: "plus") {
           if selectedSection == .presets {
-            presetPresentation = FoodPresetPresentation(preset: nil)
+            presentation = .preset(nil)
           } else {
-            createMealTemplate()
+            presentation = .meal(nil)
           }
         }
         .accessibilityIdentifier("foodLibrary.create")
       }
     }
-    .sheet(item: $presetPresentation) { value in
-      FoodPresetEditor(preset: value.preset)
-    }
-    .sheet(item: $mealPresentation) { value in
-      MealTemplateEditor(template: value.template, isNew: value.isNew)
+    .sheet(item: $presentation) { value in
+      switch value {
+      case .preset(let preset): FoodPresetEditor(preset: preset)
+      case .meal(let template): MealTemplateEditor(template: template)
+      }
     }
     .alert("删除常用食物？", isPresented: presetDeletionBinding, presenting: pendingPresetDeletion) {
       preset in
       Button("删除", role: .destructive) {
-        modelContext.delete(preset)
-        try? modelContext.save()
-        pendingPresetDeletion = nil
+        delete(preset)
       }
       Button("取消", role: .cancel) { pendingPresetDeletion = nil }
     } message: { _ in
@@ -80,13 +79,16 @@ struct FoodLibraryView: View {
     .alert("删除固定餐？", isPresented: mealDeletionBinding, presenting: pendingMealDeletion) {
       template in
       Button("删除", role: .destructive) {
-        modelContext.delete(template)
-        try? modelContext.save()
-        pendingMealDeletion = nil
+        delete(template)
       }
       Button("取消", role: .cancel) { pendingMealDeletion = nil }
     } message: { _ in
       Text("已经记录的饮食不会改变。")
+    }
+    .alert("操作失败", isPresented: actionErrorBinding) {
+      Button("好", role: .cancel) { actionErrorMessage = nil }
+    } message: {
+      Text(actionErrorMessage ?? "")
     }
   }
 
@@ -98,13 +100,13 @@ struct FoodLibraryView: View {
       } else {
         ForEach(presets) { preset in
           Button {
-            presetPresentation = FoodPresetPresentation(preset: preset)
+            presentation = .preset(preset)
           } label: {
             HStack {
               VStack(alignment: .leading, spacing: 3) {
                 Text(preset.name)
                 Text(
-                  "\(preset.servingDescription) · \(preset.caloriesPerServing, format: .number.precision(.fractionLength(0))) kcal"
+                  "\(preset.servingDescription) · \(NutritionFormatting.number(preset.caloriesPerServing, fraction: 0)) kcal"
                 )
                 .font(.caption)
                 .foregroundStyle(.secondary)
@@ -112,6 +114,8 @@ struct FoodLibraryView: View {
               Spacer()
               Image(systemName: "chevron.right").foregroundStyle(.tertiary)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .contentShape(Rectangle())
           }
           .buttonStyle(.plain)
           .swipeActions {
@@ -130,7 +134,7 @@ struct FoodLibraryView: View {
       } else {
         ForEach(templates) { template in
           Button {
-            mealPresentation = MealTemplatePresentation(template: template, isNew: false)
+            presentation = .meal(template)
           } label: {
             HStack {
               VStack(alignment: .leading, spacing: 3) {
@@ -142,6 +146,8 @@ struct FoodLibraryView: View {
               Spacer()
               Image(systemName: "chevron.right").foregroundStyle(.tertiary)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .contentShape(Rectangle())
           }
           .buttonStyle(.plain)
           .swipeActions {
@@ -160,10 +166,32 @@ struct FoodLibraryView: View {
     Binding(get: { pendingMealDeletion != nil }, set: { if !$0 { pendingMealDeletion = nil } })
   }
 
-  private func createMealTemplate() {
-    let template = MealTemplate(name: "新固定餐")
-    modelContext.insert(template)
-    mealPresentation = MealTemplatePresentation(template: template, isNew: true)
+  private var actionErrorBinding: Binding<Bool> {
+    Binding(get: { actionErrorMessage != nil }, set: { if !$0 { actionErrorMessage = nil } })
+  }
+
+  private func delete(_ preset: FoodPreset) {
+    modelContext.delete(preset)
+    do {
+      try modelContext.save()
+      pendingPresetDeletion = nil
+    } catch {
+      modelContext.rollback()
+      pendingPresetDeletion = nil
+      actionErrorMessage = "删除失败：\(error.localizedDescription)。请重试。"
+    }
+  }
+
+  private func delete(_ template: MealTemplate) {
+    modelContext.delete(template)
+    do {
+      try modelContext.save()
+      pendingMealDeletion = nil
+    } catch {
+      modelContext.rollback()
+      pendingMealDeletion = nil
+      actionErrorMessage = "删除失败：\(error.localizedDescription)。请重试。"
+    }
   }
 }
 
@@ -172,15 +200,22 @@ private struct FoodPresetEditor: View {
   @Environment(\.modelContext) private var modelContext
 
   let preset: FoodPreset?
+  @State private var inputMode: PortionInputMode
   @State private var name: String
   @State private var servingDescription: String
   @State private var calories: Double
   @State private var carbohydrates: Double
   @State private var protein: Double
   @State private var fat: Double
+  @State private var errorMessage: String?
 
   init(preset: FoodPreset?) {
     self.preset = preset
+    _inputMode = State(
+      initialValue: preset.map {
+        FoodPortionMath.isPer100g($0.servingDescription) ? .per100g : .perServing
+      }
+        ?? .perServing)
     _name = State(initialValue: preset?.name ?? "")
     _servingDescription = State(initialValue: preset?.servingDescription ?? "1 份")
     _calories = State(initialValue: preset?.caloriesPerServing ?? 0)
@@ -189,9 +224,13 @@ private struct FoodPresetEditor: View {
     _fat = State(initialValue: preset?.fatPerServing ?? 0)
   }
 
+  private var effectiveServingDescription: String {
+    inputMode == .per100g ? FoodPortionMath.per100gServingDescription : servingDescription.trimmed
+  }
+
   private var isValid: Bool {
     !name.trimmed.isEmpty
-      && !servingDescription.trimmed.isEmpty
+      && !effectiveServingDescription.isEmpty
       && [calories, carbohydrates, protein, fat].allSatisfy(\.isValidNonnegativeNumber)
   }
 
@@ -201,9 +240,21 @@ private struct FoodPresetEditor: View {
         Section("食物") {
           TextField("名称", text: $name)
             .accessibilityIdentifier("foodPreset.name")
-          TextField("每份说明", text: $servingDescription)
+          Picker("营养基准", selection: $inputMode) {
+            ForEach(PortionInputMode.allCases) { Text($0.title).tag($0) }
+          }
+          .pickerStyle(.segmented)
+          .accessibilityIdentifier("foodPreset.basis")
+          if inputMode == .perServing {
+            TextField("每份说明", text: $servingDescription)
+          } else {
+            LabeledContent("每份说明") {
+              Text(FoodPortionMath.per100gServingDescription)
+                .foregroundStyle(.secondary)
+            }
+          }
         }
-        Section("每份营养") {
+        Section(inputMode.nutrientSectionTitle) {
           field("卡路里", value: $calories, unit: "kcal")
           field("碳水", value: $carbohydrates, unit: "g")
           field("蛋白质", value: $protein, unit: "g")
@@ -219,6 +270,12 @@ private struct FoodPresetEditor: View {
             .disabled(!isValid)
             .accessibilityIdentifier("foodPreset.save")
         }
+        NutritionKeyboardDoneToolbar()
+      }
+      .alert("保存失败", isPresented: errorBinding) {
+        Button("好", role: .cancel) { errorMessage = nil }
+      } message: {
+        Text(errorMessage ?? "")
       }
     }
   }
@@ -227,6 +284,7 @@ private struct FoodPresetEditor: View {
     LabeledContent(title) {
       HStack {
         TextField("0", value: value, format: .number.precision(.fractionLength(0...2)))
+          .accessibilityIdentifier("foodPreset.nutrient.\(title)")
           .keyboardType(.decimalPad)
           .multilineTextAlignment(.trailing)
         Text(unit).foregroundStyle(.secondary)
@@ -234,30 +292,60 @@ private struct FoodPresetEditor: View {
     }
   }
 
+  private var errorBinding: Binding<Bool> {
+    Binding(get: { errorMessage != nil }, set: { if !$0 { errorMessage = nil } })
+  }
+
   private func save() {
-    guard isValid else { return }
+    guard isValid else {
+      errorMessage = "请填写名称和份量说明，营养数值必须为有限非负数。"
+      return
+    }
+    let description = effectiveServingDescription
     if let preset {
+      let snapshot = (
+        name: preset.name, serving: preset.servingDescription,
+        calories: preset.caloriesPerServing, carbohydrates: preset.carbohydratesPerServing,
+        protein: preset.proteinPerServing, fat: preset.fatPerServing, updatedAt: preset.updatedAt
+      )
       preset.name = name.trimmed
-      preset.servingDescription = servingDescription.trimmed
+      preset.servingDescription = description
       preset.caloriesPerServing = calories
       preset.carbohydratesPerServing = carbohydrates
       preset.proteinPerServing = protein
       preset.fatPerServing = fat
       preset.updatedAt = .now
+      do {
+        try modelContext.save()
+        dismiss()
+      } catch {
+        preset.name = snapshot.name
+        preset.servingDescription = snapshot.serving
+        preset.caloriesPerServing = snapshot.calories
+        preset.carbohydratesPerServing = snapshot.carbohydrates
+        preset.proteinPerServing = snapshot.protein
+        preset.fatPerServing = snapshot.fat
+        preset.updatedAt = snapshot.updatedAt
+        errorMessage = "保存失败：\(error.localizedDescription)。修改仍保留在表单中，请重试。"
+      }
     } else {
-      modelContext.insert(
-        FoodPreset(
-          name: name.trimmed,
-          servingDescription: servingDescription.trimmed,
-          caloriesPerServing: calories,
-          carbohydratesPerServing: carbohydrates,
-          proteinPerServing: protein,
-          fatPerServing: fat
-        )
+      let preset = FoodPreset(
+        name: name.trimmed,
+        servingDescription: description,
+        caloriesPerServing: calories,
+        carbohydratesPerServing: carbohydrates,
+        proteinPerServing: protein,
+        fatPerServing: fat
       )
+      modelContext.insert(preset)
+      do {
+        try modelContext.save()
+        dismiss()
+      } catch {
+        modelContext.delete(preset)
+        errorMessage = "保存失败：\(error.localizedDescription)。输入仍保留在表单中，请重试。"
+      }
     }
-    try? modelContext.save()
-    dismiss()
   }
 }
 
@@ -266,41 +354,146 @@ private enum MealEditorSheet: String, Identifiable {
   var id: String { rawValue }
 }
 
+/// 固定餐编辑用的纯值草稿，只有显式保存才会写入 SwiftData。
+struct MealTemplateItemDraft: Identifiable, Equatable {
+  let id: UUID
+  var orderIndex: Int
+  var nameSnapshot: String
+  var servingDescriptionSnapshot: String
+  var quantity: Double
+  var caloriesPerServing: Double
+  var carbohydratesPerServing: Double
+  var proteinPerServing: Double
+  var fatPerServing: Double
+
+  var isValid: Bool {
+    !nameSnapshot.trimmed.isEmpty
+      && !servingDescriptionSnapshot.trimmed.isEmpty
+      && quantity.isFinite && quantity > 0
+      && caloriesPerServing.isValidNonnegativeNumber
+      && carbohydratesPerServing.isValidNonnegativeNumber
+      && proteinPerServing.isValidNonnegativeNumber
+      && fatPerServing.isValidNonnegativeNumber
+      && (caloriesPerServing * quantity).isValidNonnegativeNumber
+      && (carbohydratesPerServing * quantity).isValidNonnegativeNumber
+      && (proteinPerServing * quantity).isValidNonnegativeNumber
+      && (fatPerServing * quantity).isValidNonnegativeNumber
+  }
+}
+
+struct MealTemplateDraft: Identifiable, Equatable {
+  let id: UUID
+  let isNew: Bool
+  var name: String
+  var notes: String
+  var items: [MealTemplateItemDraft]
+
+  init(template: MealTemplate?) {
+    if let template {
+      id = template.id
+      isNew = false
+      name = template.name
+      notes = template.notes
+      items = template.sortedItems.map { item in
+        MealTemplateItemDraft(
+          id: item.id,
+          orderIndex: item.orderIndex,
+          nameSnapshot: item.nameSnapshot,
+          servingDescriptionSnapshot: item.servingDescriptionSnapshot,
+          quantity: item.quantity,
+          caloriesPerServing: item.caloriesPerServing,
+          carbohydratesPerServing: item.carbohydratesPerServing,
+          proteinPerServing: item.proteinPerServing,
+          fatPerServing: item.fatPerServing
+        )
+      }
+    } else {
+      id = UUID()
+      isNew = true
+      name = ""
+      notes = ""
+      items = []
+    }
+  }
+
+  var isValid: Bool {
+    !name.trimmed.isEmpty && !items.isEmpty && items.allSatisfy(\.isValid)
+  }
+
+  var isEmptyDraft: Bool {
+    name.trimmed.isEmpty && notes.trimmed.isEmpty && items.isEmpty
+  }
+
+  mutating func add(preset: FoodPreset) {
+    items.append(
+      MealTemplateItemDraft(
+        id: UUID(),
+        orderIndex: items.count,
+        nameSnapshot: preset.name,
+        servingDescriptionSnapshot: preset.servingDescription,
+        quantity: 1,
+        caloriesPerServing: preset.caloriesPerServing,
+        carbohydratesPerServing: preset.carbohydratesPerServing,
+        proteinPerServing: preset.proteinPerServing,
+        fatPerServing: preset.fatPerServing
+      )
+    )
+  }
+
+  mutating func remove(id: UUID) {
+    items.removeAll { $0.id == id }
+    for index in items.indices { items[index].orderIndex = index }
+  }
+}
+
 private struct MealTemplateEditor: View {
   @Environment(\.dismiss) private var dismiss
   @Environment(\.modelContext) private var modelContext
 
-  @Bindable var template: MealTemplate
-  let isNew: Bool
-
+  let template: MealTemplate?
+  @State private var draft: MealTemplateDraft
   @State private var presentedSheet: MealEditorSheet?
   @State private var showCancelConfirmation = false
+  @State private var errorMessage: String?
 
-  private var canSave: Bool { template.isValid }
+  init(template: MealTemplate?) {
+    self.template = template
+    _draft = State(initialValue: MealTemplateDraft(template: template))
+  }
+
+  private var canSave: Bool { draft.isValid }
 
   var body: some View {
     NavigationStack {
       List {
         Section("固定餐") {
-          TextField("名称", text: $template.name)
-          TextField("备注（可选）", text: $template.notes, axis: .vertical)
+          TextField("名称", text: $draft.name)
+            .accessibilityIdentifier("mealTemplate.name")
+          TextField("备注（可选）", text: $draft.notes, axis: .vertical)
         }
 
         Section("食物") {
-          ForEach(template.sortedItems) { item in
-            MealTemplateItemRow(item: item) { delete(item) }
+          ForEach($draft.items) { $item in
+            MealTemplateItemDraftRow(item: $item) {
+              draft.remove(id: item.id)
+            }
           }
           Button("从常用食物添加", systemImage: "plus.circle.fill") {
             presentedSheet = .presetPicker
           }
+          .accessibilityIdentifier("mealTemplate.addPreset")
         }
       }
-      .navigationTitle(isNew ? "新建固定餐" : "编辑固定餐")
+      .navigationTitle(draft.isNew ? "新建固定餐" : "编辑固定餐")
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
         ToolbarItem(placement: .cancellationAction) {
-          Button(isNew ? "取消" : "关闭") {
-            if isNew { showCancelConfirmation = true } else { dismiss() }
+          Button(draft.isNew ? "取消" : "关闭") {
+            if draft.isNew && !draft.isEmptyDraft {
+              showCancelConfirmation = true
+            } else {
+              dismiss()
+            }
           }
         }
         ToolbarItem(placement: .confirmationAction) {
@@ -308,42 +501,126 @@ private struct MealTemplateEditor: View {
             .disabled(!canSave)
             .accessibilityIdentifier("mealTemplate.save")
         }
+        NutritionKeyboardDoneToolbar()
       }
       .sheet(item: $presentedSheet) { _ in
-        MealTemplatePresetPicker(template: template)
+        MealTemplatePresetPicker { preset in
+          draft.add(preset: preset)
+        }
       }
       .confirmationDialog(
         "放弃新固定餐？", isPresented: $showCancelConfirmation, titleVisibility: .visible
       ) {
-        Button("放弃", role: .destructive) {
-          modelContext.delete(template)
-          dismiss()
-        }
+        Button("放弃", role: .destructive) { dismiss() }
         Button("继续编辑", role: .cancel) {}
+      } message: {
+        Text("尚未保存的修改不会保留到资料库。")
+      }
+      .alert("保存失败", isPresented: errorBinding) {
+        Button("好", role: .cancel) { errorMessage = nil }
+      } message: {
+        Text(errorMessage ?? "")
       }
     }
   }
 
-  private func delete(_ item: MealTemplateItem) {
-    modelContext.delete(item)
-    for (index, value) in template.sortedItems.filter({ $0.id != item.id }).enumerated() {
-      value.orderIndex = index
-    }
-    template.updatedAt = .now
+  private var errorBinding: Binding<Bool> {
+    Binding(get: { errorMessage != nil }, set: { if !$0 { errorMessage = nil } })
   }
 
   private func save() {
-    guard canSave else { return }
-    template.name = template.name.trimmed
-    template.updatedAt = .now
-    try? modelContext.save()
-    dismiss()
+    guard canSave else {
+      errorMessage = "请填写固定餐名称，并至少添加一项数量有效的食物。"
+      return
+    }
+    if let template {
+      let previousName = template.name
+      let previousNotes = template.notes
+      let previousUpdatedAt = template.updatedAt
+      let draftIDs = Set(draft.items.map(\.id))
+      var existingByID: [UUID: MealTemplateItem] = [:]
+      for item in template.items {
+        existingByID[item.id] = item
+        if !draftIDs.contains(item.id) {
+          modelContext.delete(item)
+        }
+      }
+      for (index, itemDraft) in draft.items.enumerated() {
+        if let item = existingByID[itemDraft.id] {
+          item.orderIndex = index
+          item.nameSnapshot = itemDraft.nameSnapshot
+          item.servingDescriptionSnapshot = itemDraft.servingDescriptionSnapshot
+          item.quantity = itemDraft.quantity
+          item.caloriesPerServing = itemDraft.caloriesPerServing
+          item.carbohydratesPerServing = itemDraft.carbohydratesPerServing
+          item.proteinPerServing = itemDraft.proteinPerServing
+          item.fatPerServing = itemDraft.fatPerServing
+        } else {
+          let item = MealTemplateItem(
+            id: itemDraft.id,
+            orderIndex: index,
+            nameSnapshot: itemDraft.nameSnapshot,
+            servingDescriptionSnapshot: itemDraft.servingDescriptionSnapshot,
+            quantity: itemDraft.quantity,
+            caloriesPerServing: itemDraft.caloriesPerServing,
+            carbohydratesPerServing: itemDraft.carbohydratesPerServing,
+            proteinPerServing: itemDraft.proteinPerServing,
+            fatPerServing: itemDraft.fatPerServing
+          )
+          item.template = template
+          template.items.append(item)
+        }
+      }
+      template.name = draft.name.trimmed
+      template.notes = draft.notes
+      template.updatedAt = .now
+      do {
+        try modelContext.save()
+        dismiss()
+      } catch {
+        template.name = previousName
+        template.notes = previousNotes
+        template.updatedAt = previousUpdatedAt
+        modelContext.rollback()
+        errorMessage = "保存失败：\(error.localizedDescription)。修改仍保留在表单中，请重试。"
+      }
+    } else {
+      let template = MealTemplate(id: draft.id, name: draft.name.trimmed, notes: draft.notes)
+      template.items = draft.items.enumerated().map { index, itemDraft in
+        let item = MealTemplateItem(
+          id: itemDraft.id,
+          orderIndex: index,
+          nameSnapshot: itemDraft.nameSnapshot,
+          servingDescriptionSnapshot: itemDraft.servingDescriptionSnapshot,
+          quantity: itemDraft.quantity,
+          caloriesPerServing: itemDraft.caloriesPerServing,
+          carbohydratesPerServing: itemDraft.carbohydratesPerServing,
+          proteinPerServing: itemDraft.proteinPerServing,
+          fatPerServing: itemDraft.fatPerServing
+        )
+        item.template = template
+        return item
+      }
+      modelContext.insert(template)
+      do {
+        try modelContext.save()
+        dismiss()
+      } catch {
+        modelContext.rollback()
+        errorMessage = "保存失败：\(error.localizedDescription)。输入仍保留在表单中，请重试。"
+      }
+    }
   }
 }
 
-private struct MealTemplateItemRow: View {
-  @Bindable var item: MealTemplateItem
+private struct MealTemplateItemDraftRow: View {
+  @Binding var item: MealTemplateItemDraft
   let onDelete: () -> Void
+
+  private var displayQuantity: Binding<Double> {
+    let factor = FoodPortionMath.isPer100g(item.servingDescriptionSnapshot) ? 100.0 : 1.0
+    return Binding(get: { item.quantity * factor }, set: { item.quantity = $0 / factor })
+  }
 
   var body: some View {
     HStack {
@@ -354,10 +631,12 @@ private struct MealTemplateItemRow: View {
           .foregroundStyle(.secondary)
       }
       Spacer()
-      TextField("数量", value: $item.quantity, format: .number.precision(.fractionLength(0...2)))
+      TextField("数量", value: displayQuantity, format: .number.precision(.fractionLength(0...2)))
         .keyboardType(.decimalPad)
         .multilineTextAlignment(.trailing)
         .frame(maxWidth: 56)
+      Text(FoodPortionMath.isPer100g(item.servingDescriptionSnapshot) ? "g" : "份")
+        .font(.caption).foregroundStyle(.secondary)
       Button("删除", systemImage: "trash", role: .destructive, action: onDelete)
         .labelStyle(.iconOnly)
     }
@@ -370,29 +649,45 @@ private struct MealTemplatePresetPicker: View {
   @Query(sort: \FoodPreset.name)
   private var presets: [FoodPreset]
 
-  let template: MealTemplate
+  let onSelect: (FoodPreset) -> Void
+
+  @State private var searchText = ""
+
+  private var filteredPresets: [FoodPreset] {
+    let normalized = searchText.trimmed.lowercased()
+    guard !normalized.isEmpty else { return presets }
+    return presets.filter {
+      $0.name.lowercased().contains(normalized)
+        || $0.servingDescription.lowercased().contains(normalized)
+    }
+  }
 
   var body: some View {
     NavigationStack {
-      List(presets) { preset in
+      List(filteredPresets) { preset in
         Button {
-          add(preset)
+          onSelect(preset)
           dismiss()
         } label: {
           VStack(alignment: .leading, spacing: 3) {
             Text(preset.name)
             Text(
-              "\(preset.servingDescription) · \(preset.caloriesPerServing, format: .number.precision(.fractionLength(0))) kcal"
+              "\(preset.servingDescription) · \(NutritionFormatting.number(preset.caloriesPerServing, fraction: 0)) kcal"
             )
             .font(.caption)
             .foregroundStyle(.secondary)
           }
+          .frame(maxWidth: .infinity, alignment: .leading)
+          .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
       }
+      .searchable(text: $searchText, prompt: "搜索常用食物")
       .overlay {
         if presets.isEmpty {
           ContentUnavailableView("没有常用食物", systemImage: "star")
+        } else if filteredPresets.isEmpty {
+          ContentUnavailableView("没有匹配的常用食物", systemImage: "magnifyingglass")
         }
       }
       .navigationTitle("选择常用食物")
@@ -401,21 +696,5 @@ private struct MealTemplatePresetPicker: View {
         ToolbarItem(placement: .cancellationAction) { Button("取消") { dismiss() } }
       }
     }
-  }
-
-  private func add(_ preset: FoodPreset) {
-    let item = MealTemplateItem(
-      orderIndex: template.items.count,
-      nameSnapshot: preset.name,
-      servingDescriptionSnapshot: preset.servingDescription,
-      quantity: 1,
-      caloriesPerServing: preset.caloriesPerServing,
-      carbohydratesPerServing: preset.carbohydratesPerServing,
-      proteinPerServing: preset.proteinPerServing,
-      fatPerServing: preset.fatPerServing
-    )
-    item.template = template
-    template.items.append(item)
-    template.updatedAt = .now
   }
 }

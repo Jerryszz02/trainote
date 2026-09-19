@@ -73,3 +73,11 @@
 ## 待确认
 
 - 正式发布用 Bundle ID、签名 Team 和目标设备验证要在进入 App Store/TestFlight 阶段确认。
+
+## 1.1 补充约定
+
+- `ExerciseTrackingModes.json` 为全部 1,324 个动作保存显式默认方式；`audit_tracking_modes.py` 校验目录与策略覆盖。
+- 训练历史编辑、训练模板和固定餐编辑使用独立草稿；保存前不改写原记录。进行中训练的字段变化和转入后台会触发显式保存。
+- `WorkoutInsights` 统一上次表现、已完成组、容量和 PR 的有效性规则；`WeeklySummary` 使用当地周一到周日，按已完成训练开始日期归周。
+- `BackupArchiveService` 使用值类型 DTO 与稳定 JSON 版本。整个备份预检通过后，在关闭 autosave 的独立 `ModelContext` 一次保存；出错回滚。
+- 运行时仍无网络调用；应用内隐私和帮助离线可用，外部反馈链接仅由用户点击打开。

@@ -15,6 +15,9 @@ struct TrainingView: View {
 
   @State private var presentedSheet: TrainingSheet?
   @State private var pendingDeletion: Workout?
+  @State private var selectedWorkout: Workout?
+  @State private var queuedWorkout: Workout?
+  @State private var saveError: String?
 
   let startRequest: Int
 
@@ -65,8 +68,8 @@ struct TrainingView: View {
     }
     .navigationTitle("训练")
     .onChange(of: startRequest, initial: true) { _, newValue in
-      if newValue > 0, activeWorkout == nil {
-        presentedSheet = .start
+      if newValue > 0 {
+        if let activeWorkout { selectedWorkout = activeWorkout } else { presentedSheet = .start }
       }
     }
     .toolbar {
@@ -78,21 +81,40 @@ struct TrainingView: View {
         .accessibilityIdentifier("training.start")
       }
     }
-    .sheet(item: $presentedSheet) { sheet in
+    .navigationDestination(item: $selectedWorkout) { ActiveWorkoutView(workout: $0) }
+    .sheet(
+      item: $presentedSheet,
+      onDismiss: {
+        if let queuedWorkout {
+          selectedWorkout = queuedWorkout
+          self.queuedWorkout = nil
+        }
+      }
+    ) { sheet in
       switch sheet {
       case .start:
-        StartWorkoutSheet()
+        StartWorkoutSheet { queuedWorkout = $0 }
       }
     }
     .alert("删除这条训练记录？", isPresented: deletionAlertBinding, presenting: pendingDeletion) { workout in
       Button("删除", role: .destructive) {
         modelContext.delete(workout)
-        try? modelContext.save()
+        do { try modelContext.save() } catch {
+          modelContext.rollback()
+          saveError = error.localizedDescription
+        }
         pendingDeletion = nil
       }
       Button("取消", role: .cancel) { pendingDeletion = nil }
     } message: { _ in
       Text("训练动作和组记录会一起删除，此操作无法撤销。")
+    }
+    .alert(
+      "保存失败", isPresented: Binding(get: { saveError != nil }, set: { if !$0 { saveError = nil } })
+    ) {
+      Button("知道了", role: .cancel) {}
+    } message: {
+      Text(saveError ?? "请重试。")
     }
   }
 
@@ -105,6 +127,9 @@ struct TrainingView: View {
 }
 
 private struct StartWorkoutSheet: View {
+  let onStarted: (Workout) -> Void
+  @State private var saveError: String?
+  @Query private var existingWorkouts: [Workout]
   @Environment(\.dismiss) private var dismiss
   @Environment(\.modelContext) private var modelContext
 
@@ -123,9 +148,9 @@ private struct StartWorkoutSheet: View {
           .accessibilityIdentifier("training.startBlank")
         }
 
-        Section("我的 Routine") {
+        Section("我的训练模板") {
           if routines.isEmpty {
-            Text("还没有 routine，可在资料库中创建。")
+            Text("还没有训练模板，可在资料库中创建。")
               .foregroundStyle(.secondary)
           } else {
             ForEach(routines) { routine in
@@ -151,14 +176,37 @@ private struct StartWorkoutSheet: View {
           Button("取消") { dismiss() }
         }
       }
+      .alert(
+        "无法开始训练",
+        isPresented: Binding(get: { saveError != nil }, set: { if !$0 { saveError = nil } })
+      ) {
+        Button("知道了", role: .cancel) {}
+      } message: {
+        Text(saveError ?? "请重试。")
+      }
     }
   }
 
   private func start(from routine: Routine?) {
+    if let active = existingWorkouts.first(where: { $0.status == .inProgress }) {
+      onStarted(active)
+      dismiss()
+      return
+    }
+    if let routine, !routine.exercises.allSatisfy(\.hasValidDefaults) {
+      saveError = "模板包含无效参数，请先在资料库中编辑修正。"
+      return
+    }
     let workout = RoutineFactory.workout(from: routine)
     modelContext.insert(workout)
-    try? modelContext.save()
-    dismiss()
+    do {
+      try modelContext.save()
+      onStarted(workout)
+      dismiss()
+    } catch {
+      modelContext.rollback()
+      saveError = error.localizedDescription
+    }
   }
 }
 
@@ -187,73 +235,137 @@ struct WorkoutRow: View {
 }
 
 struct WorkoutDetailView: View {
+  @Environment(\.modelContext) private var modelContext
+  @Query(sort: \Workout.startedAt, order: .reverse) private var history: [Workout]
   let workout: Workout
+  @State private var editing = false
+  @State private var repeatedWorkout: Workout?
+  @State private var message: String?
+  @State private var templateSaved = false
 
   var body: some View {
     List {
       Section {
+        Button("再次训练", systemImage: "repeat", action: repeatWorkout)
+          .disabled(history.contains { $0.status == .inProgress })
+          .accessibilityIdentifier("training.repeat")
+        Button(
+          templateSaved ? "已保存为训练模板" : "保存为训练模板", systemImage: "list.bullet.rectangle",
+          action: saveAsTemplate
+        )
+        .disabled(templateSaved).accessibilityIdentifier("training.saveTemplate")
+      }
+      let records = WorkoutInsights.personalRecords(for: workout, history: history)
+      if !records.isEmpty {
+        Section("突破 PR") {
+          ForEach(records) { record in
+            VStack(alignment: .leading, spacing: 5) {
+              Label("\(record.exerciseName) · \(record.title)", systemImage: "trophy.fill")
+              Text(
+                "\(record.previousValue.formatted()) → \(record.value.formatted()) \(record.unit)"
+              )
+              .font(.subheadline).monospacedDigit()
+            }
+          }
+        }
+      }
+      Section("训练信息") {
         LabeledContent(
           "开始", value: workout.startedAt.formatted(date: .abbreviated, time: .shortened))
         if let endedAt = workout.endedAt {
-          LabeledContent("结束", value: endedAt.formatted(date: .omitted, time: .shortened))
+          LabeledContent("结束", value: endedAt.formatted(date: .abbreviated, time: .shortened))
         }
         LabeledContent("状态", value: workout.status.title)
+        LabeledContent("完成组数", value: "\(WorkoutInsights.completedSets(in: workout)) 组")
+        LabeledContent("负重容量", value: "\(WorkoutInsights.volume(in: workout).formatted()) kg·次")
+        if !workout.notes.isEmpty { Text(workout.notes) }
       }
-
       ForEach(workout.sortedExercises) { exercise in
-        Section {
-          if exercise.trackingMode == .strength {
-            ForEach(exercise.sortedStrengthSets, id: \.id) { strengthSet in
-              strengthSetRow(strengthSet)
+        Section(exercise.nameZhSnapshot) {
+          Text(exercise.trackingMode.title).font(.caption).foregroundStyle(.secondary)
+          if exercise.trackingMode.usesSets {
+            ForEach(exercise.sortedStrengthSets) { set in
+              HStack {
+                Text("第 \(set.orderIndex + 1) 组")
+                Spacer()
+                Text(WorkoutValueFormatting.set(set, mode: exercise.trackingMode)).monospacedDigit()
+                Image(systemName: set.isCompleted ? "checkmark.circle.fill" : "circle")
+                  .foregroundStyle(set.isCompleted ? Color.green : Color.secondary)
+                  .accessibilityLabel(set.isCompleted ? "已完成" : "未完成")
+              }
             }
           } else {
-            ForEach(exercise.cardioEntries, id: \.id) { cardio in
-              cardioEntryRows(cardio)
+            ForEach(exercise.cardioEntries) { cardio in
+              LabeledContent(
+                "时长", value: "\(cardio.durationSeconds / 60) 分 \(cardio.durationSeconds % 60) 秒")
+              if cardio.distanceKilometers > 0 {
+                LabeledContent("距离", value: "\(cardio.distanceKilometers.formatted()) km")
+              }
+              if cardio.calories > 0 {
+                LabeledContent("消耗", value: "\(cardio.calories.formatted()) kcal")
+              }
             }
           }
-        } header: {
-          VStack(alignment: .leading) {
-            Text(exercise.nameZhSnapshot)
-            Text(exercise.nameEnSnapshot)
-              .textCase(nil)
-              .font(.caption)
-          }
+          if !exercise.notes.isEmpty { Text(exercise.notes).font(.footnote) }
         }
       }
     }
-    .navigationTitle(workout.title)
-    .navigationBarTitleDisplayMode(.inline)
-  }
-
-  private func cardioEntryRows(_ cardio: CardioEntry) -> some View {
-    let duration = "\(cardio.durationSeconds / 60) 分钟"
-    let distance = cardio.distanceKilometers.formatted(
-      .number.precision(.fractionLength(0...2))) + " km"
-    let calories = cardio.calories.formatted(
-      .number.precision(.fractionLength(0))) + " kcal"
-
-    return Group {
-      LabeledContent("时长", value: duration)
-      if cardio.distanceKilometers > 0 {
-        LabeledContent("距离", value: distance)
+    .navigationTitle(workout.title).navigationBarTitleDisplayMode(.inline)
+    .toolbar {
+      ToolbarItem(placement: .topBarTrailing) {
+        Button("编辑") { editing = true }.accessibilityIdentifier("training.edit")
       }
-      if cardio.calories > 0 {
-        LabeledContent("消耗", value: calories)
-      }
+    }
+    .sheet(isPresented: $editing) { WorkoutHistoryEditor(original: workout) }
+    .navigationDestination(item: $repeatedWorkout) { ActiveWorkoutView(workout: $0) }
+    .alert("操作失败", isPresented: Binding(get: { message != nil }, set: { if !$0 { message = nil } }))
+    {
+      Button("知道了", role: .cancel) {}
+    } message: {
+      Text(message ?? "请重试。")
     }
   }
 
-  private func strengthSetRow(_ strengthSet: StrengthSet) -> some View {
-    let formattedWeight = strengthSet.weightKilograms.formatted(
-      .number.precision(.fractionLength(0...1)))
+  private func repeatWorkout() {
+    guard !history.contains(where: { $0.status == .inProgress }) else { return }
+    let copy = WorkoutHistoryFactory.copy(of: workout, startedAt: .now, status: .inProgress)
+    modelContext.insert(copy)
+    do {
+      try modelContext.save()
+      repeatedWorkout = copy
+    } catch {
+      modelContext.rollback()
+      message = error.localizedDescription
+    }
+  }
+  private func saveAsTemplate() {
+    let routine = WorkoutHistoryFactory.routine(from: workout)
+    modelContext.insert(routine)
+    do {
+      try modelContext.save()
+      templateSaved = true
+    } catch {
+      modelContext.rollback()
+      message = error.localizedDescription
+    }
+  }
+}
 
-    return HStack {
-      Text("第 \(strengthSet.orderIndex + 1) 组")
-      Spacer()
-      Text("\(formattedWeight) kg × \(strengthSet.repetitions)")
-        .monospacedDigit()
-      Image(systemName: strengthSet.isCompleted ? "checkmark.circle.fill" : "circle")
-        .foregroundStyle(strengthSet.isCompleted ? Color.green : Color.secondary)
+private struct WorkoutHistoryEditor: View {
+  @Environment(\.modelContext) private var modelContext
+  let original: Workout
+  @State private var draft: Workout
+  init(original: Workout) {
+    self.original = original
+    _draft = State(
+      initialValue: WorkoutHistoryFactory.copy(
+        of: original, startedAt: original.startedAt, status: .completed, preserveCompletion: true))
+  }
+  var body: some View {
+    NavigationStack {
+      ActiveWorkoutView(workout: draft, isHistoricalEdit: true) {
+        try WorkoutHistoryFactory.apply(draft, to: original, context: modelContext)
+      }
     }
   }
 }

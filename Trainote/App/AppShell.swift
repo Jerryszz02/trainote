@@ -11,6 +11,7 @@ struct AppShell: View {
   @State private var selectedTab: AppTab = .today
   @State private var startWorkoutRequest = 0
   @State private var logFoodRequest = 0
+  @State private var templatesRequest = 0
 
   var body: some View {
     TabView(selection: $selectedTab) {
@@ -23,6 +24,10 @@ struct AppShell: View {
           onLogFood: {
             selectedTab = .nutrition
             logFoodRequest += 1
+          },
+          onOpenTemplates: {
+            selectedTab = .library
+            templatesRequest += 1
           }
         )
       }
@@ -42,7 +47,7 @@ struct AppShell: View {
       .tag(AppTab.nutrition)
 
       NavigationStack {
-        LibraryView()
+        LibraryView(templatesRequest: templatesRequest)
       }
       .tabItem { Label("资料库", systemImage: "books.vertical.fill") }
       .tag(AppTab.library)

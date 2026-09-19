@@ -23,21 +23,22 @@ enum RoutineFactory {
       exercise.workout = workout
 
       switch item.trackingMode {
-      case .strength:
-        for index in 0..<max(item.defaultSetCount, 1) {
+      case .strength, .repetitions, .duration:
+        for index in 0..<min(max(item.defaultSetCount, 1), 100) {
           let strengthSet = StrengthSet(
             orderIndex: index,
             weightKilograms: max(item.defaultWeightKilograms, 0),
-            repetitions: max(item.defaultRepetitions, 1)
+            repetitions: max(item.defaultRepetitions, 1),
+            durationSeconds: max(item.defaultDurationSeconds, 0)
           )
           strengthSet.exercise = exercise
           exercise.strengthSets.append(strengthSet)
         }
       case .cardio:
-        let cardio = CardioEntry(
-          durationSeconds: max(item.defaultDurationSeconds, 0),
-          distanceKilometers: max(item.defaultDistanceKilometers, 0)
-        )
+        // Planned cardio is a target, not a result of the new session.
+        exercise.notes =
+          "模板目标：\(item.defaultDurationSeconds / 60) 分钟，\(item.defaultDistanceKilometers.formatted()) km"
+        let cardio = CardioEntry()
         cardio.exercise = exercise
         exercise.cardioEntries.append(cardio)
       }
@@ -60,7 +61,7 @@ enum RoutineFactory {
       orderIndex: orderIndex,
       trackingMode: mode
     )
-    if mode == .strength {
+    if mode.usesSets {
       let strengthSet = StrengthSet(orderIndex: 0)
       strengthSet.exercise = exercise
       exercise.strengthSets.append(strengthSet)

@@ -6,12 +6,14 @@ Trainote 是一款中文优先、完全离线的 iPhone 健身与饮食记录 Ap
 
 ## 文档信息
 
-- 更新时间：2026-07-16
+- 更新时间：2026-09-19
 - 项目根目录：`/Users/jerryszz/Desktop/Projects/trainote`
 - 计划标题：Trainote iOS v1 实施计划
 - 已检查证据：根 README、`project.yml`、Xcode 工程、App/模型/服务/功能源码、单元与 UI 测试、动作资源、第三方许可证、当前 Xcode/Swift/Simulator 状态和实际构建结果
 
 本文档仅根据当前仓库可见内容和本机验证结果整理；未找到证据的发布信息继续标记为 `待确认`。
+
+1.1 新增功能与可靠性规则以 [日常使用升级计划](daily-use-upgrade.md) 为准；下列文档保留基础架构约定。
 
 ## 从哪里开始
 
@@ -42,6 +44,6 @@ Trainote 是一款中文优先、完全离线的 iPhone 健身与饮食记录 Ap
 
 - 当前已激活 Xcode 26.6，Apple Swift 6.3.3；项目仍使用 Swift 5.9 language mode，最低部署目标为 iOS 17。
 - 2026-07-16 已完成 generic iOS Simulator 无签名构建；当前可用 `iPhone 17`（iOS 26.5）运行测试。
-- 单元测试、UI 测试和人工验收尚未在当前环境执行，不能仅凭构建成功视为 v1 已完成验收。
+- 最新验证结果见 [测试计划](test-plan.md)；模拟器验证与真机、签名、发布验收分别记录。
 - 临时 Bundle ID 为 `com.jerryszz.trainote`，正式分发前需要与 Apple Developer 账号中的标识一致。
 - v1 只支持 iPhone、iOS 17+、简体中文 UI、公斤和公里。

@@ -15,20 +15,28 @@ enum WorkoutStatus: String, Codable, CaseIterable {
 enum TrackingMode: String, Codable, CaseIterable, Identifiable {
   case strength
   case cardio
+  case repetitions
+  case duration
 
   var id: Self { self }
 
   var title: String {
     switch self {
-    case .strength: "力量"
-    case .cardio: "有氧"
+    case .strength: "重量 × 次数"
+    case .cardio: "有氧（时长 / 距离）"
+    case .repetitions: "次数"
+    case .duration: "时长"
     }
   }
+
+  var usesSets: Bool { self != .cardio }
 
   var systemImage: String {
     switch self {
     case .strength: "dumbbell.fill"
     case .cardio: "figure.run"
+    case .repetitions: "repeat"
+    case .duration: "timer"
     }
   }
 }
@@ -81,7 +89,7 @@ enum NutrientKind: String, CaseIterable, Identifiable {
 }
 
 extension Double {
-  var isValidNonnegativeNumber: Bool { isFinite && self >= 0 }
+  var isValidNonnegativeNumber: Bool { isFinite && (0...1_000_000).contains(self) }
 }
 
 extension String {
