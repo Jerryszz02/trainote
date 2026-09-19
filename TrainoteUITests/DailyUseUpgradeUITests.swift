@@ -89,10 +89,19 @@ final class DailyUseUpgradeUITests: XCTestCase {
     app.alerts.buttons["知道了"].tap()
 
     // Cancelling also preserves a result the user already entered for this session.
-    fill(app.textFields["cardio.duration"], "4")
+    // Enter a distinct result without depending on text-selection gestures.
+    let duration = app.textFields["cardio.duration"]
+    reveal(duration)
+    duration.coordinate(withNormalizedOffset: CGVector(dx: 0.98, dy: 0.5)).tap()
+    duration.typeText("4")
+    app.buttons["收起键盘"].tap()
+    let enteredDuration = duration.value as? String ?? ""
+    let enteredMinutes = Double(enteredDuration) ?? 0
+    XCTAssertGreaterThan(enteredMinutes, 0)
+    XCTAssertNotEqual(enteredMinutes, 10)
     prefix("exercise.history.apply.").tap()
     app.buttons["cardio.history.cancel"].tap()
-    XCTAssertEqual(app.textFields["cardio.duration"].value as? String, "4")
+    XCTAssertEqual(duration.value as? String, enteredDuration)
 
     prefix("exercise.history.apply.").tap()
     app.buttons["cardio.history.confirm"].tap()
