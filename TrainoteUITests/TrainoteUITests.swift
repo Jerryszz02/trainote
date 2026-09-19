@@ -101,11 +101,12 @@ final class TrainoteUITests: XCTestCase {
       .firstMatch.tap()
     reveal(app.buttons["nutrition.preset.log"])
     app.buttons["nutrition.preset.log"].tap()
-
-    XCTAssertEqual(
-      app.buttons.matching(NSPredicate(format: "label CONTAINS '测试香蕉'")).count,
-      2
-    )
+    XCTAssertTrue(app.navigationBars["记录常用食物"].waitForNonExistence(timeout: 5))
+    let rows = app.buttons.matching(NSPredicate(format: "label CONTAINS '测试香蕉'"))
+    let updated = XCTNSPredicateExpectation(
+      predicate: NSPredicate { _, _ in rows.count == 2 }, object: nil)
+    XCTAssertEqual(XCTWaiter.wait(for: [updated], timeout: 5), .completed)
+    XCTAssertEqual(rows.count, 2)
   }
 
   func testPersistentDataSurvivesRelaunch() {
@@ -203,6 +204,7 @@ final class TrainoteUITests: XCTestCase {
       app.buttons["完成"].exists
     {
       app.buttons["完成"].firstMatch.tap()
+      XCTAssertTrue(app.keyboards.firstMatch.waitForNonExistence(timeout: 5))
     }
   }
 }

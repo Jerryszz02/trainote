@@ -69,8 +69,7 @@ final class DailyUseUpgradeUITests: XCTestCase {
     app.buttons["nutrition.add"].tap()
     app.buttons["nutrition.add.direct"].tap()
     fill(app.textFields["nutrition.entry.name"], "验收燕麦")
-    app.buttons["nutrition.entry.basis"].tap()
-    app.buttons["按每 100 克"].tap()
+    selectPer100g("nutrition.entry.basis")
     fill(app.textFields["nutrition.entry.amount"], "150")
     fill(app.textFields["nutrition.entry.perUnit.calories"], "380")
     app.buttons["nutrition.entry.save"].tap()
@@ -87,7 +86,8 @@ final class DailyUseUpgradeUITests: XCTestCase {
     fill(app.textFields["nutrition.portion.amount"], "50")
     reveal(app.buttons["nutrition.recent.log"])
     app.buttons["nutrition.recent.log"].tap()
-    XCTAssertEqual(app.buttons.matching(NSPredicate(format: "label CONTAINS '验收燕麦'")).count, 2)
+    XCTAssertTrue(app.navigationBars["记录最近食物"].waitForNonExistence(timeout: 5))
+    waitForCount(app.buttons.matching(NSPredicate(format: "label CONTAINS '验收燕麦'")), 2)
     XCTAssertTrue(
       app.buttons.matching(
         NSPredicate(format: "label CONTAINS '验收燕麦' AND label CONTAINS '190 kcal'")
@@ -152,8 +152,7 @@ final class DailyUseUpgradeUITests: XCTestCase {
     app.segmentedControls.buttons["饮食"].tap()
     app.buttons["foodLibrary.create"].tap()
     fill(app.textFields["foodPreset.name"], "固定餐燕麦")
-    app.buttons["foodPreset.basis"].tap()
-    app.buttons["按每 100 克"].tap()
+    selectPer100g("foodPreset.basis")
     fill(app.textFields["foodPreset.nutrient.卡路里"], "100")
     app.buttons["foodPreset.save"].tap()
     app.segmentedControls.buttons["固定餐"].tap()
@@ -184,7 +183,7 @@ final class DailyUseUpgradeUITests: XCTestCase {
     reveal(app.buttons["nutrition.copy.confirm"])
     app.buttons["nutrition.copy.confirm"].tap()
     app.buttons["复制"].tap()
-    XCTAssertEqual(rows.count, 2)
+    waitForCount(rows, 2)
     capture("固定餐与复制一餐")
   }
 
@@ -203,6 +202,21 @@ final class DailyUseUpgradeUITests: XCTestCase {
       if element.exists && element.isHittable { return }
       app.swipeUp()
     }
+  }
+  private func waitForCount(_ query: XCUIElementQuery, _ expected: Int) {
+    let updated = XCTNSPredicateExpectation(
+      predicate: NSPredicate { _, _ in query.count == expected }, object: nil)
+    XCTAssertEqual(XCTWaiter.wait(for: [updated], timeout: 5), .completed)
+    XCTAssertEqual(query.count, expected)
+  }
+  private func selectPer100g(_ identifier: String) {
+    let picker = app.buttons[identifier]
+    reveal(picker)
+    // Tap the trailing menu value, not the Form row's label or empty space.
+    picker.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
+    let option = app.buttons["按每 100 克"]
+    XCTAssertTrue(option.waitForExistence(timeout: 5))
+    option.tap()
   }
   private func fill(_ field: XCUIElement, _ value: String) {
     reveal(field)
@@ -241,6 +255,7 @@ final class DailyUseUpgradeUITests: XCTestCase {
     {
       if app.keyboards.count > 0 && app.buttons["完成"].exists {
         app.buttons["完成"].firstMatch.tap()
+        XCTAssertTrue(app.keyboards.firstMatch.waitForNonExistence(timeout: 5))
       }
     }
   }

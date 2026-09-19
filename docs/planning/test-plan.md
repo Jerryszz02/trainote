@@ -77,13 +77,14 @@ xcodebuild -project Trainote.xcodeproj -scheme Trainote -destination 'platform=i
 | 2026-09-19 | 1.1 Release 无签名构建 | generic iOS Simulator，`BUILD SUCCEEDED` |
 | 2026-09-19 | 1.1 单元测试 | 42 项通过，包含旧磁盘库迁移、备份往返及冲突、数值边界、PR 和周边界 |
 | 2026-09-19 | 1.1 完整 UI 回归 | 16 项通过、0 失败；与 42 个单元测试在最终同一轮 `xcodebuild test` 中通过 |
+| 2026-09-19 | 系统文件选择器补充验收 | 同一版本 App 的独立 UI smoke 通过：导出 JSON、重启后恢复 1 条饮食、再次导入跳过重复记录 |
 | 2026-09-19 | 动作默认方式审计 | 1,324 条全覆盖：862 重量×次数、371 次数、82 时长、9 有氧 |
 
 本轮模拟用户流程包括：新建模板开始训练、记录四种方式、休息计时、完成后再次训练并突破 PR、历史编辑取消、强制终止后恢复训练与计时、饮食增删改、常用食物复用、每 100g 换算和修改分量、固定餐调整克重后复制到另一餐、周报、保存失败反馈。
 
 本地验收结果保存在 `/private/tmp/trainote-upgrade/`：`acceptance-results.xcresult`、`acceptance.log`、`release-acceptance.log`。这些是当前开发机上的测试证据，不属于 App 包或仓库交付内容。
 
-小屏视觉检查：iPhone SE（第 3 代）/ iOS 26.5，已检查首页浅色、深色、最大辅助字号与高对比截图。未完成所有页面的 VoiceOver 检查。最后一轮系统文件选择器人工点击因主机锁屏受阻；备份的格式、11 类实体往返、重复导入、冲突与原子性由自动化测试验证。
+小屏视觉检查：iPhone SE（第 3 代）/ iOS 26.5，已检查首页浅色、深色、最大辅助字号与高对比截图。未完成所有页面的 VoiceOver 检查。系统文件选择器通过原生 UI 自动化完成导出、恢复与重复导入验证，补充证据为 `backup-probe-4-results.xcresult`；这 1 项独立 smoke 不计入上面的 58 项回归。备份的格式、11 类实体往返、冲突与原子性另外由单元测试验证。
 
 ## 验收标准
 
