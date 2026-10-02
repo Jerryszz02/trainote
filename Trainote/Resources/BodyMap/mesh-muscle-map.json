@@ -1,0 +1,70 @@
+{
+  "back": [
+    "back.trapezius.left",
+    "back.trapezius.right",
+    "back.latissimus.left",
+    "back.latissimus.right",
+    "back.erector.left",
+    "back.erector.right"
+  ],
+  "biceps": [
+    "biceps.brachii.left",
+    "biceps.brachii.right"
+  ],
+  "calves": [
+    "calves.gastrocnemiusMedial.left",
+    "calves.gastrocnemiusMedial.right",
+    "calves.gastrocnemiusLateral.left",
+    "calves.gastrocnemiusLateral.right",
+    "calves.soleus.left",
+    "calves.soleus.right"
+  ],
+  "chest": [
+    "chest.pectoralis.left",
+    "chest.pectoralis.right"
+  ],
+  "core": [
+    "core.rectus0.left",
+    "core.rectus0.right",
+    "core.rectus1.left",
+    "core.rectus1.right",
+    "core.rectus2.left",
+    "core.rectus2.right",
+    "core.rectus3.left",
+    "core.rectus3.right",
+    "core.oblique.left",
+    "core.oblique.right"
+  ],
+  "forearms": [
+    "forearms.flexors.left",
+    "forearms.flexors.right",
+    "forearms.extensors.left",
+    "forearms.extensors.right"
+  ],
+  "glutes": [
+    "glutes.maximus.left",
+    "glutes.maximus.right"
+  ],
+  "hamstrings": [
+    "hamstrings.bicepsFemoris.left",
+    "hamstrings.bicepsFemoris.right",
+    "hamstrings.semitendinosus.left",
+    "hamstrings.semitendinosus.right"
+  ],
+  "quads": [
+    "quads.rectus.left",
+    "quads.rectus.right",
+    "quads.vastusLateralis.left",
+    "quads.vastusLateralis.right",
+    "quads.vastusMedialis.left",
+    "quads.vastusMedialis.right"
+  ],
+  "shoulders": [
+    "shoulders.deltoid.left",
+    "shoulders.deltoid.right"
+  ],
+  "triceps": [
+    "triceps.brachii.left",
+    "triceps.brachii.right"
+  ]
+}

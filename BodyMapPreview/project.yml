@@ -1,0 +1,51 @@
+name: BodyMapPreview
+options:
+  deploymentTarget:
+    iOS: "17.0"
+  developmentLanguage: zh-Hans
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    TARGETED_DEVICE_FAMILY: "1"
+    GENERATE_INFOPLIST_FILE: YES
+    CODE_SIGNING_ALLOWED: NO
+targets:
+  BodyMapPreview:
+    type: application
+    platform: iOS
+    sources:
+      - App.swift
+      - ../Trainote/Features/Recovery/BodyMap
+      - path: ../Trainote/Resources/BodyMap/body-map-v1.json
+        buildPhase: resources
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.jerryszz.trainote.bodymap-preview
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_CFBundleDisplayName: BodyMap Preview
+    scheme:
+      testTargets:
+        - BodyMapTests
+        - BodyMapUITests
+  BodyMapTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - ../TrainoteTests/BodyMapTests.swift
+    dependencies:
+      - target: BodyMapPreview
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.jerryszz.trainote.bodymap-preview.tests
+        SWIFT_ACTIVE_COMPILATION_CONDITIONS: "$(inherited) BODY_MAP_PREVIEW"
+  BodyMapUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - Tests
+    dependencies:
+      - target: BodyMapPreview
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.jerryszz.trainote.bodymap-preview.uitests
+        TEST_TARGET_NAME: BodyMapPreview
