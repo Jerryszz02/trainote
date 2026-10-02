@@ -226,7 +226,10 @@ struct TrendView: View {
       if let proposal = model.result?.proposal {
         targetRows(proposal.targets, prefix: "建议")
         if let previous = proposal.previousTargets {
-          Text(String(format: "热量调整 %+.0f kcal", proposal.targets.calories - previous.calories))
+          let adjustment =
+            TrendNutrition.displayed(proposal.targets).calories
+            - TrendNutrition.displayed(previous).calories
+          Text(String(format: "热量调整 %+.0f kcal", adjustment))
         } else {
           Text("根据身体资料建立初始目标")
         }
