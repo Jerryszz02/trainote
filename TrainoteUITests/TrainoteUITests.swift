@@ -176,39 +176,58 @@ final class TrainoteUITests: XCTestCase {
   }
 
   private func replaceText(in field: XCUIElement, with value: String) {
-    XCTAssertTrue(field.waitForExistence(timeout: 3))
     reveal(field)
-    field.coordinate(withNormalizedOffset: CGVector(dx: 0.98, dy: 0.5)).tap()
+    UITestTextInput.replace(field, with: value, in: app)
+  }
+}
+
+enum UITestTextInput {
+  static func replace(_ field: XCUIElement, with value: String, in app: XCUIApplication) {
+    XCTAssertTrue(field.waitForExistence(timeout: 3))
+    XCTAssertTrue(field.isHittable, "Input field must be visible: \(field.identifier)")
+    field.tap()
+    // hasFocus describes system focus, not the iOS text-input first responder.
+    // Wait for the keyboard after a center tap; typeText and read-back verify the target.
+    XCTAssertTrue(
+      app.keyboards.firstMatch.waitForExistence(timeout: 3),
+      "Keyboard did not appear for input: \(field.identifier)")
+
     let current = field.value as? String ?? ""
-    if Double(current.replacingOccurrences(of: ",", with: "")) != nil {
+    // Numeric SwiftUI fields can expose "0" as both their value and placeholder.
+    // It is still a real bound value and must be selected before replacement.
+    let hasNumericValue = Double(current.replacingOccurrences(of: ",", with: "")) != nil
+    if !current.isEmpty && (current != field.placeholderValue || hasNumericValue) {
       field.press(forDuration: 1.1)
-      let selectAll = app.buttons.matching(NSPredicate(format: "label IN {'Select All', '全选'}"))
-        .firstMatch
+      let selectAll = app.buttons.matching(
+        NSPredicate(format: "label IN {'Select All', '全选'}")
+      ).firstMatch
       let menuSelectAll = app.menuItems.matching(
         NSPredicate(format: "label IN {'Select All', '全选'}")
       ).firstMatch
-      if selectAll.waitForExistence(timeout: 1) {
+      if selectAll.waitForExistence(timeout: 2) {
         selectAll.tap()
-      } else if menuSelectAll.exists {
-        menuSelectAll.tap()
       } else {
-        field.doubleTap()
+        XCTAssertTrue(
+          menuSelectAll.waitForExistence(timeout: 2),
+          "Select All is unavailable for nonempty field: \(field.identifier)")
+        menuSelectAll.tap()
       }
-    } else {
-      field.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: current.count + 1))
     }
+
     field.typeText(value)
-    if let expected = Double(value),
-      let actual = Double((field.value as? String ?? "").replacingOccurrences(of: ",", with: ""))
+    let actual = field.value as? String ?? ""
+    if let expectedNumber = Double(value),
+      let actualNumber = Double(actual.replacingOccurrences(of: ",", with: ""))
     {
-      XCTAssertEqual(actual, expected, accuracy: 0.000_001)
+      XCTAssertEqual(actualNumber, expectedNumber, accuracy: 0.000_001)
     } else {
-      XCTAssertEqual(field.value as? String, value)
+      XCTAssertEqual(actual, value)
     }
     if app.buttons["收起键盘"].exists {
       app.buttons["收起键盘"].tap()
-    } else if field.identifier.hasPrefix("nutrition."), app.keyboards.count > 0,
-      app.buttons["完成"].exists
+    } else if app.keyboards.count > 0 && app.buttons["完成"].exists,
+      field.identifier.hasPrefix("nutrition.") || field.identifier.hasPrefix("foodPreset.")
+        || field.identifier.hasPrefix("mealTemplate.")
     {
       app.buttons["完成"].firstMatch.tap()
       XCTAssertTrue(app.keyboards.firstMatch.waitForNonExistence(timeout: 5))
