@@ -63,7 +63,17 @@ final class HealthIntegrationUITests: XCTestCase {
     app.buttons["today.settings"].tap()
     app.buttons["settings.disconnectHealth"].tap()
     app.buttons["断开并删除"].tap()
-    XCTAssertTrue(app.staticTexts["已断开并删除健康导入数据及相关报告。手动记录已保留。"].waitForExistence(timeout: 3))
+    let status = app.staticTexts["settings.healthStatus"]
+    reveal(status)
+    let result = XCTNSPredicateExpectation(
+      predicate: NSPredicate { _, _ in
+        status.exists || self.app.alerts["操作未完成"].exists
+      }, object: nil)
+    XCTAssertEqual(XCTWaiter.wait(for: [result], timeout: 10), .completed)
+    XCTAssertFalse(app.alerts["操作未完成"].exists, "健康断开与删除未成功")
+    reveal(status)
+    XCTAssertTrue(status.isHittable)
+    XCTAssertEqual(status.label, "已断开并删除健康导入数据及相关报告。手动记录已保留。")
     reveal(app.buttons["settings.healthHelp"])
     app.buttons["settings.healthHelp"].tap()
     XCTAssertTrue(app.navigationBars["方法与数据使用"].waitForExistence(timeout: 3))
@@ -83,22 +93,8 @@ final class HealthIntegrationUITests: XCTestCase {
     app.buttons["today.settings"].tap()
     app.buttons["每日营养目标"].tap()
     let field = app.textFields["goal.卡路里"]
-    field.coordinate(withNormalizedOffset: CGVector(dx: 0.98, dy: 0.5)).tap()
-    field.press(forDuration: 1.1)
-    let selectAll = app.buttons.matching(NSPredicate(format: "label IN {'Select All', '全选'}"))
-      .firstMatch
-    let menuSelectAll = app.menuItems.matching(NSPredicate(format: "label IN {'Select All', '全选'}"))
-      .firstMatch
-    if selectAll.waitForExistence(timeout: 1) {
-      selectAll.tap()
-    } else if menuSelectAll.exists {
-      menuSelectAll.tap()
-    } else {
-      field.doubleTap()
-    }
-    field.typeText("2100")
-    XCTAssertEqual(
-      Double((field.value as? String ?? "").replacingOccurrences(of: ",", with: "")), 2100)
+    reveal(field)
+    UITestTextInput.replace(field, with: "2100", in: app)
     app.buttons["goal.save"].tap()
     capture("手动目标再次保存")
     XCTAssertTrue(app.buttons["已保存"].waitForExistence(timeout: 3))

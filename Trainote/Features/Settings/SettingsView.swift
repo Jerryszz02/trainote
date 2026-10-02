@@ -53,6 +53,7 @@ struct SettingsView: View {
             .accessibilityIdentifier("settings.healthHelp")
           if let message = healthAccess.statusMessage {
             Text(message).font(.footnote).foregroundStyle(.secondary)
+              .accessibilityIdentifier("settings.healthStatus")
           }
         }
 
