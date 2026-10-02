@@ -1,6 +1,6 @@
 # Trend module handoff (B)
 
-Built from the approved A/D base `967fa5351838240b2bb6ca0c5cb8e777530e54c4`, then ordinarily merged the approved fixed foundation `28500cfaba534d2d09a1415f8c6d1cb1d904a10e`. P values in `TrendRules` are engineering defaults, not validated physiological accuracy.
+Built from the approved A/D base `967fa5351838240b2bb6ca0c5cb8e777530e54c4`, then ordinarily merged the approved fixed foundation `28500cfaba534d2d09a1415f8c6d1cb1d904a10e` and its precise-backup-date patch `59766ea61bb063c1f5898f5ac31ab2b3dc91842f`. P values in `TrendRules` are engineering defaults, not validated physiological accuracy.
 
 ## Consumer entry points
 
@@ -53,4 +53,4 @@ Fixture clock: `2026-10-03T12:00:00Z`, UTC. Synthetic adult: 70 kg, 175 cm, age 
 
 Dedicated Simulator: `A0F6045D-2E01-42C0-88A1-DB89CB85FF36` (Trainote Trend B, iPhone 17/iOS 26.5). DerivedData: `/tmp/trainote-trend-b-derived`; Xcode 26.6. XcodeGen 2.46.0 registration is committed separately; project.yml and CI thresholds are unchanged.
 
-Exact final checks are in the PR. Tests cover pure calculations, real repository adoption/undo/automatic cadence, profile cycles, stale state, actual read-only save rollback, post-commit read failure, fresh report rebuilding and empty/populated/accessibility-size render attachments. Hosting/render checks do not replace F's full navigation/interaction acceptance. Main coordinates A's subsequent backup chronology correction, latest-head CI, final integration and any physical-device/scientific validation. No module-specific shared DTO/transaction blocker remains.
+Exact final checks are in the PR. Tests cover pure calculations, real repository adoption/undo/automatic cadence, profile cycles, stale state, actual read-only save rollback, post-commit read failure, fresh report rebuilding and empty/populated/accessibility-size render attachments. Hosting/render checks do not replace F's full navigation/interaction acceptance. The precise-date backup correction is included. Main coordinates latest-head CI, final integration and any physical-device/scientific validation. No module-specific shared DTO/transaction blocker remains.
