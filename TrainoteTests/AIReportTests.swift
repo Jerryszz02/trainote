@@ -16,6 +16,7 @@ private struct ReportTestTrend: TrendCalculating {
 
 @MainActor
 private final class ReportTestTransport: AIReportTransport {
+  var registered = false
   var revocationPending = false
   var calls = 0
   var revocations = 0
@@ -26,7 +27,7 @@ private final class ReportTestTransport: AIReportTransport {
   var continuation: CheckedContinuation<Void, Never>?
   func generate(_ input: ReportInput, requestID: UUID, consent: ConsentLease, grantedAt: Date,
     beforeSending: @escaping @MainActor () throws -> Void) async throws -> ReportResult {
-    try beforeSending(); calls += 1
+    try beforeSending(); calls += 1; registered = true
     if wait { await withCheckedContinuation { continuation = $0; onCall?() } }
     else { onCall?() }
     if let error { throw error }
@@ -214,6 +215,63 @@ final class AIReportTests: XCTestCase {
     _ = await report(h.service); XCTAssertEqual(h.remote.calls, 1)
     h.remote.error = nil; try await h.service.resumePendingRevocation()
     XCTAssertFalse(h.service.revocationPending)
+  }
+  func testFailedConsentWriteAndSuccessfulRemoteDeletionStayRevokedAfterServiceRestart() async throws {
+    let consentURL = directory.appendingPathComponent("consent.json")
+    var rejectMainWrites = false
+    let consent = try LocalConsentStore(url: consentURL) { data, url in
+      if rejectMainWrites { throw AnalysisFailure.storageFailed }
+      try LocalHealthStorage.write(data, to: url)
+    }
+    try consent.grant(.aiReports, version: LocalConsentStore.aiConsentVersion, at: AnalysisFixtures.asOf)
+    try consent.grant(.healthData, version: LocalConsentStore.healthConsentVersion, at: AnalysisFixtures.asOf)
+    let healthGrant = try XCTUnwrap(consent.record(for: .healthData))
+    let originalMainFile = try Data(contentsOf: consentURL)
+    func makeService(_ consent: LocalConsentStore, remote: ReportTestTransport,
+      health: FixtureHealthDataProvider) throws -> AIReportService {
+      let builder = ReportSnapshotBuilder(
+        repository: SwiftDataAnalysisRepository(container: try PersistenceController.makeContainer(inMemory: true)),
+        health: health, consent: consent, trend: ReportTestTrend(),
+        recovery: FixtureRecoveryCalculator(), recommendations: FixtureRecommendationProvider())
+      return AIReportService(builder: builder, consent: consent, healthData: nil,
+        cache: try AIReportCache(url: directory.appendingPathComponent("reports.json"), allowHealthHistory: true),
+        transport: remote, clock: { AnalysisFixtures.asOf })
+    }
+    let remote = ReportTestTransport(), health = FixtureHealthDataProvider(scenario: .manualOnly)
+    let service = try makeService(consent, remote: remote, health: health)
+    let initial = await report(service)
+    XCTAssertFalse(initial.report.isLocalFallback)
+    XCTAssertTrue(remote.registered); XCTAssertEqual(remote.calls, 1)
+
+    rejectMainWrites = true
+    do { try await service.closeAI(); XCTFail("The main consent write failure must be surfaced") }
+    catch { XCTAssertEqual(error as? AnalysisFailure, .storageFailed) }
+    XCTAssertGreaterThanOrEqual(remote.revocations, 1)
+    XCTAssertFalse(remote.revocationPending, "Successful fake server deletion clears the transport marker")
+    XCTAssertTrue(remote.registered, "Deleting consent retains the registered installation")
+    XCTAssertFalse(try XCTUnwrap(consent.record(for: .aiReports)).isGranted)
+    XCTAssertEqual(try Data(contentsOf: consentURL), originalMainFile, "The old grant remains in the failed main file")
+    XCTAssertEqual(consent.record(for: .healthData), healthGrant)
+
+    // Reopen the real local store, cache and service; retain only simulated installation state.
+    let reopened = try LocalConsentStore(url: consentURL)
+    let restartedRemote = ReportTestTransport(), restartedHealth = FixtureHealthDataProvider(scenario: .manualOnly)
+    restartedRemote.registered = remote.registered
+    restartedRemote.revocationPending = remote.revocationPending
+    XCTAssertFalse(restartedRemote.revocationPending)
+    let restarted = try makeService(reopened, remote: restartedRemote, health: restartedHealth)
+    try await restarted.resumePendingRevocation()
+    XCTAssertFalse(restarted.revocationPending, "The test must not rely on a pending transport marker to block reports")
+    XCTAssertFalse(try XCTUnwrap(reopened.record(for: .aiReports)).isGranted)
+    XCTAssertThrowsError(try reopened.lease(for: .aiReports, version: LocalConsentStore.aiConsentVersion))
+    XCTAssertEqual(reopened.record(for: .healthData), healthGrant)
+    XCTAssertNoThrow(try reopened.lease(for: .healthData, version: LocalConsentStore.healthConsentVersion))
+    // A different report type prevents a cache hit from hiding an accidentally restored grant.
+    let result = await restarted.report(type: .weekly, window: AnalysisFixtures.window,
+      asOf: AnalysisFixtures.asOf, timeZone: TimeZone(secondsFromGMT: 0)!)
+    XCTAssertTrue(result.report.isLocalFallback)
+    XCTAssertEqual(restarted.failure, .consentRequired)
+    XCTAssertEqual(restartedRemote.calls, 0); XCTAssertEqual(restartedHealth.freshRequests, 0)
   }
   func testDisconnectRegistersActualCacheAndDeletesHealthDependentHistoryOnly() async throws {
     let consent = try LocalConsentStore(url: directory.appendingPathComponent("consent.json"))
