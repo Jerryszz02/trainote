@@ -1,6 +1,6 @@
 # Recovery C handoff
 
-Base: `967fa5351838240b2bb6ca0c5cb8e777530e54c4`, including A/D. This module does not wire AppShell, Settings, AI transport, the shared schema or D's renderer. F owns production navigation and candidate generation.
+Started at `967fa5351838240b2bb6ca0c5cb8e777530e54c4`; normally merged the coordinator-approved fixed foundation `28500cfaba534d2d09a1415f8c6d1cb1d904a10e`, including A/D and goal transactions. This module does not wire AppShell, Settings, AI transport, the shared schema or D's renderer. F owns production navigation and candidate generation.
 
 ## Consumer assembly
 
@@ -21,13 +21,13 @@ F's candidate rules must exclude a muscle when `hasPain || hasMovementLimitation
 
 Facts:
 - `recovery.<muscle>.score`: unrounded readiness; `load`: residual weighted sets; `lastLoad`: latest session weighted sets; `tau`: seconds.
-- `recovery.unallocatedWorkouts`: completed workouts with invalid/unreviewed/unsupported set data. Any such workout in the 28-day local window makes complete local readiness unknown. Known load facts remain inspectable.
+- `recovery.unallocatedRecords`: workout records with invalid/unreviewed/unsupported set data or unallocated external resistance activity. Any such workout in the 28-day local window makes complete local readiness unknown. Known load facts remain inspectable.
 - `recovery.<muscle>.soreness`: 0 none / 1 mild / 2 significant; `pain`, `movementLimitation`: 0 false / 1 true. A missing fact means unanswered, never false.
 - `recovery.feeling` / `sleepFeeling`: 0 tired/poor, 1 normal, 2 good; optional.
 - `recovery.systemic.<metric>.latest/baseline/deviationPercent/sustainedDeviation`; sleep also has `endTimeShift` in seconds. The latter compares sleep-window end times, not sleep architecture.
 - `recovery.systemic.externalWorkout`: most recent imported workout duration in seconds, with duplicate/coverage quality. It is activity context and never creates muscle sets.
 
-Every derived fact carries raw manual/sample dependencies or resolvable `metricFact` dependencies. Baseline/latest/deviation facts include all selected source samples, not just today's. No health source changes local muscle scores or calibrated tau. The reset boundary is reflected in calculationVersion to invalidate derived report reuse.
+Every derived fact carries raw manual/sample dependencies or resolvable `metricFact` dependencies. Baseline/latest/deviation facts include all selected source samples, not just today's. HRV/sleep never subtract from local muscle scores. Imported resistance/core/cross-training with no confirmed local set association makes local readiness unknown and excludes affected calibration pairs; those coverage dependencies are retained too. The reset boundary is reflected in calculationVersion to invalidate derived report reuse.
 
 ### Existing DTO limits and suggested single-owner follow-up
 
@@ -44,7 +44,7 @@ Additional explicit v0 engineering choices, requiring coordinator/professional r
 - Whole-body baseline: at least 14 distinct valid days in the 28 days before the latest observation, excluding the latest three evaluation days. Source/product/definition/context/version streams stay separate; latest must be today/yesterday. Three consecutive days of sleep <85%, RHR >110% or HRV <80% of baseline plus current subjective fatigue gives systemic low. A one-day deviation alone never lowers a muscle score.
 - Calibration requires at least **6 fit pairs plus 4 later holdout pairs**. It uses later repetitions at the same catalog ID, strength mode, set order, exact weight and RIR 0–4 relative to the preceding three comparable performances; no e1RM formula, changed mode, missing RIR, unknown set role or duration conversion. Pretraining feedback within 24 h must answer soreness, pain=false and limitation=false. Multiple sets in one workout form one pair. Unallocated preceding training excludes calibration.
 - The most recent four outcomes are never used to select the fitted candidate in that evaluation. Holdout MSE must improve by at least 5% and more than 1 squared point versus both 36 h and the current parameter. Evaluate at most once per 7 days, change tau at most 10%, clamp 24–72 h. Replaying current input makes edits/deletions invalidate parameters. Synthetic tests verify gates, not forecasting accuracy.
-- Reset stores only a versioned timestamp in UserDefaults, no derived values. `control.reset(at:)` excludes earlier observations/load from calibration only; raw training and base readiness remain. `control.clear()` is the hook for delete-all. There is no persisted health-dependent calibration/cache to register for disconnect. Future use of health sources would require A's derived-data invalidator hook and transitive dependencies.
+- Reset stores only a versioned timestamp in UserDefaults, no derived values. `control.reset(at:)` excludes earlier observations/load from calibration only; raw training and base readiness remain. `control.clear()` is the hook for delete-all. There is no persisted health-dependent calibration/cache to register for disconnect. Eligibility uses currently supplied external-training coverage, so each new report must recompute; any future persisted health-dependent derivative would require A's invalidator hook.
 
 All parameters are engineering initial values. Main/secondary weights are not EMG ratios; scores are not measured tissue recovery. F's methods/help flow should present these boundaries rather than repeating disclaimers in every daily row.
 
@@ -52,7 +52,7 @@ All parameters are engineering initial values. Main/secondary weights are not EM
 
 `generate_muscle_map.py` reproduces `ExerciseMuscleMap.json` from the pinned MIT text catalog without changing it. All 1,324 IDs are explicit: **38 mapped common movements, 1,175 pending review, 111 not applicable**. The 38 were checked against pinned names/instructions at the coarse 11-muscle level; this is engineering text review, not professional anatomical/biomechanical validation. Complex/unreviewed variants remain unknown rather than inheriting a mapping by a matching word. Common compound movements have explicit overrides (e.g. squat quads+glutes); unsupported or stabilizer targets are not forced into an unrelated muscle.
 
-Expand the explicit reviewed table and regenerate only after reviewing each added movement. Status, support scope and this count are intentionally visible. Duration/cardio/stretch modes have no conversion to resistance sets. External aggregate strength duration also never becomes sets.
+Expand the explicit reviewed table and regenerate only after reviewing each added movement. Status, support scope and this count are intentionally visible. Duration/cardio/stretch modes have no conversion to resistance sets. External aggregate strength duration also never becomes sets. A possible duplicate ID is not a confirmed association, so v0 keeps an external resistance record as a coverage gap even when it may overlap a local workout. A future confirmed-association contract must have one shared owner.
 
 ## Verification
 
@@ -60,6 +60,6 @@ Test fixtures are synthetic. Dedicated Simulator: `56CCDE13-528E-4012-AABA-D0559
 
 Coverage includes filtering/invalid times, RIR and historical role priors, unknown versus 100, deduplicated muscle weights, monotonic decay, edit/delete, independent pain/limitation, feedback persistence/prompt skip, temporal holdout rejection/reset, HRV source separation, complete dependencies and fresh-report removal, real RIR/history/repeat UI, and standalone recovery-page UI (body selection, pain override, feedback save/cancel and empty-state skip).
 
-Production navigation/help wiring, final combined CI with the other tasks, physical-device HealthKit behavior, professional review and physiological/forecast validity remain distinct acceptance items. A's later merge-normalization fixes are coordinated by the parent; they are not duplicated in this module.
+Production navigation/help wiring, final combined CI with the other tasks, physical-device HealthKit behavior, professional review and physiological/forecast validity remain distinct acceptance items. The approved sleep/activity normalization and goal transaction updates are merged. A's separately announced backup precision patch remains coordinated by the parent.
 
 Standalone preview: `python3 TrainoteTests/RecoveryFixtures/prepare_preview.py --xcodegen /path/to/xcodegen` then build/test `build/recovery-preview/TrainoteRecoveryPreview.xcodeproj`, scheme `TrainoteRecoveryPreview`, with a dedicated Simulator and DerivedData. All preview state is synthetic and in memory; `RECOVERY_PREVIEW` / `RECOVERY_PREVIEW_TESTS` keep the harness entry point and UI tests outside production. The generator extracts the current persistence declaration mechanically and excludes the production `@main` file.

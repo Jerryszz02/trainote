@@ -20,6 +20,7 @@ enum RecoveryCalibration {
     var candidateError: Double?
     var windowStart: Date
     var dependencies: [SourceDependency] = []
+    var sources: [DataSource] = [.manual]
   }
 
   static func evaluate(
@@ -31,7 +32,14 @@ enum RecoveryCalibration {
     )
     return Dictionary(
       uniqueKeysWithValues: MuscleID.allCases.map { muscle in
-        (muscle, fit(observations[muscle] ?? [], muscle: muscle, asOf: input.asOf))
+        var result = fit(observations[muscle] ?? [], muscle: muscle, asOf: input.asOf)
+        // Coverage exclusions are inputs to eligibility and retain their complete lineage.
+        result.dependencies = RecoveryEvidence.dependencies(
+          result.dependencies + unallocated.flatMap(\.dependencies))
+        result.sources = RecoveryEvidence.sortedSources([.manual] + unallocated.flatMap(\.sources))
+        result.windowStart = min(
+          result.windowStart, unallocated.map(\.endedAt).min() ?? result.windowStart)
+        return (muscle, result)
       })
   }
 

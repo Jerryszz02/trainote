@@ -27,12 +27,15 @@ struct RecoveryCalculator: RecoveryCalculating {
       unallocated: extraction.gaps)
     var facts = feedback.facts
     let gapDependencies = RecoveryEvidence.dependencies(gaps.flatMap(\.dependencies))
-    let gapQuality = gaps.isEmpty ? [] : [DataQualityFlag.partial, .unknownExercise]
+    let gapQuality =
+      gaps.isEmpty
+      ? [] : RecoveryEvidence.quality([.partial, .unknownExercise] + gaps.flatMap(\.quality))
+    let gapSources = RecoveryEvidence.sortedSources([.manual] + gaps.flatMap(\.sources))
     facts.append(
       .init(
-        id: "recovery.unallocatedWorkouts", metric: "recovery.unallocatedWorkouts",
+        id: "recovery.unallocatedRecords", metric: "recovery.unallocatedRecords",
         value: Double(Set(gaps.map(\.workoutID)).count), unit: .count, window: window,
-        sources: [.manual], dependencies: gapDependencies, quality: gapQuality))
+        sources: gapSources, dependencies: gapDependencies, quality: gapQuality))
     var muscles: [MuscleRecovery] = []
     for muscle in MuscleID.allCases {
       let sessions = recent.filter { $0.load[muscle] != nil }
@@ -55,21 +58,23 @@ struct RecoveryCalculator: RecoveryCalculating {
       let tauFact = MetricFact(
         id: "\(prefix).tau", metric: "recovery.tau", value: tau * 3600, unit: .seconds,
         window: .init(start: calibration?.windowStart ?? recentStart, end: input.asOf),
-        sources: [.manual, .init(kind: .calculation, identifier: RecoveryParameters.version)],
+        sources: RecoveryEvidence.sortedSources(
+          (calibration?.sources ?? [.manual])
+            + [.init(kind: .calculation, identifier: RecoveryParameters.version)]),
         dependencies: calibration?.dependencies ?? [], quality: [.estimated])
       facts.append(tauFact)
       facts.append(
         .init(
           id: "\(prefix).load", metric: "recovery.residualLoad",
           value: sessions.isEmpty ? nil : residual,
-          unit: .count, window: window, sources: [.manual],
+          unit: .count, window: window, sources: gapSources,
           dependencies: RecoveryEvidence.dependencies(
             dependencies + [.init(kind: .metricFact, id: tauFact.id)]),
           quality: quality))
       facts.append(
         .init(
           id: "\(prefix).score", metric: "recovery.readiness", value: score, unit: .score,
-          window: window, sources: [.manual],
+          window: window, sources: gapSources,
           dependencies: [.init(kind: .metricFact, id: "\(prefix).load")], quality: quality))
       if let last = sessions.last {
         facts.append(
@@ -91,7 +96,7 @@ struct RecoveryCalculator: RecoveryCalculating {
       }
       if !gaps.isEmpty {
         influences.append(
-          .init(code: "unallocatedExercise", factIDs: ["recovery.unallocatedWorkouts"]))
+          .init(code: "unallocatedExercise", factIDs: ["recovery.unallocatedRecords"]))
       }
       if calibration?.isAdopted == true {
         influences.append(
@@ -201,6 +206,24 @@ struct RecoveryCalculator: RecoveryCalculating {
       session.dependencies = RecoveryEvidence.dependencies(session.dependencies)
       session.quality = RecoveryEvidence.quality(session.quality)
       if !session.load.isEmpty { result.sessions.append(session) }
+    }
+    for external in input.health.externalWorkouts.sorted(by: { $0.id.uuidString < $1.id.uuidString }
+    ) {
+      guard external.activityCode.map(RecoveryParameters.resistanceActivityCodes.contains) == true,
+        external.start.timeIntervalSince1970.isFinite, external.end.timeIntervalSince1970.isFinite,
+        external.start <= external.end, external.end <= input.asOf
+      else { continue }
+      // A possible duplicate is not a confirmed match to a fully recorded local workout.
+      // Retain the uncertainty; never infer sets from duration or allocate it as zero work.
+      result.gaps.append(
+        .init(
+          workoutID: external.id, endedAt: external.end, load: [:],
+          quality: external.possibleDuplicateIDs.isEmpty
+            ? [.partial] : [.partial, .sourceConflict],
+          dependencies: [
+            .init(kind: .healthSample, id: external.id.uuidString, healthType: .workout)
+          ],
+          sources: [external.source]))
     }
     return result
   }

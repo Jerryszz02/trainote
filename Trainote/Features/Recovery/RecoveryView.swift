@@ -260,7 +260,7 @@ enum RecoveryCopy {
     case "recordedLoad": "根据已记录工作组、RIR 和经过时间估计。"
     case "unknownRIRPrior": "部分组未填 RIR，采用默认努力程度。"
     case "historicalRolePrior": "历史组类型未区分，暂按工作组计入。"
-    case "unallocatedExercise": "存在待核查动作或未支持的记录方式，暂不计算完整准备度。"
+    case "unallocatedExercise": "存在待核查动作、未支持的记录方式或未逐动作记录的外部力量训练，暂不计算完整准备度。"
     case "significantSoreness": "明显酸痛：优先减少相关训练量。"
     case "mildSoreness": "已记录轻微酸痛，结合本次表现安排训练。"
     case "excludeTraining": "疼痛或活动受限独立于分数，需先更新体感。"

@@ -94,6 +94,27 @@ final class RecoveryCalculatorTests: XCTestCase {
     XCTAssertTrue(result.muscles.allSatisfy { $0.score == nil })
     XCTAssertEqual(result.facts.first { $0.id == "recovery.systemic.externalWorkout" }?.value, 3600)
   }
+  func testUnallocatedExternalStrengthIsNotZeroLoadAndCarriesSourceDependencies() throws {
+    var value = input([workout(hoursAgo: 48)])
+    let id = UUID()
+    value.health.externalWorkouts = [
+      .init(
+        id: id, start: now.addingTimeInterval(-3600), end: now,
+        activityCode: 50, source: .init(kind: .healthKit, identifier: "synthetic.watch"),
+        possibleDuplicateIDs: [])
+    ]
+    let result = try calculator().calculate(value)
+    XCTAssertNil(try chest(result).score)
+    let load = try XCTUnwrap(result.facts.first { $0.id == "recovery.chest.load" })
+    XCTAssertTrue(load.dependencies.contains { $0.kind == .healthSample && $0.id == id.uuidString })
+    let tau = try XCTUnwrap(result.facts.first { $0.id == "recovery.chest.tau" })
+    XCTAssertTrue(tau.dependencies.contains { $0.kind == .healthSample && $0.id == id.uuidString })
+    value.health.externalWorkouts = []
+    let rebuilt = try calculator().calculate(value)
+    XCTAssertNotNil(try chest(rebuilt).score)
+    XCTAssertFalse(rebuilt.facts.flatMap(\.dependencies).contains { $0.kind == .healthSample })
+  }
+
   func testDecayIsDeterministicMonotonicAndEditDeleteRecalculate() throws {
     var value = input([workout(hoursAgo: 2, count: 5)])
     let c = try calculator()
