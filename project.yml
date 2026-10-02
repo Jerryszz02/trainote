@@ -28,6 +28,8 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.jerryszz.trainote
         PRODUCT_NAME: Trainote
+        CODE_SIGN_ENTITLEMENTS: Trainote/Trainote.entitlements
+        INFOPLIST_KEY_NSHealthShareUsageDescription: 读取你选择共享的体重、睡眠、静息心率、心率变异性、步数、活动能量和训练，用于本机趋势与恢复分析。
         TARGETED_DEVICE_FAMILY: "1"
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_ITSAppUsesNonExemptEncryption: NO

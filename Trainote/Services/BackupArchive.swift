@@ -5,7 +5,7 @@ import UniformTypeIdentifiers
 
 /// Versioned, value-only backup format. SwiftData models deliberately never conform to Codable.
 struct BackupArchive: Codable {
-  static let schemaVersion = 1
+  static let schemaVersion = 2
   static let maxBytes = 20 * 1024 * 1024
   static let maxObjects = 100_000
 
@@ -17,8 +17,9 @@ struct BackupArchive: Codable {
     var foodLogs: Int = 0
     var nutritionGoals: Int = 0
     var childObjects: Int = 0
+    var manualHealthObjects: Int = 0
     var total: Int {
-      workouts + routines + foodPresets + mealTemplates + foodLogs + nutritionGoals + childObjects
+      workouts + routines + foodPresets + mealTemplates + foodLogs + nutritionGoals + childObjects + manualHealthObjects
     }
   }
 
@@ -30,6 +31,7 @@ struct BackupArchive: Codable {
   var mealTemplates: [MealTemplateDTO]
   var foodLogs: [FoodLogDTO]
   var nutritionGoals: [NutritionGoalDTO]
+  var manualHealth: HealthManualBackup? = nil
   var counts: Counts {
     Counts(
       workouts: workouts.count, routines: routines.count, foodPresets: foodPresets.count,
@@ -38,7 +40,8 @@ struct BackupArchive: Codable {
       childObjects: workouts.reduce(0) {
         $0 + $1.exercises.reduce(0) { $0 + 1 + $1.strengthSets.count + $1.cardioEntries.count }
       } + routines.reduce(0) { $0 + $1.exercises.count }
-        + mealTemplates.reduce(0) { $0 + $1.items.count })
+        + mealTemplates.reduce(0) { $0 + $1.items.count },
+      manualHealthObjects: manualHealth?.count ?? 0)
   }
 }
 
@@ -83,6 +86,8 @@ struct StrengthSetDTO: Codable {
   var repetitions: Int
   var durationSeconds: Int
   var isCompleted: Bool
+  var rir: Int? = nil
+  var setRoleRaw: String? = nil
 }
 struct CardioEntryDTO: Codable {
   var id: UUID
@@ -193,6 +198,7 @@ struct BackupImportResult: Equatable {
   var counts: BackupArchive.Counts
 }
 
+@MainActor
 enum BackupArchiveService {
   private static let encoder: JSONEncoder = {
     let e = JSONEncoder()
@@ -209,13 +215,14 @@ enum BackupArchiveService {
   static func export(context: ModelContext) throws -> Data {
     try context.save()
     let archive = BackupArchive(
-      schemaVersion: 1, createdAt: .now,
+      schemaVersion: BackupArchive.schemaVersion, createdAt: .now,
       workouts: try context.fetch(FetchDescriptor<Workout>()).map(workout),
       routines: try context.fetch(FetchDescriptor<Routine>()).map(routine),
       foodPresets: try context.fetch(FetchDescriptor<FoodPreset>()).map(foodPreset),
       mealTemplates: try context.fetch(FetchDescriptor<MealTemplate>()).map(mealTemplate),
       foodLogs: try context.fetch(FetchDescriptor<FoodLogEntry>()).map(foodLog),
-      nutritionGoals: try context.fetch(FetchDescriptor<NutritionGoal>()).map(nutritionGoal))
+      nutritionGoals: try context.fetch(FetchDescriptor<NutritionGoal>()).map(nutritionGoal),
+      manualHealth: try HealthManualBackup.read(context))
     try validate(archive)
     let data = try encoder.encode(archive)
     guard data.count <= BackupArchive.maxBytes, archive.counts.total <= BackupArchive.maxObjects
@@ -225,12 +232,16 @@ enum BackupArchiveService {
 
   static func decode(_ data: Data) throws -> BackupArchive {
     guard data.count <= BackupArchive.maxBytes else { throw BackupArchiveError.tooLarge }
+    struct Header: Decodable { var schemaVersion: Int }
+    let version: Int
+    do { version = try decoder.decode(Header.self, from: data).schemaVersion }
+    catch { throw BackupArchiveError.invalid("JSON 格式或版本字段不正确。") }
+    guard (1...BackupArchive.schemaVersion).contains(version) else {
+      throw BackupArchiveError.unsupportedVersion(version)
+    }
     let archive: BackupArchive
     do { archive = try decoder.decode(BackupArchive.self, from: data) } catch {
       throw BackupArchiveError.invalid("JSON 格式或字段不正确。")
-    }
-    guard archive.schemaVersion == BackupArchive.schemaVersion else {
-      throw BackupArchiveError.unsupportedVersion(archive.schemaVersion)
     }
     try validate(archive)
     return archive
@@ -255,10 +266,13 @@ enum BackupArchiveService {
     {
       throw BackupArchiveError.activeWorkoutConflict
     }
-    let existingIDs = Set(
+    let existingHealth = try HealthManualBackup.read(isolated)
+    try archive.manualHealth?.preflight(existing: existingHealth)
+    var existingIDs = Set(
       existingWorkouts.map(\.id) + existingRoutines.map(\.id) + existingPresets.map(\.id)
         + existingTemplates.map(\.id) + existingLogs.map(\.id) + existingGoals.map(\.id))
-    var childIDs = Set<UUID>()
+    existingIDs.formUnion(existingHealth.topIDs)
+    var childIDs = existingHealth.childIDs
     for workout in existingWorkouts {
       for exercise in workout.exercises {
         childIDs.insert(exercise.id)
@@ -274,7 +288,11 @@ enum BackupArchiveService {
     incomingTopIDs.formUnion(archive.mealTemplates.map(\.id))
     incomingTopIDs.formUnion(archive.foodLogs.map(\.id))
     incomingTopIDs.formUnion(archive.nutritionGoals.map(\.id))
+    incomingTopIDs.formUnion(archive.manualHealth?.topIDs ?? [])
     var incomingChildIDs = Set<UUID>()
+    for checkIn in archive.manualHealth?.checkIns ?? [] where !existingIDs.contains(checkIn.id) {
+      incomingChildIDs.formUnion(checkIn.muscleFeedback.map(\.id))
+    }
     for workout in archive.workouts where !existingIDs.contains(workout.id) {
       for exercise in workout.exercises {
         incomingChildIDs.insert(exercise.id)
@@ -298,6 +316,7 @@ enum BackupArchiveService {
     matchingTypeIDs.formUnion(Set(archive.foodLogs.map(\.id)).intersection(existingLogs.map(\.id)))
     matchingTypeIDs.formUnion(
       Set(archive.nutritionGoals.map(\.id)).intersection(existingGoals.map(\.id)))
+    matchingTypeIDs.formUnion(archive.manualHealth?.matchingTypeIDs(existingHealth) ?? [])
     guard incomingTopIDs.intersection(existingIDs) == matchingTypeIDs,
       incomingTopIDs.isDisjoint(with: childIDs),
       incomingChildIDs.isDisjoint(with: childIDs.union(existingIDs))
@@ -357,7 +376,14 @@ enum BackupArchiveService {
         inserted += 1
       }
     }
-    do { try isolated.save() } catch {
+    do {
+      if let manualHealth = archive.manualHealth {
+        let result = try manualHealth.insert(into: isolated, existingIDs: existingIDs)
+        inserted += result.inserted
+        skipped += result.skipped
+      }
+      try isolated.save()
+    } catch {
       isolated.rollback()
       throw error
     }
@@ -374,6 +400,7 @@ enum BackupArchiveService {
     func unique(_ id: UUID) throws {
       guard ids.insert(id).inserted else { throw BackupArchiveError.invalid("存在重复 ID。") }
     }
+    try a.manualHealth?.validate(ids: &ids)
     for w in a.workouts {
       try unique(w.id)
       guard !w.title.trimmed.isEmpty, WorkoutStatus(rawValue: w.statusRaw) != nil,
@@ -444,7 +471,9 @@ enum BackupArchiveService {
       try requireUnique(s.id, &ids)
       guard (0..<BackupArchive.maxObjects).contains(s.orderIndex),
         s.weightKilograms.isFinite && (0...10_000).contains(s.weightKilograms),
-        (0...100_000).contains(s.repetitions), (0...604_800).contains(s.durationSeconds)
+        (0...100_000).contains(s.repetitions), (0...604_800).contains(s.durationSeconds),
+        s.rir.map({ (0...5).contains($0) }) != false,
+        SetRole(rawValue: s.setRoleRaw ?? "unknown") != nil
       else { throw BackupArchiveError.invalid("训练组数值无效。") }
     }
     for c in e.cardioEntries {
@@ -487,7 +516,7 @@ extension BackupArchiveService {
             StrengthSetDTO(
               id: $0.id, orderIndex: $0.orderIndex, weightKilograms: $0.weightKilograms,
               repetitions: $0.repetitions, durationSeconds: $0.durationSeconds,
-              isCompleted: $0.isCompleted)
+              isCompleted: $0.isCompleted, rir: $0.rir, setRoleRaw: $0.setRoleRaw)
           },
           cardioEntries: $0.cardioEntries.map {
             CardioEntryDTO(
@@ -560,7 +589,7 @@ extension BackupArchiveService {
       let s = StrengthSet(
         id: $0.id, orderIndex: $0.orderIndex, weightKilograms: $0.weightKilograms,
         repetitions: $0.repetitions, durationSeconds: $0.durationSeconds,
-        isCompleted: $0.isCompleted)
+        isCompleted: $0.isCompleted, rir: $0.rir, setRole: SetRole(rawValue: $0.setRoleRaw ?? "unknown")!)
       s.exercise = e
       return s
     }
