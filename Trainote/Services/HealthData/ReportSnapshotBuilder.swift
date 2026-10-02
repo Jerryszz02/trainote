@@ -6,6 +6,12 @@ struct PreparedReportInput {
   var healthConsent: ConsentLease?
 }
 
+private struct ReportFingerprint: Encodable {
+  /// Contains the original analysis fingerprint plus all prepared report output identity.
+  var report: ReportInput
+  var recommendationContextFingerprint: String?
+}
+
 /// Rebuild the entire dependency graph from a fresh readable window. Never accepts cached results.
 @MainActor
 final class ReportSnapshotBuilder {
@@ -49,10 +55,13 @@ final class ReportSnapshotBuilder {
     guard trendResult.inputFingerprint == input.inputFingerprint,
       recoveryResult.inputFingerprint == input.inputFingerprint
     else { throw AnalysisFailure.staleSnapshot }
-    let candidates = try recommendations.candidates(
+    let recommendationSnapshot = try recommendations.snapshot(
       input: input, trend: trendResult, recovery: recoveryResult)
+    let candidates = recommendationSnapshot.candidates
     var factsByID: [String: MetricFact] = [:]
-    for fact in input.health.facts + trendResult.facts + recoveryResult.facts {
+    for fact in input.health.facts + trendResult.facts + recoveryResult.facts
+      + recommendationSnapshot.facts
+    {
       if let old = factsByID[fact.id], old != fact { throw AnalysisFailure.invalidInput }
       factsByID[fact.id] = fact
     }
@@ -74,7 +83,10 @@ final class ReportSnapshotBuilder {
         !fact.sources.contains(where: { $0.kind == .healthKit })
           || resolved.contains(where: { $0.kind == .healthSample })
       else { throw AnalysisFailure.staleSnapshot }
-      return Array(Set(resolved)).sorted { $0.id < $1.id }
+      return Array(Set(resolved)).sorted {
+        ($0.kind.rawValue, $0.id, $0.healthType?.rawValue ?? "")
+          < ($1.kind.rawValue, $1.id, $1.healthType?.rawValue ?? "")
+      }
     }
     let resultFacts: [MetricFact]
     switch type {
@@ -82,7 +94,11 @@ final class ReportSnapshotBuilder {
     case .recovery: resultFacts = recoveryResult.facts
     case .today, .weekly: resultFacts = trendResult.facts + recoveryResult.facts
     }
-    var needed = Set(resultFacts.map(\.id) + candidates.flatMap(\.reasonFactIDs))
+    var needed = Set(
+      (resultFacts + recommendationSnapshot.facts).map(\.id) + candidates.flatMap(\.reasonFactIDs))
+    for candidate in candidates {
+      needed.formUnion(candidate.dependencies.filter { $0.kind == .metricFact }.map(\.id))
+    }
     // Recursively include referenced facts; the transport never needs the full raw input.
     var frontier = Array(needed)
     while let id = frontier.popLast() {
@@ -104,7 +120,7 @@ final class ReportSnapshotBuilder {
         if dependency.kind == .metricFact { _ = try dependencies(dependency.id) }
       }
     }
-    let report = ReportInput(
+    var report = ReportInput(
       reportType: type, asOf: asOf, inputFingerprint: input.inputFingerprint,
       facts: facts, candidates: candidates, goalDirection: input.profile?.goalDirection,
       knowledgeVersion: knowledgeVersion,
@@ -112,6 +128,12 @@ final class ReportSnapshotBuilder {
       missingData: current.statuses.filter { $0.state != .samplesAvailable }.map {
         $0.type.rawValue
       })
+    // Calculator matching above uses the original AnalysisInput fingerprint. Only the final
+    // report identity includes recommendation context/output, so changing a plan or schedule
+    // invalidates cached reports without altering B/C's calculation contract.
+    report.inputFingerprint = try AnalysisFingerprint.digest(
+      ReportFingerprint(
+        report: report, recommendationContextFingerprint: recommendationSnapshot.contextFingerprint))
     let prepared = PreparedReportInput(
       input: report, aiConsent: aiLease, healthConsent: healthLease)
     try validateBeforeSending(prepared)
