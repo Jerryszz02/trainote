@@ -185,4 +185,55 @@ final class TrendWorkflowTests: XCTestCase {
     XCTAssertTrue(try repository.manualRecords().goalRevisions.isEmpty)
     XCTAssertEqual(try context.fetch(FetchDescriptor<NutritionGoal>()).first?.calories, 2300)
   }
+
+  func testFreshReportRebuildDropsOldWeightAndDerivedEnergyDespiteCachedSample() async throws {
+    let container = try PersistenceController.makeContainer(inMemory: true)
+    let repository = SwiftDataAnalysisRepository(container: container)
+    try repository.saveProfile(try XCTUnwrap(TrendTestData.input(cold: true).profile))
+    try repository.savePreferences(.init(goalMode: .suggested))
+    let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+    defer { try? FileManager.default.removeItem(at: directory) }
+    let consent = try LocalConsentStore(url: directory.appendingPathComponent("consent.json"))
+    try consent.grant(
+      .healthData, version: LocalConsentStore.healthConsentVersion, at: TrendTestData.now)
+    try consent.grant(
+      .aiReports, version: LocalConsentStore.aiConsentVersion, at: TrendTestData.now)
+    let window = AnalysisWindow(start: TrendTestData.date(-30), end: TrendTestData.now)
+    let cache = try HealthCacheStore(
+      url: directory.appendingPathComponent("cache.json"), syncStart: window.start)
+    let sample = HealthSample(
+      id: AnalysisFixtures.id(2600), type: .bodyMass,
+      start: TrendTestData.date(0), end: TrendTestData.date(0), value: 70, unit: .kilograms,
+      source: .init(bundleIdentifier: "fixture.scale", name: "Fixture Scale"))
+    try cache.commit(
+      .init(
+        type: .bodyMass, added: [sample], deletedIDs: [], newAnchor: Data([1]),
+        queriedAt: TrendTestData.now))
+    let client = FakeHealthQueryClient()
+    client.samplesByType[.bodyMass] = [sample]
+    let health = HealthDataService(
+      client: client, cache: cache, consent: consent, clock: { TrendTestData.now })
+    let builder = ReportSnapshotBuilder(
+      repository: repository, health: health, consent: consent,
+      trend: TrendCalculator(), recovery: FixtureRecoveryCalculator(),
+      recommendations: FixtureRecommendationProvider())
+    let before = try await builder.prepare(
+      type: .trend, window: window, asOf: TrendTestData.now,
+      timeZone: TimeZone(secondsFromGMT: 0)!, knowledgeVersion: "fixture",
+      consentVersion: LocalConsentStore.aiConsentVersion)
+    let energy = try XCTUnwrap(before.input.facts.first { $0.metric == "energy.initialEstimate" })
+    XCTAssertTrue(
+      energy.dependencies.contains { $0.kind == .healthSample && $0.id == sample.id.uuidString })
+    client.samplesByType = [:]
+    let after = try await builder.prepare(
+      type: .trend, window: window, asOf: TrendTestData.now,
+      timeZone: TimeZone(secondsFromGMT: 0)!, knowledgeVersion: "fixture",
+      consentVersion: LocalConsentStore.aiConsentVersion)
+    XCTAssertFalse(after.input.facts.contains { $0.metric == "energy.initialEstimate" })
+    XCTAssertNil(after.input.facts.first { $0.metric == "weight.smoothed" }?.value)
+    XCTAssertFalse(
+      after.input.facts.contains { $0.dependencies.contains { $0.kind == .healthSample } })
+    XCTAssertEqual(cache.state.samples.count, 1)
+    XCTAssertNotEqual(before.input.inputFingerprint, after.input.inputFingerprint)
+  }
 }
