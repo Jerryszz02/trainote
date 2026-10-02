@@ -1,4 +1,5 @@
 import SceneKit
+import UIKit
 import XCTest
 
 #if BODY_MAP_PREVIEW
@@ -148,6 +149,70 @@ final class BodyMapTests: XCTestCase {
     XCTAssertEqual(policy(thermal: .critical), .list)
     XCTAssertEqual(policy(available: false), .list)
     XCTAssertEqual(BodyMapDisplayPolicy.economical.framesPerSecond, 20)
+  }
+
+  func testDismantledContainerIgnoresLateUIKitLayoutAndUpdates() async throws {
+    let container = BodyMapSceneContainer(frame: CGRect(x: 0, y: 0, width: 370, height: 430))
+    let model = try XCTUnwrap(container.model)
+    let label = try XCTUnwrap(container.subviews.compactMap { $0 as? UIButton }.first)
+    var selections = 0
+    container.onSelect = { _ in selections += 1 }
+    container.layoutIfNeeded()
+    XCTAssertFalse(model.projectedAnchors(in: container.sceneView).isEmpty)
+
+    let lateUpdate = expectation(description: "Queued update after dismantling")
+    DispatchQueue.main.async {
+      container.configure(
+        input: BodyMapRenderInput(presentation: BodyMapFixtures.populated),
+        policy: .economical, active: true)
+      container.rotate(to: .pi)
+      container.updateLabels()
+      label.sendActions(for: .touchUpInside)
+      lateUpdate.fulfill()
+    }
+    BodyMapSceneView.dismantleUIView(container, coordinator: ())
+    // UIKit may lay out a removed representable again during its parent's transition.
+    container.bounds.size.width = 390
+    container.setNeedsLayout()
+    container.layoutIfNeeded()
+    await fulfillment(of: [lateUpdate], timeout: 2)
+    BodyMapSceneView.dismantleUIView(container, coordinator: ())
+    XCTAssertTrue(container.isDismantled)
+    XCTAssertNil(container.model)
+    XCTAssertNil(container.onSelect)
+    XCTAssertFalse(container.isUserInteractionEnabled)
+    XCTAssertTrue(container.sceneView.gestureRecognizers?.allSatisfy { !$0.isEnabled } ?? false)
+    XCTAssertNil(container.sceneView.scene)
+    XCTAssertNil(container.sceneView.pointOfView)
+    XCTAssertFalse(container.sceneView.isPlaying)
+    XCTAssertFalse(container.sceneView.rendersContinuously)
+    XCTAssertEqual(selections, 0)
+    // A retained model must also reject calls made with its detached renderer.
+    XCTAssertTrue(model.projectedAnchors(in: container.sceneView).isEmpty)
+    XCTAssertNil(model.hit(at: CGPoint(x: 200, y: 120), in: container.sceneView))
+  }
+
+  func testProjectionRequiresAttachedSceneCameraAndViewport() throws {
+    let model = BodyMapScene(asset: try BodyMapAsset.load())
+    let view = SCNView(frame: CGRect(x: 0, y: 0, width: 370, height: 430))
+    let point = CGPoint(x: 200, y: 120)
+    XCTAssertTrue(model.projectedAnchors(in: view).isEmpty)
+    XCTAssertNil(model.hit(at: point, in: view))
+    view.scene = model.scene
+    view.pointOfView = model.camera
+    XCTAssertFalse(model.projectedAnchors(in: view).isEmpty)
+    view.pointOfView = SCNNode()
+    XCTAssertTrue(model.projectedAnchors(in: view).isEmpty)
+    XCTAssertNil(model.hit(at: point, in: view))
+    view.pointOfView = model.camera
+    view.scene = SCNScene()
+    XCTAssertTrue(model.projectedAnchors(in: view).isEmpty)
+    XCTAssertNil(model.hit(at: point, in: view))
+    view.scene = model.scene
+    view.pointOfView = model.camera
+    view.bounds = .zero
+    XCTAssertTrue(model.projectedAnchors(in: view).isEmpty)
+    XCTAssertNil(model.hit(at: point, in: view))
   }
 
   func testSceneConstructionPerformance() throws {

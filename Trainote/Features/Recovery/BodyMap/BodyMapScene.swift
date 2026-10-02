@@ -117,6 +117,7 @@ final class BodyMapScene {
   }
 
   func hit(at point: CGPoint, in view: SCNView) -> MuscleID? {
+    guard canProject(in: view) else { return nil }
     // The first surface wins, including neutral surfaces. Never select through the torso.
     // Raycast in model coordinates: SCNView.hitTest can lag a gesture by a render frame.
     let near = view.unprojectPoint(SCNVector3(Float(point.x), Float(point.y), 0))
@@ -133,7 +134,7 @@ final class BodyMapScene {
   }
 
   func projectedAnchors(in view: SCNView) -> [ProjectedAnchor] {
-    guard view.bounds.width > 0, view.bounds.height > 0 else { return [] }
+    guard canProject(in: view) else { return [] }
     var candidates: [MuscleID: [(point: CGPoint, quality: Float)]] = [:]
     for anchor in anchors {
       let worldNormal = body.convertVector(anchor.normal, to: nil)
@@ -157,6 +158,12 @@ final class BodyMapScene {
       else { return nil }
       return ProjectedAnchor(muscle: muscle, point: best.point)
     }
+  }
+
+  private func canProject(in view: SCNView) -> Bool {
+    // SceneKit projection is unsafe with a detached scene, even if this model is retained.
+    view.scene === scene && view.pointOfView === camera && camera.camera != nil
+      && view.bounds.width > 0 && view.bounds.height > 0
   }
 }
 
