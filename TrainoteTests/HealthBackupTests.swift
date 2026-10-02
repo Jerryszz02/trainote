@@ -217,8 +217,189 @@ final class HealthBackupTests: XCTestCase {
     let destination = try PersistenceController.makeContainer(inMemory: true)
     XCTAssertEqual(try BackupArchiveService.importData(data, into: destination).inserted, 3)
     let restored = try SwiftDataAnalysisRepository(container: destination).goalRevisionState()
+    XCTAssertEqual(restored, originalState)
     XCTAssertEqual(restored.currentGoal?.targets, revision.targets)
     XCTAssertEqual(restored.latestRevisionID, revision.id)
+  }
+
+  func testRapidAdoptionUndoBackupPreservesOrderAndAllowsNextAdoption() throws {
+    let date = AnalysisFixtures.asOf
+    let source = try PersistenceController.makeContainer(inMemory: true)
+    let context = ModelContext(source)
+    let before = NutritionTargets(calories: 2000, carbohydrates: 240, protein: 120, fat: 60)
+    context.insert(
+      NutritionGoal(
+        calories: before.calories, carbohydrates: before.carbohydrates,
+        protein: before.protein, fat: before.fat, updatedAt: date.addingTimeInterval(-60)))
+    try context.save()
+    let repo = SwiftDataAnalysisRepository(container: source)
+    let adoption = NutritionGoalRevisionValue(
+      id: UUID(uuidString: "ffffffff-ffff-ffff-ffff-ffffffffffff")!,
+      effectiveAt: date.addingTimeInterval(0.2),
+      targets: .init(calories: 2200, carbohydrates: 260, protein: 140, fat: 60),
+      origin: .suggested, proposalID: "rapid-adoption", calculationVersion: "fixture",
+      createdAt: date.addingTimeInterval(0.2))
+    let applied = try repo.applyGoalRevision(
+      .init(revision: adoption, expectedState: repo.goalRevisionState()))
+    let undo = NutritionGoalRevisionValue(
+      id: UUID(uuidString: "00000000-0000-0000-0000-000000000001")!,
+      effectiveAt: date.addingTimeInterval(0.8), targets: before, origin: .manual,
+      reversesRevisionID: adoption.id, createdAt: date.addingTimeInterval(0.8))
+    let undone = try repo.applyGoalRevision(.init(revision: undo, expectedState: applied.state))
+    let data = try BackupArchiveService.export(context: ModelContext(source))
+    XCTAssertEqual(try BackupArchiveService.importData(data, into: source).inserted, 0)
+    XCTAssertEqual(try repo.goalRevisionState(), undone.state)
+    let destination = try PersistenceController.makeContainer(inMemory: true)
+    XCTAssertEqual(try BackupArchiveService.importData(data, into: destination).inserted, 4)
+    let restored = SwiftDataAnalysisRepository(container: destination)
+    XCTAssertEqual(try restored.goalRevisionState(), undone.state)
+    XCTAssertEqual(
+      try restored.manualRecords().goalRevisions.sorted { $0.id.uuidString < $1.id.uuidString },
+      try repo.manualRecords().goalRevisions.sorted { $0.id.uuidString < $1.id.uuidString })
+    XCTAssertEqual(try BackupArchiveService.importData(data, into: destination).skipped, 4)
+    XCTAssertEqual(try restored.goalRevisionState(), undone.state)
+    var next = adoption
+    next.id = AnalysisFixtures.id(910)
+    next.proposalID = "after-rapid-undo"
+    next.effectiveAt = date.addingTimeInterval(0.9)
+    next.createdAt = next.effectiveAt
+    let continued = try restored.applyGoalRevision(
+      .init(revision: next, expectedState: restored.goalRevisionState()))
+    XCTAssertEqual(continued.state.currentGoal?.targets, adoption.targets)
+    XCTAssertEqual(continued.state.latestRevisionID, next.id)
+  }
+
+  func testSubsecondBaselineBackupPreservesFirstAdoptionAndUndo() throws {
+    let date = AnalysisFixtures.asOf
+    let source = try PersistenceController.makeContainer(inMemory: true)
+    let context = ModelContext(source)
+    let before = NutritionTargets(calories: 2000, carbohydrates: 240, protein: 120, fat: 60)
+    let originalDate = date.addingTimeInterval(0.1)
+    context.insert(
+      NutritionGoal(
+        calories: before.calories, carbohydrates: before.carbohydrates,
+        protein: before.protein, fat: before.fat, updatedAt: originalDate))
+    try context.save()
+    let repo = SwiftDataAnalysisRepository(container: source)
+    // The generated baseline UUID sorts after this ID if its effectiveAt loses precision.
+    let adoption = NutritionGoalRevisionValue(
+      id: UUID(uuidString: "00000000-0000-0000-0000-000000000000")!,
+      effectiveAt: date.addingTimeInterval(0.2),
+      targets: .init(calories: 2200, carbohydrates: 260, protein: 140, fat: 60),
+      origin: .manual, createdAt: date.addingTimeInterval(0.2))
+    let applied = try repo.applyGoalRevision(
+      .init(revision: adoption, expectedState: repo.goalRevisionState()))
+    let data = try BackupArchiveService.export(context: ModelContext(source))
+    let destination = try PersistenceController.makeContainer(inMemory: true)
+    XCTAssertEqual(try BackupArchiveService.importData(data, into: destination).inserted, 3)
+    let restored = SwiftDataAnalysisRepository(container: destination)
+    XCTAssertEqual(try restored.goalRevisionState(), applied.state)
+    let baseline = try XCTUnwrap(
+      restored.manualRecords().goalRevisions.first { $0.id == applied.insertedBaselineRevisionID })
+    XCTAssertEqual(baseline.effectiveAt, originalDate)
+    XCTAssertEqual(baseline.createdAt, adoption.createdAt)
+    let undo = NutritionGoalRevisionValue(
+      id: AnalysisFixtures.id(911), effectiveAt: date.addingTimeInterval(0.3),
+      targets: before, origin: .manual, reversesRevisionID: adoption.id,
+      createdAt: date.addingTimeInterval(0.3))
+    let undone = try restored.applyGoalRevision(
+      .init(revision: undo, expectedState: restored.goalRevisionState()))
+    XCTAssertEqual(undone.state.currentGoal?.targets, before)
+    XCTAssertEqual(undone.state.latestRevisionID, undo.id)
+  }
+
+  func testBackupPreservesAdjacentRepresentableDatesWithoutEpochConversion() throws {
+    let now = AnalysisFixtures.asOf.timeIntervalSinceReferenceDate
+    let intervals = [
+      Double.leastNonzeroMagnitude, Double.leastNormalMagnitude,
+      (-0.25).nextDown, (-0.25).nextUp, 0.25.nextDown, 0.25.nextUp,
+      now.nextDown, now, now.nextUp,
+    ]
+    let source = try PersistenceController.makeContainer(inMemory: true)
+    let context = ModelContext(source)
+    var expected: [UUID: UInt64] = [:]
+    for interval in intervals {
+      let goal = NutritionGoal(
+        calories: 2000, carbohydrates: 240, protein: 120, fat: 60,
+        updatedAt: Date(timeIntervalSinceReferenceDate: interval))
+      expected[goal.id] = interval.bitPattern
+      context.insert(goal)
+    }
+    let data = try BackupArchiveService.export(context: context)
+    let decoded = try BackupArchiveService.decode(data)
+    for goal in decoded.nutritionGoals {
+      XCTAssertEqual(goal.updatedAt.timeIntervalSinceReferenceDate.bitPattern, expected[goal.id])
+    }
+    let destination = try PersistenceController.makeContainer(inMemory: true)
+    XCTAssertEqual(try BackupArchiveService.importData(data, into: destination).inserted, intervals.count)
+    for goal in try ModelContext(destination).fetch(FetchDescriptor<NutritionGoal>()) {
+      XCTAssertEqual(goal.updatedAt.timeIntervalSinceReferenceDate.bitPattern, expected[goal.id])
+    }
+    XCTAssertEqual(try BackupArchiveService.importData(data, into: destination).skipped, intervals.count)
+  }
+
+  func testLegacySecondPrecisionV2StillImportsAndRepeatsWithoutChangingSourceDates() throws {
+    let date = AnalysisFixtures.asOf.addingTimeInterval(0.125)
+    let source = try PersistenceController.makeContainer(inMemory: true)
+    let context = ModelContext(source)
+    context.insert(
+      NutritionGoal(calories: 2000, carbohydrates: 240, protein: 120, fat: 60, updatedAt: date))
+    try context.save()
+    let repo = SwiftDataAnalysisRepository(container: source)
+    let revision = NutritionGoalRevisionValue(
+      id: AnalysisFixtures.id(912), effectiveAt: date.addingTimeInterval(10),
+      targets: .init(calories: 2200, carbohydrates: 260, protein: 140, fat: 60),
+      origin: .manual, createdAt: date.addingTimeInterval(10))
+    let applied = try repo.applyGoalRevision(
+      .init(revision: revision, expectedState: repo.goalRevisionState()))
+    let archive = try BackupArchiveService.decode(
+      BackupArchiveService.export(context: ModelContext(source)))
+    let oldEncoder = JSONEncoder()
+    oldEncoder.dateEncodingStrategy = .iso8601
+    let legacyData = try oldEncoder.encode(archive)
+    XCTAssertEqual(try BackupArchiveService.decode(legacyData).schemaVersion, 2)
+    XCTAssertEqual(try BackupArchiveService.importData(legacyData, into: source).skipped, 3)
+    XCTAssertEqual(try repo.goalRevisionState(), applied.state)
+    let destination = try PersistenceController.makeContainer(inMemory: true)
+    XCTAssertEqual(try BackupArchiveService.importData(legacyData, into: destination).inserted, 3)
+    XCTAssertEqual(try BackupArchiveService.importData(legacyData, into: destination).skipped, 3)
+    let restored = SwiftDataAnalysisRepository(container: destination)
+    XCTAssertEqual(try restored.goalRevisionState().latestRevisionID, revision.id)
+    var next = revision
+    next.id = AnalysisFixtures.id(913)
+    next.createdAt = date.addingTimeInterval(20)
+    next.effectiveAt = next.createdAt
+    XCTAssertEqual(
+      try restored.applyGoalRevision(
+        .init(revision: next, expectedState: restored.goalRevisionState())).state.latestRevisionID,
+      next.id)
+  }
+
+  func testPreciseBackupDoesNotIgnoreSubsecondSharedGoalConflicts() throws {
+    let date = AnalysisFixtures.asOf.addingTimeInterval(0.125)
+    let source = try PersistenceController.makeContainer(inMemory: true)
+    let context = ModelContext(source)
+    let goal = NutritionGoal(
+      calories: 2000, carbohydrates: 240, protein: 120, fat: 60, updatedAt: date)
+    context.insert(goal)
+    try context.save()
+    let repo = SwiftDataAnalysisRepository(container: source)
+    let revision = NutritionGoalRevisionValue(
+      id: AnalysisFixtures.id(914), effectiveAt: date.addingTimeInterval(10),
+      targets: .init(calories: 2200, carbohydrates: 260, protein: 140, fat: 60),
+      origin: .manual, createdAt: date.addingTimeInterval(10))
+    let applied = try repo.applyGoalRevision(
+      .init(revision: revision, expectedState: repo.goalRevisionState()))
+    var archive = try BackupArchiveService.decode(
+      BackupArchiveService.export(context: ModelContext(source)))
+    archive.nutritionGoals[0].updatedAt = Date(
+      timeIntervalSinceReferenceDate: archive.nutritionGoals[0].updatedAt
+        .timeIntervalSinceReferenceDate.nextUp)
+    let data = try JSONEncoder().encode(archive)
+    XCTAssertThrowsError(try BackupArchiveService.importData(data, into: source)) {
+      XCTAssertEqual($0 as? BackupArchiveError, .goalStateConflict)
+    }
+    XCTAssertEqual(try repo.goalRevisionState(), applied.state)
   }
 
   func testSaveFailureLeavesOldStoreUntouched() throws {
