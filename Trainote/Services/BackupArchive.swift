@@ -204,11 +204,24 @@ struct BackupImportResult: Equatable {
 enum BackupArchiveService {
   private static let encoder: JSONEncoder = {
     let e = JSONEncoder()
-    e.dateEncodingStrategy = .iso8601
+    // Date's native Codable representation is a lossless Double measured from 2001-01-01.
+    // Do not format to fixed fractional digits or shift epochs: either can collapse valid dates.
+    e.dateEncodingStrategy = .deferredToDate
     e.outputFormatting = [.prettyPrinted, .sortedKeys]
     return e
   }()
   private static let decoder: JSONDecoder = {
+    let d = JSONDecoder()
+    d.dateDecodingStrategy = .deferredToDate
+    return d
+  }()
+  private static let legacyEncoder: JSONEncoder = {
+    let e = JSONEncoder()
+    e.dateEncodingStrategy = .iso8601
+    e.outputFormatting = [.prettyPrinted, .sortedKeys]
+    return e
+  }()
+  private static let legacyDecoder: JSONDecoder = {
     let d = JSONDecoder()
     d.dateDecodingStrategy = .iso8601
     return d
@@ -233,6 +246,12 @@ enum BackupArchiveService {
   }
 
   static func decode(_ data: Data) throws -> BackupArchive {
+    try decodeArchive(data).archive
+  }
+
+  private static func decodeArchive(_ data: Data) throws -> (
+    archive: BackupArchive, usesLegacyDates: Bool
+  ) {
     guard data.count <= BackupArchive.maxBytes else { throw BackupArchiveError.tooLarge }
     struct Header: Decodable { var schemaVersion: Int }
     let version: Int
@@ -242,16 +261,28 @@ enum BackupArchiveService {
       throw BackupArchiveError.unsupportedVersion(version)
     }
     let archive: BackupArchive
-    do { archive = try decoder.decode(BackupArchive.self, from: data) } catch {
+    let usesLegacyDates: Bool
+    do {
+      if let decoded = try? decoder.decode(BackupArchive.self, from: data) {
+        archive = decoded
+        usesLegacyDates = false
+      } else {
+        // Frozen v1 and early v2 exports used whole-second ISO-8601 strings. Decode the
+        // entire archive consistently; never downgrade comparisons for a mixed-format file.
+        archive = try legacyDecoder.decode(BackupArchive.self, from: data)
+        usesLegacyDates = true
+      }
+    } catch {
       throw BackupArchiveError.invalid("JSON 格式或字段不正确。")
     }
     try validate(archive)
-    return archive
+    return (archive, usesLegacyDates)
   }
 
   static func importData(_ data: Data, into container: ModelContainer) throws -> BackupImportResult
   {
-    let archive = try decode(data)
+    let decoded = try decodeArchive(data)
+    let archive = decoded.archive
     let isolated = ModelContext(container)
     isolated.autosaveEnabled = false
     let existingWorkouts = try isolated.fetch(FetchDescriptor<Workout>())
@@ -269,7 +300,9 @@ enum BackupArchiveService {
       throw BackupArchiveError.activeWorkoutConflict
     }
     let existingHealth = try HealthManualBackup.read(isolated)
-    try preflightGoalState(archive, existingGoals: existingGoals, existingHistory: existingHealth.goalRevisions)
+    try preflightGoalState(
+      archive, existingGoals: existingGoals, existingHistory: existingHealth.goalRevisions,
+      comparisonEncoder: decoded.usesLegacyDates ? legacyEncoder : encoder)
     try archive.manualHealth?.preflight(existing: existingHealth)
     var existingIDs = Set(
       existingWorkouts.map(\.id) + existingRoutines.map(\.id) + existingPresets.map(\.id)
@@ -396,20 +429,21 @@ enum BackupArchiveService {
   /// Current targets and revision history are one logical state. Skipping a conflicting target
   /// while importing its new revisions would silently create two different versions of that state.
   private static func preflightGoalState(
-    _ archive: BackupArchive, existingGoals: [NutritionGoal], existingHistory: [NutritionGoalRevisionValue]
+    _ archive: BackupArchive, existingGoals: [NutritionGoal],
+    existingHistory: [NutritionGoalRevisionValue], comparisonEncoder: JSONEncoder
   ) throws {
     let incomingHistory = archive.manualHealth?.goalRevisions ?? []
     guard !incomingHistory.isEmpty || !existingHistory.isEmpty else { return }
     let existingGoalValues = existingGoals.map(nutritionGoal)
     for incoming in archive.nutritionGoals {
       if let existing = existingGoalValues.first(where: { $0.id == incoming.id }),
-        try encoder.encode(existing) != encoder.encode(incoming) {
+        try comparisonEncoder.encode(existing) != comparisonEncoder.encode(incoming) {
         throw BackupArchiveError.goalStateConflict
       }
     }
     for incoming in incomingHistory {
       if let existing = existingHistory.first(where: { $0.id == incoming.id }),
-        try encoder.encode(existing) != encoder.encode(incoming) {
+        try comparisonEncoder.encode(existing) != comparisonEncoder.encode(incoming) {
         throw BackupArchiveError.goalStateConflict
       }
     }
@@ -419,11 +453,11 @@ enum BackupArchiveService {
       }.first
     }
     if let incoming = newest(archive.nutritionGoals), let existing = newest(existingGoalValues),
-      try encoder.encode(existing) != encoder.encode(incoming) {
+      try comparisonEncoder.encode(existing) != comparisonEncoder.encode(incoming) {
       throw BackupArchiveError.goalStateConflict
     }
-    // Compare the archive's own date representation: v1/v2 ISO-8601 timestamps are second precision,
-    // so restoring an unchanged export into its source store remains idempotent.
+    // Compare at the incoming archive's precision. Only legacy ISO-8601 archives allow second
+    // precision; native-Date exports must retain and compare every representable fraction.
   }
 
   private static func validate(_ a: BackupArchive) throws {
