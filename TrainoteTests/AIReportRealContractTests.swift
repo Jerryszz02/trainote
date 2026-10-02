@@ -28,6 +28,18 @@ private struct CapturedHealthTrend: TrendCalculating {
     return result
   }
 }
+private final class CapturedRecommendationProvider: RecommendationProviding {
+  var value: RecommendationSnapshot
+  var analysisFingerprints: [String] = []
+  init(_ value: RecommendationSnapshot) { self.value = value }
+  func candidates(input: AnalysisInput, trend: TrendResult, recovery: RecoveryResult) throws -> [RecommendationCandidate] {
+    throw AnalysisFailure.invalidInput // The builder must take facts and candidates from one snapshot.
+  }
+  func snapshot(input: AnalysisInput, trend: TrendResult, recovery: RecoveryResult) throws -> RecommendationSnapshot {
+    analysisFingerprints.append(input.inputFingerprint)
+    return value
+  }
+}
 
 @MainActor
 final class AIReportRealContractTests: XCTestCase {
@@ -187,5 +199,48 @@ final class AIReportRealContractTests: XCTestCase {
     XCTAssertThrowsError(try ReportWireInput(invalid))
     invalid = input; invalid.facts[index].window.start = input.asOf.addingTimeInterval(3600)
     XCTAssertThrowsError(try ReportWireInput(invalid))
+  }
+  func testRealCandidateSnapshotUsesOpaqueReportIdentityAndContextInvalidatesPersistentCache() async throws {
+    let captured = try XCTUnwrap(fixture().recommendationInputs["reduce"])
+    let folder = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+    defer { try? FileManager.default.removeItem(at: folder) }
+    let consent = try LocalConsentStore(url: folder.appendingPathComponent("consent.json"))
+    try consent.grant(.aiReports, version: LocalConsentStore.aiConsentVersion, at: captured.asOf)
+    let health = FixtureHealthDataProvider(scenario: .manualOnly)
+    let recommendations = CapturedRecommendationProvider(.init(candidates: captured.candidates,
+      facts: captured.facts, contextFingerprint: "synthetic-plan-v1-days-1-3-5"))
+    let builder = ReportSnapshotBuilder(
+      repository: SwiftDataAnalysisRepository(container: try PersistenceController.makeContainer(inMemory: true)),
+      health: health, consent: consent, trend: FixtureTrendCalculator(),
+      recovery: FixtureRecoveryCalculator(), recommendations: recommendations)
+    func prepare() async throws -> ReportInput {
+      try await builder.prepare(type: .today, window: health.snapshot.window, asOf: captured.asOf,
+        timeZone: TimeZone(secondsFromGMT: 0)!, knowledgeVersion: AIReportPolicy.knowledgeVersion,
+        consentVersion: LocalConsentStore.aiConsentVersion).input
+    }
+    let first = try await prepare()
+    XCTAssertEqual(first.candidates, captured.candidates)
+    XCTAssertEqual(Set(first.facts.map(\.id)), Set(captured.facts.map(\.id)))
+    XCTAssertNotEqual(first.inputFingerprint, recommendations.analysisFingerprints[0])
+    let wire = try ReportWireInput(first)
+    let decoded = try ReportResultValidator.decode(AIReportPolicy.encoder().encode(remoteResult(wire.validationInput)), input: first, now: first.asOf)
+    let cacheURL = folder.appendingPathComponent("reports.json")
+    let cache = try AIReportCache(url: cacheURL, allowHealthHistory: false)
+    try cache.save(.init(report: decoded, input: first, dependsOnHealth: false))
+    let same = try await prepare()
+    XCTAssertEqual(same.inputFingerprint, first.inputFingerprint)
+    XCTAssertNotNil(try cache.current(same, now: same.asOf))
+    recommendations.value.contextFingerprint = "synthetic-plan-v2-days-2-4-6"
+    let changed = try await prepare()
+    XCTAssertEqual(recommendations.analysisFingerprints.count, 3)
+    XCTAssertEqual(Set(recommendations.analysisFingerprints).count, 1)
+    XCTAssertEqual(first.facts, changed.facts); XCTAssertEqual(first.candidates, changed.candidates)
+    XCTAssertNotEqual(first.inputFingerprint, changed.inputFingerprint)
+    XCTAssertThrowsError(try ReportResultValidator.validate(decoded, input: changed, now: changed.asOf))
+    XCTAssertNil(try cache.current(changed, now: changed.asOf))
+    let reopened = try AIReportCache(url: cacheURL, allowHealthHistory: false)
+    XCTAssertNil(try reopened.current(changed, now: changed.asOf))
+    XCTAssertEqual(reopened.history().first?.input.inputFingerprint, first.inputFingerprint)
+    XCTAssertEqual(health.freshRequests, 3)
   }
 }
