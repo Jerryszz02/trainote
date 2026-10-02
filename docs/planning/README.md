@@ -4,7 +4,7 @@
 
 当前默认分支的 Trainote 是一款中文优先、完全离线的 iPhone 健身与饮食记录 App。它用于记录力量训练、有氧训练、训练 routine，以及每日卡路里、碳水、蛋白质和脂肪。动作目录来自 `hasaneyldrm/exercises-dataset` 的固定版本，只内置 MIT 许可覆盖的文字和结构化数据，不分发需要单独授权的图片或 GIF。
 
-计划新增“趋势分析”“恢复分析”、Apple 健康读取和可选 DeepSeek 报告。**2026-10-03 用户已批准计划和分工；功能尚未实现，实施对话待文档 PR 通过 CI 并合并后创建。** 先完成并合并 A、D，再创建 B、C、E、F，各自 fetch 最新默认分支并使用独立工作树。现有代码是实现事实的依据，规划描述目标，不代替测试、科学验证或发布证据。
+计划新增“趋势分析”“恢复分析”、Apple 健康读取和可选 DeepSeek 报告。**2026-10-03 用户已批准计划和分工；功能尚未实现，实施对话待文档 PR 通过 CI 并合并后创建。** 先完成 A、D 并验证包含两者的固定提交，再创建 B、C、E、F，各自 fetch 并基于该提交使用独立工作树；无需等待 A/D 主线合并。所有实施对话使用 max。现有代码是实现事实的依据，规划描述目标，不代替测试、科学验证或发布证据。
 
 ## 文档信息
 
@@ -26,7 +26,7 @@
 
 1. 阅读已获批准的 [健康分析实施提案](health-analysis-plan.md)，遵循导航、目标调整、权限和计算边界。
 2. 阅读 [研究证据与模型资产](health-analysis-evidence.md)，分清文献依据、产品参数与未验证部分。
-3. 阅读 [并行交付计划](health-analysis-delivery.md)，遵循六条工作流、high 设置、A/D 双前置依赖和集成授权。
+3. 阅读 [并行交付计划](health-analysis-delivery.md)，遵循六条工作流、max 设置、A/D 固定基础依赖和集成授权。
 4. 维护现有功能时阅读 [prd.md](prd.md)、[technical-design.md](technical-design.md)、[database-design.md](database-design.md) 与 [test-plan.md](test-plan.md)。
 
 ## 规划文档
@@ -35,7 +35,7 @@
 | --- | --- |
 | [health-analysis-plan.md](health-analysis-plan.md) | 新增：已批准的产品流程、算法候选、数据/API 契约、隐私、迁移和验收 |
 | [health-analysis-evidence.md](health-analysis-evidence.md) | 新增：14 项营养/恢复来源、健康 AI 研究资产与推论边界 |
-| [health-analysis-delivery.md](health-analysis-delivery.md) | 新增：已批准的六条工作流、文件所有权、A/D 双前置依赖及派发消息 |
+| [health-analysis-delivery.md](health-analysis-delivery.md) | 新增：已批准的六条工作流、文件所有权、A/D 固定基础依赖及派发消息 |
 | [daily-use-upgrade.md](daily-use-upgrade.md) | 已有：1.1 日常使用与可靠性基线 |
 | [prd.md](prd.md) | 定义用户场景、页面流程、业务规则和非目标 |
 | [technical-design.md](technical-design.md) | 定义 App 壳层、状态归属、动作导入和隐私边界 |
