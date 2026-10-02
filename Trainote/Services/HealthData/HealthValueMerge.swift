@@ -44,19 +44,14 @@ enum HealthValueMerge {
     let sleep = samples.filter { $0.type == .sleep && $0.sleepStage?.isAsleep == true }
     var calendar = Calendar(identifier: .gregorian)
     calendar.timeZone = timeZone
-    // A sleep night is noon-to-noon, labelled by its ending day. Midnight does not split stages.
-    let nights = Dictionary(grouping: sleep) {
-      AnalysisFingerprint.localDate(
-        calendar.date(byAdding: .hour, value: 12, to: $0.end)!, timeZone: timeZone)
-    }
+    // Split at local noon before assigning nights, so overlapping stages cannot cross buckets.
+    let nights = splitIntervals(
+      sleep, window: snapshot.window, calendar: calendar, grouping: .sleepNight)
     for night in nights.keys.sorted() {
       let all = nights[night]!
       let selected = selectSource(all, preferred: preferredSources)
       guard let first = selected.first else { continue }
-      let intervals = selected.map {
-        AnalysisWindow(
-          start: max($0.start, snapshot.window.start), end: min($0.end, snapshot.window.end))
-      }.filter { $0.start < $0.end }
+      let intervals = selected.map { AnalysisWindow(start: $0.start, end: $0.end) }
       let duration = unionDuration(intervals)
       var fact = makeFact(
         metric: "sleep.duration", suffix: night, value: duration,
@@ -92,9 +87,9 @@ enum HealthValueMerge {
     // Fresh snapshots use HealthKit statistics instead (including when statistics return no data).
     if !snapshot.isFresh && snapshot.activityFacts.isEmpty {
       for type in [HealthDataType.steps, .activeEnergy] {
-        let groups = Dictionary(grouping: samples.filter { $0.type == type }) {
-          AnalysisFingerprint.localDate($0.start, timeZone: timeZone)
-        }
+        let groups = splitIntervals(
+          samples.filter { $0.type == type }, window: snapshot.window,
+          calendar: calendar, grouping: .activityDay)
         for day in groups.keys.sorted() {
           let chosen = selectSource(groups[day]!, preferred: preferredSources)
           let total = nonOverlappingActivity(chosen)
@@ -131,6 +126,54 @@ enum HealthValueMerge {
       window: snapshot.window, facts: facts.sorted { $0.id < $1.id },
       externalWorkouts: workouts,
       statuses: snapshot.statuses.sorted { $0.type.rawValue < $1.type.rawValue })
+  }
+
+  private enum IntervalGrouping { case sleepNight, activityDay }
+
+  /// Slices retain their original sample IDs and source dependencies. Activity quantities are
+  /// apportioned using the original elapsed-time density, before any clipping or deduplication.
+  private static func splitIntervals(
+    _ samples: [HealthSample], window: AnalysisWindow, calendar: Calendar,
+    grouping: IntervalGrouping
+  ) -> [String: [HealthSample]] {
+    guard window.start < window.end else { return [:] }
+    var groups: [String: [HealthSample]] = [:]
+    for sample in samples where sample.start < sample.end {
+      if grouping == .activityDay && sample.value.map({ $0.isFinite && $0 >= 0 }) != true {
+        continue
+      }
+      var cursor = max(sample.start, window.start)
+      let end = min(sample.end, window.end)
+      while cursor < end {
+        guard let day = calendar.dateInterval(of: .day, for: cursor) else { break }
+        let boundary: Date
+        let label: Date
+        switch grouping {
+        case .activityDay:
+          boundary = day.end
+          label = day.start
+        case .sleepNight:
+          guard let noon = calendar.date(bySettingHour: 12, minute: 0, second: 0, of: day.start),
+            let nextNoon = calendar.date(bySettingHour: 12, minute: 0, second: 0, of: day.end)
+          else { return groups }
+          boundary = cursor < noon ? noon : nextNoon
+          label = boundary  // A noon-to-noon night is named for the day on which it ends.
+        }
+        let sliceEnd = min(end, boundary)
+        guard sliceEnd > cursor else { break }
+        var slice = sample
+        slice.start = cursor
+        slice.end = sliceEnd
+        if grouping == .activityDay, let value = sample.value {
+          slice.value =
+            value / sample.end.timeIntervalSince(sample.start) * sliceEnd.timeIntervalSince(cursor)
+        }
+        let dayLabel = AnalysisFingerprint.localDate(label, timeZone: calendar.timeZone)
+        groups[dayLabel, default: []].append(slice)
+        cursor = sliceEnd
+      }
+    }
+    return groups
   }
 
   static func selectSource(_ samples: [HealthSample], preferred: [String]) -> [HealthSample] {
