@@ -6,6 +6,8 @@ extension RecommendationPlan {
     struct Item: Encodable {
       var id: UUID
       var sourceID: String
+      var nameEn: String
+      var nameZh: String
       var mode: String
       var sets: Int
       var weight: Double
@@ -15,7 +17,9 @@ extension RecommendationPlan {
     }
     let items = routine.sortedExercises.map {
       Item(
-        id: $0.id, sourceID: $0.sourceExerciseID, mode: $0.trackingModeRaw,
+        id: $0.id, sourceID: $0.sourceExerciseID,
+        nameEn: $0.nameEnSnapshot, nameZh: $0.nameZhSnapshot,
+        mode: $0.trackingModeRaw,
         sets: $0.defaultSetCount, weight: $0.defaultWeightKilograms,
         repetitions: $0.defaultRepetitions, duration: $0.defaultDurationSeconds,
         distance: $0.defaultDistanceKilometers)
@@ -25,7 +29,13 @@ extension RecommendationPlan {
       + RecommendationIdentity.digest([routine.name, routine.notes])
     return .init(
       id: routine.id, revision: revision,
-      exerciseIDs: routine.sortedExercises.map(\.sourceExerciseID))
+      exerciseIDs: routine.sortedExercises.map(\.sourceExerciseID),
+      isSupported: !routine.exercises.isEmpty
+        && routine.exercises.allSatisfy {
+          [TrackingMode.strength.rawValue, TrackingMode.repetitions.rawValue].contains(
+            $0.trackingModeRaw)
+            && $0.hasValidDefaults
+        })
   }
 }
 
@@ -38,8 +48,59 @@ enum RecommendationWorkoutFactory {
   ) throws -> Workout {
     let current = try reevaluate()
     guard let candidate = current.candidates.first(where: { $0.actionID == actionID }),
-      let expectedPlan = current.plansByAction[actionID],
-      RecommendationPlan.snapshot(routine) == expectedPlan,
+      let expectedPlan = current.plansByAction[actionID]
+    else { throw AnalysisFailure.staleSnapshot }
+    return try makeSnapshot(
+      routine: routine, candidate: candidate, expectedPlan: expectedPlan,
+      parameters: parameters, startedAt: startedAt)
+  }
+
+  /// The displayed action ID contains the read clock. Match the selected display action to a
+  /// newly approved action by its complete decision and template, never by that volatile ID.
+  static func make(
+    routine: Routine, displayed: TrainingRecommendationEvaluation, actionID: String,
+    parameters: [String: Double] = [:], startedAt: Date,
+    reevaluate: () throws -> TrainingRecommendationEvaluation
+  ) throws -> Workout {
+    guard let selected = displayed.candidates.first(where: { $0.actionID == actionID }),
+      let shownPlan = displayed.plansByAction[actionID],
+      RecommendationPlan.snapshot(routine) == shownPlan
+    else { throw AnalysisFailure.staleSnapshot }
+    let fresh = try reevaluate()
+    guard fresh.localDay == displayed.localDay,
+      fresh.contextFingerprint == displayed.contextFingerprint,
+      safetyFacts(in: fresh) == safetyFacts(in: displayed),
+      let approved = fresh.candidates.first(where: {
+        $0.action == selected.action && $0.muscleIDs == selected.muscleIDs
+          && $0.allowedParameters == selected.allowedParameters
+          && $0.exclusionCodes == selected.exclusionCodes
+          && fresh.plansByAction[$0.actionID] == shownPlan
+      })
+    else { throw AnalysisFailure.staleSnapshot }
+    return try makeSnapshot(
+      routine: routine, candidate: approved, expectedPlan: shownPlan,
+      parameters: parameters, startedAt: startedAt)
+  }
+
+  private static func safetyFacts(in evaluation: TrainingRecommendationEvaluation) -> [MetricFact] {
+    evaluation.facts.filter {
+      [
+        "recommendation.painOrLimitation", "recommendation.recentWorkingSets",
+        "recommendation.significantSoreness", "recommendation.feeling.tired",
+      ].contains($0.metric)
+    }.map { fact in
+      var stable = fact
+      stable.window = .init(start: .distantPast, end: .distantFuture)
+      return stable
+    }
+  }
+
+  private static func makeSnapshot(
+    routine: Routine, candidate: RecommendationCandidate, expectedPlan: RecommendationPlan,
+    parameters: [String: Double], startedAt: Date
+  ) throws -> Workout {
+    guard RecommendationPlan.snapshot(routine) == expectedPlan,
+      expectedPlan.isSupported,
       !routine.exercises.isEmpty, routine.exercises.allSatisfy(\.hasValidDefaults),
       [.keepPlan, .reduceSets, .increaseRIR, .swapTrainingDay].contains(candidate.action),
       Set(parameters.keys) == Set(candidate.allowedParameters.map(\.name)),

@@ -7,6 +7,8 @@ struct RecommendationPlan: Codable, Equatable, Sendable {
   var id: UUID
   var revision: String
   var exerciseIDs: [String]
+  /// Only reviewed resistance modes with valid defaults can create a workout snapshot.
+  var isSupported: Bool = true
 }
 
 struct TrainingRecommendationContext: Codable, Equatable, Sendable {
@@ -36,6 +38,7 @@ struct TrainingRecommendationEvaluation: Equatable, Sendable {
   var facts: [MetricFact]
   var plansByAction: [String: RecommendationPlan]
   var contextFingerprint: String
+  var localDay: String
 }
 
 enum TrainingRecommendationPolicy {
@@ -53,6 +56,15 @@ struct TrainingRecommendationRules: RecommendationProviding {
     -> [RecommendationCandidate]
   {
     try evaluate(input: input, trend: trend, recovery: recovery).candidates
+  }
+
+  func snapshot(input: AnalysisInput, trend: TrendResult, recovery: RecoveryResult) throws
+    -> RecommendationSnapshot
+  {
+    let evaluated = try evaluate(input: input, trend: trend, recovery: recovery)
+    return .init(
+      candidates: evaluated.candidates, facts: evaluated.facts,
+      contextFingerprint: evaluated.contextFingerprint)
   }
 
   func evaluate(input: AnalysisInput, trend: TrendResult, recovery: RecoveryResult) throws
@@ -103,6 +115,10 @@ struct TrainingRecommendationRules: RecommendationProviding {
     let availableFactIDs = Set(availableFacts.map(\.id))
     guard context.nutritionReviewFactIDs.allSatisfy({ availableFactIDs.contains($0) }) else {
       throw AnalysisFailure.invalidInput
+    }
+    let hasUnallocatedRecords = recovery.facts.contains {
+      $0.metric == "recovery.unallocatedRecords"
+        && (($0.value ?? 1) > 0 || $0.quality.contains(.partial))
     }
     let checkIn = input.checkIns.filter {
       $0.timeZoneIdentifier == input.calendarTimeZone && $0.updatedAt <= input.asOf
@@ -195,7 +211,7 @@ struct TrainingRecommendationRules: RecommendationProviding {
         where alternative.id != plan.id && isFullyMapped(alternative) {
           let alternativeMuscles = mappedMuscles(alternative)
           let states = recovery.muscles.filter { alternativeMuscles.contains($0.muscleID) }
-          if Set(alternativeMuscles).isDisjoint(with: blocked),
+          if !hasUnallocatedRecords, Set(alternativeMuscles).isDisjoint(with: blocked),
             states.count == alternativeMuscles.count,
             states.allSatisfy({
               $0.state == .ready && $0.score?.isFinite == true && !$0.hasPain
@@ -214,7 +230,7 @@ struct TrainingRecommendationRules: RecommendationProviding {
           }
         }
         restOptions(reasons: readinessFacts)
-      } else if !isMapped || selectedRecovery.count != muscles.count
+      } else if !isMapped || hasUnallocatedRecords || selectedRecovery.count != muscles.count
         || selectedRecovery.contains(where: {
           $0.state == .unknown || $0.score == nil || $0.score?.isFinite == false
         })
@@ -286,7 +302,8 @@ struct TrainingRecommendationRules: RecommendationProviding {
     }
     return .init(
       candidates: candidates, facts: facts, plansByAction: plans,
-      contextFingerprint: context.fingerprint)
+      contextFingerprint: context.fingerprint,
+      localDay: AnalysisFingerprint.localDate(input.asOf, timeZone: timeZone))
   }
 
   private func mappedMuscles(_ plan: RecommendationPlan) -> [MuscleID] {
@@ -295,7 +312,7 @@ struct TrainingRecommendationRules: RecommendationProviding {
     }
   }
   private func isFullyMapped(_ plan: RecommendationPlan) -> Bool {
-    !plan.exerciseIDs.isEmpty
+    plan.isSupported && !plan.exerciseIDs.isEmpty
       && plan.exerciseIDs.allSatisfy { context.exerciseMuscles[$0]?.isEmpty == false }
   }
   private func muscleDependencies(_ muscle: MuscleRecovery) -> [SourceDependency] {
