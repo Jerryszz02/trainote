@@ -136,6 +136,8 @@ final class StrengthSet {
   var repetitions: Int
   var durationSeconds: Int = 0
   var isCompleted: Bool
+  var rir: Int?
+  var setRoleRaw: String = "unknown"
   var exercise: WorkoutExercise?
 
   init(
@@ -144,7 +146,9 @@ final class StrengthSet {
     weightKilograms: Double = 0,
     repetitions: Int = 8,
     durationSeconds: Int = 0,
-    isCompleted: Bool = false
+    isCompleted: Bool = false,
+    rir: Int? = nil,
+    setRole: SetRole = .unknown
   ) {
     self.id = id
     self.orderIndex = orderIndex
@@ -152,9 +156,18 @@ final class StrengthSet {
     self.repetitions = repetitions
     self.durationSeconds = durationSeconds
     self.isCompleted = isCompleted
+    self.rir = rir
+    self.setRoleRaw = setRole.rawValue
+  }
+
+  var setRole: SetRole {
+    get { SetRole(rawValue: setRoleRaw) ?? .unknown }
+    set { setRoleRaw = newValue.rawValue }
   }
 
   func isValid(for mode: TrackingMode) -> Bool {
+    guard rir.map({ (0...5).contains($0) }) != false,
+      SetRole(rawValue: setRoleRaw) != nil else { return false }
     switch mode {
     case .strength:
       return weightKilograms.isFinite && (0...10_000).contains(weightKilograms)

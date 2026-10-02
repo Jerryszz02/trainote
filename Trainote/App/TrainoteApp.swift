@@ -6,6 +6,8 @@ import SwiftUI
 @MainActor
 struct TrainoteApp: App {
   @State private var catalog: ExerciseCatalog
+  @State private var healthFoundation: HealthFoundation?
+  @Environment(\.scenePhase) private var scenePhase
   private let containerResult: Result<ModelContainer, Error>
 
   init() {
@@ -25,15 +27,28 @@ struct TrainoteApp: App {
       #endif
       return try PersistenceController.makeContainer(inMemory: inMemory)
     }
+    if case .success(let container) = containerResult {
+      let directory = inMemory
+        ? FileManager.default.temporaryDirectory.appendingPathComponent("health-test-\(UUID().uuidString)")
+        : LocalHealthStorage.directory
+      _healthFoundation = State(initialValue: HealthFoundation(container: container, localDirectory: directory))
+    } else { _healthFoundation = State(initialValue: nil) }
   }
 
   var body: some Scene {
     WindowGroup {
       switch containerResult {
       case .success(let container):
-        AppShell()
-          .environment(catalog)
-          .modelContainer(container)
+        if let healthFoundation {
+          AppShell()
+            .environment(catalog)
+            .environment(healthFoundation)
+            .modelContainer(container)
+            .task { await healthFoundation.resume() }
+            .onChange(of: scenePhase) { _, phase in
+              if phase == .active { Task { await healthFoundation.resume() } }
+            }
+        }
       case .failure(let error):
         PersistenceErrorView(message: error.localizedDescription)
       }
@@ -54,6 +69,13 @@ enum PersistenceController {
     MealTemplateItem.self,
     FoodLogEntry.self,
     NutritionGoal.self,
+    BodyProfile.self,
+    BodyWeightEntry.self,
+    DailyCheckIn.self,
+    MuscleFeedback.self,
+    DietLogCompleteness.self,
+    NutritionGoalRevision.self,
+    AnalysisPreferences.self,
   ]
 
   static func makeContainer(inMemory: Bool = false, storeURL: URL? = nil, allowsSave: Bool = true)
@@ -66,9 +88,9 @@ enum PersistenceController {
       )
     }
 
-    // 1.1 adds only optional/defaulted attributes; SwiftData performs a lightweight migration.
-    // The legacy on-disk fixture is opened by PersistenceUpgradeTests before each release.
-    let schema = Schema(modelTypes, version: Schema.Version(1, 1, 0))
+    // 1.2 adds user facts plus optional/defaulted set fields. Both frozen 1.0 and 1.1
+    // disk fixtures must pass lightweight migration; never fall back to an empty store.
+    let schema = Schema(modelTypes, version: Schema.Version(1, 2, 0))
     let configuration: ModelConfiguration
     if let storeURL {
       configuration = ModelConfiguration(
