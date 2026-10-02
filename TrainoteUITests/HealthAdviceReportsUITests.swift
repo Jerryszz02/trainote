@@ -17,12 +17,17 @@ final class HealthAdviceReportsUITests: XCTestCase {
     let card = app.descendants(matching: .any)["reports.current"].firstMatch
     XCTAssertTrue(card.waitForExistence(timeout: 5))
     XCTAssertTrue(app.staticTexts["基础报告"].exists)
-    XCTAssertTrue(app.staticTexts["reports.localOnly"].exists)
     XCTAssertFalse(app.buttons["health.aiConsent"].exists)
-    app.buttons["查看依据与说明"].tap()
+    capture("真实本地基础报告")
+    let details = app.buttons["查看依据与说明"]
+    reveal(details)
+    details.tap()
     XCTAssertTrue(app.navigationBars["报告依据"].waitForExistence(timeout: 3))
     XCTAssertTrue(app.staticTexts["事实与依据"].exists)
     app.navigationBars.buttons.element(boundBy: 0).tap()
+    let disclosure = app.staticTexts["reports.localOnly"]
+    reveal(disclosure)
+    XCTAssertTrue(disclosure.isHittable)
     let history = app.buttons["reports.history"]
     reveal(history)
     history.tap()
@@ -68,6 +73,7 @@ final class HealthAdviceReportsUITests: XCTestCase {
       .firstMatch
     XCTAssertTrue(rir.label.contains("未记录"))
     XCTAssertTrue(app.tabBars.buttons["训练"].isSelected)
+    capture("按建议新建减量训练")
   }
 
   private func reveal(_ element: XCUIElement) {
@@ -75,5 +81,12 @@ final class HealthAdviceReportsUITests: XCTestCase {
       if element.exists && element.isHittable { return }
       app.swipeUp()
     }
+  }
+
+  private func capture(_ name: String) {
+    let attachment = XCTAttachment(screenshot: app.screenshot())
+    attachment.name = name
+    attachment.lifetime = .keepAlways
+    add(attachment)
   }
 }

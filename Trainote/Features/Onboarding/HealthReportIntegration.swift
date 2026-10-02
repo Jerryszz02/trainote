@@ -75,7 +75,7 @@ final class HealthReportIntegration: AIReportLifecycle {
   var isConfigured: Bool { service?.isRemoteAvailable == true }
   var serverRevocationPending: Bool { service?.revocationPending == true }
   var configurationMessage: String {
-    "AI 报告尚未开放。完成代理配置、设备认证及 DeepSeek API 数据处理条款核验后，才能单独选择启用。目前可查看本地基础报告。"
+    "AI 报告尚未开放，目前可查看本机生成的基础报告；开放后可单独选择启用。"
   }
   var content: AIReportContent? {
     guard let displayedSelection, displayedSelection == (try? selectionIdentity()) else {
