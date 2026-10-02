@@ -11,6 +11,12 @@ final class HealthAdviceReportsUITests: XCTestCase {
   }
 
   func testLocalReportUsesRealFactsAndHistoryRemainsReadOnly() {
+    app.tabBars.buttons["趋势"].tap()
+    app.buttons["trend.continueCurrentMode"].tap()
+    app.buttons["trend.addWeight"].tap()
+    UITestTextInput.replace(app.textFields["trend.weight.kilograms"], with: "70", in: app)
+    app.buttons["trend.weight.save"].tap()
+    app.tabBars.buttons["今日"].tap()
     let reports = app.buttons["today.analysisReports"]
     reveal(reports)
     reports.tap()
@@ -24,6 +30,13 @@ final class HealthAdviceReportsUITests: XCTestCase {
     details.tap()
     XCTAssertTrue(app.navigationBars["报告依据"].waitForExistence(timeout: 3))
     XCTAssertTrue(app.staticTexts["事实与依据"].exists)
+    let weightFact = app.descendants(matching: .any)["reports.fact.weight.representative"]
+      .firstMatch
+    reveal(weightFact)
+    XCTAssertTrue(weightFact.isHittable, "报告应包含刚保存的真实手动体重")
+    XCTAssertTrue(weightFact.label.contains("70kg"))
+    XCTAssertTrue(weightFact.label.contains("手动记录"))
+    capture("报告依据中的真实手动体重")
     app.navigationBars.buttons.element(boundBy: 0).tap()
     let disclosure = app.staticTexts["reports.localOnly"]
     reveal(disclosure)

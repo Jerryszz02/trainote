@@ -136,6 +136,8 @@ private struct HealthReportEvidenceView: View {
             )
             .font(.caption).foregroundStyle(.secondary)
           }
+          .accessibilityElement(children: .combine)
+          .accessibilityIdentifier("reports.fact.\(fact.metric)")
         }
       }
       Section { NavigationLink("完整方法与数据使用") { HealthHelpView() } }
