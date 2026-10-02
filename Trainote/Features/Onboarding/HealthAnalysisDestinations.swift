@@ -11,8 +11,12 @@ struct HealthAnalysisDestinations {
     recovery: { AnyView(PendingAnalysisView(title: "恢复分析", systemImage: "figure.stand")) }
   )
 
-  static func recoveryReady(_ integration: HealthRecoveryIntegration) -> Self {
-    Self(trends: pending.trends, recovery: { AnyView(RecoveryAnalysisDestination(integration: integration)) })
+  static func verifiedModules(
+    trend: HealthTrendIntegration, recovery: HealthRecoveryIntegration
+  ) -> Self {
+    Self(
+      trends: { AnyView(TrendAnalysisDestination(integration: trend)) },
+      recovery: { AnyView(RecoveryAnalysisDestination(integration: recovery)) })
   }
 }
 

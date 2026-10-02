@@ -5,6 +5,9 @@ import SwiftUI
 struct WeeklyReportView: View {
   @Query(sort: \Workout.startedAt, order: .reverse) private var workouts: [Workout]
   @Query(sort: \FoodLogEntry.loggedAt, order: .reverse) private var food: [FoodLogEntry]
+  @Query(sort: \NutritionGoal.updatedAt, order: .reverse) private var goals: [NutritionGoal]
+  @Query(sort: \NutritionGoalRevision.effectiveAt, order: .reverse)
+  private var goalRevisions: [NutritionGoalRevision]
   @State private var date = Date.now
 
   private var report: WeeklySummary { WeeklySummary(date: date, workouts: workouts, food: food) }
@@ -12,7 +15,9 @@ struct WeeklyReportView: View {
     Calendar.current.date(byAdding: .day, value: -1, to: report.interval.end)!
   }
   private var days: [DaySummary] {
-    (0..<7).compactMap { offset in
+    let history = goalRevisions.map(\.value)
+    let legacyCurrent = NutritionGoalHistory.targets(from: goals.first)
+    return (0..<7).compactMap { offset in
       guard
         let day = Calendar.current.date(byAdding: .day, value: offset, to: report.interval.start)
       else { return nil }
@@ -22,6 +27,8 @@ struct WeeklyReportView: View {
       }
       return DaySummary(
         date: day, calories: known.reduce(0) { $0 + $1.calories }, recorded: !known.isEmpty,
+        targetCalories: NutritionGoalHistory.targets(
+          on: day, history: history, legacyCurrent: legacyCurrent)?.calories,
         workouts: workouts.filter {
           $0.status == .completed && Calendar.current.isDate($0.startedAt, inSameDayAs: day)
         }.count)
@@ -83,6 +90,7 @@ struct WeeklyReportView: View {
 
       Section("饮食记录") {
         LabeledContent("有记录的日期", value: "\(report.nutritionDays) 天")
+        LabeledContent("可解析目标的日期", value: "\(days.filter { $0.targetCalories != nil }.count) / 7 天")
         if let calories = report.averageCalories, let protein = report.averageProtein {
           LabeledContent(
             "日均已记录热量", value: "\(calories.formatted(.number.precision(.fractionLength(0)))) kcal")
@@ -101,7 +109,7 @@ struct WeeklyReportView: View {
           Text("这一周尚无已填写营养的饮食记录。")
             .foregroundStyle(.secondary)
         }
-        Text("平均值仅按填写过营养的 \(report.nutritionValueDays) 天计算。漏记日期不按零摄入处理；已记录数值不代表全天实际摄入。")
+        Text("平均值仅按填写过营养的 \(report.nutritionValueDays) 天计算。目标按各日历史显示；漏记日期不按零摄入处理，已记录数值不代表全天实际摄入。")
           .font(.caption).foregroundStyle(.secondary)
         if report.unknownFoodCount > 0 {
           Label("\(report.unknownFoodCount) 条食物未填写营养", systemImage: "info.circle")
@@ -119,6 +127,12 @@ struct WeeklyReportView: View {
                 day.recorded
                   ? "\(day.calories.formatted(.number.precision(.fractionLength(0)))) kcal"
                   : "营养未记录")
+              Text(
+                day.targetCalories.map {
+                  "目标 \($0.formatted(.number.precision(.fractionLength(0)))) kcal"
+                } ?? (goals.isEmpty && goalRevisions.isEmpty ? "未设置目标" : "无历史目标")
+              )
+              .font(.caption).foregroundStyle(.secondary)
               Text("\(day.workouts) 次训练").font(.caption).foregroundStyle(.secondary)
             }
           }
@@ -138,6 +152,7 @@ private struct DaySummary: Identifiable {
   let date: Date
   let calories: Double
   let recorded: Bool
+  let targetCalories: Double?
   let workouts: Int
   var id: Date { date }
 }

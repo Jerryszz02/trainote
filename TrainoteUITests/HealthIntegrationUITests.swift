@@ -183,6 +183,52 @@ final class HealthIntegrationUITests: XCTestCase {
     XCTAssertTrue(app.staticTexts["恢复指数如何计算"].exists)
   }
 
+  func testTrendSuggestionsPreserveManualTargetAndSaveManualWeight() {
+    app.buttons["today.settings"].tap()
+    app.buttons["每日营养目标"].tap()
+    app.buttons["goal.save"].tap()
+    XCTAssertTrue(app.buttons["已保存"].waitForExistence(timeout: 3))
+    app.navigationBars.buttons.element(boundBy: 0).tap()
+    app.buttons["完成"].tap()
+    app.tabBars.buttons["趋势"].tap()
+    XCTAssertTrue(app.buttons["trend.enableSuggestions"].waitForExistence(timeout: 3))
+    app.buttons["trend.enableSuggestions"].tap()
+    XCTAssertTrue(app.buttons["trend.addWeight"].waitForExistence(timeout: 3))
+    let mode = app.buttons["trend.goalMode"]
+    reveal(mode)
+    XCTAssertTrue(mode.label.contains("建议后采用"))
+    app.buttons["trend.addWeight"].tap()
+    let field = app.textFields["trend.weight.kilograms"]
+    field.tap()
+    field.typeText("70")
+    app.buttons["trend.weight.save"].tap()
+    XCTAssertTrue(app.navigationBars["趋势分析"].waitForExistence(timeout: 3))
+    app.swipeDown()
+    XCTAssertTrue(app.otherElements["trend.weightChart"].exists)
+    capture("真实趋势页手动体重")
+    app.tabBars.buttons["今日"].tap()
+    let card = app.descendants(matching: .any)["today.nutrient.calories"].firstMatch
+    reveal(card)
+    XCTAssertTrue(card.label.contains("目标 2,000") || card.label.contains("目标 2000"))
+  }
+
+  func testTrendViewOnlyKeepsManualModeAndOpensExistingGoalEditor() {
+    app.tabBars.buttons["趋势"].tap()
+    app.buttons["trend.continueCurrentMode"].tap()
+    let mode = app.buttons["trend.goalMode"]
+    reveal(mode)
+    XCTAssertTrue(mode.label.contains("手动"))
+    let editor = app.buttons["编辑手动营养目标"]
+    reveal(editor)
+    editor.tap()
+    XCTAssertTrue(app.buttons["goal.save"].waitForExistence(timeout: 3))
+    app.buttons["goal.save"].tap()
+    XCTAssertTrue(app.buttons["已保存"].waitForExistence(timeout: 3))
+    app.buttons["完成"].tap()
+    reveal(mode)
+    XCTAssertTrue(mode.label.contains("手动"))
+  }
+
   private func reveal(_ element: XCUIElement) {
     for _ in 0..<8 {
       if element.isHittable { return }

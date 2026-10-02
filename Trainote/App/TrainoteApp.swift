@@ -9,6 +9,7 @@ struct TrainoteApp: App {
   @State private var healthFoundation: HealthFoundation?
   @State private var healthAccess: HealthFeatureAccess?
   @State private var recoveryIntegration: HealthRecoveryIntegration?
+  @State private var trendIntegration: HealthTrendIntegration?
   @Environment(\.scenePhase) private var scenePhase
   private let containerResult: Result<ModelContainer, Error>
 
@@ -42,10 +43,13 @@ struct TrainoteApp: App {
       _recoveryIntegration = State(initialValue: HealthRecoveryIntegration(
         repository: foundation.repository, healthData: foundation.healthData,
         calibration: RecoveryCalibrationControl(defaults: defaults)))
+      _trendIntegration = State(initialValue: HealthTrendIntegration(
+        repository: foundation.repository, health: foundation.healthData, defaults: defaults))
     } else {
       _healthFoundation = State(initialValue: nil)
       _healthAccess = State(initialValue: nil)
       _recoveryIntegration = State(initialValue: nil)
+      _trendIntegration = State(initialValue: nil)
     }
   }
 
@@ -53,9 +57,9 @@ struct TrainoteApp: App {
     WindowGroup {
       switch containerResult {
       case .success(let container):
-        if let healthFoundation, let healthAccess, let recoveryIntegration {
+        if let healthFoundation, let healthAccess, let recoveryIntegration, let trendIntegration {
           AppShell(
-            analysisDestinations: .recoveryReady(recoveryIntegration),
+            analysisDestinations: .verifiedModules(trend: trendIntegration, recovery: recoveryIntegration),
             recoveryIntegration: recoveryIntegration)
             .environment(catalog)
             .environment(healthFoundation)
@@ -64,12 +68,14 @@ struct TrainoteApp: App {
             .task {
               await healthFoundation.resume()
               recoveryIntegration.reloadToday()
+              trendIntegration.refreshAfterHealthSync()
             }
             .onChange(of: scenePhase) { _, phase in
               if phase == .active {
                 Task {
                   await healthFoundation.resume()
                   recoveryIntegration.reloadToday()
+                  trendIntegration.refreshAfterHealthSync()
                 }
               }
             }

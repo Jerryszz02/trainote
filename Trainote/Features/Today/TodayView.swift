@@ -24,6 +24,8 @@ struct TodayView: View {
 
   @Query(sort: \NutritionGoal.updatedAt, order: .reverse)
   private var goals: [NutritionGoal]
+  @Query(sort: \NutritionGoalRevision.effectiveAt, order: .reverse)
+  private var goalRevisions: [NutritionGoalRevision]
 
   @State private var presentedSheet: TodaySheet?
 
@@ -42,7 +44,11 @@ struct TodayView: View {
   }
 
   private var summary: DailyNutritionSummary {
-    DailyNutritionSummary(entries: todayEntries, goal: goals.first)
+    DailyNutritionSummary(
+      entries: todayEntries,
+      historicalTargets: NutritionGoalHistory.targets(
+        on: currentDate, history: goalRevisions.map(\.value),
+        legacyCurrent: NutritionGoalHistory.targets(from: goals.first)))
   }
 
   var body: some View {
@@ -330,8 +336,10 @@ private struct NutrientProgressCard: View {
         .font(.title2.bold())
         .monospacedDigit()
 
-      ProgressView(value: summary.progress(for: nutrient))
-        .tint(remainingIsNegative ? .orange : .accentColor)
+      if target != nil {
+        ProgressView(value: summary.progress(for: nutrient))
+          .tint(remainingIsNegative ? .orange : .accentColor)
+      }
 
       if let target, let remaining = summary.remaining(for: nutrient) {
         Text(
