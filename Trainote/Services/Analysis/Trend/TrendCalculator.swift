@@ -141,9 +141,6 @@ struct TrendCalculator: TrendCalculating {
     if let latest = history.last, latest.targets != input.currentManualTargets {
       return result(.requiresReview)
     }
-    let analysisHistory = history.filter {
-      $0.calculationVersion == rules.version && $0.reversesRevisionID == nil
-    }
     let current = history.last?.targets ?? input.currentManualTargets
     if let current { try ManualRecordValidation.validate(current) }
     let targetRate = profile.targetWeeklyChangePercent ?? rules.targetRate(direction)
@@ -156,10 +153,9 @@ struct TrendCalculator: TrendCalculating {
       sources: [.manual])
     var reasonIDs = [weightFact.id, priorFact.id, targetFact.id]
     var calories = prior * rules.initialMultiplier(direction)
+    var minimumEnergy = max(ree, prior * rules.minimumPriorFraction)
     let protein = weight * rules.proteinPerKilogram(direction)
-    if let first = analysisHistory.first {
-      // Shared v1 DTO has no historical profile snapshot. Never silently reconstruct it using a changed profile.
-      if profile.updatedAt > first.createdAt { return result(.requiresReview) }
+    if let first = TrendHistory.baseline(in: input, version: rules.version) {
       guard let last = history.last, let current else { return result(.requiresReview) }
       if input.asOf < calendar.adding(days: rules.reviewDays, to: last.effectiveAt) {
         return result(last.reversesRevisionID == nil ? .baselineBuilding : .paused)
@@ -208,18 +204,23 @@ struct TrendCalculator: TrendCalculating {
       calories = current.calories + (difference > 0 ? step : -step)
       // The first unrounded proposal preserves the formula prior as long as its profile is unchanged.
       let initialPrior = first.targets.calories / rules.initialMultiplier(direction)
-      guard calories >= max(ree, initialPrior * rules.minimumPriorFraction) else {
-        return result(.safetyBoundary)
-      }
+      minimumEnergy = max(ree, initialPrior * rules.minimumPriorFraction)
     } else if !history.isEmpty {
+      // updatedAt is the configuration generation boundary. A changed profile gets a new explicitly
+      // adopted initial estimate after seven days; old targets are never reinterpreted as its prior.
+      if TrendHistory.needsBaselineRebuild(input, version: rules.version),
+        input.asOf < calendar.adding(days: rules.reviewDays, to: profile.updatedAt)
+      {
+        return result(.baselineBuilding)
+      }
       // Existing manual revisions have real effective dates: recent edits get their full review period.
       if let last = history.last,
         input.asOf < calendar.adding(days: rules.reviewDays, to: last.effectiveAt)
       {
-        return result(.baselineBuilding)
+        return result(last.reversesRevisionID == nil ? .baselineBuilding : .paused)
       }
     }
-    guard calories >= max(ree, prior * rules.minimumPriorFraction),
+    guard calories >= minimumEnergy,
       let targets = TrendNutrition.targets(
         calories: calories, protein: protein, fatFraction: rules.fatFraction)
     else { return result(.safetyBoundary) }

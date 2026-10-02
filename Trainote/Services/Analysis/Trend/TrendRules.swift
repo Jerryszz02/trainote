@@ -84,6 +84,25 @@ enum TrendNutrition {
 }
 
 enum TrendHistory {
+  static func baseline(in input: AnalysisInput, version: String = TrendRules().version)
+    -> NutritionGoalRevisionValue?
+  {
+    guard let profile = input.profile else { return nil }
+    return ordered(input.goalHistory).first {
+      $0.calculationVersion == version && $0.origin != .manual && $0.reversesRevisionID == nil
+        && $0.createdAt >= profile.updatedAt && !isReversed($0, history: input.goalHistory)
+    }
+  }
+  static func needsBaselineRebuild(_ input: AnalysisInput, version: String = TrendRules().version)
+    -> Bool
+  {
+    guard let profile = input.profile, baseline(in: input, version: version) == nil else {
+      return false
+    }
+    return input.goalHistory.contains {
+      $0.calculationVersion == version && $0.createdAt < profile.updatedAt
+    }
+  }
   static func ordered(_ history: [NutritionGoalRevisionValue]) -> [NutritionGoalRevisionValue] {
     history.sorted {
       if $0.effectiveAt != $1.effectiveAt { return $0.effectiveAt < $1.effectiveAt }

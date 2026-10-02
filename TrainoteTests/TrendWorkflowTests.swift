@@ -9,31 +9,37 @@ final class TrendWorkflowTests: XCTestCase {
     var input = TrendTestData.input(cold: true)
     let proposal = try XCTUnwrap(TrendCalculator().calculate(input).proposal)
     var writes: [NutritionGoalRevisionValue] = []
-    let workflow = TrendGoalWorkflow { revision, expected, latest, preferences in
-      XCTAssertEqual(expected, input.currentManualTargets)
-      XCTAssertNil(latest)
-      XCTAssertNil(preferences)
-      writes.append(revision)
+    let workflow = workflow { request in
+      XCTAssertEqual(request.expectedState.currentGoal?.targets, input.currentManualTargets)
+      XCTAssertNil(request.expectedState.latestRevisionID)
+      writes.append(request.revision)
     }
     XCTAssertThrowsError(
-      try workflow.adopt(proposalID: proposal.id, input: input, automatically: true))
+      try workflow.adopt(
+        proposalID: proposal.id, input: input, expectedState: try token(input), automatically: true)
+    )
     XCTAssertTrue(writes.isEmpty)
-    let revision = try workflow.adopt(proposalID: proposal.id, input: input)
+    let revision = try workflow.adopt(
+      proposalID: proposal.id, input: input, expectedState: try token(input))
     XCTAssertEqual(revision.origin, .suggested)
-    XCTAssertEqual(revision.effectiveAt, TrendTestData.calendar.start(input.asOf))
+    XCTAssertEqual(revision.effectiveAt, input.asOf)
     XCTAssertEqual(writes.count, 1)
     input.goalHistory = [revision]
     input.currentManualTargets = revision.targets
-    XCTAssertEqual(try workflow.adopt(proposalID: proposal.id, input: input), revision)
+    XCTAssertEqual(
+      try workflow.adopt(proposalID: proposal.id, input: input, expectedState: try token(input)),
+      revision)
     XCTAssertEqual(writes.count, 1)
   }
   func testAutomaticExplicitOptInAndDeterministicRevision() throws {
     var input = TrendTestData.input()
     input.preferences.goalMode = .automatic
     let proposal = try XCTUnwrap(TrendCalculator().calculate(input).proposal)
-    let workflow = TrendGoalWorkflow { _, _, _, _ in }
-    let first = try workflow.adopt(proposalID: proposal.id, input: input, automatically: true)
-    let second = try workflow.adopt(proposalID: proposal.id, input: input, automatically: true)
+    let workflow = workflow { _ in }
+    let first = try workflow.adopt(
+      proposalID: proposal.id, input: input, expectedState: try token(input), automatically: true)
+    let second = try workflow.adopt(
+      proposalID: proposal.id, input: input, expectedState: try token(input), automatically: true)
     XCTAssertEqual(first, second)
     XCTAssertEqual(first.origin, .automatic)
   }
@@ -42,35 +48,40 @@ final class TrendWorkflowTests: XCTestCase {
     var input = TrendTestData.input(cold: true)
     input.preferences.goalMode = .automatic
     let proposal = try XCTUnwrap(TrendCalculator().calculate(input).proposal)
-    let workflow = TrendGoalWorkflow { _, _, _, _ in
+    let workflow = workflow { _ in
       XCTFail("Initial goal must be adopted explicitly")
     }
     XCTAssertThrowsError(
-      try workflow.adopt(proposalID: proposal.id, input: input, automatically: true))
+      try workflow.adopt(
+        proposalID: proposal.id, input: input, expectedState: try token(input), automatically: true)
+    )
   }
   func testStaleChangedOrManualInputNeverReachesWriter() throws {
     var input = TrendTestData.input(cold: true)
     let proposal = try XCTUnwrap(TrendCalculator().calculate(input).proposal)
-    let workflow = TrendGoalWorkflow { _, _, _, _ in XCTFail("Must not write a stale proposal") }
+    let workflow = workflow { _ in XCTFail("Must not write a stale proposal") }
     input.weights[0].kilograms += 1
-    XCTAssertThrowsError(try workflow.adopt(proposalID: proposal.id, input: input))
+    XCTAssertThrowsError(
+      try workflow.adopt(proposalID: proposal.id, input: input, expectedState: try token(input)))
     input.preferences.goalMode = .manual
-    XCTAssertThrowsError(try workflow.adopt(proposalID: proposal.id, input: input))
+    XCTAssertThrowsError(
+      try workflow.adopt(proposalID: proposal.id, input: input, expectedState: try token(input)))
   }
   func testWriterFailurePropagatesWithoutSeparateHistoryOrGoalWrites() throws {
     let input = TrendTestData.input(cold: true)
     let before = input
     let proposal = try XCTUnwrap(TrendCalculator().calculate(input).proposal)
     var attempts = 0
-    let workflow = TrendGoalWorkflow { _, _, _, _ in
+    let workflow = workflow { _ in
       attempts += 1
       throw AnalysisFailure.storageFailed
     }
-    XCTAssertThrowsError(try workflow.adopt(proposalID: proposal.id, input: input))
+    XCTAssertThrowsError(
+      try workflow.adopt(proposalID: proposal.id, input: input, expectedState: try token(input)))
     XCTAssertEqual(attempts, 1)
     XCTAssertEqual(input, before)
   }
-  func testUndoRestoresPreviousValuesInNewRevisionAndDisablesAutomaticReapply() throws {
+  func testUndoRestoresPreviousValuesInNewRevisionAndPausesReapplication() throws {
     var input = TrendTestData.input()
     input.preferences.goalMode = .automatic
     let original = input.goalHistory[0]
@@ -83,24 +94,28 @@ final class TrendWorkflowTests: XCTestCase {
     input.goalHistory.append(revision)
     input.currentManualTargets = revision.targets
     var writes = 0
-    let workflow = TrendGoalWorkflow { restored, expected, latest, preferences in
+    let workflow = workflow { request in
       writes += 1
-      XCTAssertEqual(expected, revision.targets)
-      XCTAssertEqual(latest, revision.id)
-      XCTAssertEqual(restored.targets, original.targets)
-      XCTAssertEqual(restored.reversesRevisionID, revision.id)
-      XCTAssertEqual(preferences?.goalMode, .suggested)
-      XCTAssertEqual(
-        preferences?.pausedUntil,
-        TrendTestData.calendar.adding(days: 7, to: TrendTestData.calendar.start(input.asOf)))
+      XCTAssertEqual(request.expectedState.currentGoal?.targets, revision.targets)
+      XCTAssertEqual(request.expectedState.latestRevisionID, revision.id)
+      XCTAssertEqual(request.revision.targets, original.targets)
+      XCTAssertEqual(request.revision.reversesRevisionID, revision.id)
+      XCTAssertNil(request.revision.proposalID)
     }
-    let restored = try workflow.undo(revisionID: revision.id, input: input)
+    input.asOf.addTimeInterval(1)
+    let restored = try workflow.undo(
+      revisionID: revision.id, input: input, expectedState: try token(input))
     XCTAssertEqual(writes, 1)
     input.goalHistory.append(restored)
+    input.currentManualTargets = restored.targets
+    XCTAssertEqual(try TrendCalculator().calculate(input).holdReason, .paused)
     XCTAssertEqual(TrendHistory.ordered(input.goalHistory).last?.id, restored.id)
     XCTAssertThrowsError(
-      try workflow.adopt(proposalID: "new-proposal", input: input, automatically: true))
-    XCTAssertThrowsError(try workflow.undo(revisionID: revision.id, input: input))
+      try workflow.adopt(
+        proposalID: "new-proposal", input: input, expectedState: try token(input),
+        automatically: true))
+    XCTAssertThrowsError(
+      try workflow.undo(revisionID: revision.id, input: input, expectedState: try token(input)))
     XCTAssertEqual(writes, 1)
     XCTAssertEqual(input.goalHistory[0], original)
   }
@@ -176,7 +191,7 @@ final class TrendWorkflowTests: XCTestCase {
     try context.save()
     let model = TrendViewModel(
       repository: repository,
-      atomicGoalWriter: { _, _, _, _ in
+      atomicGoalWriter: { _ in
         throw AnalysisFailure.storageFailed
       }, now: { TrendTestData.now }, timeZone: { TimeZone(secondsFromGMT: 0)! })
     model.reload()
@@ -236,4 +251,28 @@ final class TrendWorkflowTests: XCTestCase {
     XCTAssertEqual(cache.state.samples.count, 1)
     XCTAssertNotEqual(before.input.inputFingerprint, after.input.inputFingerprint)
   }
+  private func token(_ input: AnalysisInput) throws -> GoalRevisionState {
+    let latest = TrendHistory.ordered(input.goalHistory).last
+    return .init(
+      currentGoal: input.currentManualTargets.map {
+        .init(
+          id: AnalysisFixtures.id(2700), targets: $0,
+          updatedAt: latest?.createdAt ?? TrendTestData.date(-60))
+      }, latestRevisionID: latest?.id,
+      historyFingerprint: try AnalysisFingerprint.digest(
+        input.goalHistory.sorted {
+          $0.id.uuidString < $1.id.uuidString
+        }))
+  }
+  private func workflow(_ inspect: @escaping (ApplyGoalRevisionRequest) throws -> Void)
+    -> TrendGoalWorkflow
+  {
+    TrendGoalWorkflow { request in
+      try inspect(request)
+      return .init(
+        state: request.expectedState, appliedRevisionID: request.revision.id,
+        insertedBaselineRevisionID: nil, wasAlreadyApplied: false)
+    }
+  }
+
 }

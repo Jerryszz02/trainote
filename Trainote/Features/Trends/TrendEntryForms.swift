@@ -98,9 +98,12 @@ struct TrendProfileForm: View {
       return
     }
     model.errorMessage = nil
-    model.saveProfile(profile)
-    if model.errorMessage == nil, useSuggested { model.setMode(.suggested) }
-    if model.errorMessage == nil { dismiss() } else { validationMessage = model.errorMessage }
+    if model.saveProfile(profile) {
+      if useSuggested { model.setMode(.suggested) }
+      dismiss()
+    } else {
+      validationMessage = model.errorMessage
+    }
   }
 }
 
@@ -108,6 +111,7 @@ struct TrendWeightForm: View {
   @Environment(\.dismiss) private var dismiss
   let model: TrendViewModel
   let entry: ManualWeightValue?
+  @State private var recordID: UUID
   @State private var date: Date
   @State private var kilograms: String
   @State private var validationMessage: String?
@@ -115,6 +119,7 @@ struct TrendWeightForm: View {
   init(model: TrendViewModel, entry: ManualWeightValue? = nil) {
     self.model = model
     self.entry = entry
+    _recordID = State(initialValue: entry?.id ?? UUID())
     _date = State(initialValue: entry?.measuredAt ?? model.now())
     _kilograms = State(initialValue: entry.map { String(format: "%.1f", $0.kilograms) } ?? "")
   }
@@ -138,8 +143,7 @@ struct TrendWeightForm: View {
               return
             }
             model.errorMessage = nil
-            model.saveWeight(id: entry?.id, date: date, kilograms: value)
-            if model.errorMessage == nil {
+            if model.saveWeight(id: recordID, date: date, kilograms: value) {
               dismiss()
             } else {
               validationMessage = model.errorMessage

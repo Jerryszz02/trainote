@@ -1,19 +1,20 @@
 import Foundation
 import Observation
 
-/// F supplies A's repository/health service and atomic writer. All UI mutations refresh their input.
+/// F supplies A's repository/health service. All target writes use its atomic revision API.
 @MainActor
 @Observable
 final class TrendViewModel {
   private(set) var input: AnalysisInput?
   private(set) var result: TrendResult?
+  private(set) var goalState: GoalRevisionState?
   private(set) var records: ManualHealthRecords = .init()
   var errorMessage: String?
   private(set) var isLoading = false
   let repository: any AnalysisRepository
   let health: (any HealthDataProviding)?
   let calculator: any TrendCalculating
-  let workflow: TrendGoalWorkflow?
+  let workflow: TrendGoalWorkflow
   let now: () -> Date
   let timeZone: () -> TimeZone
 
@@ -26,11 +27,13 @@ final class TrendViewModel {
     self.repository = repository
     self.health = health
     self.calculator = calculator
-    self.workflow = atomicGoalWriter.map { TrendGoalWorkflow(calculator: calculator, write: $0) }
+    self.workflow = TrendGoalWorkflow(
+      calculator: calculator,
+      write: atomicGoalWriter ?? repository.applyGoalRevision)
     self.now = now
     self.timeZone = timeZone
   }
-  var canApplyGoals: Bool { workflow != nil }
+  var canApplyGoals: Bool { goalState != nil && errorMessage == nil }
   var calendar: TrendCalendar { TrendCalendar(identifier: timeZone().identifier)! }
   var today: DailyNutrition? {
     input?.nutrition.first {
@@ -39,27 +42,37 @@ final class TrendViewModel {
   }
   var nextReview: Date? {
     guard let input else { return nil }
-    if let paused = input.preferences.pausedUntil, paused > now() { return paused }
-    guard let last = TrendHistory.ordered(input.goalHistory).last else { return nil }
-    return calendar.adding(days: 7, to: last.effectiveAt)
+    var dates: [Date] = []
+    if let paused = input.preferences.pausedUntil { dates.append(paused) }
+    if let last = TrendHistory.ordered(input.goalHistory).last {
+      dates.append(calendar.adding(days: 7, to: last.effectiveAt))
+    }
+    if TrendHistory.needsBaselineRebuild(input), let profile = input.profile {
+      dates.append(calendar.adding(days: 7, to: profile.updatedAt))
+    }
+    return dates.max()
   }
 
   func reload(allowAutomaticAdoption: Bool = true) {
     errorMessage = nil
     isLoading = true
     defer { isLoading = false }
+    do { try read() } catch {
+      goalState = nil
+      errorMessage = "读取失败，请刷新后重试。"
+      return
+    }
     do {
-      try read()
       if allowAutomaticAdoption, let input, input.preferences.goalMode == .automatic,
         TrendGoalWorkflow.hasAdoptedBaseline(input),
-        let proposal = result?.proposal, let workflow
+        let proposal = result?.proposal, let goalState
       {
-        try workflow.adopt(proposalID: proposal.id, input: input, automatically: true)
-        try read()
+        try workflow.adopt(
+          proposalID: proposal.id, input: input, expectedState: goalState, automatically: true)
+        refreshAfterCommit()
       }
     } catch {
-      // Keep values visible only as stale feedback; no action may use them until a fresh read succeeds.
-      errorMessage = "读取或保存失败，请重试。原有记录和目标不会因这次失败而改变。"
+      errorMessage = "本次目标未能保存，请刷新后重试。"
     }
   }
   private func read() throws {
@@ -77,23 +90,38 @@ final class TrendViewModel {
     let freshInput = try repository.analysisInput(
       asOf: asOf, window: window, timeZone: zone, health: snapshot)
     let freshResult = try calculator.calculate(freshInput)
+    goalState = try repository.goalRevisionState()
     input = freshInput
     result = freshResult
   }
-  private func mutate(_ operation: () throws -> Void) {
+  @discardableResult
+  private func mutate(_ operation: () throws -> Void) -> Bool {
     errorMessage = nil
     do {
       try operation()
-      reload(allowAutomaticAdoption: false)
     } catch {
-      errorMessage = "未能保存，请检查输入并重试；当前目标未被改写。"
+      errorMessage =
+        error is GoalRevisionConflict
+        ? "目标状态已变化或需要复核，请刷新后重新确认。"
+        : "未能完成操作，请检查输入并重试。"
+      return false
+    }
+    refreshAfterCommit()
+    return true
+  }
+  private func refreshAfterCommit() {
+    do { try read() } catch {
+      goalState = nil
+      errorMessage = "已保存，但显示尚未刷新。请刷新页面核对，无需再次保存。"
     }
   }
-  func saveProfile(_ profile: BodyProfileValue) {
+  @discardableResult
+  func saveProfile(_ profile: BodyProfileValue) -> Bool {
     mutate { try repository.saveProfile(profile) }
   }
-  func saveWeight(id: UUID? = nil, date: Date, kilograms: Double) {
-    mutate {
+  @discardableResult
+  func saveWeight(id: UUID? = nil, date: Date, kilograms: Double) -> Bool {
+    return mutate {
       guard date <= now() else { throw AnalysisFailure.invalidInput }
       let old = records.weights.first { $0.id == id }
       try repository.saveWeight(
@@ -156,20 +184,24 @@ final class TrendViewModel {
       try repository.savePreferences(preferences)
     }
   }
-  func adopt(_ proposalID: String) {
-    mutate {
-      guard let workflow else { throw AnalysisFailure.unavailable }
+  @discardableResult
+  func adopt(_ proposalID: String) -> Bool {
+    let expected = goalState
+    return mutate {
+      guard let expected else { throw AnalysisFailure.unavailable }
       try read()
       guard let input else { throw AnalysisFailure.unavailable }
-      try workflow.adopt(proposalID: proposalID, input: input)
+      try workflow.adopt(proposalID: proposalID, input: input, expectedState: expected)
     }
   }
-  func undo(_ revisionID: UUID) {
-    mutate {
-      guard let workflow else { throw AnalysisFailure.unavailable }
+  @discardableResult
+  func undo(_ revisionID: UUID) -> Bool {
+    let expected = goalState
+    return mutate {
+      guard let expected else { throw AnalysisFailure.unavailable }
       try read()
       guard let input else { throw AnalysisFailure.unavailable }
-      try workflow.undo(revisionID: revisionID, input: input)
+      try workflow.undo(revisionID: revisionID, input: input, expectedState: expected)
     }
   }
 }

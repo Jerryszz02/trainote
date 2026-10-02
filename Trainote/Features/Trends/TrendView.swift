@@ -114,6 +114,10 @@ struct TrendView: View {
       if let hold = model.result?.holdReason {
         Text(hold.trendMessage).foregroundStyle(.secondary).accessibilityIdentifier("trend.hold")
       }
+      if let input = model.input, TrendHistory.needsBaselineRebuild(input) {
+        Text("身体资料已更新。观察满 7 天后，请核对并采用新的初始目标，重新建立基线。")
+          .font(.footnote).foregroundStyle(.secondary)
+      }
     }
   }
   private var weightChart: some View {
@@ -235,7 +239,12 @@ struct TrendView: View {
             }
           }
         }
-        Button("采用建议") { model.adopt(proposal.id) }
+        let rebuilding = model.input.map { TrendHistory.needsBaselineRebuild($0) } ?? false
+        if rebuilding {
+          Text("这是新配置的初始估计，需要你确认；采用后至少观察 7 天再调整。")
+            .font(.footnote).foregroundStyle(.secondary)
+        }
+        Button(rebuilding ? "采用新的初始目标" : "采用建议") { model.adopt(proposal.id) }
           .disabled(!model.canApplyGoals).accessibilityIdentifier("trend.adopt")
         Button("暂不采用，7 天后复核") {
           model.pause(until: model.calendar.adding(days: 7, to: model.now()))
@@ -267,11 +276,14 @@ struct TrendView: View {
           targetRows(revision.targets, prefix: "")
           if TrendHistory.isReversed(revision, history: model.input?.goalHistory ?? []) {
             Text("已撤销").font(.caption).foregroundStyle(.secondary)
-          } else if revision.id == history.first?.id && revision.origin != .manual
-            && revision.reversesRevisionID == nil
-          {
-            Button("撤销并切回建议模式") { model.undo(revision.id) }
+          } else if let input = model.input, TrendGoalWorkflow.canUndo(revision.id, input: input) {
+            Button("撤销并暂停 7 天") { model.undo(revision.id) }
               .disabled(!model.canApplyGoals).accessibilityIdentifier("trend.undo")
+            Text("恢复上次目标，暂停后仍按原设置复核。")
+              .font(.caption).foregroundStyle(.secondary)
+          } else if history.count == 1 && revision.origin != .manual {
+            Text("这是首个目标，没有可恢复的旧值。可在手动目标中修改。")
+              .font(.caption).foregroundStyle(.secondary)
           }
         }
       }

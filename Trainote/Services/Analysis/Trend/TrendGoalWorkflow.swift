@@ -1,16 +1,10 @@
 import Foundation
 
-/// Orchestrates shared values. The injected writer MUST atomically compare expected state, preserve
-/// the first legacy baseline, append an immutable revision, and project NutritionGoal/preferences.
-/// A owns that transaction; there is deliberately no append-then-save fallback here.
+/// Revalidates proposals and invokes A's single atomic target/history transaction.
+/// No preference save or append-then-project fallback is performed here.
 @MainActor
 struct TrendGoalWorkflow {
-  typealias AtomicWriter = (
-    _ revision: NutritionGoalRevisionValue,
-    _ expectedTargets: NutritionTargets?,
-    _ expectedLatestRevisionID: UUID?,
-    _ preferences: AnalysisPreferencesValue?
-  ) throws -> Void
+  typealias AtomicWriter = (ApplyGoalRevisionRequest) throws -> GoalRevisionApplicationResult
   let calculator: any TrendCalculating
   let write: AtomicWriter
 
@@ -18,73 +12,83 @@ struct TrendGoalWorkflow {
     self.calculator = calculator
     self.write = write
   }
+  init(repository: any AnalysisRepository, calculator: any TrendCalculating = TrendCalculator()) {
+    self.init(calculator: calculator, write: repository.applyGoalRevision)
+  }
 
   @discardableResult
-  func adopt(proposalID: String, input: AnalysisInput, automatically: Bool = false) throws
-    -> NutritionGoalRevisionValue
-  {
+  func adopt(
+    proposalID: String, input: AnalysisInput, expectedState: GoalRevisionState,
+    automatically: Bool = false
+  ) throws -> NutritionGoalRevisionValue {
     if let existing = input.goalHistory.first(where: { $0.proposalID == proposalID }) {
       guard !TrendHistory.isReversed(existing, history: input.goalHistory) else {
         throw AnalysisFailure.staleSnapshot
       }
       return existing
     }
+    try validate(input, against: expectedState)
     guard input.preferences.goalMode != .manual,
       !automatically || (input.preferences.goalMode == .automatic && Self.hasAdoptedBaseline(input))
-    else {
-      throw AnalysisFailure.invalidInput
-    }
+    else { throw AnalysisFailure.invalidInput }
     guard let proposal = try calculator.calculate(input).proposal, proposal.id == proposalID,
       proposal.previousTargets == input.currentManualTargets
     else { throw AnalysisFailure.staleSnapshot }
     let revision = NutritionGoalRevisionValue(
-      id: Self.revisionID(proposal.id), effectiveAt: proposal.effectiveAt,
-      targets: proposal.targets,
+      id: Self.revisionID(proposal.id), effectiveAt: input.asOf, targets: proposal.targets,
       origin: automatically ? .automatic : .suggested, proposalID: proposal.id,
-      calculationVersion: proposal.calculationVersion,
-      createdAt: max(
-        input.asOf,
-        TrendHistory.ordered(input.goalHistory).last?.createdAt
-          .addingTimeInterval(0.001) ?? input.asOf))
-    try write(
-      revision, input.currentManualTargets,
-      TrendHistory.ordered(input.goalHistory).last?.id, nil)
+      calculationVersion: proposal.calculationVersion, createdAt: input.asOf)
+    _ = try write(.init(revision: revision, expectedState: expectedState))
     return revision
   }
 
   static func hasAdoptedBaseline(_ input: AnalysisInput) -> Bool {
-    input.goalHistory.contains {
-      $0.calculationVersion == TrendRules().version && $0.reversesRevisionID == nil
-    }
+    TrendHistory.baseline(in: input) != nil
+  }
+
+  static func canUndo(_ revisionID: UUID, input: AnalysisInput) -> Bool {
+    let history = TrendHistory.ordered(input.goalHistory)
+    guard let latest = history.last else { return false }
+    return history.count >= 2 && latest.id == revisionID && latest.origin != .manual
+      && latest.reversesRevisionID == nil
+      && !TrendHistory.isReversed(latest, history: history)
   }
 
   @discardableResult
-  func undo(revisionID: UUID, input: AnalysisInput) throws -> NutritionGoalRevisionValue {
+  func undo(revisionID: UUID, input: AnalysisInput, expectedState: GoalRevisionState) throws
+    -> NutritionGoalRevisionValue
+  {
+    try validate(input, against: expectedState)
     let history = TrendHistory.ordered(input.goalHistory)
-    guard let latest = history.last, latest.id == revisionID, latest.origin != .manual,
-      latest.reversesRevisionID == nil, history.count >= 2,
-      !TrendHistory.isReversed(latest, history: history),
-      latest.targets == input.currentManualTargets,
-      let calendar = TrendCalendar(identifier: input.calendarTimeZone)
-    else {
-      throw AnalysisFailure.staleSnapshot
-    }
-    let id = "trend-undo-\(latest.id.uuidString)"
+    guard Self.canUndo(revisionID, input: input), let latest = history.last,
+      latest.targets == input.currentManualTargets
+    else { throw AnalysisFailure.staleSnapshot }
     let revision = NutritionGoalRevisionValue(
-      id: Self.revisionID(id), effectiveAt: calendar.start(input.asOf),
-      targets: history[history.count - 2].targets, origin: .manual, proposalID: id,
+      id: Self.revisionID("trend-undo-\(latest.id.uuidString)"), effectiveAt: input.asOf,
+      targets: history[history.count - 2].targets, origin: .manual,
       calculationVersion: latest.calculationVersion, reversesRevisionID: latest.id,
-      createdAt: max(input.asOf, latest.createdAt.addingTimeInterval(0.001)))
-    var preferences = input.preferences
-    // Undo explicitly returns to user adoption, preventing changed fingerprints from reapplying it.
-    preferences.goalMode = .suggested
-    preferences.pausedUntil = calendar.adding(days: 7, to: calendar.start(input.asOf))
-    try write(revision, input.currentManualTargets, latest.id, preferences)
+      createdAt: input.asOf)
+    // The durable reversal itself pauses review for seven days. No separate preference write can fail
+    // after target restoration, and the original proposal stays in history and can never be reapplied.
+    _ = try write(.init(revision: revision, expectedState: expectedState))
     return revision
   }
 
+  private func validate(_ input: AnalysisInput, against state: GoalRevisionState) throws {
+    guard state.currentGoal?.targets == input.currentManualTargets,
+      state.latestRevisionID == TrendHistory.ordered(input.goalHistory).last?.id,
+      state.historyFingerprint
+        == (try AnalysisFingerprint.digest(
+          input.goalHistory.sorted {
+            $0.id.uuidString < $1.id.uuidString
+          }))
+    else { throw GoalRevisionConflict.staleState }
+    if let current = state.currentGoal, input.asOf <= current.updatedAt {
+      throw GoalRevisionConflict.invalidChronology
+    }
+  }
+
   private static func revisionID(_ text: String) -> UUID {
-    // Stable proposal IDs contain SHA-256; undo IDs contain UUIDs. Hash both into a stable UUID.
     let digest = try! AnalysisFingerprint.digest(text)
     let bytes = Array(digest.prefix(32))
     let value =

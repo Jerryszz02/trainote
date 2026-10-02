@@ -187,7 +187,7 @@ final class TrendCalculatorTests: XCTestCase {
     XCTAssertEqual(try calculator.calculate(input).holdReason, .baselineBuilding)
     input = TrendTestData.input()
     input.profile?.updatedAt = TrendTestData.date(-1)
-    XCTAssertEqual(try calculator.calculate(input).holdReason, .requiresReview)
+    XCTAssertEqual(try calculator.calculate(input).holdReason, .baselineBuilding)
   }
   func testSafetyAndMissingInputsHaveExplicitHolds() throws {
     var input = TrendTestData.input(cold: true)
@@ -337,5 +337,24 @@ final class TrendCalculatorTests: XCTestCase {
     let difference = try XCTUnwrap(
       result.facts.first { $0.metric == "diet.targetDifferencePercent" }?.value)
     XCTAssertEqual(difference, (2355.0 / 2350 - 1) * 100, accuracy: 1e-8)
+  }
+
+  func testAdaptiveFloorRetainsConfigurationInitialPriorAsWeightChanges() throws {
+    var input = TrendTestData.input()
+    input.profile?.goalDirection = .maintain
+    input.goalHistory = [2638.0, 2538, 2438, 2338, 2238].enumerated().map { index, energy in
+      .init(
+        id: AnalysisFixtures.id(2900 + index), effectiveAt: TrendTestData.date(-48 + index * 7),
+        targets: TrendTestData.targets(energy), origin: .suggested,
+        proposalID: "floor-fixture-\(index)",
+        calculationVersion: TrendRules().version, createdAt: TrendTestData.date(-48 + index * 7))
+    }
+    input.currentManualTargets = input.goalHistory.last?.targets
+    input.weights = (-21...0).map { TrendTestData.weight($0, value: 73 + Double($0 + 21) * 0.02) }
+    for index in input.nutrition.indices { input.nutrition[index].totals.calories = 2238 }
+    let result = try calculator.calculate(input)
+    XCTAssertEqual(try XCTUnwrap(result.proposal).targets.calories, 2138)
+    XCTAssertEqual(2638 * TrendRules().minimumPriorFraction, 2110.4, accuracy: 1e-8)
+    XCTAssertGreaterThan(try XCTUnwrap(result.weeklyChangePercent), 0.15)
   }
 }
