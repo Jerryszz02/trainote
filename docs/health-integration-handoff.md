@@ -1,17 +1,18 @@
 # Health integration (task F)
 
 2026-10-03：B/C/E 真实生产装配已进入 PR #9，分支 `agent/health-integration`，工作树 `392a/trainote`。
-本任务只交付可审阅 PR；不自行合并默认分支、发布、部署或上传真实健康数据。E 日统计窗口阻塞已通过定向单元及真实 UI；A 撤回持久化固定补丁已纳入；公共输入 helper 和完整趋势采用/撤销 UI 已定向通过，最终完整回归与当前 CI 仍待收口，不能声明最终验收完成。
+本任务交付可审阅 PR，由主协调统一审阅和合并。包含 E 日统计窗口、A 持久撤回及真实报告服务重启回归的固定代码 `405d2f4` 已通过全部 268 项单元与 31 项 UI，零失败、零跳过；随后 B 的显示取整补丁及新增 +240 UI 断言也已定向通过。最新提交的 CI 以 [PR #9 检查](https://github.com/Jerryszz02/trainote/pull/9/checks) 为准；真机、科学有效性和发布验收仍未完成。
 
 ## 固定依赖与工程
 
-按主协调指定的准确提交普通合并，未复制算法或另建共享 DTO：
+按主协调指定的准确提交合入，未复制算法或另建共享 DTO。除表内单独注明的 B 显示补丁外，依赖均普通合并：
 
 | 依赖 | 已消费固定提交 | 当前用途 |
 | --- | --- | --- |
 | A/D 基础 | `967fa535`、`28500cf`、`59766ea` | schema 1.2、原子目标写入、备份 Date 精度 |
 | C | `2d2703ef28033d952d0d61a3b950003afe5e97f2` | 真实恢复服务、审核映射、体感/校准和恢复页 |
 | B | `27a026f88f1e6d21158313af6d1fb7e619ad82e0` | 趋势计算、目标采用/撤销、历史日目标和趋势页 |
+| B 显示精度 | `94b502f21c7dd3a9e86709abd9b2e96998002ba5`，按主协调明确要求仅 cherry-pick 为 `92b017e` | 调整量使用两个展示目标相减；内部计算和保存精度不变 |
 | A 持久撤回 | `149bbdb0a3f67f19d56383ea68b3d0654aef65fc`（含 `a343be8`） | 每 scope 独立日志覆盖旧主状态，新显式 grant 原子确认；默认 init/协议兼容 |
 | A 推荐快照 | `d4ee483a5ff355e94e813b9ff760cb6333295772` | 一次求值收集推荐 facts 与候选；最终报告指纹包含上下文 |
 | E | `a36d640ee4ba4b3fe375e477ec08c109ebac9fa2` | 真实报告缓存、最小化、客户端校验及撤回生命周期 |
@@ -63,6 +64,10 @@ E `415db319` 已普通合入 `405d2f4`，没有修改生产报告逻辑。测试
 
 环境：Xcode 26.6 / iOS 26.5；专用模拟器 `B4FF3837-B382-4AD5-A24A-FEAC05A0ECAB`，DerivedData `/tmp/trainote-health-integration-derived`。其他工作树、服务和模拟器未操作。
 
+- **完整运行**：`405d2f4` 的全部 268 单元、31 UI 通过，07:24 完成；`/tmp/trainote-health-integration-full-final.xcresult` 汇总为 299 passed、0 failed、0 skipped。命令没有 `only-testing` 或排除项，完整覆盖 E 真实服务重启撤回、建议采用、真实报告、D 场景拆卸、体感、目标历史、原训练/饮食/备份及趋势采用/撤销。
+- **后续显示修复**：主协调从截图发现 2240 与 2000 的目标显示配上 +242 原始差值；B `94b502f` 统一显示取整后，现有 `TrendAdoptionUITests` 增加精确“热量调整 +240 kcal”可见断言，同一真实采用/撤销路径再次通过。证据 `/tmp/trainote-health-integration-displayed-delta.xcresult`；内部计算与保存值未改，未无故重复整套本地回归。
+- **主协调独立验收**：在与 `13619fc` tree 完全相同的接受树上，三个旧 CI 转场路径和趋势采用/撤销共 4/4 UI 通过，产物 `/tmp/trainote-health-acceptance-final-ui-13619fc.xcresult`；E `415db319` 真实服务撤回回归另独立 1/1 通过。该证据与 F 自身完整运行分开记录。
+- 当前提交的 CI 结果见 PR 检查；服务端 65 项测试和 synthetic-offline demo、规划链接审计、1,324 条动作记录方式审计、变更 Swift lint 与 diff 空白检查已通过。下列保留历史失败及修复定位，不将分批结果相加替代完整运行。
 - 初始骨架 94 单元、原子目标接入后 113 单元、C 真实装配后 145 单元分别通过；这些是历史阶段结果，不当作最终 head 全量回归。
 - 公共 UI 输入修复 `3a093ed7c3b4f421fdb824d88e0d592c577063ff` 仅改两个原有测试文件。中心点击、等待键盘、全选替换、数值零/占位语义和回读验证，保留业务断言。取消编辑后重新打开原训练核对名称。四条原失败路径全部通过：`/tmp/trainote-health-integration-ui-input-final.xcresult`。
 - 采用修复 `491a991` 的 8 项真实仓库/C 集成测试全部通过，含同 ID 修改体感/睡眠/轻微酸痛拒绝、仅前进 2 秒成功。`/tmp/trainote-health-integration-report-boundary.xcresult` 同时记录了 4 项报告边界失败，不是整次成功。
@@ -74,8 +79,7 @@ E `415db319` 已普通合入 `405d2f4`，没有修改生产报告逻辑。测试
 - 公共 helper `7dd83902594c00d524425f7097d302ff16fbbe9b`：`/tmp/trainote-health-integration-ui-helper-adoption-final.xcresult` 的双次搜索、固定餐、手动目标、真实 70 kg 报告 UI 通过；该轮趋势 UI 滚动断言失败，未称整轮成功。`/tmp/trainote-health-integration-consent-and-adoption.xcresult` 再验分量→最近记录→周回顾通过，且包含 A/E 的全体 267 单元通过，趋势采用/撤销 UI 同轮通过，整个运行成功。该测试以 DEBUG 且内存库中的旧版目标 fixture 开始，身体资料与体重均通过真实表单录入，验证 2000→2240→撤销恢复 2000、七日后复核、原建议模式和首页读回；不预造 proposal 或生成 revision。源码提交 `6926fb4`，工程登记 `e0ef426`。
 - F 的 `c97e4f7` 只同步设置/体感表单转场和动态 Form 结果行，业务断言完整保留；三项定向 UI 全部通过，证据 `/tmp/trainote-health-integration-settings-transitions.xcresult`。主协调另独立确认 `7dd8390` 的双次搜索、分量/周回顾和旧目标编辑三项通过，证据 `/tmp/trainote-health-acceptance-input-7dd8390.xcresult`。
 - 已查看趋势撤销后的目标/模式截图与真实报告依据截图：恢复为 2000 kcal、原建议模式保留，报告读回表单保存的 70 kg 并标明手动来源；缺失指标仍为未知。
-- 当前代码固定点 `405d2f4` 已启动无排除项的全体单元与 UI，产物 `/tmp/trainote-health-integration-full-final.xcresult`；结果未完成前不计为通过。
-- 原 `0ac8091` CI `37071374776` 因 30 分钟作业上限取消，另有已定位的旧报告/helper 及 F 表单转场等待失败。当前修复提交须重新完整跑 UI/CI，不能把定向绿色替代当前 head 完整通过。
+- 原 `0ac8091` CI `37071374776` 因 30 分钟作业上限取消，另有旧报告/helper 及 F 表单转场等待失败；这些路径现已包含在本地完整成功运行。旧 CI 不能作为当前 head 的 CI 通过证据。
 
 ## 真机及发布剩余条件
 

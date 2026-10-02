@@ -169,25 +169,25 @@ CI 命令沿用仓库 iOS 工作流，实施时先枚举实际 Simulator，使�
 
 ## 实施与 PR 快照
 
-2026-10-03 07:06（Asia/Shanghai）通过 GitHub PR API 核对；后续状态以相应 PR 的当前 head 为准。
+2026-10-03 07:28（Asia/Shanghai）通过 GitHub PR API 核对；后续状态以相应 PR 的当前 head 为准。
 
 | 工作流 | PR / 当时状态 | F 已消费或核实的固定点 |
 | --- | --- | --- |
 | 规划 | [#3](https://github.com/Jerryszz02/trainote/pull/3) 已合并 | 2026-10-03 02:56 合并，实施授权与分工已执行 |
 | A | [#4](https://github.com/Jerryszz02/trainote/pull/4) 开放 | `28500cf`、精确备份日期 `59766ea`、推荐快照契约 `d4ee483a5ff355e94e813b9ff760cb6333295772` 已纳入；撤回持久化 `149bbdb0a3f67f19d56383ea68b3d0654aef65fc` 已获后续授权并纳入 |
-| B | [#6](https://github.com/Jerryszz02/trainote/pull/6) 开放 | `27a026f88f1e6d21158313af6d1fb7e619ad82e0` 已普通合并，真实趋势页/目标历史已装配 |
+| B | [#6](https://github.com/Jerryszz02/trainote/pull/6) 开放 | `27a026f88f1e6d21158313af6d1fb7e619ad82e0` 已普通合并；主协调另明确指定仅 cherry-pick 显示精度 `94b502f` 为 `92b017e`，+240 实际 UI 已验证 |
 | C | [#8](https://github.com/Jerryszz02/trainote/pull/8) 开放 | `2d2703ef28033d952d0d61a3b950003afe5e97f2` 已普通合并，真实恢复页/反馈/RIR 已装配 |
 | D | [#5](https://github.com/Jerryszz02/trainote/pull/5)、[#10](https://github.com/Jerryszz02/trainote/pull/10) 已合并 | 04:27 / 06:04 合并；F 纳入 `a363195d480d1412d496336b674efc7c09dafaa8`，原 SceneKit 拆卸崩溃路径通过 |
 | E | [#7](https://github.com/Jerryszz02/trainote/pull/7) 开放 | 日桶边界 `52fbb321` 已通过 F 定向回归；真实服务重启撤回测试 `415db319170247189bc9b8a9d270693ab38f33f5` 已获批准并普通合入 `405d2f4` |
-| F | [#9](https://github.com/Jerryszz02/trainote/pull/9) 开放、ready | 五 Tab、历史目标适配、真实训练建议/报告生命周期、隐私帮助及联合验收；尚未宣称最终全通过 |
+| F | [#9](https://github.com/Jerryszz02/trainote/pull/9) 开放、ready | 五 Tab、历史目标适配、真实训练建议/报告生命周期、隐私帮助；完整本地 268 单元/31 UI 及后续显示修复定向通过，当前 CI 见 PR |
 
 上表的消费提交与各模块 PR 当前 head 可以不同：公共测试辅助修复会分别纳入各分支，不能未经协调直接合并更新后的整个分支。完整 SHA、测试产物与后续结果见 [F 集成交接](../health-integration-handoff.md)。
 
 ## 当前验证与仍需完成
 
-- F 已通过包含 A 持久撤回修复的全部 267 项单元，以及真实趋势目标 2000→2240→撤销恢复 2000、分量→最近记录→周回顾 UI。公共 helper `7dd8390`、设置/体感转场 `c97e4f7` 均已定向通过；固定代码 `405d2f4` 正跑无排除项完整回归。不把分批历史结果相加当作最终 head 全量通过。
+- F 固定代码 `405d2f4` 已完成无排除项完整回归：268 单元、31 UI，299 passed、0 failed、0 skipped。包含真实目标 2000→2240→撤销恢复 2000、分量/周回顾、公共 helper `7dd8390` 和设置/体感转场 `c97e4f7`。后续 B 显示取整补丁已通过含 +240 断言的同一实际趋势 UI，最新 CI 以 PR 当前检查为准。
 - E `52fbb321` 的真实 B 日桶边界已通过 F 的 9 项联合单元和真实基础报告→依据→只读历史 UI；补充 UI 已验证实际保存的 70 kg 与手动来源。旧失败产物及后续替代证据保留在交接文档。
 - 代理已运行 65 项 Node 测试和 synthetic-offline demo，没有真实 DeepSeek 请求。原创 3D 资产许可已记录；D 独立组件与 F 实际页证据分别保留。
-- A 对撤回写盘失败后重启读取旧 granted 的路径已提供修复，固定基础 `149bbdb0` 包含 `a343be8`；F 普通合入 `7f84015`、工程登记 `35ec339`，已通过上述全部单元。E `415db319` 的真实报告服务重启回归已纳入本次最终运行；F 继续使用共享日志，不另造持久标记。
+- A 对撤回写盘失败后重启读取旧 granted 的路径已提供修复，固定基础 `149bbdb0` 包含 `a343be8`；F 普通合入 `7f84015`、工程登记 `35ec339`。E `415db319` 的真实报告服务重启回归与 A 修复均通过上述完整运行；F 继续使用共享日志，不另造持久标记。
 - 真机 HealthKit/撤回、最低 iOS 17、真实 VoiceOver/设备性能、签名 App Attest、专业审查和前瞻试用仍未完成。供应商条款、预算、域名/托管、真实合成请求和正式部署/发布也未完成。
 - 主对话拥有统一审阅、当前 head CI 与合并协调。F 不合并默认分支、不部署、不发送真实健康数据、不清理其他任务资源。工程交付、科学有效性、真实服务与发布逐项报告。
