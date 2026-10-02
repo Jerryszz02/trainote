@@ -146,4 +146,21 @@ final class HealthFeatureAccessTests: XCTestCase {
     XCTAssertFalse(reopened.record(for: .aiReports)!.isGranted)
     XCTAssertTrue(reopened.record(for: .healthData)!.isGranted)
   }
+
+  func testForegroundRetryClearsFailureOnlyAfterClosingBothSidesAgain() async throws {
+    let consent = try LocalConsentStore(url: directory.appendingPathComponent("consent.json"))
+    let reports = TestReportLifecycle()
+    let access = HealthFeatureAccess(consent: consent, health: nil, reports: reports) { _ in }
+    await access.enableAI()
+    reports.revokeFails = true
+    await access.revokeAI()
+    XCTAssertTrue(access.aiRevocationNeedsRetry)
+    reports.revokeFails = false
+    await access.resumePendingRevocation()
+    XCTAssertEqual(reports.revocations, 2)
+    XCTAssertFalse(access.aiRevocationNeedsRetry)
+    XCTAssertNil(access.errorMessage)
+    let reopened = try LocalConsentStore(url: directory.appendingPathComponent("consent.json"))
+    XCTAssertFalse(reopened.record(for: .aiReports)!.isGranted)
+  }
 }

@@ -160,8 +160,17 @@ final class HealthFeatureAccess {
   }
 
   func resumePendingRevocation() async {
+    let retryingLocalAndServer = aiRevocationNeedsRetry
     do {
-      try await reports.resumePendingRevocation()
+      if retryingLocalAndServer {
+        // An earlier failure may include the local consent write. Re-run the complete
+        // close operation before clearing that flag, even when the server marker is gone.
+        try await reports.closeAI(at: .now, consent: consent)
+      } else {
+        try await reports.resumePendingRevocation()
+      }
+      aiRevocationNeedsRetry = reports.serverRevocationPending
+      if retryingLocalAndServer && !aiRevocationNeedsRetry { errorMessage = nil }
     } catch {
       aiRevocationNeedsRetry = true
       errorMessage = "AI 撤回尚未完成，已停止后续发送。请在设置中重试撤回。"

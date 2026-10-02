@@ -1,5 +1,6 @@
 import Foundation
 import Observation
+import SwiftData
 
 /// ReportSnapshotBuilder calls this synchronously on its main actor, after its fresh read.
 /// Keeping the bridge alive does not freeze the selected template at app startup.
@@ -38,6 +39,8 @@ final class HealthReportIntegration: AIReportLifecycle {
   private var displayedSelection: String?
   private var generation = UUID()
   private var historyRevision = 0
+  private var lastRequestedType: ReportType?
+  @ObservationIgnored private var saveObserver: NSObjectProtocol?
 
   init(
     foundation: HealthFoundation, trend: any TrendCalculating, recovery: RecoveryService?,
@@ -57,6 +60,16 @@ final class HealthReportIntegration: AIReportLifecycle {
     } else {
       service = nil
     }
+    saveObserver = NotificationCenter.default.addObserver(
+      forName: ModelContext.didSave, object: nil, queue: .main
+    ) { [weak self] _ in
+      MainActor.assumeIsolated { self?.cancelPendingRequests() }
+    }
+    advice.onSelectionChange = { [weak self] in self?.cancelPendingRequests() }
+  }
+
+  deinit {
+    if let saveObserver { NotificationCenter.default.removeObserver(saveObserver) }
   }
 
   var isConfigured: Bool { service?.isRemoteAvailable == true }
@@ -78,6 +91,7 @@ final class HealthReportIntegration: AIReportLifecycle {
 
   /// A new explicit refresh fixes one evaluation time; SwiftUI recomputation never changes it.
   func refresh(type: ReportType, asOf: Date = .now, timeZone: TimeZone = .current) async {
+    lastRequestedType = type
     if isRefreshing { service?.cancelActive() }
     isRefreshing = true
     errorMessage = nil
@@ -119,6 +133,13 @@ final class HealthReportIntegration: AIReportLifecycle {
         ? "AI 撤回尚未完成，请在设置中重试。训练、饮食和本地分析仍可使用。"
         : "记录或模板已变化，或暂时无法读取。请刷新报告后重试。"
     }
+  }
+
+  /// Refresh an already requested basic report after foreground health synchronization.
+  /// A configured remote service still requires the report page's explicit request path.
+  func refreshLocalAfterHealthSync() async {
+    guard let lastRequestedType else { return }
+    if isConfigured { cancelPendingRequests() } else { await refresh(type: lastRequestedType) }
   }
 
   /// Local fallback uses current repository/calculators and is never handed to a transport.

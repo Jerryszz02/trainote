@@ -93,6 +93,19 @@ final class HealthReportIntegrationTests: XCTestCase {
     XCTAssertNotEqual(try XCTUnwrap(reports.content).input.inputFingerprint, renamed)
   }
 
+  func testSavingManualDataInvalidatesTheCurrentCardWithoutDeletingHistory() async throws {
+    let (_, foundation, _, reports, _) = try assembly()
+    await reports.refresh(type: .today, asOf: AnalysisFixtures.asOf, timeZone: .gmt)
+    XCTAssertNotNil(reports.content)
+    try foundation.repository.saveWeight(
+      .init(
+        id: UUID(), measuredAt: AnalysisFixtures.asOf, kilograms: 70,
+        timeZoneIdentifier: TimeZone.gmt.identifier, createdAt: AnalysisFixtures.asOf,
+        updatedAt: AnalysisFixtures.asOf))
+    XCTAssertNil(reports.content)
+    XCTAssertTrue(reports.history.isEmpty)
+  }
+
   func testRealLifecycleCloseDisconnectAndDeletePreserveManualRecords() async throws {
     let (_, foundation, _, reports, access) = try assembly()
     try foundation.repository.saveWeight(

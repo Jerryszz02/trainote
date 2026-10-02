@@ -16,10 +16,22 @@ final class TrainingAdviceController {
   private(set) var routines: [Routine] = []
   private(set) var evaluation: TrainingRecommendationEvaluation?
   private(set) var errorMessage: String?
-  var selectedRoutineID: UUID? { didSet { evaluation = nil } }
-  var alternativeRoutineIDs: Set<UUID> = [] { didSet { evaluation = nil } }
+  @ObservationIgnored var onSelectionChange: (() -> Void)?
+  var selectedRoutineID: UUID? {
+    didSet { if selectedRoutineID != oldValue { selectionChanged() } }
+  }
+  var alternativeRoutineIDs: Set<UUID> = [] {
+    didSet { if alternativeRoutineIDs != oldValue { selectionChanged() } }
+  }
   /// nil means the user has not supplied a schedule; [] explicitly means no available day.
-  var availableWeekdays: [Int]? { didSet { evaluation = nil } }
+  var availableWeekdays: [Int]? {
+    didSet { if availableWeekdays != oldValue { selectionChanged() } }
+  }
+
+  private func selectionChanged() {
+    evaluation = nil
+    onSelectionChange?()
+  }
 
   init(
     repository: any AnalysisRepository, healthData: (any HealthDataProviding)?,

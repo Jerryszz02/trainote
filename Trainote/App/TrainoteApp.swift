@@ -93,6 +93,7 @@ struct TrainoteApp: App {
             recoveryIntegration.reloadToday()
             trendIntegration.refreshAfterHealthSync()
             trainingAdvice.refresh()
+            await reportIntegration.refreshLocalAfterHealthSync()
           }
           .onChange(of: scenePhase) { _, phase in
             if phase == .active {
@@ -102,6 +103,7 @@ struct TrainoteApp: App {
                 recoveryIntegration.reloadToday()
                 trendIntegration.refreshAfterHealthSync()
                 trainingAdvice.refresh()
+                await reportIntegration.refreshLocalAfterHealthSync()
               }
             }
           }
