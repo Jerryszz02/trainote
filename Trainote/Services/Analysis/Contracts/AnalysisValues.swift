@@ -332,6 +332,8 @@ protocol AnalysisRepository {
   func saveCheckIn(_ value: CheckInValue) throws
   func confirmDiet(_ value: DietCompletenessValue) throws
   func appendGoalRevision(_ value: NutritionGoalRevisionValue) throws
+  func goalRevisionState() throws -> GoalRevisionState
+  func applyGoalRevision(_ request: ApplyGoalRevisionRequest) throws -> GoalRevisionApplicationResult
   func savePreferences(_ value: AnalysisPreferencesValue) throws
   func analysisInput(
     asOf: Date, window: AnalysisWindow, timeZone: TimeZone,
