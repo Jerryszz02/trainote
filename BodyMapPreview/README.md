@@ -3,6 +3,7 @@
 此目录只包含合成数据预览、组件 UI 测试和本地性能采样。不会注册到生产 App，
 不读取 SwiftData / HealthKit，不访问网络，不修改恢复计算、RecoveryView 或导航。
 实际截图及验证结果见 [Evidence/verification.md](Evidence/verification.md)。
+拆卸崩溃的复现和修复回归见 [Evidence/teardown-verification.md](Evidence/teardown-verification.md)。
 
 ## 正式接入点
 
@@ -54,6 +55,7 @@ xcodebuild -project build/body-map/preview/BodyMapPreview.xcodeproj \
 安装构建好的 `BodyMapPreview.app` 并启动 `com.jerryszz.trainote.bodymap-preview`。
 可选启动参数：`-fixture-list`、`-fixture-economical`、`-fixture-dark`、`-fixture-large-text`。
 `-fixture-benchmark` 在预览内运行 1 秒预热、5 秒旋转和 2 秒静止采样，显示实际渲染回调间隔与进程物理内存。
+`-fixture-navigation` 增加独立的导航入口，用于反复进入恢复预览、返回和重建 3D 视图的验收。
 这些参数仅在预览入口读取，未加入生产 App 的 launch 参数。
 
 ## 资产许可与重现
