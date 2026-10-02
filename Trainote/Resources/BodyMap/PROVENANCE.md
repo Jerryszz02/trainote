@@ -7,6 +7,8 @@
 - License: [MIT](LICENSE.txt); free commercial use, modification and redistribution with this notice.
 - Included asset: `body-map-v1.json`, 74 named closed muscle/connective volumes, 23,298 bytes.
 - SHA-256: `6191358fa3a17a54df1ebed45440203850e173db4d67eca854315e299d9c41e9`.
+- `mesh-muscle-map.json` SHA-256: `e4bc26b947774b69b6b28be86bc1808e6025a77ebb52d225f17a55a65506d664`.
+- `BodyMapPreview/generate_asset.py` SHA-256: `f077003147a9812e61268a29b20a35dc79dcac01db33795661979a9aaa993b70`.
 - Muscle assignment: [mesh-muscle-map.json](mesh-muscle-map.json); each named mesh has one broad training muscle ID, left/right share that ID and score. Neutral head, neck, joints, hands and feet have no score.
 
 The generator defines elliptical cross-section control profiles in metres (+Y up, +Z anterior),

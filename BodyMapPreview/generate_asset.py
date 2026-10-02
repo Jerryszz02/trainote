@@ -3,7 +3,7 @@
 
 Coordinates in metres: +Y up, +Z anterior; neutral A-pose; bilateral scores share a muscle ID.
 Run from any directory to reproduce the JSON and its mesh-muscle map byte for byte.
-The asset and this generator are licensed under the adjacent BodyMap/LICENSE.txt (MIT).
+The asset and this generator are licensed under Trainote/Resources/BodyMap/LICENSE.txt (MIT).
 """
 import hashlib
 import json

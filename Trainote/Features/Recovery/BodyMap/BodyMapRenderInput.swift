@@ -1,13 +1,9 @@
 import Foundation
 import UIKit
 
-/// Renderer-local IDs. The shared analysis contract is adapted at the component boundary.
-enum BodyMapMuscle: String, CaseIterable, Identifiable, Codable {
-  case chest, back, shoulders, biceps, triceps, forearms, core, glutes, quads, hamstrings, calves
-
-  var id: String { rawValue }
-
-  var title: String {
+/// Compact display names; identity belongs to the frozen analysis contract.
+extension MuscleID {
+  var bodyMapTitle: String {
     switch self {
     case .chest: "胸"
     case .back: "背"
@@ -25,23 +21,29 @@ enum BodyMapMuscle: String, CaseIterable, Identifiable, Codable {
 }
 
 struct BodyMapRegion: Equatable, Identifiable {
-  let muscle: BodyMapMuscle
+  let muscle: MuscleID
   let score: Double?
   let status: String
-  var id: BodyMapMuscle { muscle }
+  let isLimited: Bool
+  var id: MuscleID { muscle }
 
-  init(muscle: BodyMapMuscle, score: Double?, status: String) {
+  init(muscle: MuscleID, score: Double?, status: String, isLimited: Bool = false) {
     self.muscle = muscle
+    self.isLimited = isLimited
     // Invalid presentation values must never become reassuring colours or trap on Int conversion.
     self.score = score.flatMap { $0.isFinite && (0...100).contains($0) ? $0 : nil }
-    self.status = self.score == nil ? "待建立记录" : status
+    self.status = self.score == nil ? (isLimited ? "\(status) · 待建立记录" : "待建立记录") : status
   }
 
   var displayedScore: Int? { score.map { Int(($0 / 5).rounded()) * 5 } }
   var scoreText: String { displayedScore.map { "\($0) 分" } ?? "未知" }
-  var accessibilityText: String { "\(muscle.title)，\(scoreText)，\(status)" }
+  var accessibilityText: String { "\(muscle.bodyMapTitle)，\(scoreText)，\(status)" }
+  var compactStatus: String {
+    isLimited ? status.replacingOccurrences(of: "待建立记录", with: "未知") : status
+  }
 
   var color: UIColor {
+    if isLimited { return UIColor(red: 0.73, green: 0.39, blue: 0.14, alpha: 1) }
     guard let score else { return UIColor(red: 0.47, green: 0.53, blue: 0.58, alpha: 1) }
     let low = SIMD3<Double>(0.80, 0.25, 0.20)
     let middle = SIMD3<Double>(0.84, 0.60, 0.20)
@@ -52,20 +54,49 @@ struct BodyMapRegion: Equatable, Identifiable {
   }
 }
 
+extension BodyMapRenderInput {
+  init(presentation: BodyMapPresentation) {
+    let regions = presentation.muscles.map { value in
+      let limited = value.hasPain || value.hasMovementLimitation || value.state == .limited
+      let status: String
+      if value.hasPain && value.hasMovementLimitation {
+        status = "疼痛/受限"
+      } else if value.hasPain {
+        status = "疼痛反馈"
+      } else if value.hasMovementLimitation {
+        status = "活动受限"
+      } else {
+        status =
+          switch value.state {
+          case .unknown: "待建立记录"
+          case .low: "优先恢复"
+          case .moderate: "适度安排"
+          case .ready: "状态较好"
+          case .limited: "受限"
+          }
+      }
+      return BodyMapRegion(
+        muscle: value.muscleID, score: value.state == .unknown ? nil : value.score,
+        status: status, isLimited: limited)
+    }
+    self.init(regions: regions, selected: presentation.muscles.first(where: \.isSelected)?.muscleID)
+  }
+}
+
 struct BodyMapRenderInput: Equatable {
   let regions: [BodyMapRegion]
-  let selected: BodyMapMuscle?
+  let selected: MuscleID?
 
-  init(regions: [BodyMapRegion], selected: BodyMapMuscle? = nil) {
+  init(regions: [BodyMapRegion], selected: MuscleID? = nil) {
     // A partial DTO still exposes all eleven choices; omitted regions stay unknown.
-    self.regions = BodyMapMuscle.allCases.map { muscle in
+    self.regions = MuscleID.allCases.map { muscle in
       regions.first(where: { $0.muscle == muscle })
         ?? BodyMapRegion(muscle: muscle, score: nil, status: "待建立记录")
     }
     self.selected = selected
   }
 
-  subscript(muscle: BodyMapMuscle) -> BodyMapRegion {
+  subscript(muscle: MuscleID) -> BodyMapRegion {
     regions.first(where: { $0.muscle == muscle })!
   }
 
@@ -87,7 +118,9 @@ enum BodyMapDisplayPolicy: Equatable {
   ) -> Self {
     if voiceOver || largeText || !rendererAvailable || thermalState == .serious
       || thermalState == .critical
-    { return .list }
+    {
+      return .list
+    }
     return lowPower || thermalState == .fair ? .economical : .standard
   }
 

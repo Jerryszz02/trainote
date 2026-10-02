@@ -9,7 +9,7 @@ struct BodyMapAsset: Decodable {
 
   struct Mesh: Decodable {
     let name: String
-    let muscle: BodyMapMuscle?
+    let muscle: MuscleID?
     let rings: [Ring]
     let facing: Float?
   }
@@ -22,7 +22,8 @@ struct BodyMapAsset: Decodable {
   enum AssetError: Error { case missingResource, invalidGeometry }
 
   static func load(bundle: Bundle = .main) throws -> Self {
-    let url = bundle.url(forResource: "body-map-v1", withExtension: "json", subdirectory: "BodyMap")
+    let url =
+      bundle.url(forResource: "body-map-v1", withExtension: "json", subdirectory: "BodyMap")
       ?? bundle.url(forResource: "body-map-v1", withExtension: "json")
     guard let url else { throw AssetError.missingResource }
     let asset = try JSONDecoder().decode(Self.self, from: Data(contentsOf: url))
@@ -33,7 +34,7 @@ struct BodyMapAsset: Decodable {
   func validate() throws {
     guard version == 1, (1...150).contains(meshes.count),
       Set(meshes.map(\.name)).count == meshes.count,
-      Set(meshes.compactMap(\.muscle)) == Set(BodyMapMuscle.allCases)
+      Set(meshes.compactMap(\.muscle)) == Set(MuscleID.allCases)
     else { throw AssetError.invalidGeometry }
     for mesh in meshes {
       guard (3...24).contains(mesh.rings.count), !mesh.name.isEmpty,
@@ -79,13 +80,19 @@ enum BodyMapGeometry {
     for i in 0..<((rings.count - 1) * steps + 1) {
       let segment = min(i / steps, rings.count - 2)
       let t = Float(i - segment * steps) / Float(steps)
-      let a = rings[max(0, segment - 1)], b = rings[segment]
-      let c = rings[segment + 1], d = rings[min(rings.count - 1, segment + 2)]
+      let a = rings[max(0, segment - 1)]
+      let b = rings[segment]
+      let c = rings[segment + 1]
+      let d = rings[min(rings.count - 1, segment + 2)]
       func interpolate(_ values: [Float]) -> Float {
-        let a = values[0], b = values[1], c = values[2], d = values[3]
-        return 0.5 * ((2 * b) + (-a + c) * t
-          + (2 * a - 5 * b + 4 * c - d) * t * t
-          + (-a + 3 * b - 3 * c + d) * t * t * t)
+        let a = values[0]
+        let b = values[1]
+        let c = values[2]
+        let d = values[3]
+        return 0.5
+          * ((2 * b) + (-a + c) * t
+            + (2 * a - 5 * b + 4 * c - d) * t * t
+            + (-a + 3 * b - 3 * c + d) * t * t * t)
       }
       let center = (0..<3).map { axis in
         interpolate([a.center[axis], b.center[axis], c.center[axis], d.center[axis]])
@@ -95,31 +102,39 @@ enum BodyMapGeometry {
       }
       for j in 0..<slices {
         let angle = Float(j) * 2 * .pi / Float(slices)
-        positions.append(SIMD3(
-          center[0] + radius[0] * cos(angle), center[1], center[2] + radius[1] * sin(angle)))
+        positions.append(
+          SIMD3(
+            center[0] + radius[0] * cos(angle), center[1], center[2] + radius[1] * sin(angle)))
       }
     }
     let ringCount = positions.count / slices
     var indices = [UInt32]()
     for i in 0..<(ringCount - 1) {
       for j in 0..<slices {
-        let a = UInt32(i * slices + j), b = UInt32(i * slices + (j + 1) % slices)
-        let c = UInt32((i + 1) * slices + j), d = UInt32((i + 1) * slices + (j + 1) % slices)
+        let a = UInt32(i * slices + j)
+        let b = UInt32(i * slices + (j + 1) % slices)
+        let c = UInt32((i + 1) * slices + j)
+        let d = UInt32((i + 1) * slices + (j + 1) % slices)
         indices += [a, c, b, b, c, d]
       }
     }
-    let bottom = UInt32(positions.count), top = bottom + 1
+    let bottom = UInt32(positions.count)
+    let top = bottom + 1
     positions.append(SIMD3(rings[0].center[0], rings[0].center[1], rings[0].center[2]))
     let last = rings[rings.count - 1]
     positions.append(SIMD3(last.center[0], last.center[1], last.center[2]))
     for j in 0..<slices {
       let next = (j + 1) % slices
       indices += [bottom, UInt32(j), UInt32(next)]
-      indices += [top, UInt32((ringCount - 1) * slices + next), UInt32((ringCount - 1) * slices + j)]
+      indices += [
+        top, UInt32((ringCount - 1) * slices + next), UInt32((ringCount - 1) * slices + j),
+      ]
     }
     var normals = [SIMD3<Float>](repeating: .zero, count: positions.count)
     for i in stride(from: 0, to: indices.count, by: 3) {
-      let a = Int(indices[i]), b = Int(indices[i + 1]), c = Int(indices[i + 2])
+      let a = Int(indices[i])
+      let b = Int(indices[i + 1])
+      let c = Int(indices[i + 2])
       let normal = simd_cross(positions[b] - positions[a], positions[c] - positions[a])
       normals[a] += normal
       normals[b] += normal

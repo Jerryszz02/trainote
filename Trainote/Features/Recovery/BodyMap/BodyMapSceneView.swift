@@ -8,7 +8,7 @@ struct BodyMapSceneView: UIViewRepresentable {
   let viewpointRevision: Int
   let policy: BodyMapDisplayPolicy
   let active: Bool
-  let onSelect: (BodyMapMuscle) -> Void
+  let onSelect: (MuscleID) -> Void
   let onUnavailable: () -> Void
 
   func makeUIView(context: Context) -> BodyMapSceneContainer {
@@ -41,15 +41,17 @@ final class BodyMapSceneContainer: UIView, UIGestureRecognizerDelegate {
   let sceneView = SCNView()
   private(set) var model: BodyMapScene?
   private var input = BodyMapRenderInput(regions: [])
-  private var buttons: [BodyMapMuscle: UIButton] = [:]
-  private var lines: [BodyMapMuscle: CAShapeLayer] = [:]
+  private var buttons: [MuscleID: UIButton] = [:]
+  private var lines: [MuscleID: CAShapeLayer] = [:]
   private var panStartAngle: Float = 0
   var viewpointRevision: Int?
-  var onSelect: ((BodyMapMuscle) -> Void)?
+  var onSelect: ((MuscleID) -> Void)?
 
   override init(frame: CGRect) {
     super.init(frame: frame)
-    guard MTLCreateSystemDefaultDevice() != nil, let asset = try? BodyMapAsset.load() else { return }
+    guard MTLCreateSystemDefaultDevice() != nil, let asset = try? BodyMapAsset.load() else {
+      return
+    }
     let model = BodyMapScene(asset: asset)
     self.model = model
     model.update(input: input)
@@ -71,16 +73,18 @@ final class BodyMapSceneContainer: UIView, UIGestureRecognizerDelegate {
     let tap = UITapGestureRecognizer(target: self, action: #selector(tap(_:)))
     tap.require(toFail: pan)
     sceneView.addGestureRecognizer(tap)
-    for muscle in BodyMapMuscle.allCases {
+    for muscle in MuscleID.allCases {
       let line = CAShapeLayer()
       line.fillColor = UIColor.clear.cgColor
       line.lineWidth = 1
       layer.addSublayer(line)
       lines[muscle] = line
-      let button = UIButton(type: .system)
+      let button = UIButton(type: .custom)
       button.titleLabel?.numberOfLines = 2
       button.titleLabel?.textAlignment = .center
       button.titleLabel?.font = .systemFont(ofSize: 11, weight: .medium)
+      button.titleLabel?.adjustsFontSizeToFitWidth = true
+      button.titleLabel?.minimumScaleFactor = 0.85
       button.layer.cornerRadius = 9
       button.layer.borderWidth = 1
       button.backgroundColor = .secondarySystemGroupedBackground
@@ -97,7 +101,8 @@ final class BodyMapSceneContainer: UIView, UIGestureRecognizerDelegate {
     super.layoutSubviews()
     sceneView.frame = bounds
     // Leave room for the full A-pose on narrow containers without cropping the hands.
-    model?.camera.camera?.orthographicScale = Double(max(1.01, bounds.height / max(1, bounds.width) * 0.57))
+    model?.camera.camera?.orthographicScale = Double(
+      max(1.08, bounds.height / max(1, bounds.width) * 0.57))
     updateLabels()
   }
 
@@ -116,7 +121,7 @@ final class BodyMapSceneContainer: UIView, UIGestureRecognizerDelegate {
 
   func rotate(to angle: Float) {
     guard angle.isFinite else { return }
-    model?.body.eulerAngles.y = angle.truncatingRemainder(dividingBy: 2 * .pi)
+    model?.rotate(to: angle)
     let facing = cos(angle)
     sceneView.accessibilityValue = facing > 0.85 ? "前面" : facing < -0.85 ? "背面" : "侧面"
     updateLabels()
@@ -135,15 +140,18 @@ final class BodyMapSceneContainer: UIView, UIGestureRecognizerDelegate {
   }
 
   @objc private func tap(_ gesture: UITapGestureRecognizer) {
-    guard let muscle = model?.hit(at: gesture.location(in: sceneView), in: sceneView) else { return }
+    guard let muscle = model?.hit(at: gesture.location(in: sceneView), in: sceneView) else {
+      return
+    }
     onSelect?(muscle)
   }
 
   func updateLabels() {
     guard let model else { return }
-    let labels = BodyMapLabelLayout.arrange(anchors: model.projectedAnchors(in: sceneView), bounds: bounds)
+    let labels = BodyMapLabelLayout.arrange(
+      anchors: model.projectedAnchors(in: sceneView), bounds: bounds, selected: input.selected)
     let visible = Set(labels.map(\.muscle))
-    for muscle in BodyMapMuscle.allCases {
+    for muscle in MuscleID.allCases {
       buttons[muscle]?.isHidden = !visible.contains(muscle)
       lines[muscle]?.isHidden = !visible.contains(muscle)
     }
@@ -155,9 +163,12 @@ final class BodyMapSceneContainer: UIView, UIGestureRecognizerDelegate {
       let button = buttons[item.muscle]!
       button.frame = item.frame
       let score = region.displayedScore.map(String.init) ?? "—"
-      button.setTitle("\(selected ? "✓ " : "")\(region.muscle.title)  \(score)\n\(region.status)", for: .normal)
+      button.setTitle(
+        "\(selected ? "✓ " : "")\(region.muscle.bodyMapTitle)  \(score)\n\(region.compactStatus)",
+        for: .normal)
       button.setTitleColor(.label, for: .normal)
-      button.layer.borderColor = selected ? UIColor.label.cgColor : region.color.withAlphaComponent(0.5).cgColor
+      button.layer.borderColor =
+        selected ? UIColor.label.cgColor : region.color.withAlphaComponent(0.5).cgColor
       button.layer.borderWidth = selected ? 2 : 1
       button.accessibilityLabel = region.accessibilityText
       button.accessibilityHint = "查看肌群详情"

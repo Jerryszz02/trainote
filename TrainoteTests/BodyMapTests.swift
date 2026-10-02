@@ -9,6 +9,29 @@ import XCTest
 
 @MainActor
 final class BodyMapTests: XCTestCase {
+  func testFormalContractAdapterPreservesStateSelectionAndRestrictions() {
+    var presentation = BodyMapFixtures.populated
+    presentation.muscles = [
+      .init(muscleID: .chest, score: 100, state: .unknown),
+      .init(muscleID: .back, score: 88, state: .low, isSelected: true),
+      .init(muscleID: .shoulders, score: 90, state: .ready, hasPain: true),
+      .init(muscleID: .glutes, score: nil, state: .unknown, hasMovementLimitation: true),
+      .init(muscleID: .quads, score: 0, state: .low),
+    ]
+    let input = BodyMapRenderInput(presentation: presentation)
+    XCTAssertNil(input[.chest].score)
+    XCTAssertEqual(input[.back].score, 88)
+    // Render the supplied state, do not re-classify it.
+    XCTAssertEqual(input[.back].status, "优先恢复")
+    XCTAssertEqual(input.selected, .back)
+    XCTAssertEqual(input[.shoulders].status, "疼痛反馈")
+    XCTAssertTrue(input[.shoulders].isLimited)
+    XCTAssertEqual(input[.glutes].status, "活动受限 · 待建立记录")
+    XCTAssertEqual(input[.quads].displayedScore, 0)
+    XCTAssertEqual(input.regions.count, 11)
+    XCTAssertNil(input[.hamstrings].score)
+  }
+
   func testUnknownZeroRoundingAndInvalidNumbersRemainDistinct() {
     let unknown = BodyMapRegion(muscle: .chest, score: nil, status: "状态较好")
     let zero = BodyMapRegion(muscle: .chest, score: 0, status: "优先恢复")
@@ -37,7 +60,9 @@ final class BodyMapTests: XCTestCase {
       XCTAssertTrue(data.positions.allSatisfy { $0.x.isFinite && $0.y.isFinite && $0.z.isFinite })
       XCTAssertTrue(data.normals.allSatisfy { abs(simd_length($0) - 1) < 0.001 })
       XCTAssertTrue(data.indices.allSatisfy { $0 < data.positions.count })
-      let x = data.positions.map(\.x), y = data.positions.map(\.y), z = data.positions.map(\.z)
+      let x = data.positions.map(\.x)
+      let y = data.positions.map(\.y)
+      let z = data.positions.map(\.z)
       XCTAssertGreaterThan(x.max()! - x.min()!, 0.001)
       XCTAssertGreaterThan(y.max()! - y.min()!, 0.001)
       XCTAssertGreaterThan(z.max()! - z.min()!, 0.001)
@@ -46,7 +71,8 @@ final class BodyMapTests: XCTestCase {
       for i in stride(from: 0, to: data.indices.count, by: 3) {
         let triangle = Array(data.indices[i..<(i + 3)])
         for j in 0..<3 {
-          let a = triangle[j], b = triangle[(j + 1) % 3]
+          let a = triangle[j]
+          let b = triangle[(j + 1) % 3]
           edges["\(min(a, b))-\(max(a, b))", default: 0] += 1
         }
       }
@@ -54,8 +80,8 @@ final class BodyMapTests: XCTestCase {
     }
     XCTAssertLessThan(triangles, 65_000)
     let scene = BodyMapScene(asset: asset)
-    XCTAssertEqual(Set(scene.nodes.keys), Set(BodyMapMuscle.allCases))
-    for muscle in BodyMapMuscle.allCases {
+    XCTAssertEqual(Set(scene.nodes.keys), Set(MuscleID.allCases))
+    for muscle in MuscleID.allCases {
       XCTAssertGreaterThanOrEqual(scene.nodes[muscle]!.count, 2)
     }
   }
@@ -63,12 +89,15 @@ final class BodyMapTests: XCTestCase {
   func testAssetRejectsBadProfilesBeforeGeometryGeneration() throws {
     let good = try BodyMapAsset.load()
     let mesh = good.meshes[0]
-    let broken = BodyMapAsset.Mesh(name: mesh.name, muscle: mesh.muscle, rings: [
-      .init(center: [0, 1, 0], radius: [0.1, 0.1]),
-      .init(center: [0, 1, 0], radius: [0.1, 0.1]),
-      .init(center: [0, 0, 0], radius: [0.1, 0.1]),
-    ], facing: nil)
-    XCTAssertThrowsError(try BodyMapAsset(version: 1, meshes: [broken] + good.meshes.dropFirst()).validate())
+    let broken = BodyMapAsset.Mesh(
+      name: mesh.name, muscle: mesh.muscle,
+      rings: [
+        .init(center: [0, 1, 0], radius: [0.1, 0.1]),
+        .init(center: [0, 1, 0], radius: [0.1, 0.1]),
+        .init(center: [0, 0, 0], radius: [0.1, 0.1]),
+      ], facing: nil)
+    XCTAssertThrowsError(
+      try BodyMapAsset(version: 1, meshes: [broken] + good.meshes.dropFirst()).validate())
     XCTAssertThrowsError(try BodyMapAsset(version: 2, meshes: good.meshes).validate())
   }
 
@@ -77,28 +106,37 @@ final class BodyMapTests: XCTestCase {
     let view = SCNView(frame: CGRect(x: 0, y: 0, width: 370, height: 430))
     view.scene = model.scene
     view.pointOfView = model.camera
-    var visible = Set<BodyMapMuscle>()
-    for angle: Float in [0, .pi / 2, .pi, -.pi / 2] {
-      model.body.eulerAngles.y = angle
+    var visible = Set<MuscleID>()
+    for step in 0..<24 {
+      let angle = Float(step) * .pi / 12
+      model.rotate(to: angle)
       let anchors = model.projectedAnchors(in: view)
       visible.formUnion(anchors.map(\.muscle))
       for anchor in anchors { XCTAssertEqual(model.hit(at: anchor.point, in: view), anchor.muscle) }
       let labels = BodyMapLabelLayout.arrange(anchors: anchors, bounds: view.bounds)
-      for label in labels { XCTAssertTrue(view.bounds.contains(label.frame), label.muscle.rawValue) }
+      for label in labels {
+        XCTAssertTrue(view.bounds.contains(label.frame), label.muscle.rawValue)
+      }
       for (i, label) in labels.enumerated() {
         for other in labels.dropFirst(i + 1) { XCTAssertFalse(label.frame.intersects(other.frame)) }
       }
     }
-    XCTAssertEqual(visible, Set(BodyMapMuscle.allCases))
-    model.body.eulerAngles.y = 0
-    XCTAssertFalse(model.projectedAnchors(in: view).contains { [.glutes, .hamstrings, .back].contains($0.muscle) })
+    XCTAssertEqual(visible, Set(MuscleID.allCases))
+    model.rotate(to: 0)
+    XCTAssertFalse(
+      model.projectedAnchors(in: view).contains {
+        [.glutes, .hamstrings, .back].contains($0.muscle)
+      })
     XCTAssertNil(model.hit(at: CGPoint(x: 2, y: 2), in: view))
   }
 
   func testPerformanceAndAccessibilityPolicies() {
-    func policy(voiceOver: Bool = false, largeText: Bool = false, lowPower: Bool = false,
-      thermal: ProcessInfo.ThermalState = .nominal, available: Bool = true) -> BodyMapDisplayPolicy {
-      .resolve(voiceOver: voiceOver, largeText: largeText, lowPower: lowPower,
+    func policy(
+      voiceOver: Bool = false, largeText: Bool = false, lowPower: Bool = false,
+      thermal: ProcessInfo.ThermalState = .nominal, available: Bool = true
+    ) -> BodyMapDisplayPolicy {
+      .resolve(
+        voiceOver: voiceOver, largeText: largeText, lowPower: lowPower,
         thermalState: thermal, rendererAvailable: available)
     }
     XCTAssertEqual(policy(), .standard)
