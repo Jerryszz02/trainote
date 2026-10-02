@@ -5,6 +5,10 @@
 `28500cfaba534d2d09a1415f8c6d1cb1d904a10e`（merge `22a53d2` / 工程 `da4b72b`）。
 不表示 B/C/E 已装配、模型已验证或服务已部署。
 
+最新进展：普通合并基础 `59766ea61bb063c1f5898f5ac31ab2b3dc91842f`（精确 Date 备份修复）及
+C 固定提交 `2d2703ef28033d952d0d61a3b950003afe5e97f2`。恢复 Tab、今日体感和恢复摘要已连接真实
+`RecoveryService` / `RecoveryView`；B/E 仍待装配。共享推荐快照缺口已由主对话交给 A，等待固定接口。
+
 ## 当前接口协调
 
 - A 的 `goalRevisionState` / `applyGoalRevision` 已随固定基础 `28500cf` 接入。F 的旧目标编辑器使用
@@ -27,7 +31,10 @@
 - `HealthFeatureAccess` 构造时注册 `AIReportLifecycle` 的 health invalidator 与 AI 同步取消 hook；
   健康断开调用 A `disconnectAndDelete`。撤回分别尝试本机和服务器，失败可重试。
   当前生产装配为 `LocalOnlyReportAccess`，无网络/凭据/报告缓存，未配置时无法预先同意。
-- `HealthAnalysisDestinations` 是 B/C 页面装配点；当前默认是诚实的未开放空态，不提供合成数据。
+- `HealthAnalysisDestinations` 是 B/C 页面装配点；当前恢复页装配真实 C，趋势仍是未开放空态。
+- `HealthRecoveryIntegration` 持有同一个 C service/calibration control，加载失败显示不可用，不使用
+  fixture。今日摘要从实际 C 结果读取疼痛、疲劳及 `recovery.unallocatedRecords`；完整训练候选待 B。
+  两处体感入口复用同日/时区的记录，调用 C 的提示门控和保存/清空语义；跳过不写入答案。
 - `TrainingRecommendationRules(context:)` 遵守 A `RecommendationProviding`；`evaluate` 同时返回
   candidates、新增 facts、`plansByAction` 和 contextFingerprint。C 提供 reviewed exercise mapping，
   B 提供有事实来源的 nutritionReviewFactIDs。无显式模板不推断长期计划。
@@ -38,7 +45,7 @@
 
 ## 待完成
 
-- 当前建议卡尚未运行完整 B/C 计算；完成页面装配后连接真实候选和采用入口、可跳过的 C 体感入口。
+- 当前建议卡已使用 C 恢复摘要和可跳过体感；完成 B 页面装配后连接完整真实候选和采用入口。
 - Settings 手动写入已接 A 的单事务；旧营养汇总按日历史查询仍待 B 实装。首次主动启用趋势选择每周建议，不改变升级前手动目标。
 - 在同分支接入主对话已验证的 B/C/E 固定提交，完成采用/撤销、报告及真机条件清单。
 - 只推送 ready PR，不自行合并、部署或发布。
@@ -65,6 +72,21 @@
   后者结果 `/tmp/trainote-health-integration-manual-goal-ui.xcresult`。累计覆盖 23 条 UI 路径，
   为上述分次运行结果，不表示本次 head 已完整重跑 23 项 UI；联合集成后仍需完整验收。
 - `git diff --check` 和 planning 链接审计通过。未运行真实 HealthKit、供应商、签名、TestFlight 或部署。
+
+## C 真实装配验证（2026-10-03）
+
+- 合入 `59766ea` 和 C 后 **145 项单元测试全部通过**，其中 4 项 F 装配测试验证未知分数、38 项
+  已审核映射、共享提示门控/新鲜草稿、清空、健康读取失败及资源缺失不使用 fixture。
+- 今日填写疲惫 → 恢复页读取相同答案 → 修改后跳过不覆盖 → 今日清空已保存回答，真实 UI 通过。
+  结果 `/tmp/trainote-health-integration-recovery-verified.xcresult`；其中另一个身体图 UI 测试失败。
+- 待 D 修复的真实阻塞：生产恢复页点击 `bodyMap.toggleList` 切换肌群列表时发生
+  `EXC_BAD_ACCESS / KERN_INVALID_ADDRESS 0xe8`，主线程栈为 `C3DSceneLock` → `SCNView.projectPoint`
+  → `BodyMapScene.projectedAnchors(in:)`（142）→ `BodyMapSceneContainer.updateLabels()`（152）
+  → `layoutSubviews()`（106）。F 保留失败测试，不在 D 文件里越界修复。
+  复现结果 `/tmp/trainote-health-integration-recovery-ui-ready.xcresult`，崩溃日志
+  `/Users/jerryszz/Library/Logs/DiagnosticReports/Trainote-2026-10-03-051441.ips`。
+- 首次只测 UI 的尝试遭遇专用 Simulator 的启动 Busy；仅显式 boot 本任务设备后重跑，实际进入
+  App 并得到上述崩溃证据。不能把启动失败或身体图截图当作页面验收通过。
 
 复现：
 

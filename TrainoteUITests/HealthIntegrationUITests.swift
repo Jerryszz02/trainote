@@ -85,13 +85,20 @@ final class HealthIntegrationUITests: XCTestCase {
     let field = app.textFields["goal.卡路里"]
     field.coordinate(withNormalizedOffset: CGVector(dx: 0.98, dy: 0.5)).tap()
     field.press(forDuration: 1.1)
-    let selectAll = app.buttons.matching(NSPredicate(format: "label IN {'Select All', '全选'}")).firstMatch
-    let menuSelectAll = app.menuItems.matching(NSPredicate(format: "label IN {'Select All', '全选'}")).firstMatch
-    if selectAll.waitForExistence(timeout: 1) { selectAll.tap() }
-    else if menuSelectAll.exists { menuSelectAll.tap() }
-    else { field.doubleTap() }
+    let selectAll = app.buttons.matching(NSPredicate(format: "label IN {'Select All', '全选'}"))
+      .firstMatch
+    let menuSelectAll = app.menuItems.matching(NSPredicate(format: "label IN {'Select All', '全选'}"))
+      .firstMatch
+    if selectAll.waitForExistence(timeout: 1) {
+      selectAll.tap()
+    } else if menuSelectAll.exists {
+      menuSelectAll.tap()
+    } else {
+      field.doubleTap()
+    }
     field.typeText("2100")
-    XCTAssertEqual(Double((field.value as? String ?? "").replacingOccurrences(of: ",", with: "")), 2100)
+    XCTAssertEqual(
+      Double((field.value as? String ?? "").replacingOccurrences(of: ",", with: "")), 2100)
     app.buttons["goal.save"].tap()
     capture("手动目标再次保存")
     XCTAssertTrue(app.buttons["已保存"].waitForExistence(timeout: 3))
@@ -118,6 +125,62 @@ final class HealthIntegrationUITests: XCTestCase {
     XCTAssertTrue(app.navigationBars["趋势分析"].waitForExistence(timeout: 3))
     app.tabBars.buttons["恢复"].tap()
     XCTAssertTrue(app.navigationBars["恢复分析"].waitForExistence(timeout: 3))
+  }
+
+  func testTodayCheckInUpdatesRecoveryAndSkipPreservesSavedFeeling() {
+    let openToday = app.buttons["today.checkIn.open"]
+    openToday.tap()
+    let feeling = app.buttons["recovery.checkIn.feeling"]
+    feeling.tap()
+    app.buttons["疲惫"].tap()
+    app.buttons["recovery.checkIn.save"].tap()
+    XCTAssertTrue(app.buttons["today.recommendation"].label.contains("疲惫"))
+    app.buttons["today.recommendation"].tap()
+    XCTAssertTrue(app.navigationBars["恢复分析"].waitForExistence(timeout: 3))
+    let openRecovery = app.buttons["recovery.checkIn.open"]
+    reveal(openRecovery)
+    openRecovery.tap()
+    XCTAssertTrue(feeling.label.contains("疲惫"))
+    feeling.tap()
+    app.buttons["好"].tap()
+    app.buttons["recovery.checkIn.skip"].tap()
+    app.tabBars.buttons["今日"].tap()
+    XCTAssertTrue(app.buttons["today.recommendation"].label.contains("疲惫"))
+    openToday.tap()
+    XCTAssertTrue(feeling.label.contains("疲惫"))
+    feeling.tap()
+    app.buttons["未回答"].tap()
+    app.buttons["recovery.checkIn.save"].tap()
+    XCTAssertFalse(app.buttons["today.recommendation"].label.contains("疲惫"))
+  }
+
+  func testRecoveryBodyMapPainConstraintAndBundledMethods() {
+    app.tabBars.buttons["恢复"].tap()
+    XCTAssertTrue(app.otherElements["bodyMap.scene"].waitForExistence(timeout: 5))
+    capture("生产恢复页未知状态")
+    app.buttons["bodyMap.toggleList"].tap()
+    let chest = app.buttons["bodyMap.row.chest"]
+    XCTAssertTrue(chest.waitForExistence(timeout: 5))
+    chest.tap()
+    let feedback = app.buttons["更新这块肌群的体感"]
+    reveal(feedback)
+    feedback.tap()
+    app.buttons["胸部"].tap()
+    let pain = app.buttons["recovery.pain.chest"]
+    reveal(pain)
+    pain.tap()
+    app.buttons["有"].tap()
+    app.buttons["recovery.checkIn.save"].tap()
+    let warning = app.staticTexts["已标记疼痛：相关训练暂不列入建议"]
+    reveal(warning)
+    XCTAssertTrue(warning.exists)
+    capture("生产恢复页疼痛约束")
+    let methods = app.buttons["计算方法与数据使用"]
+    reveal(methods)
+    methods.tap()
+    XCTAssertTrue(app.navigationBars["方法与数据使用"].waitForExistence(timeout: 3))
+    reveal(app.staticTexts["恢复指数如何计算"])
+    XCTAssertTrue(app.staticTexts["恢复指数如何计算"].exists)
   }
 
   private func reveal(_ element: XCUIElement) {

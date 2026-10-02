@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// F replaces these closures with verified B/C views during integration.
+/// F supplies verified module views during integration.
 /// The default does not install fixture calculators or synthetic health records.
 struct HealthAnalysisDestinations {
   var trends: () -> AnyView
@@ -10,6 +10,10 @@ struct HealthAnalysisDestinations {
     trends: { AnyView(PendingAnalysisView(title: "趋势分析", systemImage: "chart.xyaxis.line")) },
     recovery: { AnyView(PendingAnalysisView(title: "恢复分析", systemImage: "figure.stand")) }
   )
+
+  static func recoveryReady(_ integration: HealthRecoveryIntegration) -> Self {
+    Self(trends: pending.trends, recovery: { AnyView(RecoveryAnalysisDestination(integration: integration)) })
+  }
 }
 
 private struct PendingAnalysisView: View {

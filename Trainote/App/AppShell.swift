@@ -16,6 +16,7 @@ struct AppShell: View {
   @State private var showHealthOnboarding = false
   @AppStorage("health.onboarding.v1.completed") private var healthOnboardingCompleted = false
   var analysisDestinations: HealthAnalysisDestinations = .pending
+  var recoveryIntegration: HealthRecoveryIntegration? = nil
 
   var body: some View {
     TabView(selection: $selectedTab) {
@@ -32,7 +33,8 @@ struct AppShell: View {
           onOpenTemplates: {
             todayPath.append(.routines)
           },
-          onOpenRecovery: { selectedTab = .recovery }
+          onOpenRecovery: { selectedTab = .recovery },
+          recoveryIntegration: recoveryIntegration
         )
         .navigationDestination(for: LibrarySection.self) { LibraryView(initialSection: $0) }
       }

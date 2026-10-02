@@ -31,6 +31,7 @@ struct TodayView: View {
   let onLogFood: () -> Void
   var onOpenTemplates: () -> Void = {}
   var onOpenRecovery: () -> Void = {}
+  var recoveryIntegration: HealthRecoveryIntegration? = nil
 
   private var todayEntries: [FoodLogEntry] {
     foodEntries.filter { Calendar.current.isDate($0.loggedAt, inSameDayAs: currentDate) }
@@ -49,7 +50,13 @@ struct TodayView: View {
       LazyVStack(alignment: .leading, spacing: 20) {
         header
         quickActions
-        recommendationCard
+        if let recoveryIntegration {
+          TodayRecoveryCard(
+            integration: recoveryIntegration, hasRoutines: !routines.isEmpty,
+            onOpenTemplates: onOpenTemplates, onOpenRecovery: onOpenRecovery)
+        } else {
+          recommendationCard
+        }
         if !onboardingDismissed && workouts.isEmpty && foodEntries.isEmpty { gettingStarted }
         nutrientGrid
         routineShortcuts
@@ -88,7 +95,7 @@ struct TodayView: View {
     } message: {
       Text(saveError ?? "请重试。")
     }
-    .sheet(item: $presentedSheet) { sheet in
+    .sheet(item: $presentedSheet, onDismiss: { recoveryIntegration?.reloadToday() }) { sheet in
       switch sheet {
       case .settings:
         SettingsView()

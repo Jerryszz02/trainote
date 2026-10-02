@@ -8,6 +8,7 @@ struct TrainoteApp: App {
   @State private var catalog: ExerciseCatalog
   @State private var healthFoundation: HealthFoundation?
   @State private var healthAccess: HealthFeatureAccess?
+  @State private var recoveryIntegration: HealthRecoveryIntegration?
   @Environment(\.scenePhase) private var scenePhase
   private let containerResult: Result<ModelContainer, Error>
 
@@ -36,9 +37,15 @@ struct TrainoteApp: App {
       _healthFoundation = State(initialValue: foundation)
       _healthAccess = State(initialValue: HealthFeatureAccess(
         foundation: foundation, reports: LocalOnlyReportAccess()))
+      let defaults = inMemory
+        ? UserDefaults(suiteName: "recovery-test-\(UUID().uuidString)") ?? .standard : .standard
+      _recoveryIntegration = State(initialValue: HealthRecoveryIntegration(
+        repository: foundation.repository, healthData: foundation.healthData,
+        calibration: RecoveryCalibrationControl(defaults: defaults)))
     } else {
       _healthFoundation = State(initialValue: nil)
       _healthAccess = State(initialValue: nil)
+      _recoveryIntegration = State(initialValue: nil)
     }
   }
 
@@ -46,15 +53,25 @@ struct TrainoteApp: App {
     WindowGroup {
       switch containerResult {
       case .success(let container):
-        if let healthFoundation, let healthAccess {
-          AppShell()
+        if let healthFoundation, let healthAccess, let recoveryIntegration {
+          AppShell(
+            analysisDestinations: .recoveryReady(recoveryIntegration),
+            recoveryIntegration: recoveryIntegration)
             .environment(catalog)
             .environment(healthFoundation)
             .environment(healthAccess)
             .modelContainer(container)
-            .task { await healthFoundation.resume() }
+            .task {
+              await healthFoundation.resume()
+              recoveryIntegration.reloadToday()
+            }
             .onChange(of: scenePhase) { _, phase in
-              if phase == .active { Task { await healthFoundation.resume() } }
+              if phase == .active {
+                Task {
+                  await healthFoundation.resume()
+                  recoveryIntegration.reloadToday()
+                }
+              }
             }
         }
       case .failure(let error):
