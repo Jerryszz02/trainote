@@ -46,6 +46,9 @@ final class TrendAdoptionUITests: XCTestCase {
     let proposal = targetRow(prefix: "建议", calories: 2240)
     reveal(proposal)
     XCTAssertTrue(proposal.exists, "建议应来自实际趋势计算")
+    let adjustment = app.staticTexts["热量调整 +240 kcal"]
+    reveal(adjustment)
+    XCTAssertTrue(adjustment.isHittable, "调整量应等于展示目标之差：2240 − 2000 = 240")
     capture("旧目标与真实初始建议")
 
     reveal(adopt)
