@@ -31,6 +31,7 @@
 		3359EB29320B0F1CE335CF89 /* HealthValueMerge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC5319C02727CE30DD73DA2 /* HealthValueMerge.swift */; };
 		3647D268C134DA5DF36F38FE /* PreviewSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35DDE3ACB1FCD48A7B450933 /* PreviewSupport.swift */; };
 		3D094B53F762A9972CAB1E04 /* HealthNormalizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC224FAF4441238A50F4BA5B /* HealthNormalizationTests.swift */; };
+		3E33C403669173E55337F865 /* AIReportRealContractTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D487466DDA6B161237EB3BC /* AIReportRealContractTests.swift */; };
 		3F18D3E5112919ECC2C6D5A5 /* HealthSyncTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAE360D8B622F780230EC85C /* HealthSyncTests.swift */; };
 		3F76649A88333A976CBA313A /* ExerciseCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = F15FA22680EDF85603E77C79 /* ExerciseCatalog.swift */; };
 		4088E59700F60C7F297376C3 /* HealthBackupTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2708DCC26BF871C5D68D64E4 /* HealthBackupTests.swift */; };
@@ -91,6 +92,7 @@
 		DDE226E964F8DFCFB86C75A2 /* ActiveWorkoutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED5D39A73AA6FB27104C3236 /* ActiveWorkoutView.swift */; };
 		E5265C2F4D487677A5496FFB /* BodyMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74055D258AA32E8FB2B3490B /* BodyMapView.swift */; };
 		E8B6258EAE0F59527C212A31 /* BodyMapTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECDC6333AB4DD54A67BBDA70 /* BodyMapTests.swift */; };
+		ED93F32B31BA85F8C8FC326C /* ai-report-real-contract.json in Resources */ = {isa = PBXBuildFile; fileRef = E6CFFE3748736E18A0B5A4AB /* ai-report-real-contract.json */; };
 		EDB21C343323975881C1203B /* BodyProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3C5211C74CE6CFCCD95F605 /* BodyProfile.swift */; };
 		F2963E2E3D545A72ACA165A5 /* TrainoteApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 490FFA844AB42EA8BD546B33 /* TrainoteApp.swift */; };
 		F393087226715EFE9CABE54E /* AIReportCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 744C373DC46848369D4D6120 /* AIReportCache.swift */; };
@@ -164,6 +166,7 @@
 		75A716841CBA0C07DC0AF122 /* TrainoteTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainoteTests.swift; sourceTree = "<group>"; };
 		7B66E3EF281D052B514A6EB7 /* AnalysisPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalysisPreferences.swift; sourceTree = "<group>"; };
 		7B8B96FAC2F94AAE346057CC /* AIReportCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIReportCard.swift; sourceTree = "<group>"; };
+		7D487466DDA6B161237EB3BC /* AIReportRealContractTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIReportRealContractTests.swift; sourceTree = "<group>"; };
 		82F261B8284B11224A930E8C /* MuscleFeedback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MuscleFeedback.swift; sourceTree = "<group>"; };
 		8424241243F586A3CD4BB993 /* SwiftDataAnalysisRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftDataAnalysisRepository.swift; sourceTree = "<group>"; };
 		85CC5490582AE8F4F5C1B7B2 /* WorkoutModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutModels.swift; sourceTree = "<group>"; };
@@ -202,6 +205,7 @@
 		E0A14C31574087316905BD39 /* LibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryView.swift; sourceTree = "<group>"; };
 		E1856DDF7D2EBFEE9AFD1FA2 /* NutritionModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NutritionModels.swift; sourceTree = "<group>"; };
 		E1B413469D6A8A1F517B2D75 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		E6CFFE3748736E18A0B5A4AB /* ai-report-real-contract.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "ai-report-real-contract.json"; sourceTree = "<group>"; };
 		E6D840093FF2B98EDF67A855 /* BodyWeightEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BodyWeightEntry.swift; sourceTree = "<group>"; };
 		E753264FCE568A126404149B /* AppShell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppShell.swift; sourceTree = "<group>"; };
 		EC16B45CC0B4B502EC6A2D3D /* LocalHealthStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalHealthStorage.swift; sourceTree = "<group>"; };
@@ -224,6 +228,7 @@
 			isa = PBXGroup;
 			children = (
 				365FEAD0F1B33F53B71919F3 /* ai-report-contract.json */,
+				E6CFFE3748736E18A0B5A4AB /* ai-report-real-contract.json */,
 				C91785E77B15E5CF7605491D /* backup-v1.json */,
 			);
 			path = Fixtures;
@@ -232,6 +237,7 @@
 		114FD2898F4093CE2AC4D973 /* TrainoteTests */ = {
 			isa = PBXGroup;
 			children = (
+				7D487466DDA6B161237EB3BC /* AIReportRealContractTests.swift */,
 				3C86E92C25EA81701311B37F /* AIReportTests.swift */,
 				EF385ADA9FFFCEB4A4579B2E /* AIReportTransportTests.swift */,
 				C3501E876F2A34E63BE66682 /* AnalysisContractTests.swift */,
@@ -647,6 +653,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2EAA1DBA6537D58164FCA86B /* ai-report-contract.json in Resources */,
+				ED93F32B31BA85F8C8FC326C /* ai-report-real-contract.json in Resources */,
 				8D6B4FE8A24397A0B8D9D172 /* backup-v1.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -667,6 +674,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3E33C403669173E55337F865 /* AIReportRealContractTests.swift in Sources */,
 				87C41505F990B4B7F2F304AE /* AIReportTests.swift in Sources */,
 				D76EC5C28906D0EE30B1030D /* AIReportTransportTests.swift in Sources */,
 				74B862B9B0B11881C1379CA5 /* AnalysisContractTests.swift in Sources */,
