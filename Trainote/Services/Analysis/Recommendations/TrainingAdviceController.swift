@@ -59,6 +59,13 @@ final class TrainingAdviceController {
     }
   }
 
+  /// Capture only the current explicit plan selection. ReportSnapshotBuilder will fetch its own
+  /// fresh input and call this provider once with B/C's freshly calculated results.
+  func makeRecommendationProvider() throws -> TrainingRecommendationProvider {
+    guard let recovery else { throw AnalysisFailure.unavailable }
+    return provider(routines: try currentRoutines(), recovery: recovery)
+  }
+
   /// Re-reads repository, HealthKit's local snapshot and templates on the same actor before save.
   @discardableResult
   func adopt(actionID: String, parameters: [String: Double] = [:]) throws -> Workout {
@@ -109,6 +116,13 @@ final class TrainingAdviceController {
       asOf: asOf, window: window, timeZone: zone, health: health)
     let trend = try TrendCalculator().calculate(input)
     let recovered = try recovery.calculate(input)
+    return try provider(routines: routines, recovery: recovery).evaluate(
+      input: input, trend: trend, recovery: recovered)
+  }
+
+  private func provider(routines: [Routine], recovery: RecoveryService)
+    -> TrainingRecommendationProvider
+  {
     let byID = Dictionary(uniqueKeysWithValues: routines.map { ($0.id, $0) })
     let selected = selectedRoutineID.flatMap { byID[$0] }.map(RecommendationPlan.snapshot)
     let alternatives = alternativeRoutineIDs.sorted { $0.uuidString < $1.uuidString }
@@ -118,16 +132,50 @@ final class TrainingAdviceController {
       return (entry.exerciseID, entry.weights.keys.sorted { $0.rawValue < $1.rawValue })
     }
     let reviewed = Dictionary(uniqueKeysWithValues: reviewedEntries)
+    return TrainingRecommendationProvider(
+      selectedPlan: selected, alternativePlans: alternatives,
+      availableWeekdays: availableWeekdays, exerciseMuscles: reviewed)
+  }
+}
+
+/// Immutable selection adapter for a single fresh report preparation.
+struct TrainingRecommendationProvider: RecommendationProviding {
+  let selectedPlan: RecommendationPlan?
+  let alternativePlans: [RecommendationPlan]
+  let availableWeekdays: [Int]?
+  let exerciseMuscles: [String: [MuscleID]]
+
+  func context(trend: TrendResult) -> TrainingRecommendationContext {
     let nutritionReviewIDs = trend.facts.filter { fact in
       fact.metric == "diet.targetDifferencePercent" && fact.unit == .percent
         && fact.value.map { $0.isFinite && abs($0) > TrendRules().adherenceTolerance * 100 } == true
         && fact.quality.isEmpty
     }.map(\.id)
-    let context = TrainingRecommendationContext(
-      selectedPlan: selected, alternativePlans: alternatives,
+    return TrainingRecommendationContext(
+      selectedPlan: selectedPlan, alternativePlans: alternativePlans,
       availableWeekdays: availableWeekdays,
-      exerciseMuscles: reviewed, nutritionReviewFactIDs: nutritionReviewIDs)
-    return try TrainingRecommendationRules(context: context).evaluate(
-      input: input, trend: trend, recovery: recovered)
+      exerciseMuscles: exerciseMuscles, nutritionReviewFactIDs: nutritionReviewIDs)
+  }
+
+  func evaluate(input: AnalysisInput, trend: TrendResult, recovery: RecoveryResult) throws
+    -> TrainingRecommendationEvaluation
+  {
+    try TrainingRecommendationRules(context: context(trend: trend)).evaluate(
+      input: input, trend: trend, recovery: recovery)
+  }
+
+  func candidates(input: AnalysisInput, trend: TrendResult, recovery: RecoveryResult) throws
+    -> [RecommendationCandidate]
+  {
+    try evaluate(input: input, trend: trend, recovery: recovery).candidates
+  }
+
+  func snapshot(input: AnalysisInput, trend: TrendResult, recovery: RecoveryResult) throws
+    -> RecommendationSnapshot
+  {
+    let evaluated = try evaluate(input: input, trend: trend, recovery: recovery)
+    return .init(
+      candidates: evaluated.candidates, facts: evaluated.facts,
+      contextFingerprint: evaluated.contextFingerprint)
   }
 }

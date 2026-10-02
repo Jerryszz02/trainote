@@ -69,6 +69,8 @@ enum RecommendationWorkoutFactory {
     let fresh = try reevaluate()
     guard fresh.localDay == displayed.localDay,
       fresh.contextFingerprint == displayed.contextFingerprint,
+      fresh.blockedMuscles == displayed.blockedMuscles,
+      fresh.feedbackIdentity == displayed.feedbackIdentity,
       safetyFacts(in: fresh) == safetyFacts(in: displayed),
       let approved = fresh.candidates.first(where: {
         $0.action == selected.action && $0.muscleIDs == selected.muscleIDs
@@ -87,7 +89,10 @@ enum RecommendationWorkoutFactory {
       [
         "recommendation.painOrLimitation", "recommendation.recentWorkingSets",
         "recommendation.significantSoreness", "recommendation.feeling.tired",
+        "recommendation.trainingDaysPerWeek",
       ].contains($0.metric)
+        || $0.metric.hasPrefix("recommendation.goal.")
+        || $0.metric.hasPrefix("recommendation.systemic.")
     }.map { fact in
       var stable = fact
       stable.window = .init(start: .distantPast, end: .distantFuture)

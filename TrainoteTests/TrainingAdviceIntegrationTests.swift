@@ -11,7 +11,10 @@ final class TrainingAdviceIntegrationTests: XCTestCase {
     init(_ value: Date) { self.value = value }
   }
 
-  private func setup(mode: TrackingMode = .strength, withCoverageGap: Bool = false) throws
+  private func setup(
+    mode: TrackingMode = .strength, withCoverageGap: Bool = false,
+    historyAgeHours: Double = 48
+  ) throws
     -> (TrainingAdviceController, SwiftDataAnalysisRepository, ModelContext, Routine, Clock)
   {
     let container = try PersistenceController.makeContainer(inMemory: true)
@@ -25,8 +28,8 @@ final class TrainingAdviceIntegrationTests: XCTestCase {
     ]
     context.insert(routine)
     let history = Workout(
-      title: "原有训练", startedAt: baseTime.addingTimeInterval(-49 * 3600),
-      endedAt: baseTime.addingTimeInterval(-48 * 3600), status: .completed)
+      title: "原有训练", startedAt: baseTime.addingTimeInterval(-(historyAgeHours + 1) * 3600),
+      endedAt: baseTime.addingTimeInterval(-historyAgeHours * 3600), status: .completed)
     let exercise = WorkoutExercise(
       sourceExerciseID: "0025", nameEnSnapshot: "Bench", nameZhSnapshot: "卧推",
       orderIndex: 0, trackingMode: .strength)
@@ -101,6 +104,21 @@ final class TrainingAdviceIntegrationTests: XCTestCase {
     XCTAssertEqual(try context.fetch(FetchDescriptor<Workout>()).count, 1)
   }
 
+  func testNewPainOutsideSelectedPlanStillRequiresFreshConfirmation() throws {
+    let (controller, repository, context, _, _) = try setup()
+    let candidate = try XCTUnwrap(
+      controller.evaluation?.candidates.first { $0.action == .keepPlan })
+    try repository.saveCheckIn(
+      .init(
+        id: UUID(), localDate: AnalysisFingerprint.localDate(baseTime, timeZone: .gmt),
+        timeZoneIdentifier: TimeZone.gmt.identifier,
+        muscleFeedback: [
+          .init(id: UUID(), muscleID: .quads, hasPain: true, recordedAt: baseTime)
+        ], updatedAt: baseTime))
+    XCTAssertThrowsError(try controller.adopt(actionID: candidate.id))
+    XCTAssertEqual(try context.fetch(FetchDescriptor<Workout>()).count, 1)
+  }
+
   func testTemplateChangeAndExistingWorkoutRejectDuplicateStart() throws {
     let (controller, _, context, routine, _) = try setup()
     let candidate = try XCTUnwrap(
@@ -117,6 +135,61 @@ final class TrainingAdviceIntegrationTests: XCTestCase {
     XCTAssertEqual(try context.fetch(FetchDescriptor<Workout>()).count, 2)
   }
 
+  func testProfileTrainingFrequencyChangeRequiresFreshConfirmation() throws {
+    let (controller, repository, context, _, _) = try setup()
+    var profile = try XCTUnwrap(AnalysisFixtures.input(.manualOnly).profile)
+    profile.updatedAt = baseTime.addingTimeInterval(-86_400)
+    try repository.saveProfile(profile)
+    controller.refresh()
+    let candidate = try XCTUnwrap(
+      controller.evaluation?.candidates.first { $0.action == .keepPlan })
+    profile.trainingDaysPerWeek = 4
+    profile.updatedAt = baseTime
+    try repository.saveProfile(profile)
+    XCTAssertThrowsError(try controller.adopt(actionID: candidate.id))
+    XCTAssertEqual(try context.fetch(FetchDescriptor<Workout>()).count, 1)
+  }
+
+  func testSameCheckInIDEditedFeelingSleepOrMildSorenessRejectsOldReduceAdvice() throws {
+    for edit in 0..<3 {
+      let (controller, repository, context, _, clock) = try setup(historyAgeHours: 3)
+      var checkIn = CheckInValue(
+        id: UUID(), localDate: AnalysisFingerprint.localDate(baseTime, timeZone: .gmt),
+        timeZoneIdentifier: TimeZone.gmt.identifier,
+        feeling: .normal, sleepFeeling: .normal,
+        muscleFeedback: [
+          .init(id: UUID(), muscleID: .chest, soreness: .mild, recordedAt: baseTime)
+        ], updatedAt: baseTime)
+      try repository.saveCheckIn(checkIn)
+      controller.refresh()
+      let displayed = try XCTUnwrap(controller.evaluation)
+      let candidate = try XCTUnwrap(displayed.candidates.first { $0.action == .reduceSets })
+      switch edit {
+      case 0: checkIn.feeling = .good
+      case 1: checkIn.muscleFeedback[0].soreness = SorenessLevel.none
+      default: checkIn.sleepFeeling = .poor
+      }
+      checkIn.updatedAt = baseTime.addingTimeInterval(1)
+      try repository.saveCheckIn(checkIn)
+      clock.value = baseTime.addingTimeInterval(2)
+      let window = AnalysisWindow(
+        start: clock.value.addingTimeInterval(-90 * 86_400), end: clock.value)
+      let input = try repository.analysisInput(
+        asOf: clock.value, window: window, timeZone: .gmt,
+        health: .disconnected(window: window, asOf: clock.value))
+      let trend = try TrendCalculator().calculate(input)
+      let recovery = try RecoveryService().calculate(input)
+      let fresh = try controller.makeRecommendationProvider()
+        .evaluate(input: input, trend: trend, recovery: recovery)
+      XCTAssertTrue(fresh.candidates.contains { $0.action == .reduceSets })
+      XCTAssertNotEqual(fresh.feedbackIdentity, displayed.feedbackIdentity)
+      XCTAssertThrowsError(
+        try controller.adopt(
+          actionID: candidate.id, parameters: ["retainedSetPercent": 50]))
+      XCTAssertEqual(try context.fetch(FetchDescriptor<Workout>()).count, 1)
+    }
+  }
+
   func testUnsupportedTemplateModeAndUnallocatedHistoryNeverKeep() throws {
     let (unsupported, _, _, _, _) = try setup(mode: .cardio)
     XCTAssertFalse(unsupported.evaluation?.candidates.contains { $0.action == .keepPlan } == true)
@@ -124,5 +197,26 @@ final class TrainingAdviceIntegrationTests: XCTestCase {
     let (unallocated, _, _, _, _) = try setup(withCoverageGap: true)
     XCTAssertFalse(unallocated.evaluation?.candidates.contains { $0.action == .keepPlan } == true)
     XCTAssertTrue(unallocated.evaluation?.candidates.contains { $0.action == .choosePlan } == true)
+  }
+
+  func testReportProviderRebuildsFactsAndContextFromCurrentSelection() throws {
+    let (controller, repository, _, _, _) = try setup()
+    let provider = try controller.makeRecommendationProvider()
+    let window = AnalysisWindow(
+      start: baseTime.addingTimeInterval(-90 * 86_400), end: baseTime)
+    let input = try repository.analysisInput(
+      asOf: baseTime, window: window, timeZone: .gmt,
+      health: .disconnected(window: window, asOf: baseTime))
+    let trend = try TrendCalculator().calculate(input)
+    let recovery = try RecoveryService().calculate(input)
+    let snapshot = try provider.snapshot(input: input, trend: trend, recovery: recovery)
+    XCTAssertTrue(snapshot.candidates.contains { $0.action == .keepPlan })
+    XCTAssertTrue(snapshot.facts.contains { $0.metric == "recommendation.selectedPlan" })
+    XCTAssertEqual(snapshot.contextFingerprint, provider.context(trend: trend).fingerprint)
+    controller.availableWeekdays = []
+    let changed = try controller.makeRecommendationProvider()
+      .snapshot(input: input, trend: trend, recovery: recovery)
+    XCTAssertNotEqual(changed.contextFingerprint, snapshot.contextFingerprint)
+    XCTAssertEqual(changed.candidates.map(\.action), [.rest, .lightActivity])
   }
 }

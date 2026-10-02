@@ -39,6 +39,9 @@ struct TrainingRecommendationEvaluation: Equatable, Sendable {
   var plansByAction: [String: RecommendationPlan]
   var contextFingerprint: String
   var localDay: String
+  var blockedMuscles: [MuscleID]
+  /// Semantic answers in today's effective check-in; excludes read/edit timestamps.
+  var feedbackIdentity: String
 }
 
 enum TrainingRecommendationPolicy {
@@ -133,6 +136,39 @@ struct TrainingRecommendationRules: RecommendationProviding {
       "feeling.tired", checkIn?.feeling.map { $0 == .tired ? 1 : 0 },
       dependencies: checkIn.map { [.init(kind: .manualRecord, id: $0.id.uuidString)] } ?? [])
     let recentFeedback = checkIn?.muscleFeedback.filter { $0.recordedAt <= input.asOf } ?? []
+    struct FeedbackContent: Encodable {
+      var muscle: MuscleID
+      var soreness: SorenessLevel?
+      var pain: Bool?
+      var movementLimitation: Bool?
+    }
+    struct FeedbackIdentity: Encodable {
+      var timeZone: String
+      var feeling: OverallFeeling?
+      var sleepFeeling: SleepFeeling?
+      var muscles: [FeedbackContent]
+    }
+    let feedbackIdentity = RecommendationIdentity.digest(
+      FeedbackIdentity(
+        timeZone: input.calendarTimeZone, feeling: checkIn?.feeling,
+        sleepFeeling: checkIn?.sleepFeeling,
+        muscles: recentFeedback.map {
+          FeedbackContent(
+            muscle: $0.muscleID, soreness: $0.soreness,
+            pain: $0.hasPain, movementLimitation: $0.hasMovementLimitation)
+        }.sorted { lhs, rhs in
+          let left = [
+            lhs.muscle.rawValue, lhs.soreness?.rawValue ?? "missing",
+            lhs.pain.map { $0 ? "true" : "false" } ?? "missing",
+            lhs.movementLimitation.map { $0 ? "true" : "false" } ?? "missing",
+          ]
+          let right = [
+            rhs.muscle.rawValue, rhs.soreness?.rawValue ?? "missing",
+            rhs.pain.map { $0 ? "true" : "false" } ?? "missing",
+            rhs.movementLimitation.map { $0 ? "true" : "false" } ?? "missing",
+          ]
+          return left.lexicographicallyPrecedes(right)
+        }))
     let blocked = Set(
       recovery.muscles.filter { $0.hasPain || $0.hasMovementLimitation }.map(\.muscleID)
     )
@@ -303,7 +339,9 @@ struct TrainingRecommendationRules: RecommendationProviding {
     return .init(
       candidates: candidates, facts: facts, plansByAction: plans,
       contextFingerprint: context.fingerprint,
-      localDay: AnalysisFingerprint.localDate(input.asOf, timeZone: timeZone))
+      localDay: AnalysisFingerprint.localDate(input.asOf, timeZone: timeZone),
+      blockedMuscles: blocked.sorted { $0.rawValue < $1.rawValue },
+      feedbackIdentity: feedbackIdentity)
   }
 
   private func mappedMuscles(_ plan: RecommendationPlan) -> [MuscleID] {
