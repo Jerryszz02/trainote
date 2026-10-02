@@ -1,7 +1,7 @@
 import SwiftData
 import SwiftUI
 
-private enum LibrarySection: String, CaseIterable, Identifiable {
+enum LibrarySection: String, CaseIterable, Identifiable {
   case exercises = "动作"
   case routines = "训练模板"
   case foods = "饮食"
@@ -10,17 +10,23 @@ private enum LibrarySection: String, CaseIterable, Identifiable {
 }
 
 struct LibraryView: View {
-  var templatesRequest: Int = 0
-  @State private var selectedSection: LibrarySection = .exercises
+  @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+  @State private var selectedSection: LibrarySection
+
+  init(initialSection: LibrarySection = .exercises) {
+    _selectedSection = State(initialValue: initialSection)
+  }
 
   var body: some View {
     VStack(spacing: 0) {
-      Picker("资料类型", selection: $selectedSection) {
-        ForEach(LibrarySection.allCases) { section in
-          Text(section.rawValue).tag(section)
+      Group {
+        if dynamicTypeSize.isAccessibilitySize {
+          sectionPicker.pickerStyle(.menu)
+        } else {
+          sectionPicker.pickerStyle(.segmented)
         }
       }
-      .pickerStyle(.segmented)
+      .accessibilityIdentifier("library.section")
       .padding(.horizontal)
       .padding(.vertical, 10)
 
@@ -34,8 +40,13 @@ struct LibraryView: View {
       }
     }
     .navigationTitle("资料库")
-    .onChange(of: templatesRequest, initial: true) { _, request in
-      if request > 0 { selectedSection = .routines }
+  }
+
+  private var sectionPicker: some View {
+    Picker("资料类型", selection: $selectedSection) {
+      ForEach(LibrarySection.allCases) { section in
+        Text(section.rawValue).tag(section)
+      }
     }
   }
 }

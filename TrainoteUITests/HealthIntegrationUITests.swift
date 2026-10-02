@@ -1,0 +1,105 @@
+import XCTest
+
+final class HealthIntegrationUITests: XCTestCase {
+  private var app: XCUIApplication!
+  override func setUpWithError() throws {
+    continueAfterFailure = false
+    app = XCUIApplication()
+    app.launchArguments = ["-ui-testing"]
+    app.launch()
+  }
+
+  func testLocalOnlyOnboardingAndUnconfiguredAIDoNotBlockRecording() {
+    app.terminate()
+    app.launchArguments += ["-health-onboarding"]
+    app.launch()
+    XCTAssertTrue(app.buttons["health.localOnly"].waitForExistence(timeout: 5))
+    capture("分项数据引导")
+    app.buttons["health.aiInfo"].tap()
+    XCTAssertTrue(app.staticTexts["health.aiUnavailable"].waitForExistence(timeout: 3))
+    XCTAssertFalse(app.buttons["health.aiConsent"].exists)
+    capture("AI未配置说明")
+    app.navigationBars.buttons.element(boundBy: 0).tap()
+    app.buttons["health.localOnly"].tap()
+    XCTAssertTrue(app.tabBars.buttons["今日"].waitForExistence(timeout: 3))
+    app.buttons["today.startWorkout"].tap()
+    XCTAssertTrue(app.buttons["training.startBlank"].waitForExistence(timeout: 3))
+  }
+
+  func testAllLibraryEntrancesChooseTheirOwnSection() {
+    app.buttons["today.library"].tap()
+    XCTAssertTrue(app.navigationBars["资料库"].waitForExistence(timeout: 3))
+    XCTAssertTrue(app.segmentedControls.buttons["动作"].isSelected)
+    app.tabBars.buttons["训练"].tap()
+    app.buttons["training.routines"].tap()
+    XCTAssertTrue(app.segmentedControls.buttons["训练模板"].isSelected)
+    XCTAssertTrue(app.buttons["routine.create"].exists)
+    app.navigationBars.buttons.element(boundBy: 0).tap()
+    app.buttons["training.exercises"].tap()
+    XCTAssertTrue(app.segmentedControls.buttons["动作"].isSelected)
+    app.tabBars.buttons["饮食"].tap()
+    app.buttons["nutrition.library"].tap()
+    XCTAssertTrue(app.segmentedControls.buttons["饮食"].isSelected)
+    XCTAssertTrue(app.segmentedControls.buttons["常用食物"].exists)
+    XCTAssertTrue(app.segmentedControls.buttons["固定餐"].exists)
+  }
+
+  func testTodaySuggestionCanOpenTemplateSelectionAndOldSettingsRemain() {
+    app.buttons["today.recommendation"].tap()
+    XCTAssertTrue(app.buttons["routine.create"].waitForExistence(timeout: 3))
+    XCTAssertTrue(app.segmentedControls.buttons["训练模板"].isSelected)
+    app.navigationBars.buttons.element(boundBy: 0).tap()
+    app.buttons["today.settings"].tap()
+    XCTAssertTrue(app.buttons["每日营养目标"].waitForExistence(timeout: 3))
+    app.buttons["每日营养目标"].tap()
+    XCTAssertTrue(app.buttons["goal.save"].exists)
+    app.navigationBars.buttons.element(boundBy: 0).tap()
+    reveal(app.buttons["backup.export"])
+    XCTAssertTrue(app.buttons["backup.export"].isHittable)
+    XCTAssertTrue(app.buttons["backup.import"].exists)
+  }
+
+  func testDisconnectConfirmationAndOfflineHelp() {
+    app.buttons["today.settings"].tap()
+    app.buttons["settings.disconnectHealth"].tap()
+    app.buttons["断开并删除"].tap()
+    XCTAssertTrue(app.staticTexts["已断开并删除健康导入数据及相关报告。手动记录已保留。"].waitForExistence(timeout: 3))
+    reveal(app.buttons["settings.healthHelp"])
+    app.buttons["settings.healthHelp"].tap()
+    XCTAssertTrue(app.navigationBars["方法与数据使用"].waitForExistence(timeout: 3))
+    XCTAssertTrue(app.staticTexts["分析方法与适用范围"].exists)
+  }
+
+  func testLargeTextKeepsPrimaryNavigation() {
+    app.terminate()
+    app.launchArguments += [
+      "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL",
+      "-ui-testing-dark",
+    ]
+    app.launch()
+    XCTAssertTrue(app.buttons["today.settings"].waitForExistence(timeout: 3))
+    XCTAssertEqual(app.tabBars.buttons.count, 5)
+    capture("今日大字号")
+    app.buttons["today.library"].tap()
+    XCTAssertTrue(app.buttons["library.section"].waitForExistence(timeout: 3))
+    capture("资料库大字号")
+    app.tabBars.buttons["趋势"].tap()
+    XCTAssertTrue(app.navigationBars["趋势分析"].waitForExistence(timeout: 3))
+    app.tabBars.buttons["恢复"].tap()
+    XCTAssertTrue(app.navigationBars["恢复分析"].waitForExistence(timeout: 3))
+  }
+
+  private func reveal(_ element: XCUIElement) {
+    for _ in 0..<8 {
+      if element.isHittable { return }
+      app.swipeUp()
+    }
+  }
+
+  private func capture(_ name: String) {
+    let attachment = XCTAttachment(screenshot: app.screenshot())
+    attachment.name = name
+    attachment.lifetime = .keepAlways
+    add(attachment)
+  }
+}

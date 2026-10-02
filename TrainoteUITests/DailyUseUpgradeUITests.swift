@@ -200,7 +200,8 @@ final class DailyUseUpgradeUITests: XCTestCase {
   }
 
   func testFixedMealPortionAndCopyToAnotherMeal() {
-    app.tabBars.buttons["资料库"].tap()
+    app.tabBars.buttons["今日"].tap()
+    app.buttons["today.library"].tap()
     app.segmentedControls.buttons["饮食"].tap()
     app.buttons["foodLibrary.create"].tap()
     fill(app.textFields["foodPreset.name"], "固定餐燕麦")

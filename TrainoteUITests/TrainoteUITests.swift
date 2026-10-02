@@ -14,7 +14,10 @@ final class TrainoteUITests: XCTestCase {
     XCTAssertTrue(app.tabBars.buttons["今日"].exists)
     XCTAssertTrue(app.tabBars.buttons["训练"].exists)
     XCTAssertTrue(app.tabBars.buttons["饮食"].exists)
-    XCTAssertTrue(app.tabBars.buttons["资料库"].exists)
+    XCTAssertTrue(app.tabBars.buttons["趋势"].exists)
+    XCTAssertTrue(app.tabBars.buttons["恢复"].exists)
+    XCTAssertEqual(app.tabBars.buttons.count, 5)
+    XCTAssertTrue(app.buttons["today.library"].exists)
   }
 
   func testCanStartBlankWorkoutAndResumeIt() {
@@ -50,7 +53,8 @@ final class TrainoteUITests: XCTestCase {
   }
 
   func testCanCreateAndStartRoutine() {
-    app.tabBars.buttons["资料库"].tap()
+    app.tabBars.buttons["今日"].tap()
+    app.buttons["today.library"].tap()
     app.buttons["训练模板"].tap()
     app.buttons["routine.create"].tap()
     app.buttons["routine.addExercise"].tap()
@@ -149,6 +153,7 @@ final class TrainoteUITests: XCTestCase {
   func testAboutShowsPrivacyAndSupportLinks() {
     app.buttons["today.settings"].tap()
     XCTAssertTrue(app.navigationBars["设置"].waitForExistence(timeout: 3))
+    reveal(app.buttons["Trainote 与数据来源"])
     app.buttons["Trainote 与数据来源"].tap()
 
     XCTAssertTrue(app.navigationBars["关于"].waitForExistence(timeout: 3))

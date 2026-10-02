@@ -4,17 +4,17 @@
 
 当前默认分支的 Trainote 是一款中文优先、完全离线的 iPhone 健身与饮食记录 App。它用于记录力量训练、有氧训练、训练 routine，以及每日卡路里、碳水、蛋白质和脂肪。动作目录来自 `hasaneyldrm/exercises-dataset` 的固定版本，只内置 MIT 许可覆盖的文字和结构化数据，不分发需要单独授权的图片或 GIF。
 
-计划新增“趋势分析”“恢复分析”、Apple 健康读取和可选 DeepSeek 报告。**2026-10-03 用户已批准计划和分工；功能尚未实现，实施对话待文档 PR 通过 CI 并合并后创建。** 先完成 A、D 并验证包含两者的固定提交，再创建 B、C、E、F，各自 fetch 并基于该提交使用独立工作树；无需等待 A/D 主线合并。所有实施对话使用 max。现有代码是实现事实的依据，规划描述目标，不代替测试、科学验证或发布证据。
+计划新增“趋势分析”“恢复分析”、Apple 健康读取和可选 DeepSeek 报告。**2026-10-03：A/D 已形成固定基础 `967fa535`；本 F 分支正在实现导航、同意和建议规则，B/C/E 实际装配仍待主对话给出已验证提交。** 不据此推断默认分支、真实 AI 或发布状态。所有实施对话使用 max。现有代码是实现事实的依据，规划描述目标，不代替测试、科学验证或发布证据。
 
 ## 文档信息
 
 - 更新时间：2026-10-03
-- 工作模式：新增健康分析提案及工作树分工，保留 v1 / 1.1 设计基线。
+- 工作模式：执行已批准的 F 集成任务，保留 v1 / 1.1 的历史设计与验证记录。
 - canonical 项目根目录：`/Users/jerryszz/Desktop/Projects/trainote`
-- 本次文档工作树：`/Users/jerryszz/.codex/worktrees/f626/trainote`
-- 代码基线：已 fetch 的 `origin/main` / `e00208e`；规划分支 `agent/health-analysis-plan`。
+- 本次 F 工作树：`/Users/jerryszz/.codex/worktrees/392a/trainote`
+- 固定代码基线：`967fa5351838240b2bb6ca0c5cb8e777530e54c4`；分支 `agent/health-integration`，PR 暂以 `agent/health-foundation-integration` 为 base。
 - 本次检查证据：Git 状态与工作树、根 README、`project.yml`、已提交 Xcode 工程、AppShell/TrainoteApp、训练与营养模型、动作目录服务、备份服务、资料库/首页/设置页面、现有测试及 CI 配置；原始论文与研究仓库见证据矩阵。
-- 本次未运行 App 构建/产品测试、未检查当前签名/设备和发布状态；旧文档中的构建记录仍是带日期的历史证据。
+- F 已执行 Simulator 构建及单元/UI 测试；逐项结果在 [交接](../health-integration-handoff.md)。签名、真机和发布状态未验证，旧 1.1 记录仍为历史证据。
 
 本文档区分本次静态检查与历史运行结果；未找到证据的发布信息继续标记为 `待确认`。
 
@@ -23,6 +23,9 @@
 健康分析提案改变将来版本的数据、网络和导航边界；旧 v1 文档中的“无 HealthKit/无网络/无体重分析”描述当前基线，不表示新增模块已完成，也不表示永久排除。批准实施后由对应 PR 同步实际现状文档。
 
 ## 从哪里开始
+
+F 实施记录（2026-10-03）：本分支已从固定 A/D 基础 `967fa535` 开始导航、同意流程和推荐规则。
+见 [F 集成交接](../health-integration-handoff.md) 的接口缺口和待验条件；它不代表最终集成或默认分支现状。
 
 1. 阅读已获批准的 [健康分析实施提案](health-analysis-plan.md)，遵循导航、目标调整、权限和计算边界。
 2. 阅读 [研究证据与模型资产](health-analysis-evidence.md)，分清文献依据、产品参数与未验证部分。
@@ -50,7 +53,7 @@
 | `architecture.md`、`decision-log.md`、`security-privacy.md` | 新数据流、权限和供应商边界已写入健康分析提案，当前无需另建重复文件 |
 | `api-design.md` | 当前实现仍无后端；新代理 API 和认证操作已在提案中定义，实施时再按实际契约维护 |
 | `release-plan.md`、`operations-runbook.md` | 拟议发布条件/任务交付写入提案和交付计划；代理尚未创建，不编造运维命令；现有商店准备资料见下文 |
-| 根 README / 开发者指南 | 本轮只写规划，现有根 README 继续描述当前代码；不提前改成已实现新能力 |
+| 独立开发者指南 | 根 README 与技术/数据文档已按 F 分支事实更新；暂不另建重复指南 |
 
 ## 配套文档与历史证据
 

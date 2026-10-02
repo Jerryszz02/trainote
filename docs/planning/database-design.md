@@ -1,4 +1,4 @@
-# Trainote iOS v1 数据库设计
+# Trainote iOS 数据库设计
 
 ## 文档目的
 
@@ -6,7 +6,9 @@
 
 ## 数据边界
 
-动作目录是只读 JSON，不进入 SwiftData。SwiftData 只保存用户训练、routine、饮食模板、饮食日志和营养目标。
+动作目录是只读 JSON，不进入 SwiftData。生产 schema 1.2 在原记录之外增加手动健康实体；
+健康导入缓存、anchors、同意、设备凭据和派生报告不进入用户 JSON 备份。
+基础层详情与已验边界见 [A 交接](../health-foundation-handoff.md)。F 不另建 schema。
 
 ## 实体
 
@@ -23,6 +25,11 @@
 | `MealTemplateItem` | 名称和营养快照、数量、份量说明 | 不依赖 FoodPreset 后续变化 |
 | `FoodLogEntry` | 时间、餐次、名称、数量、份量、四项营养总值 | 完整快照，可独立编辑 |
 | `NutritionGoal` | 卡路里、碳水、蛋白质、脂肪、更新时间 | v1 只保留一份当前目标 |
+| `BodyProfile` / `BodyWeightEntry` | 活动身体档案、手动体重、时间和来源语义 | 健康体重不复制为手动记录 |
+| `DailyCheckIn` / `MuscleFeedback` | 当地日期/时区、可选感受、酸痛、独立疼痛与受限 | 未回答是 nil，不代表无症状 |
+| `DietLogCompleteness` | 记录日期和食物日志指纹 | 修改食物后旧确认失效 |
+| `NutritionGoalRevision` | 生效时间、目标、来源、proposal、撤销关系 | 历史不可被当前值覆盖；采用/撤销原子工作流待 A/B 固定接口 |
+| `AnalysisPreferences` | 手动/建议/自动模式、来源与提示偏好 | 默认 manual，升级不暗改目标 |
 
 ## 枚举
 
@@ -45,7 +52,8 @@
 - 从 routine 开始训练时复制动作名称和计划参数，随后两者互不影响。
 - 从 FoodPreset 或 MealTemplate 记录饮食时复制营养值，模板修改或删除不改写历史。
 - 删除 Workout/Routine/MealTemplate 时级联删除其从属对象；删除 FoodPreset 不删除 FoodLogEntry。
-- App 不提供自动过期或后台清理。
+- 用户手动记录不自动过期；健康导入缓存最多保留 90 天。明确断开会清缓存/anchors与依赖报告，保留手动数据。
+- `StrengthSet.rir` 可选 0–5，`setRoleRaw` 旧值默认 unknown。建议快照清空 RIR 与完成状态；建议 RIR 仅写提示，不能作为已测结果。
 
 ## 迁移策略
 
@@ -62,4 +70,3 @@
 ## 待确认
 
 1.1 备份格式版本为 1，包含全部 11 类持久化实体。先验证整个文件再通过独立 context 原子导入；同类型同 ID 保留本机版本并跳过，跨类型/子对象 ID 冲突拒绝。最多一场进行中训练。文件限制 20MB、100,000 个对象。营养数据为快照；备份不包含 AppStorage 中的入门提示和休息时长偏好。
-

@@ -30,6 +30,7 @@ struct TodayView: View {
   let onStartWorkout: () -> Void
   let onLogFood: () -> Void
   var onOpenTemplates: () -> Void = {}
+  var onOpenRecovery: () -> Void = {}
 
   private var todayEntries: [FoodLogEntry] {
     foodEntries.filter { Calendar.current.isDate($0.loggedAt, inSameDayAs: currentDate) }
@@ -48,6 +49,7 @@ struct TodayView: View {
       LazyVStack(alignment: .leading, spacing: 20) {
         header
         quickActions
+        recommendationCard
         if !onboardingDismissed && workouts.isEmpty && foodEntries.isEmpty { gettingStarted }
         nutrientGrid
         routineShortcuts
@@ -60,6 +62,12 @@ struct TodayView: View {
     .navigationTitle("今日")
     .navigationBarTitleDisplayMode(dynamicTypeSize.isAccessibilitySize ? .inline : .large)
     .toolbar {
+      ToolbarItem(placement: .topBarTrailing) {
+        NavigationLink {
+          LibraryView()
+        } label: { Label("资料库", systemImage: "books.vertical") }
+        .accessibilityIdentifier("today.library")
+      }
       ToolbarItem(placement: .topBarTrailing) {
         Button("设置", systemImage: "gearshape") {
           presentedSheet = .settings
@@ -88,6 +96,24 @@ struct TodayView: View {
     }
   }
 
+  private var recommendationCard: some View {
+    Button(action: routines.isEmpty ? onOpenTemplates : onOpenRecovery) {
+      HStack(alignment: .top, spacing: 12) {
+        Image(systemName: "lightbulb").font(.title2)
+        VStack(alignment: .leading, spacing: 4) {
+          Text("今日建议").font(.headline)
+          Text(routines.isEmpty ? "先选择一套训练模板，按自己的安排开始。" : "结合训练记录与体感，查看今天的恢复状态。")
+            .font(.subheadline).foregroundStyle(.secondary)
+        }
+        Spacer(minLength: 0)
+        Image(systemName: "chevron.right").font(.caption)
+      }
+      .padding().background(.background, in: RoundedRectangle(cornerRadius: 16))
+    }
+    .buttonStyle(.plain)
+    .accessibilityIdentifier("today.recommendation")
+  }
+
   private var gettingStarted: some View {
     VStack(alignment: .leading, spacing: 12) {
       HStack {
@@ -114,7 +140,8 @@ struct TodayView: View {
         HStack {
           Text("常用训练模板").font(.headline)
           Spacer()
-          Button("管理", action: onOpenTemplates).font(.subheadline)
+          Button("管理模板", action: onOpenTemplates).font(.subheadline)
+            .accessibilityIdentifier("today.manageTemplates")
         }
         ForEach(routines.prefix(3)) { routine in
           Button {

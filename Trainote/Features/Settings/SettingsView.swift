@@ -4,12 +4,15 @@ import SwiftUI
 struct SettingsView: View {
   @Environment(\.dismiss) private var dismiss
   @Environment(\.modelContext) private var modelContext
+  @Environment(HealthFeatureAccess.self) private var healthAccess
   @State private var exportDocument: BackupDocument?
   @State private var showExporter = false
   @State private var showImporter = false
   @State private var importMessage: String?
   @State private var showImportMessage = false
   @State private var showRestoreConfirmation = false
+  @State private var showHealthDeletion = false
+  @State private var showReportDeletion = false
 
   var body: some View {
     NavigationStack {
@@ -25,12 +28,40 @@ struct SettingsView: View {
           LabeledContent("距离", value: "公里 (km)")
         }
 
+        Section("健康与分析") {
+          LabeledContent("Apple 健康", value: healthAccess.healthConnected ? "已连接，可读类型以实际样本为准" : "未连接")
+          Button("连接 Apple 健康") { Task { await healthAccess.connectHealth() } }
+            .accessibilityIdentifier("settings.connectHealth")
+            .disabled(healthAccess.isBusy || healthAccess.health == nil)
+          Button(healthAccess.healthDeletionNeedsRetry ? "重试断开并删除健康导入数据" : "断开并删除健康导入数据", role: .destructive) {
+            showHealthDeletion = true
+          }
+          .accessibilityIdentifier("settings.disconnectHealth")
+          .disabled(healthAccess.isBusy)
+          NavigationLink("AI 报告") { AIConsentView() }
+            .accessibilityIdentifier("settings.aiReports")
+          if healthAccess.consent?.record(for: .aiReports)?.isGranted == true
+            || healthAccess.aiRevocationNeedsRetry || healthAccess.reports.serverRevocationPending {
+            Button("关闭 AI / 重试撤回") { Task { await healthAccess.revokeAI() } }
+              .accessibilityIdentifier("settings.revokeAI")
+              .disabled(healthAccess.isBusy)
+          }
+          Button("删除本机 AI 报告", role: .destructive) { showReportDeletion = true }
+            .accessibilityIdentifier("settings.deleteAIReports")
+            .disabled(healthAccess.isBusy)
+          NavigationLink("方法、隐私与数据使用") { HealthHelpView() }
+            .accessibilityIdentifier("settings.healthHelp")
+          if let message = healthAccess.statusMessage {
+            Text(message).font(.footnote).foregroundStyle(.secondary)
+          }
+        }
+
         Section("本地备份") {
           Button("导出全部数据") { exportBackup() }
             .accessibilityIdentifier("backup.export")
           Button("恢复本地备份") { showImporter = true }
             .accessibilityIdentifier("backup.import")
-          Text("备份文件包含训练、饮食和设置记录，只保存在你选择的位置；文件可能含有个人健康记录，请妥善保管。")
+          Text("导出 v2，支持恢复 v1 / v2；旧版 App 不保证能读 v2。包含手动健康资料、目标历史、训练和饮食；不包含健康导入缓存、授权、设备凭据或派生报告。备份只保存在你选择的位置，请妥善保管。")
             .font(.footnote).foregroundStyle(.secondary)
         }
 
@@ -79,6 +110,17 @@ struct SettingsView: View {
       } message: {
         Text(importMessage ?? "")
       }
+      .confirmationDialog("断开并删除健康导入数据？", isPresented: $showHealthDeletion, titleVisibility: .visible) {
+        Button("断开并删除", role: .destructive) { Task { await healthAccess.disconnectHealth() } }
+        Button("取消", role: .cancel) {}
+      } message: {
+        Text("停止同步并清除导入缓存、锚点和相关报告；保留手动记录，不改动 Apple 健康中的原始数据。")
+      }
+      .confirmationDialog("删除本机 AI 报告？", isPresented: $showReportDeletion, titleVisibility: .visible) {
+        Button("删除报告", role: .destructive) { healthAccess.deleteReports() }
+        Button("取消", role: .cancel) {}
+      } message: { Text("删除本机报告缓存，不删除训练、饮食或健康记录。") }
+      .healthAccessError(healthAccess)
     }
   }
 
@@ -156,7 +198,7 @@ struct NutritionGoalEditor: View {
       }
 
       Section {
-        Text("目标由你手动设置。Trainote 不会根据身体数据自动生成饮食建议。")
+        Text("在这里保存手动目标。趋势页的每周建议需要单独采用；不会因为升级而无声改变旧目标。")
           .font(.footnote)
           .foregroundStyle(.secondary)
       }
@@ -253,7 +295,7 @@ struct AboutView: View {
     List {
       Section("Trainote") {
         LabeledContent("版本", value: versionText)
-        Text("训练和饮食记录只保存在本机。Trainote 不上传内容，也不提供医疗或专业训练建议。")
+        Text("训练和饮食记录保存在本机。Apple 健康与 AI 报告分别选择；未配置真实 AI 服务时不会发送记录。分析是估计，不提供医疗诊断。")
       }
 
       Section("隐私与支持") {
@@ -285,13 +327,7 @@ struct AboutView: View {
 
 struct PrivacyView: View {
   var body: some View {
-    ScrollView {
-      Text(
-        "Trainote 隐私政策\n\n训练、饮食、常用食物、计划和营养目标只保存在本机。Trainote 不要求账号，不包含广告、分析、追踪或遥测，也不会主动上传你的内容。\n\n你导出的备份由你选择保存位置；备份可能包含个人记录，请自行妥善保管。删除记录或卸载 App 后，系统备份中的副本仍由你的设备和 Apple 账户设置管理。\n\nTrainote 只是手动记录工具，不提供医疗诊断或专业训练建议。"
-      )
-      .frame(maxWidth: .infinity, alignment: .leading).padding()
-    }
-    .navigationTitle("隐私政策").navigationBarTitleDisplayMode(.inline)
+    HealthHelpView()
   }
 }
 
@@ -299,6 +335,9 @@ struct SupportView: View {
   private let issuesURL = URL(string: "https://github.com/Jerryszz02/trainote/issues")!
   var body: some View {
     List {
+      Section("健康分析") {
+        NavigationLink("方法、权限、撤回和数据使用") { HealthHelpView() }
+      }
       Section("本地备份") {
         Text(
           "在设置中选择“导出全部数据”，将 JSON 文件保存到安全位置。更换设备后选择“恢复本地备份”，先预览记录数量，再确认恢复。已有相同 ID 的记录会跳过，当前数据不会被删除。")

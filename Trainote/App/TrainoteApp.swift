@@ -7,6 +7,7 @@ import SwiftUI
 struct TrainoteApp: App {
   @State private var catalog: ExerciseCatalog
   @State private var healthFoundation: HealthFoundation?
+  @State private var healthAccess: HealthFeatureAccess?
   @Environment(\.scenePhase) private var scenePhase
   private let containerResult: Result<ModelContainer, Error>
 
@@ -31,18 +32,25 @@ struct TrainoteApp: App {
       let directory = inMemory
         ? FileManager.default.temporaryDirectory.appendingPathComponent("health-test-\(UUID().uuidString)")
         : LocalHealthStorage.directory
-      _healthFoundation = State(initialValue: HealthFoundation(container: container, localDirectory: directory))
-    } else { _healthFoundation = State(initialValue: nil) }
+      let foundation = HealthFoundation(container: container, localDirectory: directory)
+      _healthFoundation = State(initialValue: foundation)
+      _healthAccess = State(initialValue: HealthFeatureAccess(
+        foundation: foundation, reports: LocalOnlyReportAccess()))
+    } else {
+      _healthFoundation = State(initialValue: nil)
+      _healthAccess = State(initialValue: nil)
+    }
   }
 
   var body: some Scene {
     WindowGroup {
       switch containerResult {
       case .success(let container):
-        if let healthFoundation {
+        if let healthFoundation, let healthAccess {
           AppShell()
             .environment(catalog)
             .environment(healthFoundation)
+            .environment(healthAccess)
             .modelContainer(container)
             .task { await healthFoundation.resume() }
             .onChange(of: scenePhase) { _, phase in

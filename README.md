@@ -1,6 +1,8 @@
 # Trainote
 
-Trainote 是一个中文优先、完全离线的 iPhone 健身与饮食记录 App。它使用 SwiftUI 和 SwiftData，支持四种训练记录方式、训练模板、常用食物、固定餐、每日营养目标、周报与个人纪录。
+Trainote 是一个中文优先、离线可用的 iPhone 健身与饮食记录 App。它使用 SwiftUI 和 SwiftData，支持四种训练记录方式、训练模板、常用食物、固定餐、每日营养目标、周报与个人纪录。Apple 健康连接单独选择，原有记录不需要健康权限。
+
+本分支正在集成健康分析：五个 Tab、资料库上下文入口、分项引导与撤回已实现；趋势、恢复和 AI 模块仍待固定版本装配，不能把占位页当作已交付分析功能。具体接口与验证见 [集成交接](docs/health-integration-handoff.md)。
 
 ## 当前能力
 
@@ -11,7 +13,10 @@ Trainote 是一个中文优先、完全离线的 iPhone 健身与饮食记录 Ap
 - 周一至周日的每周回顾，显示训练积累、重量/容量 PR 和饮食记录完整度。
 - 设置中可导出和恢复有版本的 JSON 备份；重复 ID 跳过、冲突和无效备份拒绝。
 - 离线内置 1,324 个中英双语动作和中文说明。
-- 所有记录只保存在本机，无账号、后端、分析或遥测。
+- 手动记录保存在本机，无账号、广告或遥测。
+- 今日、训练、饮食、趋势、恢复五个入口；完整资料库可从今日以及训练/饮食进入，设置仍从今日齿轮打开。
+- 健康数据连接后只读导入；可明确断开并清除导入缓存及依赖报告，保留手动记录。
+- 无真实代理配置时 AI 入口说明开放条件，不保存预先同意、不向 DeepSeek 发送健康记录。
 
 ## 开发环境
 
@@ -57,7 +62,11 @@ xcodebuild -project Trainote.xcodeproj -scheme Trainote \
   test
 ```
 
-## 当前验证状态
+## 验证状态
+
+2026-10-03 F 骨架：94 项单元测试通过（含新增 21 项候选/同意测试）；22 条 UI 路径经首轮及受影响路径复测通过。独立 Simulator 实际构建通过。最终 B/C/E 联合验收、真机健康链路与供应商条件尚未完成。
+
+以下为 1.1 的历史验证，不代表当前健康集成结果：
 
 - 2026-09-19：Xcode 26.6 / iOS 26.5，Release generic iOS Simulator 无签名构建通过。
 - 2026-09-19：最终完整回归通过 42 个单元测试和 16 个 UI 测试，共 58 项、0 失败。
@@ -90,7 +99,7 @@ python3 Scripts/import_exercises.py --translate-missing
 - `Trainote/App`：根 ModelContainer、Tab 和依赖注入。
 - `Trainote/Models`：SwiftData 模型和枚举。
 - `Trainote/Services`：动作目录、routine 快照和营养汇总。
-- `Trainote/Features`：今日、训练、饮食、资料库和设置界面。
+- `Trainote/Features`：五 Tab 导航、资料库、设置、分项引导和离线方法/隐私说明。
 - `TrainoteTests`、`TrainoteUITests`：领域、持久化、数据和 UI 验证。
 - `docs/planning`：PRD、技术设计、数据库设计和测试计划。
 

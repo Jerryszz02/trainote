@@ -4,18 +4,22 @@ enum AppTab: Hashable {
   case today
   case training
   case nutrition
-  case library
+  case trends
+  case recovery
 }
 
 struct AppShell: View {
   @State private var selectedTab: AppTab = .today
   @State private var startWorkoutRequest = 0
   @State private var logFoodRequest = 0
-  @State private var templatesRequest = 0
+  @State private var todayPath: [LibrarySection] = []
+  @State private var showHealthOnboarding = false
+  @AppStorage("health.onboarding.v1.completed") private var healthOnboardingCompleted = false
+  var analysisDestinations: HealthAnalysisDestinations = .pending
 
   var body: some View {
     TabView(selection: $selectedTab) {
-      NavigationStack {
+      NavigationStack(path: $todayPath) {
         TodayView(
           onStartWorkout: {
             selectedTab = .training
@@ -26,10 +30,11 @@ struct AppShell: View {
             logFoodRequest += 1
           },
           onOpenTemplates: {
-            selectedTab = .library
-            templatesRequest += 1
-          }
+            todayPath.append(.routines)
+          },
+          onOpenRecovery: { selectedTab = .recovery }
         )
+        .navigationDestination(for: LibrarySection.self) { LibraryView(initialSection: $0) }
       }
       .tabItem { Label("今日", systemImage: "chart.bar.fill") }
       .tag(AppTab.today)
@@ -47,11 +52,35 @@ struct AppShell: View {
       .tag(AppTab.nutrition)
 
       NavigationStack {
-        LibraryView(templatesRequest: templatesRequest)
+        analysisDestinations.trends()
       }
-      .tabItem { Label("资料库", systemImage: "books.vertical.fill") }
-      .tag(AppTab.library)
+      .tabItem { Label("趋势", systemImage: "chart.xyaxis.line") }
+      .tag(AppTab.trends)
+
+      NavigationStack {
+        analysisDestinations.recovery()
+      }
+      .tabItem { Label("恢复", systemImage: "figure.stand") }
+      .tag(AppTab.recovery)
     }
     .tint(.accentColor)
+    #if DEBUG
+      .preferredColorScheme(ProcessInfo.processInfo.arguments.contains("-ui-testing-dark") ? .dark : nil)
+    #endif
+    .task {
+      #if DEBUG
+        if ProcessInfo.processInfo.arguments.contains(where: { $0.hasPrefix("-ui-testing") }) {
+          showHealthOnboarding = ProcessInfo.processInfo.arguments.contains("-health-onboarding")
+          return
+        }
+      #endif
+      showHealthOnboarding = !healthOnboardingCompleted
+    }
+    .sheet(isPresented: $showHealthOnboarding) {
+      HealthOnboardingView {
+        healthOnboardingCompleted = true
+        showHealthOnboarding = false
+      }
+    }
   }
 }
