@@ -1,7 +1,7 @@
 # Health integration (task F)
 
 2026-10-03：B/C/E 真实生产装配已进入 PR #9，分支 `agent/health-integration`，工作树 `392a/trainote`。
-本任务只交付可审阅 PR；不自行合并默认分支、发布、部署或上传真实健康数据。当前仍有 E 的日统计窗口校验阻塞，不能声明最终验收完成。
+本任务只交付可审阅 PR；不自行合并默认分支、发布、部署或上传真实健康数据。E 日统计窗口阻塞已通过定向单元及真实 UI；公共输入 helper、完整趋势采用/撤销 UI 和 A 撤回持久化后续补丁仍待收口，不能声明最终验收完成。
 
 ## 固定依赖与工程
 
@@ -14,6 +14,7 @@
 | B | `27a026f88f1e6d21158313af6d1fb7e619ad82e0` | 趋势计算、目标采用/撤销、历史日目标和趋势页 |
 | A 推荐快照 | `d4ee483a5ff355e94e813b9ff760cb6333295772` | 一次求值收集推荐 facts 与候选；最终报告指纹包含上下文 |
 | E | `a36d640ee4ba4b3fe375e477ec08c109ebac9fa2` | 真实报告缓存、最小化、客户端校验及撤回生命周期 |
+| E 日桶边界 | `52fbb32110874f54d62d1c017f000b18149a4da0` | 保留真实 B 本地事实/依赖，仅 wire 投影已观测窗口，拒绝未来原始值 |
 | D 生命周期 | `a363195d480d1412d496336b674efc7c09dafaa8` | 普通合入 `e794a3c` 的 SceneKit teardown 修复 |
 
 `.pbxproj` 仅使用本树 XcodeGen 2.46.0 完整运行时从 `project.yml` 机械生成，工程登记单独提交；原 CI、schema、entitlements 未改。
@@ -48,10 +49,11 @@ PR base 保持 `agent/health-foundation-integration`，由主协调处理后续�
 - 关闭 AI 委托 E `closeAI`；启动/前台先恢复待撤回状态。失败不清 pending marker；删除 AI 历史调用 `deleteAIReports`，与手动记录、健康连接独立。
 - 模板或可训练日变化使当前报告失效；保存本地记录也取消当前工作和卡片，历史快照保留。前台健康同步完成后重算已请求的本地基础报告；配置远程服务时仍走明确报告请求入口。
 
-## 当前阻塞
+## 已闭合边界与当前待办
 
-E `ReportFactSelection.wireWindow` 目前只允许推荐事实使用截至次日的日桶。真实 B 的 `weight.smoothed` 总有该窗口；当天 `weight.representative`、满足条件后的 `energy.initialEstimate` 和 `weight.targetWeeklyChangePercent` 同样可能越过 asOf。
-真实组合测试已复现 `weight.smoothed` 被拒绝，导致本地基础报告也不能生成。最小测试 `HealthReportIntegrationTests.testRealTrendDayBucketsAreAcceptedByReportBoundary` 保留；不删 B facts、不改变其日桶语义。唯一修复方为 E，等待主协调提供新固定 SHA。
+E `ReportFactSelection.wireWindow` 原先拒绝真实 B 当日 `weight.smoothed` 等日桶，导致本地报告失败。`52fbb321` 已普通合入 `27d7e17`，工程登记为 `f0e6346`；B 本地事实和依赖完整保留，wire 只投影已观测区间，未来原始健康数据仍拒绝。原 5 项 F 报告组合测试和 4 项 E 日期/DST 边界测试全部通过，真实基础报告→查看依据→只读历史 UI 也通过。
+
+公共输入 helper 仍需处理键盘工具栏遮住零值字段的选择失败及 CI 第二次打开搜索键盘未出现；保留严格读回和业务断言。主协调另已复现 LocalConsentStore 写盘失败后重启读回旧 granted 的路径，由 A 统一修复；F 当前进程 retry 不替代该共享持久化补丁。
 
 ## 验证证据
 
@@ -62,7 +64,10 @@ E `ReportFactSelection.wireWindow` 目前只允许推荐事实使用截至次日
 - 采用修复 `491a991` 的 8 项真实仓库/C 集成测试全部通过，含同 ID 修改体感/睡眠/轻微酸痛拒绝、仅前进 2 秒成功。`/tmp/trainote-health-integration-report-boundary.xcresult` 同时记录了 4 项报告边界失败，不是整次成功。
 - D 原始崩溃为真实 RecoveryView 切列表时 `C3DSceneLock → SCNView.projectPoint → projectedAnchors → layoutSubviews` 的 EXC_BAD_ACCESS。原证据 `/tmp/trainote-health-integration-recovery-ui-ready.xcresult`；失败测试保留，D 修复后同一路径通过，继续验证肌群选择、疼痛保存与方法说明。
 - `a7e418c` 通过 244 项单元和 2 项真实 UI（恢复原崩溃回归、按建议新建减量训练），结果 `/tmp/trainote-health-integration-advice-recovery.xcresult`。此轮明确排除了已知失败的 4 项报告组合测试。
-- 新一轮完整 UI（暂不含上述报告路径）和撤回恢复测试正在执行；结果待回填。最终 E 修复后需重跑全部单元和报告路径，确认最终 head CI。
+- `/tmp/trainote-health-integration-ui-regression.xcresult`：16 项撤回/建议单元通过；29 项 UI 中 28 项通过，唯一失败为公共 helper 的零值营养输入全选。该轮明确排除当时阻塞的报告 UI。
+- `/tmp/trainote-health-integration-real-report-ui.xcresult`：9 项报告相关单元及报告真实 UI 通过；同轮公共输入辅助用例仍失败，不把整轮写成通过。已查看报告截图，未知值保留未知，没有未启用的 AI 同意入口。
+- Node 22.23.1 下代理 `npm test` 65/65 和 `npm run demo` synthetic-offline 通过，日志 `/tmp/trainote-health-integration-server.log`。没有真实供应商请求。
+- 公共 helper、趋势采用/撤销 UI 及 A 补丁收口后，仍须最终完整回归并确认当前 head CI。
 
 ## 真机及发布剩余条件
 

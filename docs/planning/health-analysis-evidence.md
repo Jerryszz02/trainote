@@ -2,13 +2,13 @@
 
 ## 文档状态与范围
 
-- 状态：`计划中`；研究证据已整理，产品算法、用户试验与健康效果均未验证。
-- 版本：`evidence-v0.1`；核查日期：2026-10-03（Asia/Shanghai）。
-- 规划分支：`agent/health-analysis-plan`；本文件不代表默认分支或已发布能力。
+- 状态：`实施中，联合验收未完成`；研究证据已整理，版本化产品规则及测试已进入 `agent/health-integration` 的 PR；用户试验、科学有效性与健康效果均未验证。
+- 文档版本：`evidence-v0.2`；文献核查日期：2026-10-03（Asia/Shanghai）；实现状态按本分支当前源码核对。
+- 原规划分支：`agent/health-analysis-plan`；本文件不代表默认分支或已发布能力。
 - 目的：为体重趋势、摄入建议、肌群准备度和分析报告提供可追溯的证据边界。
 - 来源：原始论文、PubMed/PMC、NIDDK/National Academies、研究团队官方仓库。
 - 非目标：医疗诊断、损伤判断、个体营养处方、复制研究模型或外部服务代码。
-- 本轮只整理规划材料；不实现功能、不创建实施对话、不开展用户试验。
+- 现有实现与文献发现分开记录；通过工程测试只证明指定输入下的计算和流程行为，不证明生理预测准确。
 - **研究证据及适用人群仍待运动营养、运动科学专业审查。**
 - 文档入口由 [规划索引](README.md) 维护；具体产品默认值以[实施提案](health-analysis-plan.md)为准，工作树所有权见[交付计划](health-analysis-delivery.md)。
 
@@ -174,7 +174,20 @@
 “100/100”也不能表示可以无限加量或不存在受伤风险。
 数据不足时应输出未知/低信息量，不能把未记录训练等同于已充分恢复。
 “低/中/高置信度”若仅按资料完整度划分，应注明它不是已校准的统计概率。
-本阶段不以论文名、3D 人体或更多小数位包装算法准确性。
+当前产品也不以论文名、3D 人体或更多小数位包装算法准确性。
+
+### 当前方法版本与工程入口
+
+以下数值是已写入代码的 **P 工程初值**，不是上述论文测得的通用生理常数；更改须同步版本、规则说明和回归用例。
+
+| 规则 | 当前版本与实现入口 | 已实现的边界及对应测试入口 |
+| --- | --- | --- |
+| 体重和营养趋势 | [`TrendRules`](../../Trainote/Services/Analysis/Trend/TrendRules.swift) `trend-p-v1`、[`TrendCalculator`](../../Trainote/Services/Analysis/Trend/TrendCalculator.swift) | 7 日时间 EMA、21 日斜率、至少 14 日跨度/8 个观测日、近 14 个已完成日中至少 12 个明确饮食确认、7 日调整间隔及单次最多 100 kcal/5%；不完整记录、来源冲突和历史目标缺口会暂停建议。固定计算与原子采用/撤销见 [`TrendCalculatorTests`](../../TrainoteTests/TrendCalculatorTests.swift)、[`TrendWorkflowTests`](../../TrainoteTests/TrendWorkflowTests.swift)。 |
+| 肌群与全身状态 | [`RecoveryParameters`](../../Trainote/Services/Analysis/Recovery/RecoveryParameters.swift) `recovery-v0.1`、[`RecoveryCalculator`](../../Trainote/Services/Analysis/Recovery/RecoveryCalculator.swift)、[`ExerciseMuscleMap`](../../Trainote/Services/Analysis/Recovery/ExerciseMuscleMap.swift) `exercise-muscles-v0.1` | 28 日局部窗口、初始衰减常数 36 小时、负荷尺度 6；缺 RIR、未审核动作、未分配力量活动、疼痛/活动受限均保留未知或覆盖限制，不推断成 100 分。合成回归入口为 [`RecoveryCalculatorTests`](../../TrainoteTests/RecoveryCalculatorTests.swift)、[`RecoveryCalibrationTests`](../../TrainoteTests/RecoveryCalibrationTests.swift)。 |
+| 今日训练候选 | [`TrainingRecommendationRules`](../../Trainote/Services/Analysis/Recommendations/TrainingRecommendationRules.swift) `training-candidates-p1` | 最近训练观察 24 小时；减量候选保留 50%–75% 组数，提高 RIR 的建议范围为 2–4；疼痛优先于高分，只对用户显式选择且映射已审核的模板给可采用动作。候选与重新核对见 [`TrainingRecommendationTests`](../../TrainoteTests/TrainingRecommendationTests.swift)、[`TrainingAdviceIntegrationTests`](../../TrainoteTests/TrainingAdviceIntegrationTests.swift)。 |
+| 分析报告 | [`ReportSnapshotBuilder`](../../Trainote/Services/HealthData/ReportSnapshotBuilder.swift)、[`AIReportAssembly`](../../Trainote/Services/AIReports/AIReportAssembly.swift) | 已实现新鲜快照、事实依赖、受限候选、撤回与本机缓存边界；默认没有远程代理。真实 B 日桶原先被 E 的传输窗口筛选拒绝；E `52fbb321` 修复后 F 的 9 项联合单元及真实报告 UI 通过，原复现保留为回归 [`HealthReportIntegrationTests.testRealTrendDayBucketsAreAcceptedByReportBoundary`](../../TrainoteTests/HealthReportIntegrationTests.swift)。 |
+
+上表的单元测试入口和局部通过记录是工程证据，不能据此宣称当前最终提交已通过全量测试，也不能替代按人/时间划分的预测验证、真机授权及专业审查。日期边界由 E 统一修复，只调整 wire 观测窗口，保留 B 本地日桶事实/依赖并继续拒绝未来原始健康事实。
 
 ## 健康 AI 研究：可用资产与接入边界
 
@@ -222,11 +235,15 @@
 
 ### 资产复用决定
 
-本阶段只采用研究方法和评价设计，不下载权重、不训练模型、不复制第三方代码或数据进入 App。
+当前实现只借鉴研究方法和评价设计；没有下载上述研究模型权重、训练模型或复制其代码/数据进入 App。
 “有论文”“有参考代码”“有完整权重”“有商用托管 API”“适配本项目且经验证”是五个独立状态。
 后续若复用资产，应固定提交/版本、核对逐文件及数据许可、依赖条件与用途说明，再评估维护成本。
 不得把研究案例评分、考试成绩或分类 AUC 写成本产品营养/恢复建议的准确率。
-通用 LLM 可以解释确定性计算结果；接入 DeepSeek 等服务的隐私、传输和接口验收由技术规格另行定义。
+E 已提供受限事实传输与本地报告装配，当前 App 默认 `proxy: nil`，没有真实供应商请求或可用的 AI 报告授权入口。未来接入 DeepSeek 等服务仍需完成隐私、传输、供应商条款和真实回路验收；不能把本地装配写成已上线服务。
+
+### D 人体展示资产的来源与许可
+
+当前可旋转人体使用 Trainote 自行生成的几何资料，不取用上述研究模型或第三方解剖素材。原始数值轮廓生成脚本为 [`BodyMapPreview/generate_asset.py`](../../BodyMapPreview/generate_asset.py)，资产与映射的作者、生成日期、文件 SHA-256、许可及限制记录在 [`PROVENANCE.md`](../../Trainote/Resources/BodyMap/PROVENANCE.md) 和 [`LICENSE.txt`](../../Trainote/Resources/BodyMap/LICENSE.txt)。许可为该原始资产的 MIT；动作目录的文字许可不能用作人体素材许可。74 个封闭体积、左右同组的粗粒度展示只帮助选择肌群，不表示小肌肉或左右两侧有独立生理测量，也不验证准备度分数。
 
 ## 版本记录与复核入口
 
@@ -242,20 +259,20 @@
 动态网页/README 的“未核实”是截至核查日的状态，不等于承诺未来永远不发布。
 部分 PMC/PubMed 页面出现反爬限制；已结合原始摘要、期刊页面及官方全文接口核对，不声称全文均可直连。
 
-## 计划中的验证与未完成项
+## 当前工程证据与仍需完成的验证
 
 - 专业审查：目标人群、能量/营养上下限、公式变量、特殊情境和建议措辞；尚未完成。
 - 科学有效性：尚未开展 Trainote 用户试验，也没有本产品分数与生理恢复之间的验证数据。
-- 计算验证：将来以固定案例验证单位、缺失、重复来源、平滑和限幅；算术正确不等于生理预测正确。
+- 计算验证：已有合成与固定案例覆盖单位、缺失、重复来源、平滑、限幅、体感清空、目标采用/撤销和建议重新核对；入口见上表。先前 F 阶段运行过排除报告组合路径的单元测试及 UI 路径，不能当作当前最终提交的全量通过。算术正确不等于生理预测正确。
 - 营养验证：考察可靠记录下的趋势预测误差、调整稳定性和过度调整；先与简单基线比较。
 - 准备度验证：目标先限定为可比训练的表现/主观准备度，不把该终点扩大成组织恢复或损伤预测。
 - 比较基线：至少比较“距上次训练时间”及简单近期负荷，检验复杂模型是否实际增加信息。
 - 数据划分：按人和时间避免训练/评估泄漏；缺失记录与自报误差应单独分析。
-- 报告验证：检查引用、数字一致性、缺数据时能否承认未知，以及建议是否遵守确定性规则。
+- 报告验证：已有引用、候选 ID、数字/缺失值、撤回和缓存的合成测试；真实 B/C/F/E 组合的日桶拒绝已修复并通过定向单元与 UI；最终全量回归及 A 撤回持久化补丁仍待完成。后续还须验证真实供应商只选允许候选、缺数据承认未知，且采用前仍重算规则。
 - 设备验证：本轮没有检验任一设备/固件的当前测量准确性；N08 只提供历史方法依据。
-- 模型可用性：未运行上述研究模型、未验证权重下载、未购买服务；生产适配和许可审查尚未完成。
-- 资料复用：本轮没有复制受限全文、图表、训练语料或代码；后续引入资产时另行登记来源与许可。
-- 用户确认：2026-10-03 已批准主规划和分工，按 A/D 完成并形成可构建的固定提交后启动 B/C/E/F 的顺序实施，无需等待 A/D 主线合并；实施 effort 为 max；批准不等于科学验证，本证据文档不构成超出主规划的授权。
+- 模型可用性：未运行上述研究模型、未验证权重下载、未购买真实供应商服务；生产适配和许可审查尚未完成。
+- 资料复用：没有复制受限全文、图表、训练语料或上述研究项目代码；D 原始人体资产另有明确来源和许可记录，未来引入其他资产仍须逐项登记。
+- 用户确认：2026-10-03 已批准主规划和 A/D/B/C/E/F 分工，现有固定模块已进入 F 组合分支；批准及工程阶段成果均不等于科学验证或发布授权。
 
 ## 文档验收
 
@@ -263,4 +280,4 @@
 - 研究人群、输入和测量终点不被改写成本产品已验证效果。
 - 专用模型不因有代码而被写成可直接调用的生产服务。
 - 无未经证实的“真实恢复百分比”“精准消耗”或“专业审查已完成”声明。
-- 与产品/技术规格交叉检查后，由主代理把本文件加入规划索引并记录实际文档检查结果。
+- 与产品/技术规格及当前实现交叉检查，规划索引持续指向本文件，并记录实际文档检查结果。
