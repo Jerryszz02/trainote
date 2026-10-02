@@ -27,7 +27,8 @@ try {
   // TLS terminates at an approved local reverse proxy; never trust X-Forwarded-For from callers.
   server.listen(port, '127.0.0.1');
   const switchCheck = setInterval(() => { if (!enabled()) service.disable(); }, 1000);
-  const stop = () => { clearInterval(switchCheck); service.disable(); server.close(() => { store.close(); }); };
+  const retentionCheck = setInterval(() => service.maintain(), 60_000);
+  const stop = () => { clearInterval(switchCheck); clearInterval(retentionCheck); service.disable(); server.close(() => { store.close(); }); };
   process.once('SIGTERM', stop); process.once('SIGINT', stop);
 } catch {
   // Configuration/provider errors can carry credentials; log only this fixed message.

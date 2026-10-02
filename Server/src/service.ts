@@ -54,6 +54,15 @@ export class ReportService {
     for (const [id, s] of this.sessions) if (s.intent.method !== 'DELETE' || s.intent.path !== '/v1/consent') this.sessions.delete(id);
     for (const [id, c] of this.challenges) if (c.intent?.method !== 'DELETE' || c.intent?.path !== '/v1/consent') this.challenges.delete(id);
   }
+  maintain() {
+    const now = this.clock(); this.sweep(now);
+    if (!Object.values(this.options.store.state.operations).some(op => op.expires <= now)) return;
+    try {
+      this.persist(state => {
+        for (const [key, op] of Object.entries(state.operations)) if (op.expires <= now) delete state.operations[key];
+      });
+    } catch { /* persist already disables report work; never log sensitive error objects. */ }
+  }
   private persist(change: Parameters<MetadataStore['commit']>[0]) {
     try { this.options.store.commit(change); }
     catch (error) { if (!(error instanceof APIError)) this.storageFault = true; throw error; }

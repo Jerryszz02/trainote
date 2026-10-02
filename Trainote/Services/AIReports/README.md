@@ -1,6 +1,6 @@
 # AI report consumer handoff (E → F)
 
-Based on the approved fixed A/D commit `967fa5351838240b2bb6ca0c5cb8e777530e54c4`. This module changes no shared schema, calculators, HealthKit reader, global navigation or iOS CI. The coordinator owns synchronization of later A fixes. Default assembly is local-only; no production endpoint, credential, entitlement, real health upload or deployment was added.
+Started from the approved fixed A/D commit `967fa5351838240b2bb6ca0c5cb8e777530e54c4`, then ordinarily merged the coordinator-supplied fixed update `28500cfaba534d2d09a1415f8c6d1cb1d904a10e`. This module changes no shared schema, calculators, HealthKit reader, global navigation or iOS CI. The coordinator owns synchronization of later A fixes. Default assembly is local-only; no production endpoint, credential, entitlement, real health upload or deployment was added.
 
 ## Assembly
 
@@ -63,3 +63,12 @@ Transport cancellation cannot retract a request already received by the provider
 Focused XCTest suites `AIReportTests` and `AIReportTransportTests` cover the shared synthetic fixture, no consent/no network, null values, input minimization, injection and wrong output, fresh retries, same-fingerprint reuse, coalescing, late response cancellation, independent history deletion, real health cache invalidation, revoked-input rejection, pending removal across restart, canonical request binding and unsupported App Attest. The server suite checks real synthetic certificate/signature chains plus the full API lifecycle. See [server runbook](../../../../Server/README.md) for commands, fixed limits, exact endpoints and release gates.
 
 True physical-device signing/App Attest, iOS 17 extension compatibility, provider terms and real synthetic vendor round trip, credentials/budget and deployment remain unverified external conditions. No real-health chain is enabled by passing local tests. F and the coordinator retain the final app integration, current-head CI and joint acceptance work.
+
+### Local evidence (2026-10-03)
+
+- Xcode 26.6 / iOS 26.5, dedicated simulator `8BE88433-EB6D-4C10-A418-79DBE52DA3DE` (`Trainote AI Reports E`); own DerivedData `/tmp/trainote-ai-reports-e-derived`.
+- After ordinary merge of fixed base `28500cf`: actual Simulator Debug build/test succeeded, **110 unit tests, zero failures**, including 21 report tests. Command: `xcodebuild -project Trainote.xcodeproj -scheme Trainote -destination 'platform=iOS Simulator,id=8BE88433-EB6D-4C10-A418-79DBE52DA3DE' -derivedDataPath /tmp/trainote-ai-reports-e-derived -resultBundlePath /tmp/trainote-ai-reports-e-verified-units.xcresult -only-testing:TrainoteTests CODE_SIGNING_ALLOWED=NO test`.
+- Node 22.23.1 `npm test`: **64 tests, zero failures**, including 47 cryptographic App Attest cases and synthetic full HTTP/provider lifecycle. `npm run demo` validated the shared fixture offline. `npm audit --omit=dev --audit-level=moderate` reported zero known production dependency vulnerabilities; this is not a complete security audit.
+- `git diff --check` passed. XcodeGen 2.46.0 registered sources/resources/tests mechanically in separate commits. Original iOS CI and `project.yml` are unchanged; the new server CI is independent.
+- One intermediate test attempt hit Simulator “Busy / Application failed preflight checks”. Only the dedicated E simulator was booted again; both subsequent focused and full runs passed. No other task's simulator or process was reset.
+- UI-suite execution, signed physical devices, provider calls, deployed-service behavior and final F integration are not established by this unit run.

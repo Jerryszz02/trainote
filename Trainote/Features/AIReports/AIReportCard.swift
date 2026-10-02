@@ -31,7 +31,8 @@ struct AIReportCard: View {
         Text(recommendation.text).font(.subheadline)
       }
       Button("查看依据与说明", action: onDetails).font(.subheadline)
-      Text(content.report.generatedAt, style: .date).font(.caption).foregroundStyle(.secondary)
+      Text("适用至 \(content.report.validUntil.formatted(date: .abbreviated, time: .shortened))")
+        .font(.caption).foregroundStyle(.secondary)
     }
     .padding()
     .background(.background.secondary, in: RoundedRectangle(cornerRadius: 16))

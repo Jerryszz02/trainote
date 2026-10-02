@@ -32,6 +32,7 @@ export class FileMetadataStore implements MetadataStore {
       // A restart must not revive a grant whose revocation failed to persist before a crash.
       // The app re-registers consent from a live local lease before each new report.
       this.commit(state => {
+        for (const [key, op] of Object.entries(state.operations)) if (op.expires <= Date.now()) delete state.operations[key];
         for (const installation of Object.values(state.installations)) {
           delete installation.consentVersion; delete installation.consentGrantedAt; installation.epoch++;
         }

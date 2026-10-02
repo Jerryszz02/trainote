@@ -119,6 +119,8 @@ test('idempotency prevents second provider call and mismatched reuse', async () 
   input.input.facts[0]!.value = 74;
   await assert.rejects(h.authenticated('POST', '/v1/reports', input), rejects(409));
   assert.equal(h.count(), 1); assert.equal(h.store.state.installations[keyID]!.quotaCount, 1);
+  h.advance(policy.idempotencyTTL + 1); h.service.maintain();
+  assert.deepEqual(h.store.state.operations, {});
 });
 test('daily quota survives restart and resets at UTC day boundary', async () => {
   const directory = mkdtempSync(join(tmpdir(), 'trainote-reports-'));
@@ -252,5 +254,46 @@ test('HTTP path enforces limits, refuses compression and exposes only safe error
     const compressed = await fetch(base + '/v1/reports', { method: 'POST', headers: {
       'content-type': 'application/json', 'content-encoding': 'gzip' }, body: '{}' });
     assert.equal(compressed.status, 400);
+  } finally { await new Promise<void>(resolve => server.close(() => resolve())); }
+});
+test('synthetic HTTP end-to-end path reaches the real DeepSeek adapter and returns validated facts', async () => {
+  let providerCalls = 0, counter = 0;
+  const store = new MemoryStore();
+  const provider = new DeepSeekProvider('synthetic-key', (async (_url, init) => {
+    providerCalls++;
+    const request = JSON.parse(init!.body as string);
+    const input = JSON.parse(request.messages[1].content) as ReportInput;
+    return new Response(JSON.stringify({ choices: [{ finish_reason: 'stop', message: { content: JSON.stringify({
+      observations: input.facts.map(f => ({ evidenceID: f.id, kind: kindFor(f) })), actionIDs: ['plan.choose'],
+    }) } }] }));
+  }) as typeof fetch);
+  const server = httpServer(new ReportService({ store, verifier, provider, enabled: () => true, clock: () => now }));
+  await new Promise<void>(resolve => server.listen(0, '127.0.0.1', resolve));
+  try {
+    const address = server.address(); assert.ok(address && typeof address !== 'string');
+    const base = `http://127.0.0.1:${address.port}`;
+    async function post(method: string, path: string, data: unknown, token?: string) {
+      const response = await fetch(base + path, { method, headers: { 'content-type': 'application/json',
+        ...(token ? { authorization: `Bearer ${token}` } : {}) }, body: JSON.stringify(data) });
+      assert.ok(response.ok); return await response.json() as any;
+    }
+    const challenge = await post('POST', '/v1/installations/challenge', { keyID, purpose: 'attest' });
+    await post('POST', '/v1/installations/attest', { keyID, challengeID: challenge.challengeID,
+      attestation: Buffer.from(signature(0, Buffer.from(challenge.challenge, 'base64'))).toString('base64') });
+    async function signed(method: 'POST' | 'PUT' | 'DELETE', path: '/v1/reports' | '/v1/consent', data: unknown) {
+      const intent = { method, path, bodyHash: digest(encode(data)) };
+      const challenge = await post('POST', '/v1/installations/challenge', { keyID, purpose: 'session', intent });
+      counter++;
+      const proof = encode({ counter, mac: signature(counter, clientData(challenge.challengeID, challenge.challenge, intent)) }).toString('base64');
+      const session = await post('POST', '/v1/session', { keyID, challengeID: challenge.challengeID, assertion: proof });
+      return post(method, path, data, session.token);
+    }
+    await signed('PUT', '/v1/consent', { consentVersion: policy.consent, grantedAt: now });
+    const report = await signed('POST', '/v1/reports', fixture());
+    assert.equal(report.observations[0].text, '记录值：{{fact:trend.weight}}。');
+    assert.equal(report.recommendations[0].actionID, 'plan.choose'); assert.equal(providerCalls, 1);
+    await signed('DELETE', '/v1/consent', {});
+    assert.equal(store.state.installations[keyID]!.consentVersion, undefined);
+    assert.ok(!JSON.stringify(store.state).includes('71.234567'));
   } finally { await new Promise<void>(resolve => server.close(() => resolve())); }
 });
