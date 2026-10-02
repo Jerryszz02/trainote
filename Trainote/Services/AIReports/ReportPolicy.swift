@@ -49,18 +49,37 @@ enum AIReportFailure: Error, Equatable {
 
 /// The fresh dependency closure stays local. Send summary facts and every approved candidate's reasons.
 enum ReportFactSelection {
+  private static func isTrendBucket(_ fact: MetricFact) -> Bool {
+    // B deliberately preserves whole calendar buckets and hashes each derived fact's content.
+    // Its sources describe the original readings, so they can be manual, HealthKit or empty.
+    let units: [String: MetricUnit] = ["weight.representative": .kilograms, "weight.smoothed": .kilograms,
+      "energy.initialEstimate": .kilocalories, "weight.targetWeeklyChangePercent": .percentPerWeek]
+    let prefix = "trend.\(fact.metric)."
+    return units[fact.metric] == fact.unit && fact.id.hasPrefix(prefix)
+      && String(fact.id.dropFirst(prefix.count)).range(of: "^[a-f0-9]{20}$", options: .regularExpression) != nil
+      && fact.sources.allSatisfy { $0.kind == .manual || $0.kind == .healthKit }
+      && (fact.metric == "weight.smoothed" || fact.value != nil)
+  }
   static func wireWindow(_ fact: MetricFact, asOf: Date) throws -> AnalysisWindow {
     guard fact.window.start <= fact.window.end else { throw AIReportFailure.invalidInput }
-    // F labels observed recommendation context with the whole local day (including DST).
-    // Project only its elapsed portion; all other future observations remain invalid.
-    if fact.window.end > asOf.addingTimeInterval(60) {
+    guard fact.window.end > asOf else { return fact.window }
+    guard fact.window.start <= asOf else { throw AIReportFailure.invalidInput }
+    let duration = fact.window.end.timeIntervalSince(fact.window.start)
+    if isTrendBucket(fact) {
+      // Only the last, unfinished day can extend past asOf. Smoothing can start many days ago.
+      // Calendar days can be 22–26 hours across time-zone transitions; never assume UTC midnight.
+      guard fact.window.end.timeIntervalSince(asOf) <= 26 * 3600,
+        fact.metric == "weight.smoothed" || (22 * 3600...26 * 3600).contains(duration)
+      else { throw AIReportFailure.invalidInput }
+    } else {
+      // F labels observed recommendation context with a whole local day as well.
       guard fact.metric.hasPrefix("recommendation."),
         fact.sources.contains(where: { $0.kind == .calculation && $0.identifier == "trainote.recommendations" }),
-        fact.window.start <= asOf, fact.window.end.timeIntervalSince(fact.window.start) <= 26 * 3600
+        duration <= 26 * 3600
       else { throw AIReportFailure.invalidInput }
-      return .init(start: fact.window.start, end: asOf)
     }
-    return fact.window
+    // Clip the transport copy only. Every other future observation, even within a minute, fails.
+    return .init(start: fact.window.start, end: asOf)
   }
   static func facts(_ input: ReportInput) -> [MetricFact] {
     let reasons = Set(input.candidates.flatMap(\.reasonFactIDs))
