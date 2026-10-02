@@ -1,0 +1,104 @@
+{
+  "envelope": {
+    "schemaVersion": 1,
+    "requestID": "7a4c9d1f-e7b2-4a21-9276-2cc8df746313",
+    "reportType": "today",
+    "inputFingerprint": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "consentVersion": "ai-report-v1",
+    "input": {
+      "schemaVersion": 1,
+      "reportType": "today",
+      "asOf": 1790985600000,
+      "inputFingerprint": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "facts": [
+        {
+          "id": "trend.weight",
+          "metric": "weight",
+          "value": 71.234567,
+          "unit": "kilograms",
+          "window": {
+            "start": 1790899200000,
+            "end": 1790985600000
+          },
+          "quality": []
+        },
+        {
+          "id": "recovery.hrv",
+          "metric": "hrv",
+          "value": null,
+          "unit": "milliseconds",
+          "window": {
+            "start": 1790899200000,
+            "end": 1790985600000
+          },
+          "quality": [
+            "missing"
+          ]
+        }
+      ],
+      "candidates": [
+        {
+          "actionID": "plan.choose",
+          "action": "choosePlan",
+          "muscleIDs": [],
+          "reasonFactIDs": []
+        }
+      ],
+      "goalDirection": null,
+      "knowledgeVersion": "health-evidence-v1",
+      "calculationVersions": [
+        "trend-v1",
+        "recovery-v1"
+      ],
+      "missingData": [
+        "hrv"
+      ]
+    }
+  },
+  "draft": {
+    "observations": [
+      {
+        "evidenceID": "trend.weight",
+        "kind": "recorded"
+      },
+      {
+        "evidenceID": "recovery.hrv",
+        "kind": "missing"
+      }
+    ],
+    "actionIDs": [
+      "plan.choose"
+    ]
+  },
+  "report": {
+    "reportID": "6fcd40be-45d8-4a02-871f-355a59aa5c1f",
+    "inputFingerprint": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "model": "deepseek-flash",
+    "promptVersion": "report-selection-v1",
+    "schemaVersion": 1,
+    "summary": "根据当前记录，可查看以下事实与候选建议。",
+    "observations": [
+      {
+        "text": "记录值：{{fact:trend.weight}}。",
+        "evidenceIDs": [
+          "trend.weight"
+        ]
+      },
+      {
+        "text": "暂无可用记录：{{fact:recovery.hrv}}。",
+        "evidenceIDs": [
+          "recovery.hrv"
+        ]
+      }
+    ],
+    "recommendations": [
+      {
+        "text": "先选择训练模板或目标。",
+        "actionID": "plan.choose"
+      }
+    ],
+    "generatedAt": 1790985600000,
+    "validUntil": 1791007200000,
+    "isLocalFallback": false
+  }
+}

@@ -1,0 +1,31 @@
+name: AI report service verification
+on:
+  pull_request:
+    paths:
+      - 'Server/**'
+      - 'Trainote/Services/AIReports/**'
+      - 'TrainoteTests/AIReport*'
+      - 'TrainoteTests/Fixtures/ai-report-contract.json'
+      - '.github/workflows/ai-reports.yml'
+  push:
+    branches: [main]
+    paths: ['Server/**', '.github/workflows/ai-reports.yml']
+permissions:
+  contents: read
+jobs:
+  report-contract-and-auth:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: Server
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: Server/.nvmrc
+          cache: npm
+          cache-dependency-path: Server/package-lock.json
+      - run: npm ci --ignore-scripts --no-fund --no-audit
+      - run: npm test
+      - run: npm run demo
