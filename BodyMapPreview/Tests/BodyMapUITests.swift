@@ -2,6 +2,71 @@ import XCTest
 
 final class BodyMapUITests: XCTestCase {
   @MainActor
+  func testRepeatedSceneListSwitchingPreservesSelectionAndInteraction() {
+    let app = XCUIApplication()
+    app.launchArguments = ["-AppleLanguages", "(zh-Hans)", "-AppleLocale", "zh_CN"]
+    app.launch()
+    let scene = app.otherElements["bodyMap.scene"]
+    XCTAssertTrue(scene.waitForExistence(timeout: 10))
+
+    for _ in 0..<8 {
+      app.buttons["bodyMap.toggleList"].tap()
+      let chest = app.buttons["bodyMap.row.chest"]
+      XCTAssertTrue(chest.waitForExistence(timeout: 5))
+      XCTAssertFalse(scene.exists)
+      chest.tap()
+      XCTAssertTrue(chest.isSelected)
+
+      app.buttons["bodyMap.toggleList"].tap()
+      XCTAssertTrue(scene.waitForExistence(timeout: 5))
+      XCTAssertTrue(app.buttons["bodyMap.label.chest"].isSelected)
+      app.buttons["bodyMap.back"].tap()
+      XCTAssertEqual(scene.value as? String, "背面")
+      app.buttons["bodyMap.label.glutes"].tap()
+      XCTAssertTrue(app.staticTexts["bodyMap.selection"].label.contains("臀"))
+      app.buttons["bodyMap.front"].tap()
+      XCTAssertEqual(scene.value as? String, "前面")
+    }
+    XCTAssertTrue(app.staticTexts["preview.callback"].label.contains("glutes · 16"))
+    attach("repeated-scene-list-switching", app: app)
+  }
+
+  @MainActor
+  func testLeavingAndReenteringRecoveryRecreatesInteractiveScene() {
+    let app = XCUIApplication()
+    app.launchArguments = [
+      "-fixture-navigation", "-AppleLanguages", "(zh-Hans)", "-AppleLocale", "zh_CN",
+    ]
+    app.launch()
+    let openRecovery = app.buttons["preview.openRecovery"]
+    let scene = app.otherElements["bodyMap.scene"]
+    for cycle in 0..<6 {
+      XCTAssertTrue(openRecovery.waitForExistence(timeout: 10))
+      openRecovery.tap()
+      XCTAssertTrue(scene.waitForExistence(timeout: 5))
+      scene.coordinate(withNormalizedOffset: CGVector(dx: 0.565, dy: 0.292)).tap()
+      XCTAssertTrue(app.staticTexts["bodyMap.selection"].label.contains("胸"))
+      scene.coordinate(withNormalizedOffset: CGVector(dx: 0.65, dy: 0.6))
+        .press(
+          forDuration: 0.05,
+          thenDragTo: scene.coordinate(withNormalizedOffset: CGVector(dx: 0.3, dy: 0.6)))
+      XCTAssertNotEqual(scene.value as? String, "前面")
+      app.buttons["bodyMap.back"].tap()
+      app.buttons["bodyMap.label.glutes"].tap()
+      XCTAssertTrue(app.staticTexts["bodyMap.selection"].label.contains("臀"))
+      // Cover popping the page with either the SceneKit view or the list mounted.
+      if cycle.isMultiple(of: 2) {
+        app.buttons["bodyMap.toggleList"].tap()
+        XCTAssertTrue(app.buttons["bodyMap.row.chest"].waitForExistence(timeout: 5))
+      }
+      app.navigationBars.buttons.element(boundBy: 0).tap()
+      XCTAssertTrue(openRecovery.waitForExistence(timeout: 5))
+      XCTAssertFalse(scene.exists)
+    }
+    attach("navigation-round-trips", app: app)
+  }
+
+  @MainActor
   func testFrontBackRotationSelectionAndUnknownFixtures() throws {
     let app = XCUIApplication()
     app.launchArguments = ["-AppleLanguages", "(zh-Hans)", "-AppleLocale", "zh_CN"]
