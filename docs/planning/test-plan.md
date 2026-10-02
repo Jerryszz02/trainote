@@ -6,8 +6,8 @@
 
 ## 健康集成 F（2026-10-03，本分支）
 
-- 已验证：全部 94 项单元测试通过，包含 `TrainingRecommendationTests` 14 项和 `HealthFeatureAccessTests` 7 项；独立 Simulator 构建成功。
-- UI 已验证（22 条路径分次回归）：五 Tab、资料库所有初始分区、仅本地引导、AI 未配置、设置/备份入口、断开确认、离线帮助、大字号与深色。
+- 已验证：合并固定基础 `28500cf` 后全部 113 项单元测试通过，包含 `TrainingRecommendationTests` 14 项、`HealthFeatureAccessTests` 7 项和 `ManualNutritionGoalEditingTests` 3 项；独立 Simulator 构建成功。
+- UI 已验证（23 条路径分次回归）：初始骨架验证五 Tab、资料库所有初始分区、仅本地引导、AI 未配置、设置/备份入口、断开确认、离线帮助、大字号与深色。本次基线验证手动目标保存后今日页回显，并复测只读失败反馈；尚未在本次 head 完整重跑全部 UI。
 - 待 B/C/E 固定提交：实际分析空态/部分数据、报告一致性、目标采用撤销与旧营养历史适配、真实候选采用。
 - 真机待验：分类型健康授权、系统撤回、前后台同步、锁屏、VoiceOver；供应商/API/正式服务仍未开放。
 - 当前证据与命令见 [F 交接](../health-integration-handoff.md)，下文旧 1.1 的带日期运行记录仅为历史。

@@ -37,6 +37,7 @@ F 的未完成装配与验证见 [集成交接](../health-integration-handoff.md
 
 - `RoutineFactory` 把 routine 复制成新的进行中训练；动作名称和默认参数形成快照。
 - `NutritionSummary` 是纯值计算：按本地日历范围汇总日志，计算已摄入、剩余和超标值。
+- Settings 手动目标使用 `ManualNutritionGoalEditing` 捕获 `goalRevisionState`，以 `applyGoalRevision` 同一事务保留历史并更新当前值。过期状态保留草稿，要求载入最新目标后再次确认；不修改自动/建议模式。B 的分析页采用、撤销及旧营养汇总历史查询仍待装配。
 - 固定餐应用操作在一个 ModelContext 保存周期内展开全部食物日志；任一条校验失败则整批不保存。
 - 完成训练前执行领域校验；进行中状态在每次编辑后持久化，不依赖页面仍在内存。
 

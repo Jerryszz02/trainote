@@ -168,37 +168,31 @@ struct SettingsView: View {
 }
 
 struct NutritionGoalEditor: View {
-  @Environment(\.modelContext) private var modelContext
-
-  @Query(sort: \NutritionGoal.updatedAt, order: .reverse)
-  private var goals: [NutritionGoal]
-
-  @State private var calories = 2_000.0
-  @State private var carbohydrates = 250.0
-  @State private var protein = 150.0
-  @State private var fat = 65.0
+  @Environment(HealthFoundation.self) private var foundation
+  @State private var editing = ManualNutritionGoalEditing()
   @State private var loadedExistingGoal = false
   @State private var saved = false
   @State private var saveError: String?
+  @State private var staleTarget = false
 
   private var isValid: Bool {
-    calories.isValidNonnegativeNumber && calories > 0
-      && carbohydrates.isValidNonnegativeNumber
-      && protein.isValidNonnegativeNumber
-      && fat.isValidNonnegativeNumber
+    editing.targets.calories.isValidNonnegativeNumber && editing.targets.calories > 0
+      && editing.targets.carbohydrates.isValidNonnegativeNumber
+      && editing.targets.protein.isValidNonnegativeNumber
+      && editing.targets.fat.isValidNonnegativeNumber
   }
 
   var body: some View {
     Form {
       Section("每日目标") {
-        nutrientField("卡路里", value: $calories, unit: "kcal")
-        nutrientField("碳水", value: $carbohydrates, unit: "g")
-        nutrientField("蛋白质", value: $protein, unit: "g")
-        nutrientField("脂肪", value: $fat, unit: "g")
+        nutrientField("卡路里", value: $editing.targets.calories, unit: "kcal")
+        nutrientField("碳水", value: $editing.targets.carbohydrates, unit: "g")
+        nutrientField("蛋白质", value: $editing.targets.protein, unit: "g")
+        nutrientField("脂肪", value: $editing.targets.fat, unit: "g")
       }
 
       Section {
-        Text("在这里保存手动目标。趋势页的每周建议需要单独采用；不会因为升级而无声改变旧目标。")
+        Text("在这里保存手动目标，保留此前目标历史。趋势页的自动采用仅在你主动开启后运行；不会因为升级而无声改变旧目标。")
           .font(.footnote)
           .foregroundStyle(.secondary)
       }
@@ -208,21 +202,30 @@ struct NutritionGoalEditor: View {
     .toolbar {
       ToolbarItem(placement: .confirmationAction) {
         Button(saved ? "已保存" : "保存", action: save)
-          .disabled(!isValid)
+          .disabled(!isValid || saved || editing.expectedState == nil)
           .accessibilityIdentifier("goal.save")
       }
     }
     .toolbar { NutritionKeyboardDoneToolbar() }
-    .onChange(of: calories) { saved = false }
-    .onChange(of: carbohydrates) { saved = false }
-    .onChange(of: protein) { saved = false }
-    .onChange(of: fat) { saved = false }
+    .onChange(of: editing.targets) { saved = false }
     .alert(
       "保存失败", isPresented: Binding(get: { saveError != nil }, set: { if !$0 { saveError = nil } })
     ) {
       Button("好", role: .cancel) {}
     } message: {
       Text(saveError ?? "")
+    }
+    .alert("目标已在别处更新", isPresented: $staleTarget) {
+      Button("载入最新目标") { loadLatestGoal() }
+      Button("保留草稿", role: .cancel) {}
+    } message: {
+      Text("本次修改尚未保存。载入最新目标后请重新检查并点击保存，避免覆盖新的目标。")
+    }
+    .safeAreaInset(edge: .bottom) {
+      if loadedExistingGoal && editing.expectedState == nil {
+        Button("载入最新目标再编辑", action: loadLatestGoal)
+          .buttonStyle(.borderedProminent).padding()
+      }
     }
     .task { loadExistingGoalIfNeeded() }
   }
@@ -235,6 +238,7 @@ struct NutritionGoalEditor: View {
           .submitLabel(.done)
           .multilineTextAlignment(.trailing)
           .frame(minWidth: 80)
+          .accessibilityIdentifier("goal.\(title)")
         Text(unit).foregroundStyle(.secondary)
       }
     }
@@ -243,41 +247,30 @@ struct NutritionGoalEditor: View {
   private func loadExistingGoalIfNeeded() {
     guard !loadedExistingGoal else { return }
     loadedExistingGoal = true
-    guard let goal = goals.first else { return }
-    calories = goal.calories
-    carbohydrates = goal.carbohydrates
-    protein = goal.protein
-    fat = goal.fat
+    loadLatestGoal()
+  }
+
+  private func loadLatestGoal() {
+    do {
+      try editing.load(from: foundation.repository)
+      saved = false
+      saveError = nil
+    } catch {
+      saveError = "未能读取当前目标，请重试。"
+    }
   }
 
   private func save() {
     guard isValid else { return }
-    if let goal = goals.first {
-      goal.calories = calories
-      goal.carbohydrates = carbohydrates
-      goal.protein = protein
-      goal.fat = fat
-      goal.updatedAt = .now
-    } else {
-      modelContext.insert(
-        NutritionGoal(
-          calories: calories,
-          carbohydrates: carbohydrates,
-          protein: protein,
-          fat: fat
-        )
-      )
-    }
-    for duplicate in goals.dropFirst() {
-      modelContext.delete(duplicate)
-    }
     do {
-      try modelContext.save()
+      try editing.save(to: foundation.repository)
       saved = true
-    } catch {
-      modelContext.rollback()
+    } catch GoalRevisionConflict.staleState {
       saved = false
-      saveError = error.localizedDescription
+      staleTarget = true
+    } catch {
+      saved = false
+      saveError = "目标和历史均未改变，请重试。若目标日期异常，请检查设备时间或重新载入目标。"
     }
   }
 }

@@ -28,7 +28,7 @@
 | `BodyProfile` / `BodyWeightEntry` | 活动身体档案、手动体重、时间和来源语义 | 健康体重不复制为手动记录 |
 | `DailyCheckIn` / `MuscleFeedback` | 当地日期/时区、可选感受、酸痛、独立疼痛与受限 | 未回答是 nil，不代表无症状 |
 | `DietLogCompleteness` | 记录日期和食物日志指纹 | 修改食物后旧确认失效 |
-| `NutritionGoalRevision` | 生效时间、目标、来源、proposal、撤销关系 | 历史不可被当前值覆盖；采用/撤销原子工作流待 A/B 固定接口 |
+| `NutritionGoalRevision` | 生效时间、目标、来源、proposal、撤销关系 | A 原子接口同时更新历史与当前值，F 手动编辑已接入；B 分析页采用/撤销工作流待装配 |
 | `AnalysisPreferences` | 手动/建议/自动模式、来源与提示偏好 | 默认 manual，升级不暗改目标 |
 
 ## 枚举

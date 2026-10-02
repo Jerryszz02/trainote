@@ -4,7 +4,7 @@
 
 当前默认分支的 Trainote 是一款中文优先、完全离线的 iPhone 健身与饮食记录 App。它用于记录力量训练、有氧训练、训练 routine，以及每日卡路里、碳水、蛋白质和脂肪。动作目录来自 `hasaneyldrm/exercises-dataset` 的固定版本，只内置 MIT 许可覆盖的文字和结构化数据，不分发需要单独授权的图片或 GIF。
 
-计划新增“趋势分析”“恢复分析”、Apple 健康读取和可选 DeepSeek 报告。**2026-10-03：A/D 已形成固定基础 `967fa535`；本 F 分支正在实现导航、同意和建议规则，B/C/E 实际装配仍待主对话给出已验证提交。** 不据此推断默认分支、真实 AI 或发布状态。所有实施对话使用 max。现有代码是实现事实的依据，规划描述目标，不代替测试、科学验证或发布证据。
+计划新增“趋势分析”“恢复分析”、Apple 健康读取和可选 DeepSeek 报告。**2026-10-03：F 已在初始 A/D 基础 `967fa535` 上普通合并固定基础 `28500cf`，完成导航/同意骨架、建议规则和手动目标原子写入；B/C/E 实际装配仍待主对话给出已验证提交。** 不据此推断默认分支、真实 AI 或发布状态。所有实施对话使用 max。现有代码是实现事实的依据，规划描述目标，不代替测试、科学验证或发布证据。
 
 ## 文档信息
 
@@ -12,7 +12,7 @@
 - 工作模式：执行已批准的 F 集成任务，保留 v1 / 1.1 的历史设计与验证记录。
 - canonical 项目根目录：`/Users/jerryszz/Desktop/Projects/trainote`
 - 本次 F 工作树：`/Users/jerryszz/.codex/worktrees/392a/trainote`
-- 固定代码基线：`967fa5351838240b2bb6ca0c5cb8e777530e54c4`；分支 `agent/health-integration`，PR 暂以 `agent/health-foundation-integration` 为 base。
+- 固定代码基线：初始 `967fa5351838240b2bb6ca0c5cb8e777530e54c4`，随后普通合并 `28500cfaba534d2d09a1415f8c6d1cb1d904a10e`；分支 `agent/health-integration`，PR 暂以 `agent/health-foundation-integration` 为 base。
 - 本次检查证据：Git 状态与工作树、根 README、`project.yml`、已提交 Xcode 工程、AppShell/TrainoteApp、训练与营养模型、动作目录服务、备份服务、资料库/首页/设置页面、现有测试及 CI 配置；原始论文与研究仓库见证据矩阵。
 - F 已执行 Simulator 构建及单元/UI 测试；逐项结果在 [交接](../health-integration-handoff.md)。签名、真机和发布状态未验证，旧 1.1 记录仍为历史证据。
 
@@ -24,7 +24,7 @@
 
 ## 从哪里开始
 
-F 实施记录（2026-10-03）：本分支已从固定 A/D 基础 `967fa535` 开始导航、同意流程和推荐规则。
+F 实施记录（2026-10-03）：本分支的导航、同意流程、推荐规则和原子手动目标编辑已形成可测试骨架。
 见 [F 集成交接](../health-integration-handoff.md) 的接口缺口和待验条件；它不代表最终集成或默认分支现状。
 
 1. 阅读已获批准的 [健康分析实施提案](health-analysis-plan.md)，遵循导航、目标调整、权限和计算边界。
@@ -61,17 +61,17 @@ F 实施记录（2026-10-03）：本分支已从固定 A/D 基础 `967fa535` 开
 - [1.1 测试计划](test-plan.md)中的带日期执行表是历史记录；当前测试结果应取对应 PR head 的 CI 和本地运行产物。
 - 新功能的工程验证、算法有效性、真实 AI 服务和发布条件分别见健康分析提案，不借用旧测试数量证明新功能。
 
-## 本轮文档检查
+## 文档检查记录
 
-- 范围：仅 `docs/planning/`；未修改产品源码、测试、配置或依赖。
-- 检查命令：`git diff --check`，以及 `python3 /Users/jerryszz/.agents/skills/plan-project-docs/scripts/audit_planning_docs.py --root /Users/jerryszz/.codex/worktrees/f626/trainote`。
-- 2026-10-03 上述两项文档检查通过；最终提交仍会复查。该审计只验证索引和本地链接，不验证论文结论、算法有效性或产品行为。
+- 提案阶段曾只检查 `docs/planning/`；F 实施阶段同时维护实际源码、测试、交接及发布资料。
+- F 检查命令：`git diff --check`，以及 `python3 /Users/jerryszz/.agents/skills/plan-project-docs/scripts/audit_planning_docs.py --root /Users/jerryszz/.codex/worktrees/392a/trainote`。
+- 2026-10-03 上述两项文档检查通过。该审计只验证索引和本地链接，不验证论文结论、算法有效性或产品行为。
 
 ## 当前约束与待确认
 
 - 用户已确认提案和分工，授权审阅及当前提交 CI 通过后合并本范围 PR；由主对话统一协调。尚未授权付费采购、正式部署或发布。
 - 外部条件：AI 代理部署/预算、DeepSeek API 数据处理安排、3D 资产许可、真机/签名与专业审查，见提案。
-- 当前代码配置 Swift 5.9 language mode、最低 iOS 17；旧文档中的 Xcode 26.6 / Swift 6.3.3 / iOS 26.5 为此前核查记录，本轮未重新枚举运行环境。
-- 本次未执行产品测试；实施时先确认当前工具链和 Simulator，再运行对应检查。
+- 当前代码配置 Swift 5.9 language mode、最低 iOS 17；F 在 Xcode 26.6 / Swift 6.3.3 / iOS 26.5 的独立 Simulator 验证，详细结果见交接。
+- 本次测试覆盖 F 骨架及固定基础；仍需接入 B/C/E 后进行联合验收。
 - 临时 Bundle ID 为 `com.jerryszz.trainote`，正式分发前需要与 Apple Developer 账号中的标识一致。
 - v1 只支持 iPhone、iOS 17+、简体中文 UI、公斤和公里。

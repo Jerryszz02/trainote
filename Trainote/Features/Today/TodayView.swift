@@ -344,6 +344,7 @@ private struct NutrientProgressCard: View {
     .background(.background, in: RoundedRectangle(cornerRadius: 16))
     .accessibilityElement(children: .combine)
     .accessibilityLabel(accessibilityText)
+    .accessibilityIdentifier("today.nutrient.\(nutrient.rawValue)")
   }
 
   private var remainingIsNegative: Bool {

@@ -70,6 +70,37 @@ final class HealthIntegrationUITests: XCTestCase {
     XCTAssertTrue(app.staticTexts["分析方法与适用范围"].exists)
   }
 
+  func testManualTargetChangesAreVisibleAfterSettingsCloses() {
+    app.buttons["today.settings"].tap()
+    app.buttons["每日营养目标"].tap()
+    app.buttons["goal.save"].tap()
+    XCTAssertTrue(app.buttons["已保存"].waitForExistence(timeout: 3))
+    app.navigationBars.buttons.element(boundBy: 0).tap()
+    app.buttons["完成"].tap()
+    let card = app.descendants(matching: .any)["today.nutrient.calories"].firstMatch
+    reveal(card)
+    XCTAssertTrue(card.label.contains("目标 2,000") || card.label.contains("目标 2000"))
+    app.buttons["today.settings"].tap()
+    app.buttons["每日营养目标"].tap()
+    let field = app.textFields["goal.卡路里"]
+    field.coordinate(withNormalizedOffset: CGVector(dx: 0.98, dy: 0.5)).tap()
+    field.press(forDuration: 1.1)
+    let selectAll = app.buttons.matching(NSPredicate(format: "label IN {'Select All', '全选'}")).firstMatch
+    let menuSelectAll = app.menuItems.matching(NSPredicate(format: "label IN {'Select All', '全选'}")).firstMatch
+    if selectAll.waitForExistence(timeout: 1) { selectAll.tap() }
+    else if menuSelectAll.exists { menuSelectAll.tap() }
+    else { field.doubleTap() }
+    field.typeText("2100")
+    XCTAssertEqual(Double((field.value as? String ?? "").replacingOccurrences(of: ",", with: "")), 2100)
+    app.buttons["goal.save"].tap()
+    capture("手动目标再次保存")
+    XCTAssertTrue(app.buttons["已保存"].waitForExistence(timeout: 3))
+    app.navigationBars.buttons.element(boundBy: 0).tap()
+    app.buttons["完成"].tap()
+    reveal(card)
+    XCTAssertTrue(card.label.contains("目标 2,100") || card.label.contains("目标 2100"))
+  }
+
   func testLargeTextKeepsPrimaryNavigation() {
     app.terminate()
     app.launchArguments += [
