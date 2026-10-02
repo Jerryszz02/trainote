@@ -147,6 +147,80 @@ final class HealthBackupTests: XCTestCase {
     XCTAssertEqual(try ModelContext(empty).fetchCount(FetchDescriptor<BodyWeightEntry>()), 0)
   }
 
+  func testChangedSharedGoalCannotImportNewHistoryOrAnyOtherRecords() throws {
+    let date = AnalysisFixtures.asOf
+    let goalID = AnalysisFixtures.id(900)
+    func containerWithOldGoal() throws -> ModelContainer {
+      let container = try PersistenceController.makeContainer(inMemory: true)
+      let context = ModelContext(container)
+      context.insert(
+        NutritionGoal(
+          id: goalID, calories: 2000, carbohydrates: 240,
+          protein: 120, fat: 60, updatedAt: date))
+      try context.save()
+      return container
+    }
+    let source = try containerWithOldGoal()
+    let sourceRepo = SwiftDataAnalysisRepository(container: source)
+    let newGoal = NutritionGoalRevisionValue(
+      id: AnalysisFixtures.id(901), effectiveAt: date.addingTimeInterval(10),
+      targets: .init(calories: 2200, carbohydrates: 260, protein: 140, fat: 60),
+      origin: .suggested, proposalID: "backup-goal-conflict", calculationVersion: "fixture",
+      createdAt: date.addingTimeInterval(10))
+    _ = try sourceRepo.applyGoalRevision(
+      .init(revision: newGoal, expectedState: sourceRepo.goalRevisionState()))
+    let sourceContext = ModelContext(source)
+    sourceContext.insert(
+      FoodPreset(
+        id: AnalysisFixtures.id(902), name: "应一起拒绝的合成食物",
+        caloriesPerServing: 100, carbohydratesPerServing: 10, proteinPerServing: 10,
+        fatPerServing: 2))
+    let data = try BackupArchiveService.export(context: sourceContext)
+    let destination = try containerWithOldGoal()
+    let repo = SwiftDataAnalysisRepository(container: destination)
+    try repo.saveWeight(
+      .init(
+        id: AnalysisFixtures.id(903), measuredAt: date, kilograms: 68,
+        timeZoneIdentifier: "UTC", createdAt: date, updatedAt: date))
+    let stateBefore = try repo.goalRevisionState()
+    let manualBefore = try repo.manualRecords()
+    XCTAssertThrowsError(try BackupArchiveService.importData(data, into: destination)) {
+      XCTAssertEqual($0 as? BackupArchiveError, .goalStateConflict)
+    }
+    XCTAssertEqual(try repo.goalRevisionState(), stateBefore)
+    XCTAssertEqual(try repo.manualRecords(), manualBefore)
+    XCTAssertEqual(try ModelContext(destination).fetchCount(FetchDescriptor<FoodPreset>()), 0)
+    XCTAssertEqual(
+      try ModelContext(destination).fetch(FetchDescriptor<NutritionGoal>()).first?.calories, 2000)
+  }
+
+  func testConsistentGoalHistoryBackupCanBeRepeatedAtArchiveDatePrecision() throws {
+    let date = AnalysisFixtures.asOf.addingTimeInterval(0.125)
+    let container = try PersistenceController.makeContainer(inMemory: true)
+    let context = ModelContext(container)
+    context.insert(
+      NutritionGoal(calories: 2000, carbohydrates: 240, protein: 120, fat: 60, updatedAt: date))
+    try context.save()
+    let repo = SwiftDataAnalysisRepository(container: container)
+    let revision = NutritionGoalRevisionValue(
+      id: UUID(), effectiveAt: date.addingTimeInterval(10),
+      targets: .init(calories: 2200, carbohydrates: 260, protein: 140, fat: 60),
+      origin: .manual, createdAt: date.addingTimeInterval(10))
+    _ = try repo.applyGoalRevision(
+      .init(revision: revision, expectedState: repo.goalRevisionState()))
+    let data = try BackupArchiveService.export(context: ModelContext(container))
+    let originalState = try repo.goalRevisionState()
+    let repeated = try BackupArchiveService.importData(data, into: container)
+    XCTAssertEqual(repeated.inserted, 0)
+    XCTAssertEqual(repeated.skipped, 3)
+    XCTAssertEqual(try repo.goalRevisionState(), originalState)
+    let destination = try PersistenceController.makeContainer(inMemory: true)
+    XCTAssertEqual(try BackupArchiveService.importData(data, into: destination).inserted, 3)
+    let restored = try SwiftDataAnalysisRepository(container: destination).goalRevisionState()
+    XCTAssertEqual(restored.currentGoal?.targets, revision.targets)
+    XCTAssertEqual(restored.latestRevisionID, revision.id)
+  }
+
   func testSaveFailureLeavesOldStoreUntouched() throws {
     let url = try XCTUnwrap(
       Bundle(for: Self.self).url(forResource: "backup-v1", withExtension: "json"))
