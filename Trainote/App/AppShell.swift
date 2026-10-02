@@ -17,6 +17,8 @@ struct AppShell: View {
   @AppStorage("health.onboarding.v1.completed") private var healthOnboardingCompleted = false
   var analysisDestinations: HealthAnalysisDestinations = .pending
   var recoveryIntegration: HealthRecoveryIntegration? = nil
+  var trainingAdvice: TrainingAdviceController? = nil
+  var reportIntegration: HealthReportIntegration? = nil
 
   var body: some View {
     TabView(selection: $selectedTab) {
@@ -34,7 +36,8 @@ struct AppShell: View {
             todayPath.append(.routines)
           },
           onOpenRecovery: { selectedTab = .recovery },
-          recoveryIntegration: recoveryIntegration
+          recoveryIntegration: recoveryIntegration, trainingAdvice: trainingAdvice,
+          reportIntegration: reportIntegration
         )
         .navigationDestination(for: LibrarySection.self) { LibraryView(initialSection: $0) }
       }
@@ -60,14 +63,19 @@ struct AppShell: View {
       .tag(AppTab.trends)
 
       NavigationStack {
-        analysisDestinations.recovery()
+        analysisDestinations.recovery(
+          { _ in
+            selectedTab = .training
+            startWorkoutRequest += 1
+          }, { selectedTab = .trends })
       }
       .tabItem { Label("恢复", systemImage: "figure.stand") }
       .tag(AppTab.recovery)
     }
     .tint(.accentColor)
     #if DEBUG
-      .preferredColorScheme(ProcessInfo.processInfo.arguments.contains("-ui-testing-dark") ? .dark : nil)
+      .preferredColorScheme(
+        ProcessInfo.processInfo.arguments.contains("-ui-testing-dark") ? .dark : nil)
     #endif
     .task {
       #if DEBUG

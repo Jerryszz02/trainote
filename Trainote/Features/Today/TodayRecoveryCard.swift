@@ -3,6 +3,7 @@ import SwiftUI
 struct TodayRecoveryCard: View {
   @Environment(\.scenePhase) private var scenePhase
   let integration: HealthRecoveryIntegration
+  var advice: TrainingAdviceController? = nil
   let hasRoutines: Bool
   let onOpenTemplates: () -> Void
   let onOpenRecovery: () -> Void
@@ -20,7 +21,7 @@ struct TodayRecoveryCard: View {
           Image(systemName: "lightbulb").font(.title2)
           VStack(alignment: .leading, spacing: 4) {
             Text("今日建议").font(.headline)
-            Text(integration.todayMessage(hasRoutines: hasRoutines))
+            Text(recommendationText)
               .font(.subheadline).foregroundStyle(.secondary)
           }
           Spacer(minLength: 0)
@@ -63,6 +64,7 @@ struct TodayRecoveryCard: View {
       item: $checkInDraft,
       onDismiss: {
         integration.reloadToday()
+        advice?.refresh()
         showPrompt = false
       }
     ) { draft in
@@ -97,6 +99,22 @@ struct TodayRecoveryCard: View {
 
   private func reload() {
     integration.reloadToday()
+    advice?.loadRoutines()
+    advice?.refresh()
     showPrompt = (try? integration.offerCheckIn()) ?? false
+  }
+
+  private var recommendationText: String {
+    guard !integration.needsRecoveryReview, advice?.selectedRoutineID != nil,
+      let action = advice?.evaluation?.candidates.first?.action
+    else { return integration.todayMessage(hasRoutines: hasRoutines) }
+    switch action {
+    case .keepPlan: return "可按所选模板训练，开始前再核对今日体感。"
+    case .reduceSets, .increaseRIR: return "今天建议适当减量，可查看工作组和余力范围。"
+    case .swapTrainingDay: return "可考虑所选备选模板，先查看适用条件。"
+    case .rest, .lightActivity: return "今天优先休息或按体感选择轻活动。"
+    case .reviewNutrition: return "饮食记录与目标存在差异，可到趋势页复核。"
+    case .choosePlan: return "记录覆盖还不足，先核对模板、恢复记录和体感。"
+    }
   }
 }

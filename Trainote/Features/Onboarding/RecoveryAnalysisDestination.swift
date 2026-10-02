@@ -3,7 +3,11 @@ import SwiftUI
 /// C owns the page; F supplies production dependencies and the bundled methods destination.
 struct RecoveryAnalysisDestination: View {
   let integration: HealthRecoveryIntegration
+  let advice: TrainingAdviceController
+  let onStartWorkout: (Workout) -> Void
+  let onOpenNutrition: () -> Void
   @State private var showMethods = false
+  @State private var showAdvice = false
 
   var body: some View {
     Group {
@@ -19,6 +23,25 @@ struct RecoveryAnalysisDestination: View {
         )
         .navigationTitle("恢复分析")
       }
+    }
+    .toolbar {
+      ToolbarItem(placement: .topBarTrailing) {
+        Button("训练建议") { showAdvice = true }
+          .accessibilityIdentifier("recovery.trainingAdvice")
+      }
+    }
+    .navigationDestination(isPresented: $showAdvice) {
+      TrainingAdviceView(
+        controller: advice,
+        onStartWorkout: { workout in
+          showAdvice = false
+          onStartWorkout(workout)
+        },
+        onOpenNutrition: {
+          showAdvice = false
+          onOpenNutrition()
+        },
+        onOpenRecovery: { showAdvice = false })
     }
     .sheet(isPresented: $showMethods) {
       NavigationStack {

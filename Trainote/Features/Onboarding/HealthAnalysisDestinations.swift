@@ -4,19 +4,25 @@ import SwiftUI
 /// The default does not install fixture calculators or synthetic health records.
 struct HealthAnalysisDestinations {
   var trends: () -> AnyView
-  var recovery: () -> AnyView
+  var recovery: (@escaping (Workout) -> Void, @escaping () -> Void) -> AnyView
 
   static let pending = Self(
     trends: { AnyView(PendingAnalysisView(title: "趋势分析", systemImage: "chart.xyaxis.line")) },
-    recovery: { AnyView(PendingAnalysisView(title: "恢复分析", systemImage: "figure.stand")) }
+    recovery: { _, _ in AnyView(PendingAnalysisView(title: "恢复分析", systemImage: "figure.stand")) }
   )
 
   static func verifiedModules(
-    trend: HealthTrendIntegration, recovery: HealthRecoveryIntegration
+    trend: HealthTrendIntegration, recovery: HealthRecoveryIntegration,
+    advice: TrainingAdviceController
   ) -> Self {
     Self(
       trends: { AnyView(TrendAnalysisDestination(integration: trend)) },
-      recovery: { AnyView(RecoveryAnalysisDestination(integration: recovery)) })
+      recovery: { onStartWorkout, onOpenNutrition in
+        AnyView(
+          RecoveryAnalysisDestination(
+            integration: recovery, advice: advice,
+            onStartWorkout: onStartWorkout, onOpenNutrition: onOpenNutrition))
+      })
   }
 }
 

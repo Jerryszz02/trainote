@@ -12,21 +12,25 @@ protocol AIReportLifecycle: AnyObject, HealthDerivedDataInvalidating {
   func activateConsent() async throws
   func cancelPendingRequests()
   func revokeServerConsent() async throws
+  func closeAI(at date: Date, consent: LocalConsentStore?) async throws
+  func resumePendingRevocation() async throws
   func deleteAllReports() throws
 }
 
-/// No provider, transport, credentials or cache exists in this local-only assembly.
-@MainActor
-final class LocalOnlyReportAccess: AIReportLifecycle {
-  let isConfigured = false
-  let consentVersion = LocalConsentStore.aiConsentVersion
-  let serverRevocationPending = false
-  let configurationMessage = "AI 报告尚未开放。完成代理配置、设备认证及 DeepSeek API 数据处理条款核验后，才能单独选择启用。目前可继续使用本地记录。"
-  func activateConsent() async throws { throw AnalysisFailure.unavailable }
-  func cancelPendingRequests() {}
-  func revokeServerConsent() async throws {}
-  func deleteAllReports() throws {}
-  func deleteHealthDependentData() throws {}
+extension AIReportLifecycle {
+  func closeAI(at date: Date, consent: LocalConsentStore?) async throws {
+    cancelPendingRequests()
+    var localFailure: Error?
+    do {
+      guard let consent else { throw AnalysisFailure.storageFailed }
+      try consent.revoke(.aiReports, at: date)
+    } catch { localFailure = error }
+    try await revokeServerConsent()
+    if let localFailure { throw localFailure }
+  }
+  func resumePendingRevocation() async throws {
+    if serverRevocationPending { try await revokeServerConsent() }
+  }
 }
 
 @MainActor
@@ -145,19 +149,22 @@ final class HealthFeatureAccess {
     statusMessage = nil
     reports.cancelPendingRequests()
     defer { isBusy = false }
-    var failures = [String]()
-    if let consent {
-      do { try consent.revoke(.aiReports, at: date) } catch { failures.append("本机撤回保存失败") }
-    } else {
-      failures.append("本机同意记录不可用")
-    }
-    // A local storage failure must not prevent the server revocation attempt.
-    do { try await reports.revokeServerConsent() } catch { failures.append("服务器撤回待重试") }
-    aiRevocationNeedsRetry = !failures.isEmpty || reports.serverRevocationPending
+    var failed = false
+    do { try await reports.closeAI(at: date, consent: consent) } catch { failed = true }
+    aiRevocationNeedsRetry = failed || reports.serverRevocationPending
     if aiRevocationNeedsRetry {
-      errorMessage = "已停止后续发送。\(failures.joined(separator: "；"))。请重试撤回。"
+      errorMessage = "已停止后续发送。本机保存或服务器撤回尚未完成，请重试撤回。"
     } else {
       statusMessage = "已关闭 AI 报告。健康连接和本地分析继续保留，历史报告可单独删除。"
+    }
+  }
+
+  func resumePendingRevocation() async {
+    do {
+      try await reports.resumePendingRevocation()
+    } catch {
+      aiRevocationNeedsRetry = true
+      errorMessage = "AI 撤回尚未完成，已停止后续发送。请在设置中重试撤回。"
     }
   }
 

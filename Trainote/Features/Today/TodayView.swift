@@ -34,6 +34,8 @@ struct TodayView: View {
   var onOpenTemplates: () -> Void = {}
   var onOpenRecovery: () -> Void = {}
   var recoveryIntegration: HealthRecoveryIntegration? = nil
+  var trainingAdvice: TrainingAdviceController? = nil
+  var reportIntegration: HealthReportIntegration? = nil
 
   private var todayEntries: [FoodLogEntry] {
     foodEntries.filter { Calendar.current.isDate($0.loggedAt, inSameDayAs: currentDate) }
@@ -58,7 +60,8 @@ struct TodayView: View {
         quickActions
         if let recoveryIntegration {
           TodayRecoveryCard(
-            integration: recoveryIntegration, hasRoutines: !routines.isEmpty,
+            integration: recoveryIntegration, advice: trainingAdvice,
+            hasRoutines: !routines.isEmpty,
             onOpenTemplates: onOpenTemplates, onOpenRecovery: onOpenRecovery)
         } else {
           recommendationCard
@@ -68,6 +71,16 @@ struct TodayView: View {
         routineShortcuts
         trainingSummary
         weeklyLink
+        if let reportIntegration {
+          NavigationLink {
+            HealthReportsView(integration: reportIntegration)
+          } label: {
+            Label("基础报告与历史", systemImage: "text.document")
+              .frame(maxWidth: .infinity, alignment: .leading)
+              .padding().background(.background, in: RoundedRectangle(cornerRadius: 16))
+          }
+          .accessibilityIdentifier("today.analysisReports")
+        }
       }
       .padding()
     }
@@ -78,7 +91,9 @@ struct TodayView: View {
       ToolbarItem(placement: .topBarTrailing) {
         NavigationLink {
           LibraryView()
-        } label: { Label("资料库", systemImage: "books.vertical") }
+        } label: {
+          Label("资料库", systemImage: "books.vertical")
+        }
         .accessibilityIdentifier("today.library")
       }
       ToolbarItem(placement: .topBarTrailing) {
@@ -101,7 +116,13 @@ struct TodayView: View {
     } message: {
       Text(saveError ?? "请重试。")
     }
-    .sheet(item: $presentedSheet, onDismiss: { recoveryIntegration?.reloadToday() }) { sheet in
+    .sheet(
+      item: $presentedSheet,
+      onDismiss: {
+        recoveryIntegration?.reloadToday()
+        trainingAdvice?.refresh()
+      }
+    ) { sheet in
       switch sheet {
       case .settings:
         SettingsView()
