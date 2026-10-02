@@ -278,12 +278,20 @@ struct RecommendationCandidate: Codable, Equatable, Identifiable, Sendable {
   var dependencies: [SourceDependency] = []
   var id: String { actionID }
 }
+struct RecommendationSnapshot: Codable, Equatable, Sendable {
+  var candidates: [RecommendationCandidate]
+  var facts: [MetricFact] = []
+  /// Stable digest of selected template revisions, available training days and rule context.
+  /// No context is required for existing candidate-only providers.
+  var contextFingerprint: String? = nil
+}
 
 enum ReportType: String, Codable, Sendable { case today, trend, recovery, weekly }
 struct ReportInput: Codable, Equatable, Sendable {
   var schemaVersion: Int = AnalysisContract.schemaVersion
   var reportType: ReportType
   var asOf: Date
+  /// Identifies prepared report content and recommendation context, not just AnalysisInput.
   var inputFingerprint: String
   var facts: [MetricFact]
   var candidates: [RecommendationCandidate]
@@ -320,6 +328,15 @@ protocol RecoveryCalculating { func calculate(_ input: AnalysisInput) throws -> 
 protocol RecommendationProviding {
   func candidates(input: AnalysisInput, trend: TrendResult, recovery: RecoveryResult) throws
     -> [RecommendationCandidate]
+  func snapshot(input: AnalysisInput, trend: TrendResult, recovery: RecoveryResult) throws
+    -> RecommendationSnapshot
+}
+extension RecommendationProviding {
+  func snapshot(input: AnalysisInput, trend: TrendResult, recovery: RecoveryResult) throws
+    -> RecommendationSnapshot
+  {
+    .init(candidates: try candidates(input: input, trend: trend, recovery: recovery))
+  }
 }
 protocol ReportGenerating { func generate(_ input: ReportInput) async throws -> ReportResult }
 
