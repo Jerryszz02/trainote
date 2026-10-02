@@ -60,6 +60,7 @@
 		76339E757DD7BAFC9E2CC45A /* RoutineViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DCB4C604700EA7C2BD07B98 /* RoutineViews.swift */; };
 		7962B89415BAEF02FBC7B385 /* BodyMapPresentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8ECCF5AD3F49395B1EAA064 /* BodyMapPresentation.swift */; };
 		79F3219D1F1531EDC5BC8DE9 /* AIReportCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B8B96FAC2F94AAE346057CC /* AIReportCard.swift */; };
+		8109D94DFC3C045FDCCE6C3C /* ai-report-trend-day-buckets.json in Resources */ = {isa = PBXBuildFile; fileRef = 273BFCDF2E22D0556F4C6496 /* ai-report-trend-day-buckets.json */; };
 		862F7AC4CA956D19BACF8643 /* AnalysisValues.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EA77606EE1F6C3C9A4817BA /* AnalysisValues.swift */; };
 		86A6323C1AB455DA56911FA3 /* BodyMapRendererView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF77638EC3AAF7D0132FDAD /* BodyMapRendererView.swift */; };
 		87029459148998CAAA53D61A /* RoutineFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2877E662BC6B709088E9E1A9 /* RoutineFactory.swift */; };
@@ -73,6 +74,7 @@
 		9B67A4042B2A2C92B6218F28 /* AnalysisFixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 459196F034DA83194A521DDF /* AnalysisFixtures.swift */; };
 		9BEA2F8F67BF23DCF9847234 /* HealthValues.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E60306C5C3EDD4A81279F42 /* HealthValues.swift */; };
 		9D26009EAC5BD46855E56580 /* body-map-v1.json in Resources */ = {isa = PBXBuildFile; fileRef = 25A9DF0C7F7657C0E111CADB /* body-map-v1.json */; };
+		A48287665A17996821C22621 /* AIReportTrendBoundaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BFF68FE1106B33353BDBE66 /* AIReportTrendBoundaryTests.swift */; };
 		A4B1E2917965DEDA551B9118 /* WorkoutInsights.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDE5C0955643C2033A1B8A1E /* WorkoutInsights.swift */; };
 		A647FFC2CB3ADDCBD5A9EAFA /* PersistenceUpgradeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1DE70B1D56BC8974379B01A /* PersistenceUpgradeTests.swift */; };
 		A921B691D8BEDAD822B9EBA1 /* TrainoteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75A716841CBA0C07DC0AF122 /* TrainoteTests.swift */; };
@@ -139,6 +141,7 @@
 		260199BD94DBA60F26BCEE34 /* HealthFoundation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthFoundation.swift; sourceTree = "<group>"; };
 		26F5E2B5B6372D6CF3DEAEDF /* WeeklyReportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyReportView.swift; sourceTree = "<group>"; };
 		2708DCC26BF871C5D68D64E4 /* HealthBackupTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthBackupTests.swift; sourceTree = "<group>"; };
+		273BFCDF2E22D0556F4C6496 /* ai-report-trend-day-buckets.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "ai-report-trend-day-buckets.json"; sourceTree = "<group>"; };
 		2877E662BC6B709088E9E1A9 /* RoutineFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoutineFactory.swift; sourceTree = "<group>"; };
 		2DC5319C02727CE30DD73DA2 /* HealthValueMerge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthValueMerge.swift; sourceTree = "<group>"; };
 		2EA77606EE1F6C3C9A4817BA /* AnalysisValues.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalysisValues.swift; sourceTree = "<group>"; };
@@ -146,6 +149,7 @@
 		35DDE3ACB1FCD48A7B450933 /* PreviewSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewSupport.swift; sourceTree = "<group>"; };
 		365FEAD0F1B33F53B71919F3 /* ai-report-contract.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "ai-report-contract.json"; sourceTree = "<group>"; };
 		3916BA104D99C1CD12C2558C /* BackupArchive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupArchive.swift; sourceTree = "<group>"; };
+		3BFF68FE1106B33353BDBE66 /* AIReportTrendBoundaryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIReportTrendBoundaryTests.swift; sourceTree = "<group>"; };
 		3C86E92C25EA81701311B37F /* AIReportTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIReportTests.swift; sourceTree = "<group>"; };
 		3E40DDCF1717FCB7E708D7F2 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		43B161F52F7E25F548C72FE4 /* HealthDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthDataService.swift; sourceTree = "<group>"; };
@@ -231,6 +235,7 @@
 			children = (
 				365FEAD0F1B33F53B71919F3 /* ai-report-contract.json */,
 				E6CFFE3748736E18A0B5A4AB /* ai-report-real-contract.json */,
+				273BFCDF2E22D0556F4C6496 /* ai-report-trend-day-buckets.json */,
 				C91785E77B15E5CF7605491D /* backup-v1.json */,
 			);
 			path = Fixtures;
@@ -242,6 +247,7 @@
 				7D487466DDA6B161237EB3BC /* AIReportRealContractTests.swift */,
 				3C86E92C25EA81701311B37F /* AIReportTests.swift */,
 				EF385ADA9FFFCEB4A4579B2E /* AIReportTransportTests.swift */,
+				3BFF68FE1106B33353BDBE66 /* AIReportTrendBoundaryTests.swift */,
 				C3501E876F2A34E63BE66682 /* AnalysisContractTests.swift */,
 				F819D28659E211AE3074D366 /* BackupArchiveTests.swift */,
 				ECDC6333AB4DD54A67BBDA70 /* BodyMapTests.swift */,
@@ -657,6 +663,7 @@
 			files = (
 				2EAA1DBA6537D58164FCA86B /* ai-report-contract.json in Resources */,
 				ED93F32B31BA85F8C8FC326C /* ai-report-real-contract.json in Resources */,
+				8109D94DFC3C045FDCCE6C3C /* ai-report-trend-day-buckets.json in Resources */,
 				8D6B4FE8A24397A0B8D9D172 /* backup-v1.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -680,6 +687,7 @@
 				3E33C403669173E55337F865 /* AIReportRealContractTests.swift in Sources */,
 				87C41505F990B4B7F2F304AE /* AIReportTests.swift in Sources */,
 				D76EC5C28906D0EE30B1030D /* AIReportTransportTests.swift in Sources */,
+				A48287665A17996821C22621 /* AIReportTrendBoundaryTests.swift in Sources */,
 				74B862B9B0B11881C1379CA5 /* AnalysisContractTests.swift in Sources */,
 				48B4E2CA03C1ED25CD075E75 /* BackupArchiveTests.swift in Sources */,
 				E8B6258EAE0F59527C212A31 /* BodyMapTests.swift in Sources */,
