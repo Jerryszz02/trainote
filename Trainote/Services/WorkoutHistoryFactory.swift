@@ -20,7 +20,8 @@ enum WorkoutHistoryFactory {
           orderIndex: value.orderIndex, weightKilograms: value.weightKilograms,
           repetitions: value.repetitions, durationSeconds: value.durationSeconds,
           isCompleted: preserveCompletion && value.isCompleted,
-          rir: preserveCompletion ? value.rir : nil, setRole: value.setRole)
+          rir: preserveCompletion ? value.rir : nil,
+          setRole: preserveCompletion ? value.setRole : (value.setRole == .unknown ? .working : value.setRole))
         set.exercise = exercise
         return set
       }
