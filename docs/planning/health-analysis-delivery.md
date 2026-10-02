@@ -41,7 +41,7 @@
 | 主对话 | `project.yml`、生成的 `.pbxproj`/scheme、entitlements、原 iOS CI 配置、规划索引和共享文档的最终同步；PR 检查及合并协调 | 替换用户的无关本地修改、提前宣布模型已验证 |
 
 - A 的 `TrainoteApp.swift` 所有权在 A/D 基础提交冻结后移交 F，F 才添加最终生产服务装配；基础层后续修复由主对话协调，两者不同时编辑。
-- 当前 `TrainoteApp.swift` 已由 F 完成实际服务装配。主对话另明确授权 F 独占同步本目录四份健康分析规划/索引；该次同步期间主对话不并发编辑。F 机械生成工程仍单独提交，不改 `project.yml`、原 CI 门槛或 entitlements。
+- 当前 `TrainoteApp.swift` 已由 F 完成实际服务装配。主对话另明确授权 F 独占同步本目录四份健康分析规划/索引；该次同步期间主对话不并发编辑。F 机械生成工程仍单独提交，不改 `project.yml` 或 entitlements。后续因完整 CI 实际超过 30 分钟，主协调另授权 F 单独提交作业时限 30→45 分钟（`b3b2a1b`）；所有测试、审计与证据步骤保留。
 - A 一次性建立两模块需要的实体与 RIR 字段。B/C 若发现契约缺口，先向主对话报告，由 A 或后续指定唯一负责人补齐，不各自建第二套字段。
 - `NutritionGoal` 兼容写入由基础仓储提供；B 生成 proposal，F 负责旧页面消费适配，避免 B/F 同时维护两套“当前目标”。
 - A 冻结共享 `BodyMapPresentation` 类型，D 消费它并使用 fixture 验证组件；后续 C 从恢复结果构造 presentation 并集成 D，不能要求先实现 C 才能完成 D。
@@ -169,25 +169,25 @@ CI 命令沿用仓库 iOS 工作流，实施时先枚举实际 Simulator，使�
 
 ## 实施与 PR 快照
 
-2026-10-03 06:29（Asia/Shanghai）通过 GitHub PR API 核对；后续状态以相应 PR 的当前 head 为准。
+2026-10-03 07:06（Asia/Shanghai）通过 GitHub PR API 核对；后续状态以相应 PR 的当前 head 为准。
 
 | 工作流 | PR / 当时状态 | F 已消费或核实的固定点 |
 | --- | --- | --- |
 | 规划 | [#3](https://github.com/Jerryszz02/trainote/pull/3) 已合并 | 2026-10-03 02:56 合并，实施授权与分工已执行 |
-| A | [#4](https://github.com/Jerryszz02/trainote/pull/4) 开放 | `28500cf`、精确备份日期 `59766ea`、推荐快照契约 `d4ee483a5ff355e94e813b9ff760cb6333295772` 已纳入；新撤回持久化问题由 A 负责，待准确补丁 |
+| A | [#4](https://github.com/Jerryszz02/trainote/pull/4) 开放 | `28500cf`、精确备份日期 `59766ea`、推荐快照契约 `d4ee483a5ff355e94e813b9ff760cb6333295772` 已纳入；撤回持久化 `149bbdb0a3f67f19d56383ea68b3d0654aef65fc` 已获后续授权并纳入 |
 | B | [#6](https://github.com/Jerryszz02/trainote/pull/6) 开放 | `27a026f88f1e6d21158313af6d1fb7e619ad82e0` 已普通合并，真实趋势页/目标历史已装配 |
 | C | [#8](https://github.com/Jerryszz02/trainote/pull/8) 开放 | `2d2703ef28033d952d0d61a3b950003afe5e97f2` 已普通合并，真实恢复页/反馈/RIR 已装配 |
 | D | [#5](https://github.com/Jerryszz02/trainote/pull/5)、[#10](https://github.com/Jerryszz02/trainote/pull/10) 已合并 | 04:27 / 06:04 合并；F 纳入 `a363195d480d1412d496336b674efc7c09dafaa8`，原 SceneKit 拆卸崩溃路径通过 |
-| E | [#7](https://github.com/Jerryszz02/trainote/pull/7) 开放 | 真实装配基线 `a36d640`；日桶边界固定补丁 `52fbb32110874f54d62d1c017f000b18149a4da0` 已获批准并普通合并，F 的报告 UI 与 9 项联合单元已通过 |
+| E | [#7](https://github.com/Jerryszz02/trainote/pull/7) 开放 | 日桶边界 `52fbb321` 已通过 F 定向回归；真实服务重启撤回测试 `415db319170247189bc9b8a9d270693ab38f33f5` 已获批准并普通合入 `405d2f4` |
 | F | [#9](https://github.com/Jerryszz02/trainote/pull/9) 开放、ready | 五 Tab、历史目标适配、真实训练建议/报告生命周期、隐私帮助及联合验收；尚未宣称最终全通过 |
 
 上表的消费提交与各模块 PR 当前 head 可以不同：公共测试辅助修复会分别纳入各分支，不能未经协调直接合并更新后的整个分支。完整 SHA、测试产物与后续结果见 [F 集成交接](../health-integration-handoff.md)。
 
 ## 当前验证与仍需完成
 
-- F 已运行 244 项单元测试（明确排除当时失败的报告集成类）及真实建议采用、D 恢复页 UI；其后 29 项完整 UI 中 28 项通过，公共空数字框输入辅助方法失败正在定向修复。精确产物及最终替代结果写入交接，不把分批历史结果相加当作最终 head 全量通过。
-- E `52fbb321` 的真实 B 日桶边界已由主对话独立联合测试确认：5 项 F 报告集成及 4 项 E 日期边界通过；F 自身树的同 9 项单元和真实基础报告→依据→只读历史 UI 已通过（`/tmp/trainote-health-integration-real-report-ui.xcresult`）；同轮公共输入辅助测试仍失败，最终完整回归未完成。
+- F 已通过包含 A 持久撤回修复的全部 267 项单元，以及真实趋势目标 2000→2240→撤销恢复 2000、分量→最近记录→周回顾 UI。公共 helper `7dd8390`、设置/体感转场 `c97e4f7` 均已定向通过；固定代码 `405d2f4` 正跑无排除项完整回归。不把分批历史结果相加当作最终 head 全量通过。
+- E `52fbb321` 的真实 B 日桶边界已通过 F 的 9 项联合单元和真实基础报告→依据→只读历史 UI；补充 UI 已验证实际保存的 70 kg 与手动来源。旧失败产物及后续替代证据保留在交接文档。
 - 代理已运行 65 项 Node 测试和 synthetic-offline demo，没有真实 DeepSeek 请求。原创 3D 资产许可已记录；D 独立组件与 F 实际页证据分别保留。
-- A 正核查撤回写盘失败后重启读取旧 granted 的路径；F 当前进程重试不能替代共享存储修复，收到准确 A SHA 后纳入并回归。
+- A 对撤回写盘失败后重启读取旧 granted 的路径已提供修复，固定基础 `149bbdb0` 包含 `a343be8`；F 普通合入 `7f84015`、工程登记 `35ec339`，已通过上述全部单元。E `415db319` 的真实报告服务重启回归已纳入本次最终运行；F 继续使用共享日志，不另造持久标记。
 - 真机 HealthKit/撤回、最低 iOS 17、真实 VoiceOver/设备性能、签名 App Attest、专业审查和前瞻试用仍未完成。供应商条款、预算、域名/托管、真实合成请求和正式部署/发布也未完成。
 - 主对话拥有统一审阅、当前 head CI 与合并协调。F 不合并默认分支、不部署、不发送真实健康数据、不清理其他任务资源。工程交付、科学有效性、真实服务与发布逐项报告。

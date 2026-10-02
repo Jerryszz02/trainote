@@ -1,7 +1,7 @@
 # Health integration (task F)
 
 2026-10-03：B/C/E 真实生产装配已进入 PR #9，分支 `agent/health-integration`，工作树 `392a/trainote`。
-本任务只交付可审阅 PR；不自行合并默认分支、发布、部署或上传真实健康数据。E 日统计窗口阻塞已通过定向单元及真实 UI；公共输入 helper、完整趋势采用/撤销 UI 和 A 撤回持久化后续补丁仍待收口，不能声明最终验收完成。
+本任务只交付可审阅 PR；不自行合并默认分支、发布、部署或上传真实健康数据。E 日统计窗口阻塞已通过定向单元及真实 UI；A 撤回持久化固定补丁已纳入；公共输入 helper 和完整趋势采用/撤销 UI 已定向通过，最终完整回归与当前 CI 仍待收口，不能声明最终验收完成。
 
 ## 固定依赖与工程
 
@@ -12,12 +12,14 @@
 | A/D 基础 | `967fa535`、`28500cf`、`59766ea` | schema 1.2、原子目标写入、备份 Date 精度 |
 | C | `2d2703ef28033d952d0d61a3b950003afe5e97f2` | 真实恢复服务、审核映射、体感/校准和恢复页 |
 | B | `27a026f88f1e6d21158313af6d1fb7e619ad82e0` | 趋势计算、目标采用/撤销、历史日目标和趋势页 |
+| A 持久撤回 | `149bbdb0a3f67f19d56383ea68b3d0654aef65fc`（含 `a343be8`） | 每 scope 独立日志覆盖旧主状态，新显式 grant 原子确认；默认 init/协议兼容 |
 | A 推荐快照 | `d4ee483a5ff355e94e813b9ff760cb6333295772` | 一次求值收集推荐 facts 与候选；最终报告指纹包含上下文 |
 | E | `a36d640ee4ba4b3fe375e477ec08c109ebac9fa2` | 真实报告缓存、最小化、客户端校验及撤回生命周期 |
 | E 日桶边界 | `52fbb32110874f54d62d1c017f000b18149a4da0` | 保留真实 B 本地事实/依赖，仅 wire 投影已观测窗口，拒绝未来原始值 |
+| E 重启撤回回归 | `415db319170247189bc9b8a9d270693ab38f33f5` | 真实 AIReportService 配合 fake transport，覆盖主授权文件写入失败、远端删除成功后的重启 |
 | D 生命周期 | `a363195d480d1412d496336b674efc7c09dafaa8` | 普通合入 `e794a3c` 的 SceneKit teardown 修复 |
 
-`.pbxproj` 仅使用本树 XcodeGen 2.46.0 完整运行时从 `project.yml` 机械生成，工程登记单独提交；原 CI、schema、entitlements 未改。
+`.pbxproj` 仅使用本树 XcodeGen 2.46.0 完整运行时从 `project.yml` 机械生成，工程登记单独提交；schema、entitlements 未改。主协调在确认旧 CI 30 分钟被取消后，授权仅把 `.github/workflows/ios.yml` 的作业时限改为 45 分钟，独立提交 `b3b2a1b`，测试/审计/证据上传步骤未减少。
 PR base 保持 `agent/health-foundation-integration`，由主协调处理后续合并。
 
 ## 页面与数据入口
@@ -53,7 +55,9 @@ PR base 保持 `agent/health-foundation-integration`，由主协调处理后续�
 
 E `ReportFactSelection.wireWindow` 原先拒绝真实 B 当日 `weight.smoothed` 等日桶，导致本地报告失败。`52fbb321` 已普通合入 `27d7e17`，工程登记为 `f0e6346`；B 本地事实和依赖完整保留，wire 只投影已观测区间，未来原始健康数据仍拒绝。原 5 项 F 报告组合测试和 4 项 E 日期/DST 边界测试全部通过，真实基础报告→查看依据→只读历史 UI 也通过。
 
-公共输入 helper 仍需处理键盘工具栏遮住零值字段的选择失败及 CI 第二次打开搜索键盘未出现；保留严格读回和业务断言。主协调另已复现 LocalConsentStore 写盘失败后重启读回旧 granted 的路径，由 A 统一修复；F 当前进程 retry 不替代该共享持久化补丁。
+公共输入 helper 修复 `7dd8390` 仅改原测试文件：等待可点击状态与键盘退场，重新呈现后有界获取焦点，并把输入框滚到键盘工具栏上方后全选；保留严格读回和业务断言。双次搜索、固定餐、手动目标及分量→编辑→最近记录→周回顾均已定向通过。主协调另已复现 LocalConsentStore 写盘失败后重启读回旧 granted 的路径，由 A `149bbdb0` 统一修复，F 已普通合入 `7f84015` 并用 `35ec339` 登记测试。主状态写盘失败时已持久的日志仍覆盖旧授权；不在 F 建立第二套标记。
+
+E `415db319` 已普通合入 `405d2f4`，没有修改生产报告逻辑。测试重新打开实际存储、缓存和服务，在 transport 待撤回标记已清除时仍拒绝 AI 授权，并确认远端请求与健康 fresh 请求均为零、独立健康授权保留。该合并仅新增这项测试；重新生成工程无差异。
 
 ## 验证证据
 
@@ -67,7 +71,11 @@ E `ReportFactSelection.wireWindow` 原先拒绝真实 B 当日 `weight.smoothed`
 - `/tmp/trainote-health-integration-ui-regression.xcresult`：16 项撤回/建议单元通过；29 项 UI 中 28 项通过，唯一失败为公共 helper 的零值营养输入全选。该轮明确排除当时阻塞的报告 UI。
 - `/tmp/trainote-health-integration-real-report-ui.xcresult`：9 项报告相关单元及报告真实 UI 通过；同轮公共输入辅助用例仍失败，不把整轮写成通过。已查看报告截图，未知值保留未知，没有未启用的 AI 同意入口。
 - Node 22.23.1 下代理 `npm test` 65/65 和 `npm run demo` synthetic-offline 通过，日志 `/tmp/trainote-health-integration-server.log`。没有真实供应商请求。
-- 公共 helper、趋势采用/撤销 UI 及 A 补丁收口后，仍须最终完整回归并确认当前 head CI。
+- 公共 helper `7dd83902594c00d524425f7097d302ff16fbbe9b`：`/tmp/trainote-health-integration-ui-helper-adoption-final.xcresult` 的双次搜索、固定餐、手动目标、真实 70 kg 报告 UI 通过；该轮趋势 UI 滚动断言失败，未称整轮成功。`/tmp/trainote-health-integration-consent-and-adoption.xcresult` 再验分量→最近记录→周回顾通过，且包含 A/E 的全体 267 单元通过，趋势采用/撤销 UI 同轮通过，整个运行成功。该测试以 DEBUG 且内存库中的旧版目标 fixture 开始，身体资料与体重均通过真实表单录入，验证 2000→2240→撤销恢复 2000、七日后复核、原建议模式和首页读回；不预造 proposal 或生成 revision。源码提交 `6926fb4`，工程登记 `e0ef426`。
+- F 的 `c97e4f7` 只同步设置/体感表单转场和动态 Form 结果行，业务断言完整保留；三项定向 UI 全部通过，证据 `/tmp/trainote-health-integration-settings-transitions.xcresult`。主协调另独立确认 `7dd8390` 的双次搜索、分量/周回顾和旧目标编辑三项通过，证据 `/tmp/trainote-health-acceptance-input-7dd8390.xcresult`。
+- 已查看趋势撤销后的目标/模式截图与真实报告依据截图：恢复为 2000 kcal、原建议模式保留，报告读回表单保存的 70 kg 并标明手动来源；缺失指标仍为未知。
+- 当前代码固定点 `405d2f4` 已启动无排除项的全体单元与 UI，产物 `/tmp/trainote-health-integration-full-final.xcresult`；结果未完成前不计为通过。
+- 原 `0ac8091` CI `37071374776` 因 30 分钟作业上限取消，另有已定位的旧报告/helper 及 F 表单转场等待失败。当前修复提交须重新完整跑 UI/CI，不能把定向绿色替代当前 head 完整通过。
 
 ## 真机及发布剩余条件
 
