@@ -24,7 +24,11 @@ final class DailyUseUpgradeUITests: XCTestCase {
     app.buttons["training.edit"].tap()
     fill(app.textFields["workout.title"], "不应保存")
     app.buttons["workout.edit.cancel"].tap()
-    XCTAssertFalse(app.navigationBars["不应保存"].exists)
+    XCTAssertTrue(app.navigationBars["自由训练"].waitForExistence(timeout: 3))
+    app.navigationBars.buttons.element(boundBy: 0).tap()
+    XCTAssertTrue(historyRow.waitForExistence(timeout: 3))
+    historyRow.tap()
+    XCTAssertTrue(app.navigationBars["自由训练"].waitForExistence(timeout: 3))
     app.buttons["training.repeat"].tap()
     XCTAssertTrue(app.staticTexts["上次表现"].waitForExistence(timeout: 3))
     app.buttons["加重 2.5 公斤"].firstMatch.tap()
@@ -92,7 +96,8 @@ final class DailyUseUpgradeUITests: XCTestCase {
     // Enter a distinct result without depending on text-selection gestures.
     let duration = app.textFields["cardio.duration"]
     reveal(duration)
-    duration.coordinate(withNormalizedOffset: CGVector(dx: 0.98, dy: 0.5)).tap()
+    duration.tap()
+    XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 3))
     duration.typeText("4")
     app.buttons["收起键盘"].tap()
     let enteredDuration = duration.value as? String ?? ""
@@ -112,7 +117,8 @@ final class DailyUseUpgradeUITests: XCTestCase {
     XCTAssertTrue(app.buttons["training.repeat"].waitForExistence(timeout: 3))
     app.navigationBars.buttons.element(boundBy: 0).tap()
     waitForCount(
-      app.buttons.matching(NSPredicate(format: "label CONTAINS '已完成' AND label CONTAINS '自由训练'")), 2)
+      app.buttons.matching(NSPredicate(format: "label CONTAINS '已完成' AND label CONTAINS '自由训练'")), 2
+    )
   }
 
   func testFoodPortionRecentAndWeeklyReport() {
@@ -271,44 +277,7 @@ final class DailyUseUpgradeUITests: XCTestCase {
   }
   private func fill(_ field: XCUIElement, _ value: String) {
     reveal(field)
-    XCTAssertTrue(field.waitForExistence(timeout: 3))
-    field.coordinate(withNormalizedOffset: CGVector(dx: 0.98, dy: 0.5)).tap()
-    let current = field.value as? String ?? ""
-    if Double(current.replacingOccurrences(of: ",", with: "")) != nil {
-      field.press(forDuration: 1.1)
-      let selectAll = app.buttons.matching(NSPredicate(format: "label IN {'Select All', '全选'}"))
-        .firstMatch
-      let menuSelectAll = app.menuItems.matching(
-        NSPredicate(format: "label IN {'Select All', '全选'}")
-      ).firstMatch
-      if selectAll.waitForExistence(timeout: 1) {
-        selectAll.tap()
-      } else if menuSelectAll.exists {
-        menuSelectAll.tap()
-      } else {
-        field.doubleTap()
-      }
-    } else {
-      field.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: current.count + 1))
-    }
-    field.typeText(value)
-    if let expected = Double(value),
-      let actual = Double((field.value as? String ?? "").replacingOccurrences(of: ",", with: ""))
-    {
-      XCTAssertEqual(actual, expected, accuracy: 0.000_001)
-    } else {
-      XCTAssertEqual(field.value as? String, value)
-    }
-    if app.buttons["收起键盘"].exists {
-      app.buttons["收起键盘"].tap()
-    } else if field.identifier.hasPrefix("nutrition.") || field.identifier.hasPrefix("foodPreset.")
-      || field.identifier.hasPrefix("mealTemplate.")
-    {
-      if app.keyboards.count > 0 && app.buttons["完成"].exists {
-        app.buttons["完成"].firstMatch.tap()
-        XCTAssertTrue(app.keyboards.firstMatch.waitForNonExistence(timeout: 5))
-      }
-    }
+    UITestTextInput.replace(field, with: value, in: app)
   }
   private func capture(_ title: String) {
     let attachment = XCTAttachment(screenshot: app.screenshot())
