@@ -49,11 +49,19 @@ final class HealthIntegrationUITests: XCTestCase {
     XCTAssertTrue(app.buttons["routine.create"].waitForExistence(timeout: 3))
     XCTAssertTrue(app.segmentedControls.buttons["训练模板"].isSelected)
     app.navigationBars.buttons.element(boundBy: 0).tap()
-    app.buttons["today.settings"].tap()
+    let settings = app.buttons["today.settings"]
+    XCTAssertTrue(settings.waitForExistence(timeout: 3))
+    settings.tap()
     XCTAssertTrue(app.buttons["每日营养目标"].waitForExistence(timeout: 3))
     app.buttons["每日营养目标"].tap()
-    XCTAssertTrue(app.buttons["goal.save"].exists)
+    XCTAssertTrue(app.navigationBars["营养目标"].waitForExistence(timeout: 3))
+    let save = app.buttons["goal.save"]
+    XCTAssertTrue(save.waitForExistence(timeout: 3))
+    let saveReady = XCTNSPredicateExpectation(
+      predicate: NSPredicate { _, _ in save.isHittable }, object: nil)
+    XCTAssertEqual(XCTWaiter.wait(for: [saveReady], timeout: 3), .completed)
     app.navigationBars.buttons.element(boundBy: 0).tap()
+    XCTAssertTrue(app.navigationBars["设置"].waitForExistence(timeout: 3))
     reveal(app.buttons["backup.export"])
     XCTAssertTrue(app.buttons["backup.export"].isHittable)
     XCTAssertTrue(app.buttons["backup.import"].exists)
@@ -61,10 +69,31 @@ final class HealthIntegrationUITests: XCTestCase {
 
   func testDisconnectConfirmationAndOfflineHelp() {
     app.buttons["today.settings"].tap()
-    app.buttons["settings.disconnectHealth"].tap()
-    app.buttons["断开并删除"].tap()
+    XCTAssertTrue(app.navigationBars["设置"].waitForExistence(timeout: 3))
+    let disconnect = app.buttons["settings.disconnectHealth"]
+    reveal(disconnect)
+    disconnect.tap()
+    let confirmation = app.buttons["断开并删除"]
+    XCTAssertTrue(confirmation.waitForExistence(timeout: 3))
+    confirmation.tap()
+    XCTAssertTrue(confirmation.waitForNonExistence(timeout: 3))
+    let finished = XCTNSPredicateExpectation(
+      predicate: NSPredicate { _, _ in
+        self.app.alerts["操作未完成"].exists || (disconnect.exists && disconnect.isEnabled)
+      }, object: nil)
+    XCTAssertEqual(XCTWaiter.wait(for: [finished], timeout: 10), .completed)
+    XCTAssertFalse(app.alerts["操作未完成"].exists, "健康断开与删除未成功")
+
+    // The result is a dynamic Form row directly below help. Locate this stable neighbor first;
+    // searching for an unmaterialized row by repeatedly swiping can scroll past it entirely.
+    let help = app.buttons["settings.healthHelp"]
+    reveal(help)
+    if help.frame.midY > app.frame.height * 0.55 {
+      let start = app.coordinate(withNormalizedOffset: CGVector(dx: 0.2, dy: 0.65))
+      let end = app.coordinate(withNormalizedOffset: CGVector(dx: 0.2, dy: 0.35))
+      start.press(forDuration: 0.05, thenDragTo: end)
+    }
     let status = app.staticTexts["settings.healthStatus"]
-    reveal(status)
     let result = XCTNSPredicateExpectation(
       predicate: NSPredicate { _, _ in
         status.exists || self.app.alerts["操作未完成"].exists
@@ -74,8 +103,8 @@ final class HealthIntegrationUITests: XCTestCase {
     reveal(status)
     XCTAssertTrue(status.isHittable)
     XCTAssertEqual(status.label, "已断开并删除健康导入数据及相关报告。手动记录已保留。")
-    reveal(app.buttons["settings.healthHelp"])
-    app.buttons["settings.healthHelp"].tap()
+    reveal(help)
+    help.tap()
     XCTAssertTrue(app.navigationBars["方法与数据使用"].waitForExistence(timeout: 3))
     XCTAssertTrue(app.staticTexts["分析方法与适用范围"].exists)
   }
@@ -124,29 +153,57 @@ final class HealthIntegrationUITests: XCTestCase {
   }
 
   func testTodayCheckInUpdatesRecoveryAndSkipPreservesSavedFeeling() {
+    func waitUntilHittable(_ button: XCUIElement) {
+      let ready = XCTNSPredicateExpectation(
+        predicate: NSPredicate { _, _ in button.exists && button.isHittable }, object: nil)
+      XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 3), .completed)
+    }
+
     let openToday = app.buttons["today.checkIn.open"]
     openToday.tap()
+    XCTAssertTrue(app.navigationBars["十秒体感"].waitForExistence(timeout: 3))
     let feeling = app.buttons["recovery.checkIn.feeling"]
+    XCTAssertTrue(feeling.waitForExistence(timeout: 3))
+    waitUntilHittable(feeling)
     feeling.tap()
-    app.buttons["疲惫"].tap()
+    let tired = app.buttons["疲惫"]
+    XCTAssertTrue(tired.waitForExistence(timeout: 3), "整体感觉选项未打开")
+    waitUntilHittable(tired)
+    tired.tap()
+    XCTAssertTrue(app.navigationBars["十秒体感"].waitForExistence(timeout: 3))
     app.buttons["recovery.checkIn.save"].tap()
+    XCTAssertTrue(app.navigationBars["十秒体感"].waitForNonExistence(timeout: 3))
     XCTAssertTrue(app.buttons["today.recommendation"].label.contains("疲惫"))
     app.buttons["today.recommendation"].tap()
     XCTAssertTrue(app.navigationBars["恢复分析"].waitForExistence(timeout: 3))
     let openRecovery = app.buttons["recovery.checkIn.open"]
     reveal(openRecovery)
     openRecovery.tap()
+    XCTAssertTrue(app.navigationBars["十秒体感"].waitForExistence(timeout: 3))
+    waitUntilHittable(feeling)
     XCTAssertTrue(feeling.label.contains("疲惫"))
     feeling.tap()
-    app.buttons["好"].tap()
+    let good = app.buttons["好"]
+    XCTAssertTrue(good.waitForExistence(timeout: 3), "整体感觉选项未打开")
+    waitUntilHittable(good)
+    good.tap()
+    XCTAssertTrue(app.navigationBars["十秒体感"].waitForExistence(timeout: 3))
     app.buttons["recovery.checkIn.skip"].tap()
+    XCTAssertTrue(app.navigationBars["十秒体感"].waitForNonExistence(timeout: 3))
     app.tabBars.buttons["今日"].tap()
     XCTAssertTrue(app.buttons["today.recommendation"].label.contains("疲惫"))
     openToday.tap()
+    XCTAssertTrue(app.navigationBars["十秒体感"].waitForExistence(timeout: 3))
+    waitUntilHittable(feeling)
     XCTAssertTrue(feeling.label.contains("疲惫"))
     feeling.tap()
-    app.buttons["未回答"].tap()
+    let unanswered = app.buttons["未回答"]
+    XCTAssertTrue(unanswered.waitForExistence(timeout: 3), "整体感觉选项未打开")
+    waitUntilHittable(unanswered)
+    unanswered.tap()
+    XCTAssertTrue(app.navigationBars["十秒体感"].waitForExistence(timeout: 3))
     app.buttons["recovery.checkIn.save"].tap()
+    XCTAssertTrue(app.navigationBars["十秒体感"].waitForNonExistence(timeout: 3))
     XCTAssertFalse(app.buttons["today.recommendation"].label.contains("疲惫"))
   }
 
