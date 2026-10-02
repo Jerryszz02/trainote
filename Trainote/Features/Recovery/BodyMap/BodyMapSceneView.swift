@@ -15,12 +15,16 @@ struct BodyMapSceneView: UIViewRepresentable {
     let view = BodyMapSceneContainer()
     if view.model == nil {
       // Do not mutate SwiftUI state in make/updateUIView.
-      DispatchQueue.main.async { onUnavailable() }
+      DispatchQueue.main.async { [weak view] in
+        guard let view, !view.isDismantled else { return }
+        onUnavailable()
+      }
     }
     return view
   }
 
   func updateUIView(_ view: BodyMapSceneContainer, context: Context) {
+    guard !view.isDismantled else { return }
     view.onSelect = onSelect
     view.configure(input: input, policy: policy, active: active)
     if view.viewpointRevision != viewpointRevision {
@@ -30,9 +34,7 @@ struct BodyMapSceneView: UIViewRepresentable {
   }
 
   static func dismantleUIView(_ view: BodyMapSceneContainer, coordinator: ()) {
-    view.sceneView.isPlaying = false
-    view.sceneView.scene = nil
-    view.onSelect = nil
+    view.dismantle()
   }
 }
 
@@ -40,6 +42,7 @@ struct BodyMapSceneView: UIViewRepresentable {
 final class BodyMapSceneContainer: UIView, UIGestureRecognizerDelegate {
   let sceneView = SCNView()
   private(set) var model: BodyMapScene?
+  private(set) var isDismantled = false
   private var input = BodyMapRenderInput(regions: [])
   private var buttons: [MuscleID: UIButton] = [:]
   private var lines: [MuscleID: CAShapeLayer] = [:]
@@ -97,19 +100,42 @@ final class BodyMapSceneContainer: UIView, UIGestureRecognizerDelegate {
 
   required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
+  func dismantle() {
+    guard !isDismantled else { return }
+    // UIKit can still lay out this view while SwiftUI removes it. Invalidate callbacks
+    // and the model before disconnecting the scene used by project/unprojectPoint.
+    isDismantled = true
+    onSelect = nil
+    model = nil
+    isUserInteractionEnabled = false
+    for gesture in sceneView.gestureRecognizers ?? [] {
+      gesture.isEnabled = false
+      gesture.delegate = nil
+    }
+    sceneView.delegate = nil
+    sceneView.isPlaying = false
+    sceneView.rendersContinuously = false
+    sceneView.pointOfView = nil
+    sceneView.scene = nil
+  }
+
   override func layoutSubviews() {
     super.layoutSubviews()
+    guard let model else { return }
     sceneView.frame = bounds
+    // A newly inserted SCNView needs its viewport laid out before projecting labels.
+    sceneView.layoutIfNeeded()
     // Leave room for the full A-pose on narrow containers without cropping the hands.
-    model?.camera.camera?.orthographicScale = Double(
+    model.camera.camera?.orthographicScale = Double(
       max(1.08, bounds.height / max(1, bounds.width) * 0.57))
     updateLabels()
   }
 
   func configure(input: BodyMapRenderInput, policy: BodyMapDisplayPolicy, active: Bool) {
+    guard let model else { return }
     if self.input != input {
       self.input = input
-      model?.update(input: input)
+      model.update(input: input)
     }
     sceneView.preferredFramesPerSecond = policy.framesPerSecond
     sceneView.antialiasingMode = policy == .economical ? .none : .multisampling4X
@@ -120,8 +146,8 @@ final class BodyMapSceneContainer: UIView, UIGestureRecognizerDelegate {
   }
 
   func rotate(to angle: Float) {
-    guard angle.isFinite else { return }
-    model?.rotate(to: angle)
+    guard let model, angle.isFinite else { return }
+    model.rotate(to: angle)
     let facing = cos(angle)
     sceneView.accessibilityValue = facing > 0.85 ? "前面" : facing < -0.85 ? "背面" : "侧面"
     updateLabels()
@@ -134,6 +160,7 @@ final class BodyMapSceneContainer: UIView, UIGestureRecognizerDelegate {
   }
 
   override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+    guard model != nil else { return false }
     guard let pan = gestureRecognizer as? UIPanGestureRecognizer else { return true }
     let velocity = pan.velocity(in: self)
     return abs(velocity.x) > abs(velocity.y)
