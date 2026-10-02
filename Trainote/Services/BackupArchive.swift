@@ -182,12 +182,14 @@ enum BackupArchiveError: LocalizedError, Equatable {
   case invalid(String)
   case unsupportedVersion(Int)
   case activeWorkoutConflict
+  case goalStateConflict
   var errorDescription: String {
     switch self {
     case .tooLarge: "备份文件过大。"
     case .invalid(let s): "备份无效：\(s)"
     case .unsupportedVersion(let v): "不支持的备份版本：\(v)。"
     case .activeWorkoutConflict: "当前已有进行中的训练，无法恢复另一个进行中的训练。"
+    case .goalStateConflict: "备份中的营养目标或目标历史与本机记录冲突，未导入任何数据。"
     }
   }
 }
@@ -267,6 +269,7 @@ enum BackupArchiveService {
       throw BackupArchiveError.activeWorkoutConflict
     }
     let existingHealth = try HealthManualBackup.read(isolated)
+    try preflightGoalState(archive, existingGoals: existingGoals, existingHistory: existingHealth.goalRevisions)
     try archive.manualHealth?.preflight(existing: existingHealth)
     var existingIDs = Set(
       existingWorkouts.map(\.id) + existingRoutines.map(\.id) + existingPresets.map(\.id)
@@ -388,6 +391,39 @@ enum BackupArchiveService {
       throw error
     }
     return BackupImportResult(inserted: inserted, skipped: skipped, counts: archive.counts)
+  }
+
+  /// Current targets and revision history are one logical state. Skipping a conflicting target
+  /// while importing its new revisions would silently create two different versions of that state.
+  private static func preflightGoalState(
+    _ archive: BackupArchive, existingGoals: [NutritionGoal], existingHistory: [NutritionGoalRevisionValue]
+  ) throws {
+    let incomingHistory = archive.manualHealth?.goalRevisions ?? []
+    guard !incomingHistory.isEmpty || !existingHistory.isEmpty else { return }
+    let existingGoalValues = existingGoals.map(nutritionGoal)
+    for incoming in archive.nutritionGoals {
+      if let existing = existingGoalValues.first(where: { $0.id == incoming.id }),
+        try encoder.encode(existing) != encoder.encode(incoming) {
+        throw BackupArchiveError.goalStateConflict
+      }
+    }
+    for incoming in incomingHistory {
+      if let existing = existingHistory.first(where: { $0.id == incoming.id }),
+        try encoder.encode(existing) != encoder.encode(incoming) {
+        throw BackupArchiveError.goalStateConflict
+      }
+    }
+    func newest(_ goals: [NutritionGoalDTO]) -> NutritionGoalDTO? {
+      goals.sorted {
+        $0.updatedAt == $1.updatedAt ? $0.id.uuidString < $1.id.uuidString : $0.updatedAt > $1.updatedAt
+      }.first
+    }
+    if let incoming = newest(archive.nutritionGoals), let existing = newest(existingGoalValues),
+      try encoder.encode(existing) != encoder.encode(incoming) {
+      throw BackupArchiveError.goalStateConflict
+    }
+    // Compare the archive's own date representation: v1/v2 ISO-8601 timestamps are second precision,
+    // so restoring an unchanged export into its source store remains idempotent.
   }
 
   private static func validate(_ a: BackupArchive) throws {
