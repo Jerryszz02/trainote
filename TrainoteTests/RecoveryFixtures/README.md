@@ -56,7 +56,9 @@ Expand the explicit reviewed table and regenerate only after reviewing each adde
 
 ## Verification
 
-Test fixtures are synthetic. Dedicated Simulator: `56CCDE13-528E-4012-AABA-D0559816F5AB` (Trainote Recovery C, iOS 26.5). DerivedData: `/tmp/trainote-recovery-c-derived`; Xcode 26.6. Result bundle paths and final counts are recorded in the PR after final execution.
+Test fixtures are synthetic. Dedicated Simulator: `56CCDE13-528E-4012-AABA-D0559816F5AB` (Trainote Recovery C, iOS 26.5). DerivedData: `/tmp/trainote-recovery-c-derived`; Xcode 26.6. Current merged source passed **112 unit tests and 1 real RIR UI test**, 0 failures: `/tmp/trainote-recovery-c-reviewed-final.xcresult`. The standalone recovery preview passed **3 UI tests**, including clearing an existing only answer and cancellation semantics: `/tmp/trainote-recovery-c-preview-final.xcresult`. Earlier, the same training code passed the 3 existing repeated-workout/bodyweight-duration/cardio-confirmation UI regressions in `/tmp/trainote-recovery-c-final-1.xcresult` (before the fixed foundation merge). No current-head remote CI result is implied by these local runs.
+
+The new external-strength coverage regression was first observed failing (non-nil score and missing dependency), then passed after preserving the unknown load and full eligibility lineage. The coordinator's feedback-clearing P2 is covered at repository/analysis and real UI levels. First empty drafts remain unsaved; clearing an existing record persists nil/empty values; skip leaves persisted state intact.
 
 Coverage includes filtering/invalid times, RIR and historical role priors, unknown versus 100, deduplicated muscle weights, monotonic decay, edit/delete, independent pain/limitation, feedback persistence/prompt skip, temporal holdout rejection/reset, HRV source separation, complete dependencies and fresh-report removal, real RIR/history/repeat UI, and standalone recovery-page UI (body selection, pain override, feedback save/cancel and empty-state skip).
 

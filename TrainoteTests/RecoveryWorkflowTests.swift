@@ -86,6 +86,42 @@ final class RecoveryWorkflowTests: XCTestCase {
     XCTAssertNil(try helper.chest(calculate()).score)
   }
 
+  func testClearingAnExistingOnlyAnswerPersistsUnknownAndRemovesItsAnalysisEffect() throws {
+    let helper = RecoveryCalculatorTests()
+    let now = helper.now
+    let repo = SwiftDataAnalysisRepository(
+      container: try PersistenceController.makeContainer(inMemory: true))
+    var draft = CheckInValue(
+      id: UUID(), localDate: AnalysisFingerprint.localDate(now, timeZone: .gmt),
+      timeZoneIdentifier: "GMT", feeling: .tired, updatedAt: now)
+    try repo.saveCheckIn(draft)
+    var input = helper.input()
+    input.checkIns = try repo.manualRecords().checkIns
+    XCTAssertEqual(try helper.calculator().calculate(input).systemicState, .moderate)
+    draft.feeling = nil
+    XCTAssertTrue(try RecoveryCheckInWriter.save(draft, repository: repo, at: now))
+    let reopened = try XCTUnwrap(repo.manualRecords().checkIns.first)
+    XCTAssertEqual(reopened.id, draft.id)
+    XCTAssertNil(reopened.feeling)
+    XCTAssertNil(reopened.sleepFeeling)
+    XCTAssertTrue(reopened.muscleFeedback.isEmpty)
+    input.checkIns = [reopened]
+    let result = try helper.calculator().calculate(input)
+    XCTAssertEqual(result.systemicState, .unknown)
+    XCTAssertFalse(result.facts.contains { $0.id == "recovery.feeling" })
+  }
+
+  func testFirstEmptyCheckInIsSkippedWithoutCreatingFalseAnswers() throws {
+    let repo = SwiftDataAnalysisRepository(
+      container: try PersistenceController.makeContainer(inMemory: true))
+    let now = Date.now
+    let draft = CheckInValue(
+      id: UUID(), localDate: AnalysisFingerprint.localDate(now, timeZone: .gmt),
+      timeZoneIdentifier: "GMT", updatedAt: now)
+    XCTAssertFalse(try RecoveryCheckInWriter.save(draft, repository: repo, at: now))
+    XCTAssertTrue(try repo.manualRecords().checkIns.isEmpty)
+  }
+
   func testPromptIsOptionalOncePerDayAndDoesNotChaseInactiveUsers() throws {
     let repo = SwiftDataAnalysisRepository(
       container: try PersistenceController.makeContainer(inMemory: true))

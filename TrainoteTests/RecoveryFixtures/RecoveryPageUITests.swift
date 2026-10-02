@@ -52,6 +52,33 @@
       app.buttons["胸部"].tap()
       XCTAssertTrue(pain.label.contains("有"))
     }
+    func testClearingTheOnlyFeelingPersistsAndSkipDoesNotRestoreIt() {
+      app.launchArguments = ["-fixture-empty"]
+      app.launch()
+      let open = app.buttons["recovery.checkIn.open"]
+      reveal(open)
+      open.tap()
+      let feeling = app.buttons["recovery.checkIn.feeling"]
+      feeling.tap()
+      app.buttons["疲惫"].tap()
+      app.buttons["recovery.checkIn.save"].tap()
+      reveal(open)
+      open.tap()
+      XCTAssertTrue(feeling.label.contains("疲惫"))
+      feeling.tap()
+      app.buttons["未回答"].tap()
+      app.buttons["recovery.checkIn.save"].tap()
+      reveal(open)
+      open.tap()
+      XCTAssertTrue(feeling.label.contains("未回答"))
+      feeling.tap()
+      app.buttons["疲惫"].tap()
+      app.buttons["recovery.checkIn.skip"].tap()
+      reveal(open)
+      open.tap()
+      XCTAssertTrue(feeling.label.contains("未回答"))
+    }
+
     func testEmptyRecordingIsUnknownAndCheckInCanBeSkipped() {
       app.launchArguments = ["-fixture-empty"]
       app.launch()

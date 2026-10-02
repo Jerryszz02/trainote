@@ -79,18 +79,32 @@ struct RecoveryCheckInView: View {
       })
   }
   private func save() {
-    draft.updatedAt = .now
-    draft.muscleFeedback = draft.muscleFeedback.filter {
-      $0.soreness != nil || $0.hasPain != nil || $0.hasMovementLimitation != nil
-    }
-    guard draft.feeling != nil || draft.sleepFeeling != nil || !draft.muscleFeedback.isEmpty else {
-      dismiss()
-      return
-    }
     do {
-      try repository.saveCheckIn(draft)
+      try RecoveryCheckInWriter.save(draft, repository: repository, at: .now)
       dismiss()
     } catch { self.error = "体感尚未保存，请重试。" }
+  }
+
+}
+
+@MainActor
+enum RecoveryCheckInWriter {
+  /// First-time empty drafts are skipped; clearing an existing answer must persist the empty value.
+  @discardableResult
+  static func save(_ draft: CheckInValue, repository: any AnalysisRepository, at date: Date) throws
+    -> Bool
+  {
+    var value = draft
+    value.updatedAt = date
+    value.muscleFeedback = value.muscleFeedback.filter {
+      $0.soreness != nil || $0.hasPain != nil || $0.hasMovementLimitation != nil
+    }
+    let hasAnswers =
+      value.feeling != nil || value.sleepFeeling != nil || !value.muscleFeedback.isEmpty
+    let isExisting = try repository.manualRecords().checkIns.contains { $0.id == value.id }
+    guard hasAnswers || isExisting else { return false }
+    try repository.saveCheckIn(value)
+    return true
   }
 }
 
