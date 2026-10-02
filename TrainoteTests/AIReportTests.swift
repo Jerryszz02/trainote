@@ -81,21 +81,9 @@ final class AIReportTests: XCTestCase {
   private func contract() throws -> (ReportInput, ReportResult, [String: Any]) {
     let path = try XCTUnwrap(Bundle(for: Self.self).url(forResource: "ai-report-contract", withExtension: "json"))
     let fixture = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(contentsOf: path)) as? [String: Any])
-    let envelope = try XCTUnwrap(fixture["envelope"] as? [String: Any])
-    var input = try XCTUnwrap(envelope["input"] as? [String: Any])
-    input["facts"] = (input["facts"] as! [[String: Any]]).map { fact in
-      var copy = fact
-      copy["sources"] = [["kind": "manual", "identifier": "trainote.manual"]]
-      copy["dependencies"] = []
-      return copy
-    }
-    input["candidates"] = (input["candidates"] as! [[String: Any]]).map { candidate in
-      var copy = candidate
-      copy["allowedParameters"] = []; copy["exclusionCodes"] = []; copy["dependencies"] = []
-      return copy
-    }
+    let input = try XCTUnwrap(fixture["localInput"] as? [String: Any])
     return (try AIReportPolicy.decoder().decode(ReportInput.self, from: JSONSerialization.data(withJSONObject: input)),
-      try AIReportPolicy.decoder().decode(ReportResult.self, from: JSONSerialization.data(withJSONObject: fixture["report"]!)), fixture)
+      try AIReportPolicy.decoder().decode(ReportResult.self, from: JSONSerialization.data(withJSONObject: fixture["localReport"]!)), fixture)
   }
   func testSharedServerContractRoundTripAndUnknownIsNotZero() throws {
     let (input, result, fixture) = try contract()

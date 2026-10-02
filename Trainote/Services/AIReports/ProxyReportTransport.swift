@@ -1,3 +1,4 @@
+import DeviceCheck
 import Foundation
 
 /// Deployment configuration only. F must keep transport nil until disclosure, signing and deployment gates pass.
@@ -150,7 +151,22 @@ final class ProxyReportTransport: AIReportTransport {
       return
     }
     guard let nonce = Data(base64Encoded: challenge.challenge), nonce.count == 32, challenge.expiresAt > clock() else { throw AIReportFailure.invalidResponse }
-    let attestation = try await attestor.attest(keyID: keyID, challenge: nonce)
+    let attestation: Data
+    do {
+      attestation = try await attestor.attest(keyID: keyID, challenge: nonce)
+    } catch {
+      let failure = error as NSError
+      let retrySameKey = failure.domain == DCError.errorDomain
+        && failure.code == DCError.Code.serverUnavailable.rawValue
+      if !retrySameKey, identity.keyID == keyID, !identity.registered {
+        // Apple only permits retrying serverUnavailable with this one-time attestation key.
+        // Persist removal now; generate its replacement on the next explicit report request.
+        // Preserve any revocation state changed while awaiting DeviceCheck.
+        identity.keyID = nil
+        try credentials.save(identity)
+      }
+      throw error
+    }
     try guardSend()
     let body = try AIReportPolicy.encoder().encode(Attestation(keyID: keyID, challengeID: challenge.challengeID,
       attestation: attestation.base64EncodedString()))

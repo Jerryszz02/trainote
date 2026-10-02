@@ -34,11 +34,51 @@ enum AIReportPolicy {
   static func identifier(_ value: String) -> Bool {
     value.range(of: "^[A-Za-z0-9_.:-]{1,128}$", options: .regularExpression) != nil
   }
+  static func calculationVersion(_ value: String) -> Bool {
+    value.range(of: "^[A-Za-z0-9_.:+-]{1,128}$", options: .regularExpression) != nil
+  }
+  static func localIdentifier(_ value: String) -> Bool {
+    !value.isEmpty && value.utf8.count <= 4096 && value.rangeOfCharacter(from: .controlCharacters) == nil
+  }
 }
 
 enum AIReportFailure: Error, Equatable {
   case unavailable, invalidInput, invalidResponse, stale, cancelled, storage
   case consentRequired, revocationPending, deviceUnavailable, server(Int)
+}
+
+/// The fresh dependency closure stays local. Send summary facts and every approved candidate's reasons.
+enum ReportFactSelection {
+  static func wireWindow(_ fact: MetricFact, asOf: Date) throws -> AnalysisWindow {
+    guard fact.window.start <= fact.window.end else { throw AIReportFailure.invalidInput }
+    // F labels observed recommendation context with the whole local day (including DST).
+    // Project only its elapsed portion; all other future observations remain invalid.
+    if fact.window.end > asOf.addingTimeInterval(60) {
+      guard fact.metric.hasPrefix("recommendation."),
+        fact.sources.contains(where: { $0.kind == .calculation && $0.identifier == "trainote.recommendations" }),
+        fact.window.start <= asOf, fact.window.end.timeIntervalSince(fact.window.start) <= 26 * 3600
+      else { throw AIReportFailure.invalidInput }
+      return .init(start: fact.window.start, end: asOf)
+    }
+    return fact.window
+  }
+  static func facts(_ input: ReportInput) -> [MetricFact] {
+    let reasons = Set(input.candidates.flatMap(\.reasonFactIDs))
+    let rawMetrics = Set(HealthDataType.allCases.map(\.rawValue) + ["sleep.duration"])
+    let summaries = input.facts.filter {
+      reasons.contains($0.id) || !(rawMetrics.contains($0.metric) && $0.sources.contains { $0.kind == .healthKit })
+    }
+    if !summaries.isEmpty {
+      return summaries.sorted {
+        if reasons.contains($0.id) != reasons.contains($1.id) { return reasons.contains($0.id) }
+        return $0.id < $1.id
+      }
+    }
+    // A measurement-only report keeps one latest observed fact per metric, never an arbitrary prefix.
+    return Dictionary(grouping: input.facts, by: \.metric).values.compactMap { group in
+      group.sorted { $0.window.end == $1.window.end ? $0.id < $1.id : $0.window.end > $1.window.end }.first
+    }.sorted { $0.id < $1.id }
+  }
 }
 
 /// A minimal transport projection of A's ReportInput. Never serializes source/sample IDs or user text.
@@ -77,41 +117,79 @@ struct ReportWireInput: Encodable {
   var knowledgeVersion: String
   var calculationVersions: [String]
   var missingData: [String]
+  private var localFacts: [String: MetricFact]
+  private var localCandidates: [String: RecommendationCandidate]
 
-  init(_ input: ReportInput) throws {
+  static func validateLocal(_ input: ReportInput) throws {
     let ids = Set(input.facts.map(\.id))
     guard input.schemaVersion == 1, input.knowledgeVersion == AIReportPolicy.knowledgeVersion,
       input.inputFingerprint.range(of: "^[a-f0-9]{64}$", options: .regularExpression) != nil,
-      input.facts.count <= 100, ids.count == input.facts.count,
+      input.facts.count <= 4096, ids.count == input.facts.count,
       input.candidates.count <= 12,
       Set(input.candidates.map(\.actionID)).count == input.candidates.count,
       (1...8).contains(input.calculationVersions.count),
-      input.calculationVersions.allSatisfy(AIReportPolicy.identifier),
+      input.calculationVersions.allSatisfy(AIReportPolicy.calculationVersion),
       input.missingData.count <= 32, input.missingData.allSatisfy(AIReportPolicy.identifier),
       input.facts.allSatisfy({
-        AIReportPolicy.identifier($0.id) && AIReportPolicy.identifier($0.metric)
+        AIReportPolicy.localIdentifier($0.id) && AIReportPolicy.identifier($0.metric)
           && ($0.value == nil || ($0.value!.isFinite && abs($0.value!) <= 1e12))
-          && $0.window.start <= $0.window.end && $0.window.end <= input.asOf.addingTimeInterval(60)
+          && (try? ReportFactSelection.wireWindow($0, asOf: input.asOf)) != nil
           && $0.quality.count <= 12
       }), input.candidates.allSatisfy({
-        AIReportPolicy.identifier($0.actionID) && $0.reasonFactIDs.allSatisfy(ids.contains)
+        AIReportPolicy.localIdentifier($0.actionID) && $0.reasonFactIDs.allSatisfy(ids.contains)
           && $0.muscleIDs.count <= 11 && $0.reasonFactIDs.count <= 100
       })
     else { throw AIReportFailure.invalidInput }
+  }
+  init(_ input: ReportInput) throws {
+    try Self.validateLocal(input)
+    let selected = ReportFactSelection.facts(input).sorted { $0.id < $1.id }
+    guard selected.count <= 100 else { throw AIReportFailure.invalidInput }
+    let factIDs = Dictionary(uniqueKeysWithValues: selected.enumerated().map { ($0.element.id, "f\($0.offset)") })
+    let candidatesByID = input.candidates.sorted { $0.actionID < $1.actionID }
+    localFacts = Dictionary(uniqueKeysWithValues: selected.enumerated().map { ("f\($0.offset)", $0.element) })
+    localCandidates = Dictionary(uniqueKeysWithValues: candidatesByID.enumerated().map { ("a\($0.offset)", $0.element) })
     schemaVersion = input.schemaVersion
     reportType = input.reportType
     asOf = input.asOf
     inputFingerprint = input.inputFingerprint
-    facts = input.facts.map { .init(id: $0.id, metric: $0.metric, value: $0.value,
-      unit: $0.unit, window: $0.window, quality: $0.quality) }
-    // An excluded candidate is never exposed to the provider; no model parameter can un-exclude it.
-    candidates = input.candidates.filter { $0.exclusionCodes.isEmpty }.map {
-      .init(actionID: $0.actionID, action: $0.action, muscleIDs: $0.muscleIDs, reasonFactIDs: $0.reasonFactIDs)
+    facts = try selected.map { .init(id: factIDs[$0.id]!, metric: $0.metric, value: $0.value,
+      unit: $0.unit, window: try ReportFactSelection.wireWindow($0, asOf: input.asOf), quality: $0.quality) }
+    // Candidates are already approved by F. exclusionCodes are constraints, not an eligibility flag.
+    candidates = try candidatesByID.enumerated().map { index, candidate in
+      let reasons = try candidate.reasonFactIDs.map { id -> String in
+        guard let wireID = factIDs[id] else { throw AIReportFailure.invalidInput }
+        return wireID
+      }
+      return .init(actionID: "a\(index)", action: candidate.action, muscleIDs: candidate.muscleIDs, reasonFactIDs: reasons)
     }
     goalDirection = input.goalDirection
     knowledgeVersion = input.knowledgeVersion
     calculationVersions = input.calculationVersions
     missingData = input.missingData
+  }
+  /// Value-only view of exactly what was sent, for strict response validation before local ID restoration.
+  var validationInput: ReportInput {
+    .init(reportType: reportType, asOf: asOf, inputFingerprint: inputFingerprint,
+      facts: facts.map { .init(id: $0.id, metric: $0.metric, value: $0.value, unit: $0.unit,
+        window: $0.window, sources: [], quality: $0.quality) },
+      candidates: candidates.map { .init(actionID: $0.actionID, action: $0.action,
+        muscleIDs: $0.muscleIDs, reasonFactIDs: $0.reasonFactIDs) }, goalDirection: goalDirection,
+      knowledgeVersion: knowledgeVersion, calculationVersions: calculationVersions, missingData: missingData)
+  }
+  func restore(_ report: ReportResult) throws -> ReportResult {
+    var result = report
+    result.observations = try report.observations.map { observation in
+      guard observation.evidenceIDs.count == 1, let fact = localFacts[observation.evidenceIDs[0]] else {
+        throw AIReportFailure.invalidResponse
+      }
+      return .init(text: ReportText.observation(fact), evidenceIDs: [fact.id])
+    }
+    result.recommendations = try report.recommendations.map { recommendation in
+      guard let candidate = localCandidates[recommendation.actionID] else { throw AIReportFailure.invalidResponse }
+      return .init(text: ReportText.action(candidate.action), actionID: candidate.actionID)
+    }
+    return result
   }
   enum CodingKeys: String, CodingKey {
     case schemaVersion, reportType, asOf, inputFingerprint, facts, candidates, goalDirection,
@@ -150,7 +228,7 @@ struct ReportRequestEnvelope: Encodable {
 
 enum ReportText {
   static func summary(_ input: ReportInput) -> String {
-    input.facts.contains { $0.value != nil }
+    ReportFactSelection.facts(input).contains { $0.value != nil }
       ? "根据当前记录，可查看以下事实与候选建议。" : "当前记录不足，补充记录后再看变化。"
   }
   static func observation(_ fact: MetricFact) -> String {
@@ -187,8 +265,8 @@ struct LocalReportGenerator: ReportGenerating {
   func make(_ input: ReportInput) -> ReportResult {
     .init(reportID: "local-" + UUID().uuidString, inputFingerprint: input.inputFingerprint,
       model: "local", promptVersion: AIReportPolicy.promptVersion, summary: ReportText.summary(input),
-      observations: input.facts.prefix(3).map { .init(text: ReportText.observation($0), evidenceIDs: [$0.id]) },
-      recommendations: input.candidates.filter { $0.exclusionCodes.isEmpty }.prefix(3).map {
+      observations: ReportFactSelection.facts(input).prefix(3).map { .init(text: ReportText.observation($0), evidenceIDs: [$0.id]) },
+      recommendations: input.candidates.prefix(3).map {
         .init(text: ReportText.action($0.action), actionID: $0.actionID)
       }, generatedAt: input.asOf, validUntil: input.asOf.addingTimeInterval(AIReportPolicy.reportLifetime),
       isLocalFallback: true)
@@ -206,7 +284,10 @@ enum ReportResultValidator {
       let recommendations = raw["recommendations"] as? [[String: Any]],
       recommendations.allSatisfy({ Set($0.keys) == Set(["text", "actionID"]) })
     else { throw AIReportFailure.invalidResponse }
-    let result = try AIReportPolicy.decoder().decode(ReportResult.self, from: data)
+    let wire = try ReportWireInput(input)
+    let received = try AIReportPolicy.decoder().decode(ReportResult.self, from: data)
+    try validate(received, input: wire.validationInput, now: now)
+    let result = try wire.restore(received)
     try validate(result, input: input, now: now)
     return result
   }
@@ -231,7 +312,7 @@ enum ReportResultValidator {
     }
     for recommendation in result.recommendations {
       guard let candidate = input.candidates.first(where: { $0.actionID == recommendation.actionID }),
-        candidate.exclusionCodes.isEmpty, recommendation.text == ReportText.action(candidate.action)
+        recommendation.text == ReportText.action(candidate.action)
       else { throw AIReportFailure.invalidResponse }
     }
   }

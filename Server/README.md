@@ -62,7 +62,7 @@ trainote-session-v1
 
 Challenges bind this intent and installation before proof verification. Each challenge is consumed even on failure; monotonic counters are persisted before granting a session. A registered-key challenge returns 409 so an app that lost the first attestation response can recover via a new valid assertion instead of reusing Apple's one-time attestation. This response does not authorize any operation.
 
-Report inputs have at most 100 facts, 12 eligible candidates, 32 missing-data codes and eight calculation versions. Each fact includes only ID, metric code, nullable value, unit, window and quality flags. Candidate wire fields are actionID, action, muscleIDs and reasonFactIDs. All references must exist; type/fingerprint must agree across the envelope. Input age is at most one day; freshness on the device is separately enforced by A's builder. Metric codes/IDs are bounded ASCII identifiers, never arbitrary user text. Facts with null values remain unknown.
+Report inputs have at most 100 facts, 12 rule-approved candidates, 32 missing-data codes and eight calculation versions. Each fact includes only ID, metric code, nullable value, unit, window and quality flags. Candidate wire fields are actionID, action, muscleIDs and reasonFactIDs. All references must exist; type/fingerprint must agree across the envelope. Input age is at most one day; freshness on the device is separately enforced by A's builder. Fact and action IDs are opaque client aliases (`f0…`, `a0…`); source/product/context IDs are never sent. Metric codes are bounded ASCII identifiers, and composite calculation versions may contain `+`. The device keeps the full dependency closure locally and sends summaries plus every candidate reason. Nonempty local candidate `exclusionCodes` are constraints, not a reason to drop a rule-approved candidate. Facts with null values remain unknown.
 
 ## Provider and output limits
 
@@ -71,10 +71,10 @@ The [current DeepSeek chat-completion API](https://api-docs.deepseek.com/api/cre
 The model returns a strict **selection plan**, not free prose or numbers:
 
 ```json
-{"observations":[{"evidenceID":"trend.weight","kind":"recorded"}],"actionIDs":["plan.choose"]}
+{"observations":[{"evidenceID":"f0","kind":"recorded"}],"actionIDs":["a0"]}
 ```
 
-There are at most three observations and three candidate actions. `kind` must agree with the fact's null/quality state. Duplicate, invented or excluded IDs, unexpected text/numbers, diagnoses and causal claims fail validation. The server projects valid selections into the existing `ReportResult`, using versioned fixed Chinese explanations. Text such as `{{fact:trend.weight}}` is resolved from the exact local fact table by the card; no model arithmetic is trusted. This is a deliberately constrained first report format. Richer explanatory prose requires a new validated contract, not relaxing a text filter.
+There are at most three observations and three candidate actions. `kind` must agree with the fact's null/quality state. Duplicate, invented or unapproved IDs, unexpected text/numbers, diagnoses and causal claims fail validation. The server projects valid selections into the existing `ReportResult`, using versioned fixed Chinese explanations. Text such as `{{fact:f0}}` is validated against the wire projection, restored to the original local ID by the client, and resolved from the exact local fact table by the card; no model arithmetic is trusted. This is a deliberately constrained first report format. Richer explanatory prose requires a new validated contract, not relaxing a text filter.
 
 Fixed knowledge references N02/R03/R05 from the approved evidence document preserve the distinctions between trend, local readiness and systemic measurements. They do not establish physiological validity of the product's P parameters. Knowledge is versioned and never fetched at report time.
 

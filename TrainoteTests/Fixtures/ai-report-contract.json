@@ -12,18 +12,7 @@
       "inputFingerprint": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "facts": [
         {
-          "id": "trend.weight",
-          "metric": "weight",
-          "value": 71.234567,
-          "unit": "kilograms",
-          "window": {
-            "start": 1790899200000,
-            "end": 1790985600000
-          },
-          "quality": []
-        },
-        {
-          "id": "recovery.hrv",
+          "id": "f0",
           "metric": "hrv",
           "value": null,
           "unit": "milliseconds",
@@ -34,11 +23,22 @@
           "quality": [
             "missing"
           ]
+        },
+        {
+          "id": "f1",
+          "metric": "weight",
+          "value": 71.234567,
+          "unit": "kilograms",
+          "window": {
+            "start": 1790899200000,
+            "end": 1790985600000
+          },
+          "quality": []
         }
       ],
       "candidates": [
         {
-          "actionID": "plan.choose",
+          "actionID": "a0",
           "action": "choosePlan",
           "muscleIDs": [],
           "reasonFactIDs": []
@@ -58,19 +58,116 @@
   "draft": {
     "observations": [
       {
-        "evidenceID": "trend.weight",
+        "evidenceID": "f1",
         "kind": "recorded"
       },
       {
-        "evidenceID": "recovery.hrv",
+        "evidenceID": "f0",
         "kind": "missing"
       }
     ],
     "actionIDs": [
-      "plan.choose"
+      "a0"
     ]
   },
   "report": {
+    "reportID": "6fcd40be-45d8-4a02-871f-355a59aa5c1f",
+    "inputFingerprint": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "model": "deepseek-flash",
+    "promptVersion": "report-selection-v1",
+    "schemaVersion": 1,
+    "summary": "根据当前记录，可查看以下事实与候选建议。",
+    "observations": [
+      {
+        "text": "记录值：{{fact:f1}}。",
+        "evidenceIDs": [
+          "f1"
+        ]
+      },
+      {
+        "text": "暂无可用记录：{{fact:f0}}。",
+        "evidenceIDs": [
+          "f0"
+        ]
+      }
+    ],
+    "recommendations": [
+      {
+        "text": "先选择训练模板或目标。",
+        "actionID": "a0"
+      }
+    ],
+    "generatedAt": 1790985600000,
+    "validUntil": 1791007200000,
+    "isLocalFallback": false
+  },
+  "localInput": {
+    "schemaVersion": 1,
+    "reportType": "today",
+    "asOf": 1790985600000,
+    "inputFingerprint": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "facts": [
+      {
+        "id": "trend.weight",
+        "metric": "weight",
+        "value": 71.234567,
+        "unit": "kilograms",
+        "window": {
+          "start": 1790899200000,
+          "end": 1790985600000
+        },
+        "quality": [],
+        "sources": [
+          {
+            "kind": "manual",
+            "identifier": "trainote.manual"
+          }
+        ],
+        "dependencies": []
+      },
+      {
+        "id": "recovery.hrv",
+        "metric": "hrv",
+        "value": null,
+        "unit": "milliseconds",
+        "window": {
+          "start": 1790899200000,
+          "end": 1790985600000
+        },
+        "quality": [
+          "missing"
+        ],
+        "sources": [
+          {
+            "kind": "manual",
+            "identifier": "trainote.manual"
+          }
+        ],
+        "dependencies": []
+      }
+    ],
+    "candidates": [
+      {
+        "actionID": "plan.choose",
+        "action": "choosePlan",
+        "muscleIDs": [],
+        "reasonFactIDs": [],
+        "allowedParameters": [],
+        "exclusionCodes": [],
+        "dependencies": []
+      }
+    ],
+    "goalDirection": null,
+    "knowledgeVersion": "health-evidence-v1",
+    "calculationVersions": [
+      "trend-v1",
+      "recovery-v1"
+    ],
+    "missingData": [
+      "hrv"
+    ]
+  },
+  "localReport": {
     "reportID": "6fcd40be-45d8-4a02-871f-355a59aa5c1f",
     "inputFingerprint": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
     "model": "deepseek-flash",

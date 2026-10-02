@@ -1,3 +1,4 @@
+import DeviceCheck
 import XCTest
 
 @testable import Trainote
@@ -13,13 +14,36 @@ private final class ReportMemoryCredentials: ReportCredentialStoring {
   }
 }
 @MainActor
+private final class ReportFileCredentials: ReportCredentialStoring {
+  let url: URL
+  init(url: URL) { self.url = url }
+  func load() throws -> ReportDeviceCredentials {
+    guard FileManager.default.fileExists(atPath: url.path) else { return .init() }
+    return try JSONDecoder().decode(ReportDeviceCredentials.self, from: Data(contentsOf: url))
+  }
+  func save(_ value: ReportDeviceCredentials) throws {
+    try JSONEncoder().encode(value).write(to: url, options: .atomic)
+  }
+}
+@MainActor
 private final class SyntheticReportAttestor: ReportDeviceAttesting {
   var isSupported = true
   var attestCalls = 0
+  var keys: [String] = []
+  var attestedKeys: [String] = []
+  var failure: ((String) -> Error?)?
+  var onAttest: (() throws -> Void)?
   var assertionData: [Data] = []
-  func generateKey() async throws -> String { Data(repeating: 3, count: 32).base64EncodedString() }
+  func generateKey() async throws -> String {
+    let key = Data(repeating: UInt8(keys.count + 3), count: 32).base64EncodedString()
+    keys.append(key)
+    return key
+  }
   func attest(keyID: String, challenge: Data) async throws -> Data {
-    attestCalls += 1; return Data("synthetic-attestation".utf8)
+    attestCalls += 1; attestedKeys.append(keyID)
+    try onAttest?()
+    if let error = failure?(keyID) { throw error }
+    return Data("synthetic-attestation".utf8)
   }
   func assertion(keyID: String, clientData: Data) async throws -> Data {
     assertionData.append(clientData); return Data("synthetic-assertion".utf8)
@@ -46,7 +70,7 @@ private final class ReportTestHTTP: ReportHTTPPerforming {
     case "/v1/session":
       result = ["token": String(repeating: "t", count: 43), "expiresAt": now.addingTimeInterval(120).timeIntervalSince1970 * 1000]
     case "/v1/reports":
-      var report = LocalReportGenerator().make(input)
+      var report = LocalReportGenerator().make(try ReportWireInput(input).validationInput)
       report.reportID = UUID().uuidString; report.model = AIReportPolicy.model; report.isLocalFallback = false
       return (try AIReportPolicy.encoder().encode(report), 200)
     case "/v1/consent":
@@ -66,7 +90,7 @@ final class AIReportTransportTests: XCTestCase {
     result.calculationVersions = ["test-v1"]
     return result
   }
-  private func transport(_ store: ReportMemoryCredentials, _ attestor: SyntheticReportAttestor,
+  private func transport(_ store: any ReportCredentialStoring, _ attestor: SyntheticReportAttestor,
     _ http: ReportTestHTTP) throws -> ProxyReportTransport {
     http.input = input()
     return try ProxyReportTransport(configuration: ReportProxyConfiguration(approvedBaseURL: URL(string: "https://reports.example.invalid")!),
@@ -117,6 +141,56 @@ final class AIReportTransportTests: XCTestCase {
     let transport = try transport(store, attestor, http)
     _ = try await generate(transport)
     XCTAssertEqual(attestor.attestCalls, 0); XCTAssertEqual(attestor.assertionData.count, 2)
+  }
+  func testInvalidAttestationKeyIsDiscardedOnDiskAndNextExplicitAttemptReplacesIt() async throws {
+    let url = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+    defer { try? FileManager.default.removeItem(at: url) }
+    let store = ReportFileCredentials(url: url), attestor = SyntheticReportAttestor(), http = ReportTestHTTP()
+    attestor.failure = { key in key == attestor.keys.first
+      ? NSError(domain: DCError.errorDomain, code: DCError.Code.invalidKey.rawValue) : nil }
+    let initial = try transport(store, attestor, http)
+    do { _ = try await generate(initial); XCTFail("Invalid first key must fail without an automatic retry") } catch {}
+    XCTAssertEqual(attestor.keys.count, 1); XCTAssertEqual(attestor.attestCalls, 1)
+    XCTAssertNil(try ReportFileCredentials(url: url).load().keyID)
+    XCTAssertFalse(http.calls.contains { $0.url!.path == "/v1/consent" || $0.url!.path == "/v1/reports" })
+    // Recreate both credential store and transport: memory-only cleanup would strand this retry.
+    let restarted = try transport(ReportFileCredentials(url: url), attestor, http)
+    let result = try await generate(restarted)
+    XCTAssertFalse(result.isLocalFallback)
+    XCTAssertEqual(attestor.keys.count, 2); XCTAssertEqual(attestor.attestedKeys, attestor.keys)
+    XCTAssertEqual(try store.load().keyID, attestor.keys[1]); XCTAssertTrue(try store.load().registered)
+  }
+  func testServerUnavailableKeepsSameAttestationKeyAcrossRestart() async throws {
+    let store = ReportMemoryCredentials(), attestor = SyntheticReportAttestor(), http = ReportTestHTTP()
+    attestor.failure = { _ in NSError(domain: DCError.errorDomain, code: DCError.Code.serverUnavailable.rawValue) }
+    do { _ = try await generate(transport(store, attestor, http)); XCTFail() } catch {}
+    XCTAssertEqual(attestor.keys.count, 1); XCTAssertEqual(attestor.attestCalls, 1)
+    XCTAssertEqual(store.value.keyID, attestor.keys[0]); XCTAssertFalse(store.value.registered)
+    attestor.failure = nil
+    _ = try await generate(transport(store, attestor, http))
+    XCTAssertEqual(attestor.keys.count, 1)
+    XCTAssertEqual(attestor.attestedKeys, [attestor.keys[0], attestor.keys[0]])
+  }
+  func testNonDeviceCheckErrorWithTransientCodeStillDiscardsKeyAndCancellationStopsDelivery() async throws {
+    let store = ReportMemoryCredentials(), attestor = SyntheticReportAttestor(), http = ReportTestHTTP()
+    let transport = try transport(store, attestor, http)
+    attestor.onAttest = { try transport.cancelAndMarkRevocation() }
+    attestor.failure = { _ in NSError(domain: "synthetic-other-domain", code: DCError.Code.serverUnavailable.rawValue) }
+    do { _ = try await generate(transport); XCTFail() } catch {}
+    XCTAssertNil(store.value.keyID); XCTAssertEqual(attestor.keys.count, 1)
+    XCTAssertFalse(http.calls.contains { $0.url!.path == "/v1/reports" || $0.url!.path == "/v1/consent" })
+  }
+  func testFailureToPersistDiscardedKeyFailsClosedUntilNextExplicitAttemptCanSave() async throws {
+    let store = ReportMemoryCredentials(), attestor = SyntheticReportAttestor(), http = ReportTestHTTP()
+    let transport = try transport(store, attestor, http)
+    attestor.onAttest = { store.failSaving = true }
+    attestor.failure = { _ in NSError(domain: DCError.errorDomain, code: DCError.Code.invalidKey.rawValue) }
+    do { _ = try await generate(transport); XCTFail() } catch { XCTAssertEqual(error as? AIReportFailure, .storage) }
+    XCTAssertEqual(attestor.keys.count, 1)
+    XCTAssertFalse(http.calls.contains { $0.url!.path == "/v1/installations/attest" || $0.url!.path == "/v1/reports" })
+    store.failSaving = false; attestor.onAttest = nil; attestor.failure = nil
+    _ = try await generate(transport)
+    XCTAssertEqual(attestor.keys.count, 2); XCTAssertEqual(store.value.keyID, attestor.keys[1])
   }
   func testPendingRevocationPersistsAcrossRestartAndCanOnlySendDelete() async throws {
     let store = ReportMemoryCredentials(), attestor = SyntheticReportAttestor(), http = ReportTestHTTP()

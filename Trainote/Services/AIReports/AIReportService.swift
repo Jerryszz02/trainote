@@ -175,7 +175,7 @@ final class AIReportService: HealthDerivedDataInvalidating {
   private func safeLocalInput(_ input: ReportInput?, type: ReportType, asOf: Date) -> ReportInput {
     if let input, input.reportType == type, abs(input.asOf.timeIntervalSince(asOf)) < 1,
       (!Self.dependsOnHealth(input) || consent.record(for: .healthData)?.isGranted == true),
-      (try? ReportWireInput(input)) != nil { return input }
+      (try? ReportWireInput.validateLocal(input)) != nil { return input }
     return .init(reportType: type, asOf: asOf, inputFingerprint: String(repeating: "0", count: 64),
       facts: [], candidates: [], goalDirection: nil, knowledgeVersion: AIReportPolicy.knowledgeVersion,
       calculationVersions: ["unavailable"], missingData: ["records"])

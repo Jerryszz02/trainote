@@ -12,6 +12,9 @@ export class APIError extends Error {
 }
 export const digest = (data: string | Buffer): string => createHash('sha256').update(data).digest('hex');
 export const id = z.string().regex(/^[A-Za-z0-9_.:-]{1,128}$/);
+const calculationVersion = z.string().regex(/^[A-Za-z0-9_.:+-]{1,128}$/);
+const factID = z.string().regex(/^f[0-9]{1,3}$/);
+const actionID = z.string().regex(/^a[0-9]{1,2}$/);
 export const hash = z.string().regex(/^[a-f0-9]{64}$/);
 export const uuid = z.string().uuid();
 const timestamp = z.number().int().nonnegative().max(9e15);
@@ -24,17 +27,17 @@ const muscle = z.enum(['chest', 'back', 'shoulders', 'biceps', 'triceps', 'forea
 export const action = z.enum(['keepPlan', 'reduceSets', 'increaseRIR', 'swapTrainingDay', 'rest',
   'lightActivity', 'choosePlan', 'reviewNutrition']);
 export const factSchema = z.strictObject({
-  id, metric: id, value: z.number().min(-1e12).max(1e12).nullable(), unit: units,
+  id: factID, metric: id, value: z.number().min(-1e12).max(1e12).nullable(), unit: units,
   window: z.strictObject({ start: timestamp, end: timestamp }), quality: z.array(quality).max(12),
 });
 export const candidateSchema = z.strictObject({
-  actionID: id, action, muscleIDs: z.array(muscle).max(11), reasonFactIDs: z.array(id).max(100),
+  actionID, action, muscleIDs: z.array(muscle).max(11), reasonFactIDs: z.array(factID).max(100),
 });
 export const inputSchema = z.strictObject({
   schemaVersion: z.literal(1), reportType: z.enum(['today', 'trend', 'recovery', 'weekly']),
   asOf: timestamp, inputFingerprint: hash, facts: z.array(factSchema).max(100),
   candidates: z.array(candidateSchema).max(12), goalDirection: z.enum(['maintain', 'lose', 'gain']).nullable(),
-  knowledgeVersion: z.literal(policy.knowledge), calculationVersions: z.array(id).min(1).max(8),
+  knowledgeVersion: z.literal(policy.knowledge), calculationVersions: z.array(calculationVersion).min(1).max(8),
   missingData: z.array(id).max(32),
 });
 export const envelopeSchema = z.strictObject({
@@ -45,9 +48,9 @@ export type ReportInput = z.infer<typeof inputSchema>;
 export type Envelope = z.infer<typeof envelopeSchema>;
 export type Fact = z.infer<typeof factSchema>;
 export const draftSchema = z.strictObject({
-  observations: z.array(z.strictObject({ evidenceID: id,
+  observations: z.array(z.strictObject({ evidenceID: factID,
     kind: z.enum(['recorded', 'limited', 'missing']) })).max(3),
-  actionIDs: z.array(id).max(3),
+  actionIDs: z.array(actionID).max(3),
 });
 export type Draft = z.infer<typeof draftSchema>;
 export const kindFor = (fact: Fact): 'recorded' | 'limited' | 'missing' =>
