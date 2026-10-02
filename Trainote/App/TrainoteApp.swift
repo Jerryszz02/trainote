@@ -30,7 +30,18 @@ struct TrainoteApp: App {
           return try PersistenceController.makeContainer(storeURL: url, allowsSave: false)
         }
       #endif
-      return try PersistenceController.makeContainer(inMemory: inMemory)
+      let container = try PersistenceController.makeContainer(inMemory: inMemory)
+      #if DEBUG
+        if inMemory && ProcessInfo.processInfo.arguments.contains("-ui-testing-legacy-goal") {
+          // An upgraded 1.0 goal has no revision history until the user adopts or edits it.
+          container.mainContext.insert(
+            NutritionGoal(
+              calories: 2000, carbohydrates: 250, protein: 150, fat: 65,
+              updatedAt: Date.now.addingTimeInterval(-30 * 86_400)))
+          try container.mainContext.save()
+        }
+      #endif
+      return container
     }
     if case .success(let container) = containerResult {
       let directory =
