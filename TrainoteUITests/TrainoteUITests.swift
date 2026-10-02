@@ -189,13 +189,36 @@ final class TrainoteUITests: XCTestCase {
 enum UITestTextInput {
   static func replace(_ field: XCUIElement, with value: String, in app: XCUIApplication) {
     XCTAssertTrue(field.waitForExistence(timeout: 3))
-    XCTAssertTrue(field.isHittable, "Input field must be visible: \(field.identifier)")
+    let visible = XCTNSPredicateExpectation(
+      predicate: NSPredicate { _, _ in field.exists && field.isHittable }, object: nil)
+    XCTAssertEqual(
+      XCTWaiter.wait(for: [visible], timeout: 5), .completed,
+      "Input field must be visible: \(field.identifier)")
     field.tap()
     // hasFocus describes system focus, not the iOS text-input first responder.
     // Wait for the keyboard after a center tap; typeText and read-back verify the target.
-    XCTAssertTrue(
-      app.keyboards.firstMatch.waitForExistence(timeout: 3),
-      "Keyboard did not appear for input: \(field.identifier)")
+    let keyboard = app.keyboards.firstMatch
+    if !keyboard.waitForExistence(timeout: 3) {
+      // Reopened searchable sheets can finish presenting before acquiring a text responder.
+      // Reacquire the still-visible field once, then require the keyboard and exact read-back.
+      XCTAssertTrue(field.isHittable, "Input field moved before focus: \(field.identifier)")
+      field.tap()
+    }
+    guard keyboard.waitForExistence(timeout: 5) else {
+      XCTFail("Keyboard did not appear for input: \(field.identifier)")
+      return
+    }
+    // SwiftUI can leave the focused row underneath the keyboard accessory toolbar.
+    // Move the row into the visible form before opening its text-selection menu.
+    for _ in 0..<4 {
+      let safeBottom = app.keyboards.firstMatch.frame.minY - 80
+      if field.frame.maxY < safeBottom { break }
+      let origin = app.coordinate(withNormalizedOffset: .zero)
+      let start = origin.withOffset(CGVector(dx: app.frame.width * 0.15, dy: safeBottom - 20))
+      let end = origin.withOffset(CGVector(dx: app.frame.width * 0.15, dy: safeBottom - 220))
+      start.press(forDuration: 0.05, thenDragTo: end)
+    }
+    field.tap()
 
     let current = field.value as? String ?? ""
     // Numeric SwiftUI fields can expose "0" as both their value and placeholder.
@@ -211,11 +234,11 @@ enum UITestTextInput {
       ).firstMatch
       if selectAll.waitForExistence(timeout: 2) {
         selectAll.tap()
-      } else {
-        XCTAssertTrue(
-          menuSelectAll.waitForExistence(timeout: 2),
-          "Select All is unavailable for nonempty field: \(field.identifier)")
+      } else if menuSelectAll.waitForExistence(timeout: 2) {
         menuSelectAll.tap()
+      } else {
+        XCTFail("Select All is unavailable for nonempty field: \(field.identifier)")
+        return
       }
     }
 
@@ -230,6 +253,7 @@ enum UITestTextInput {
     }
     if app.buttons["收起键盘"].exists {
       app.buttons["收起键盘"].tap()
+      XCTAssertTrue(app.keyboards.firstMatch.waitForNonExistence(timeout: 5))
     } else if app.keyboards.count > 0 && app.buttons["完成"].exists,
       field.identifier.hasPrefix("nutrition.") || field.identifier.hasPrefix("foodPreset.")
         || field.identifier.hasPrefix("mealTemplate.")
