@@ -4,7 +4,7 @@
 
 当前默认分支的 Trainote 是一款中文优先、完全离线的 iPhone 健身与饮食记录 App。它用于记录力量训练、有氧训练、训练 routine，以及每日卡路里、碳水、蛋白质和脂肪。动作目录来自 `hasaneyldrm/exercises-dataset` 的固定版本，只内置 MIT 许可覆盖的文字和结构化数据，不分发需要单独授权的图片或 GIF。
 
-计划新增“趋势分析”“恢复分析”、Apple 健康读取和可选 DeepSeek 报告。**这些尚未实现，详细计划和分工待用户确认；尚未创建实施对话。** 现有代码是实现事实的依据，规划描述目标，不代替测试、科学验证或发布证据。
+计划新增“趋势分析”“恢复分析”、Apple 健康读取和可选 DeepSeek 报告。**2026-10-03 用户已批准计划和分工；功能尚未实现，实施对话待文档 PR 通过 CI 并合并后创建。** 先完成并合并 A、D，再创建 B、C、E、F，各自 fetch 最新默认分支并使用独立工作树。现有代码是实现事实的依据，规划描述目标，不代替测试、科学验证或发布证据。
 
 ## 文档信息
 
@@ -24,18 +24,18 @@
 
 ## 从哪里开始
 
-1. 本次用户审核先读 [健康分析实施提案](health-analysis-plan.md)，确认导航、目标调整、权限和计算边界。
+1. 阅读已获批准的 [健康分析实施提案](health-analysis-plan.md)，遵循导航、目标调整、权限和计算边界。
 2. 阅读 [研究证据与模型资产](health-analysis-evidence.md)，分清文献依据、产品参数与未验证部分。
-3. 阅读 [并行交付计划](health-analysis-delivery.md)，确认六条工作流、high 设置和集成授权。
+3. 阅读 [并行交付计划](health-analysis-delivery.md)，遵循六条工作流、high 设置、A/D 双前置依赖和集成授权。
 4. 维护现有功能时阅读 [prd.md](prd.md)、[technical-design.md](technical-design.md)、[database-design.md](database-design.md) 与 [test-plan.md](test-plan.md)。
 
 ## 规划文档
 
 | 文档 | 用途 |
 | --- | --- |
-| [health-analysis-plan.md](health-analysis-plan.md) | 新增：产品流程、算法候选、数据/API 契约、隐私、迁移和验收，待确认 |
+| [health-analysis-plan.md](health-analysis-plan.md) | 新增：已批准的产品流程、算法候选、数据/API 契约、隐私、迁移和验收 |
 | [health-analysis-evidence.md](health-analysis-evidence.md) | 新增：14 项营养/恢复来源、健康 AI 研究资产与推论边界 |
-| [health-analysis-delivery.md](health-analysis-delivery.md) | 新增：六条工作流、文件所有权、依赖、派发消息草稿，尚未派发 |
+| [health-analysis-delivery.md](health-analysis-delivery.md) | 新增：已批准的六条工作流、文件所有权、A/D 双前置依赖及派发消息 |
 | [daily-use-upgrade.md](daily-use-upgrade.md) | 已有：1.1 日常使用与可靠性基线 |
 | [prd.md](prd.md) | 定义用户场景、页面流程、业务规则和非目标 |
 | [technical-design.md](technical-design.md) | 定义 App 壳层、状态归属、动作导入和隐私边界 |
@@ -66,7 +66,7 @@
 
 ## 当前约束与待确认
 
-- 用户需确认健康分析提案及分工，尤其五 Tab/资料库入口、建议采用方式和后续合并授权。
+- 用户已确认提案和分工，授权审阅及当前提交 CI 通过后合并本范围 PR；由主对话统一协调。尚未授权付费采购、正式部署或发布。
 - 外部条件：AI 代理部署/预算、DeepSeek API 数据处理安排、3D 资产许可、真机/签名与专业审查，见提案。
 - 当前代码配置 Swift 5.9 language mode、最低 iOS 17；旧文档中的 Xcode 26.6 / Swift 6.3.3 / iOS 26.5 为此前核查记录，本轮未重新枚举运行环境。
 - 本次未执行产品测试；实施时先确认当前工具链和 Simulator，再运行对应检查。
