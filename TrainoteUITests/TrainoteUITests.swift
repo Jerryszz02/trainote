@@ -176,39 +176,120 @@ final class TrainoteUITests: XCTestCase {
   }
 
   private func replaceText(in field: XCUIElement, with value: String) {
-    XCTAssertTrue(field.waitForExistence(timeout: 3))
     reveal(field)
-    field.coordinate(withNormalizedOffset: CGVector(dx: 0.98, dy: 0.5)).tap()
+    UITestTextInput.replace(field, with: value, in: app)
+  }
+}
+
+enum UITestTextInput {
+  static func replace(_ field: XCUIElement, with value: String, in app: XCUIApplication) {
+    XCTAssertTrue(field.waitForExistence(timeout: 3))
+    let visible = XCTNSPredicateExpectation(
+      predicate: NSPredicate { _, _ in field.exists && field.isHittable }, object: nil)
+    XCTAssertEqual(
+      XCTWaiter.wait(for: [visible], timeout: 5), .completed,
+      "Input field must be visible: \(field.identifier)")
+    field.tap()
+    // hasFocus describes system focus, not the iOS text-input first responder.
+    // Wait for the keyboard after a center tap; typeText and read-back verify the target.
+    let keyboard = app.keyboards.firstMatch
+    if !keyboard.waitForExistence(timeout: 3) {
+      // Reopened searchable sheets can finish presenting before acquiring a text responder.
+      // Reacquire the still-visible field once, then require the keyboard and exact read-back.
+      XCTAssertTrue(field.isHittable, "Input field moved before focus: \(field.identifier)")
+      field.tap()
+    }
+    guard keyboard.waitForExistence(timeout: 5) else {
+      XCTFail("Keyboard did not appear for input: \(field.identifier)")
+      return
+    }
+    // Search bars stay pinned beside the keyboard; scrolling their results cannot move the field.
+    // Only form rows need to move above a keyboard accessory before text selection.
+    if field.elementType != .searchField {
+      for _ in 0..<4 {
+        let safeBottom = app.keyboards.firstMatch.frame.minY - 80
+        if field.frame.maxY < safeBottom { break }
+        let origin = app.coordinate(withNormalizedOffset: .zero)
+        let start = origin.withOffset(CGVector(dx: app.frame.width * 0.15, dy: safeBottom - 20))
+        let end = origin.withOffset(CGVector(dx: app.frame.width * 0.15, dy: safeBottom - 220))
+        start.press(forDuration: 0.05, thenDragTo: end)
+      }
+      field.tap()
+    }
+
     let current = field.value as? String ?? ""
-    if Double(current.replacingOccurrences(of: ",", with: "")) != nil {
+    // Numeric SwiftUI fields can expose "0" as both their value and placeholder.
+    // It is still a real bound value and must be selected before replacement.
+    let hasNumericValue = Double(current.replacingOccurrences(of: ",", with: "")) != nil
+    if !current.isEmpty && (current != field.placeholderValue || hasNumericValue) {
       field.press(forDuration: 1.1)
-      let selectAll = app.buttons.matching(NSPredicate(format: "label IN {'Select All', '全选'}"))
-        .firstMatch
+      let selectAll = app.buttons.matching(
+        NSPredicate(format: "label IN {'Select All', '全选'}")
+      ).firstMatch
       let menuSelectAll = app.menuItems.matching(
         NSPredicate(format: "label IN {'Select All', '全选'}")
       ).firstMatch
-      if selectAll.waitForExistence(timeout: 1) {
+      if selectAll.waitForExistence(timeout: 2) {
         selectAll.tap()
-      } else if menuSelectAll.exists {
+      } else if menuSelectAll.waitForExistence(timeout: 2) {
         menuSelectAll.tap()
       } else {
-        field.doubleTap()
+        XCTFail("Select All is unavailable for nonempty field: \(field.identifier)")
+        return
       }
-    } else {
-      field.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: current.count + 1))
     }
+
     field.typeText(value)
-    if let expected = Double(value),
-      let actual = Double((field.value as? String ?? "").replacingOccurrences(of: ",", with: ""))
+    var actual = field.value as? String ?? ""
+    func matchesExpected(_ text: String) -> Bool {
+      if let expected = Double(value),
+        let observed = Double(text.replacingOccurrences(of: ",", with: ""))
+      {
+        return abs(observed - expected) <= 0.000_001
+      }
+      return text == value
+    }
+    if !matchesExpected(actual) {
+      // Event synthesis can finish before the bound value/AX snapshot settles. Observe only:
+      // never append a missing suffix, retype the phrase, or accept a prefix as success.
+      let started = Date()
+      var observations = ["0s: \(actual)"]
+      let readBack = XCTNSPredicateExpectation(
+        predicate: NSPredicate { _, _ in
+          let observed = field.value as? String ?? ""
+          if observed != actual && observations.count < 32 {
+            observations.append("\(Date().timeIntervalSince(started))s: \(observed)")
+          }
+          actual = observed
+          return matchesExpected(actual)
+        }, object: nil)
+      if XCTWaiter.wait(for: [readBack], timeout: 10) != .completed {
+        XCTContext.runActivity(named: "Text input did not reach the expected value") { activity in
+          let trace = XCTAttachment(
+            string:
+              "expected: \(value)\nactual: \(actual)\nobservations: \(observations)\nfield: \(field.identifier), \(field.frame), hittable=\(field.isHittable)\nkeyboard present: \(keyboard.exists)"
+          )
+          trace.lifetime = .keepAlways
+          activity.add(trace)
+          let screenshot = XCTAttachment(screenshot: app.screenshot())
+          screenshot.lifetime = .keepAlways
+          activity.add(screenshot)
+        }
+      }
+    }
+    if let expectedNumber = Double(value),
+      let actualNumber = Double(actual.replacingOccurrences(of: ",", with: ""))
     {
-      XCTAssertEqual(actual, expected, accuracy: 0.000_001)
+      XCTAssertEqual(actualNumber, expectedNumber, accuracy: 0.000_001)
     } else {
-      XCTAssertEqual(field.value as? String, value)
+      XCTAssertEqual(actual, value)
     }
     if app.buttons["收起键盘"].exists {
       app.buttons["收起键盘"].tap()
-    } else if field.identifier.hasPrefix("nutrition."), app.keyboards.count > 0,
-      app.buttons["完成"].exists
+      XCTAssertTrue(app.keyboards.firstMatch.waitForNonExistence(timeout: 5))
+    } else if app.keyboards.count > 0 && app.buttons["完成"].exists,
+      field.identifier.hasPrefix("nutrition.") || field.identifier.hasPrefix("foodPreset.")
+        || field.identifier.hasPrefix("mealTemplate.")
     {
       app.buttons["完成"].firstMatch.tap()
       XCTAssertTrue(app.keyboards.firstMatch.waitForNonExistence(timeout: 5))

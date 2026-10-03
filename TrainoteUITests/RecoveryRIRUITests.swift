@@ -10,8 +10,7 @@ final class RecoveryRIRUITests: XCTestCase {
     app.buttons["training.startBlank"].tap()
     app.buttons["workout.addExercise"].tap()
     let search = app.searchFields.firstMatch
-    search.tap()
-    search.typeText("barbell bench press")
+    UITestTextInput.replace(search, with: "barbell bench press", in: app)
     app.buttons["exercisePicker.item.0025"].tap()
     func control(_ prefix: String) -> XCUIElement {
       app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", prefix)).firstMatch
