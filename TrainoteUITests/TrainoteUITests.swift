@@ -14,7 +14,10 @@ final class TrainoteUITests: XCTestCase {
     XCTAssertTrue(app.tabBars.buttons["今日"].exists)
     XCTAssertTrue(app.tabBars.buttons["训练"].exists)
     XCTAssertTrue(app.tabBars.buttons["饮食"].exists)
-    XCTAssertTrue(app.tabBars.buttons["资料库"].exists)
+    XCTAssertTrue(app.tabBars.buttons["趋势"].exists)
+    XCTAssertTrue(app.tabBars.buttons["恢复"].exists)
+    XCTAssertEqual(app.tabBars.buttons.count, 5)
+    XCTAssertTrue(app.buttons["today.library"].exists)
   }
 
   func testCanStartBlankWorkoutAndResumeIt() {
@@ -50,7 +53,8 @@ final class TrainoteUITests: XCTestCase {
   }
 
   func testCanCreateAndStartRoutine() {
-    app.tabBars.buttons["资料库"].tap()
+    app.tabBars.buttons["今日"].tap()
+    app.buttons["today.library"].tap()
     app.buttons["训练模板"].tap()
     app.buttons["routine.create"].tap()
     app.buttons["routine.addExercise"].tap()
@@ -149,6 +153,7 @@ final class TrainoteUITests: XCTestCase {
   func testAboutShowsPrivacyAndSupportLinks() {
     app.buttons["today.settings"].tap()
     XCTAssertTrue(app.navigationBars["设置"].waitForExistence(timeout: 3))
+    reveal(app.buttons["Trainote 与数据来源"])
     app.buttons["Trainote 与数据来源"].tap()
 
     XCTAssertTrue(app.navigationBars["关于"].waitForExistence(timeout: 3))
@@ -206,6 +211,7 @@ enum UITestTextInput {
     // Search bars stay pinned beside the keyboard; scrolling their results cannot move the field.
     // Only form rows need to move above a keyboard accessory before text selection.
     if field.elementType != .searchField {
+      var didScroll = false
       for _ in 0..<4 {
         let safeBottom = app.keyboards.firstMatch.frame.minY - 80
         if field.frame.maxY < safeBottom { break }
@@ -213,8 +219,13 @@ enum UITestTextInput {
         let start = origin.withOffset(CGVector(dx: app.frame.width * 0.15, dy: safeBottom - 20))
         let end = origin.withOffset(CGVector(dx: app.frame.width * 0.15, dy: safeBottom - 220))
         start.press(forDuration: 0.05, thenDragTo: end)
+        didScroll = true
       }
-      field.tap()
+      // A second tap on an already focused empty field opens AutoFill's editing menu.
+      // Reacquire focus only when scrolling actually moved this form row.
+      if didScroll {
+        field.tap()
+      }
     }
 
     let current = field.value as? String ?? ""
@@ -263,7 +274,11 @@ enum UITestTextInput {
           actual = observed
           return matchesExpected(actual)
         }, object: nil)
-      if XCTWaiter.wait(for: [readBack], timeout: 10) != .completed {
+      _ = XCTWaiter.wait(for: [readBack], timeout: 10)
+      // The outer waiter can interrupt an in-flight AX query and leave its cached value empty.
+      // Read independently after observation ends before asserting the field's current value.
+      actual = field.value as? String ?? ""
+      if !matchesExpected(actual) {
         XCTContext.runActivity(named: "Text input did not reach the expected value") { activity in
           let trace = XCTAttachment(
             string:

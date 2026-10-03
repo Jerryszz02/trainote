@@ -7,6 +7,11 @@ import SwiftUI
 struct TrainoteApp: App {
   @State private var catalog: ExerciseCatalog
   @State private var healthFoundation: HealthFoundation?
+  @State private var healthAccess: HealthFeatureAccess?
+  @State private var recoveryIntegration: HealthRecoveryIntegration?
+  @State private var trendIntegration: HealthTrendIntegration?
+  @State private var trainingAdvice: TrainingAdviceController?
+  @State private var reportIntegration: HealthReportIntegration?
   @Environment(\.scenePhase) private var scenePhase
   private let containerResult: Result<ModelContainer, Error>
 
@@ -25,29 +30,94 @@ struct TrainoteApp: App {
           return try PersistenceController.makeContainer(storeURL: url, allowsSave: false)
         }
       #endif
-      return try PersistenceController.makeContainer(inMemory: inMemory)
+      let container = try PersistenceController.makeContainer(inMemory: inMemory)
+      #if DEBUG
+        if inMemory && ProcessInfo.processInfo.arguments.contains("-ui-testing-legacy-goal") {
+          // An upgraded 1.0 goal has no revision history until the user adopts or edits it.
+          container.mainContext.insert(
+            NutritionGoal(
+              calories: 2000, carbohydrates: 250, protein: 150, fat: 65,
+              updatedAt: Date.now.addingTimeInterval(-30 * 86_400)))
+          try container.mainContext.save()
+        }
+      #endif
+      return container
     }
     if case .success(let container) = containerResult {
-      let directory = inMemory
-        ? FileManager.default.temporaryDirectory.appendingPathComponent("health-test-\(UUID().uuidString)")
+      let directory =
+        inMemory
+        ? FileManager.default.temporaryDirectory.appendingPathComponent(
+          "health-test-\(UUID().uuidString)")
         : LocalHealthStorage.directory
-      _healthFoundation = State(initialValue: HealthFoundation(container: container, localDirectory: directory))
-    } else { _healthFoundation = State(initialValue: nil) }
+      let foundation = HealthFoundation(container: container, localDirectory: directory)
+      _healthFoundation = State(initialValue: foundation)
+      let defaults =
+        inMemory
+        ? UserDefaults(suiteName: "recovery-test-\(UUID().uuidString)") ?? .standard : .standard
+      let recovery = HealthRecoveryIntegration(
+        repository: foundation.repository, healthData: foundation.healthData,
+        calibration: RecoveryCalibrationControl(defaults: defaults))
+      let trend = HealthTrendIntegration(
+        repository: foundation.repository, health: foundation.healthData, defaults: defaults)
+      let advice = TrainingAdviceController(
+        repository: foundation.repository, healthData: foundation.healthData,
+        recovery: recovery.service, modelContext: container.mainContext)
+      let reports = HealthReportIntegration(
+        foundation: foundation, trend: trend.calculator, recovery: recovery.service,
+        advice: advice, directory: directory.appendingPathComponent("AIReports", isDirectory: true))
+      _recoveryIntegration = State(initialValue: recovery)
+      _trendIntegration = State(initialValue: trend)
+      _trainingAdvice = State(initialValue: advice)
+      _reportIntegration = State(initialValue: reports)
+      _healthAccess = State(
+        initialValue: HealthFeatureAccess(foundation: foundation, reports: reports))
+    } else {
+      _healthFoundation = State(initialValue: nil)
+      _healthAccess = State(initialValue: nil)
+      _recoveryIntegration = State(initialValue: nil)
+      _trendIntegration = State(initialValue: nil)
+      _trainingAdvice = State(initialValue: nil)
+      _reportIntegration = State(initialValue: nil)
+    }
   }
 
   var body: some Scene {
     WindowGroup {
       switch containerResult {
       case .success(let container):
-        if let healthFoundation {
-          AppShell()
-            .environment(catalog)
-            .environment(healthFoundation)
-            .modelContainer(container)
-            .task { await healthFoundation.resume() }
-            .onChange(of: scenePhase) { _, phase in
-              if phase == .active { Task { await healthFoundation.resume() } }
+        if let healthFoundation, let healthAccess, let recoveryIntegration, let trendIntegration,
+          let trainingAdvice, let reportIntegration
+        {
+          AppShell(
+            analysisDestinations: .verifiedModules(
+              trend: trendIntegration, recovery: recoveryIntegration, advice: trainingAdvice),
+            recoveryIntegration: recoveryIntegration, trainingAdvice: trainingAdvice,
+            reportIntegration: reportIntegration
+          )
+          .environment(catalog)
+          .environment(healthFoundation)
+          .environment(healthAccess)
+          .modelContainer(container)
+          .task {
+            await healthAccess.resumePendingRevocation()
+            await healthFoundation.resume()
+            recoveryIntegration.reloadToday()
+            trendIntegration.refreshAfterHealthSync()
+            trainingAdvice.refresh()
+            await reportIntegration.refreshLocalAfterHealthSync()
+          }
+          .onChange(of: scenePhase) { _, phase in
+            if phase == .active {
+              Task {
+                await healthAccess.resumePendingRevocation()
+                await healthFoundation.resume()
+                recoveryIntegration.reloadToday()
+                trendIntegration.refreshAfterHealthSync()
+                trainingAdvice.refresh()
+                await reportIntegration.refreshLocalAfterHealthSync()
+              }
             }
+          }
         }
       case .failure(let error):
         PersistenceErrorView(message: error.localizedDescription)

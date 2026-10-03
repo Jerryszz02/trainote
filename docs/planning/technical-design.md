@@ -1,8 +1,11 @@
-# Trainote iOS v1 技术设计
+# Trainote iOS 技术设计
 
 ## 文档目的
 
 定义 App 壳层、状态归属、动作数据导入、业务操作边界和隐私约束。
+
+2026-10-03：本文描述本分支当前代码；健康分析目标以 [实施提案](health-analysis-plan.md) 为基线，
+F 的未完成装配与验证见 [集成交接](../health-integration-handoff.md)。
 
 ## 技术栈
 
@@ -14,8 +17,10 @@
 
 ## App 壳层
 
-- 根 `App` 创建一个 `ModelContainer` 和一个 `ExerciseCatalog`。
-- `TabView` 包含“今日、训练、饮食、资料库”，每个 Tab 拥有独立 `NavigationStack`。
+- 根 `App` 创建一个生产 `ModelContainer`、`ExerciseCatalog`、A 的 `HealthFoundation` 和 F 的 `HealthFeatureAccess`。
+- `TabView` 包含“今日、训练、饮食、趋势、恢复”，每个 Tab 拥有独立 `NavigationStack`。趋势/恢复暂由 `HealthAnalysisDestinations` 注入待接入视图，生产不安装合成 fixture。
+- `LibraryView(initialSection:)` 保留完整资料库，今日进入全部/模板，训练进入动作/模板，饮食进入饮食分区。
+- 首次健康引导使用独立本机偏好，仅表示看过引导，不表示同意。健康读取只由按钮调用 `requestReadAuthorization`；AI 配置不全时不授予同意。
 - 页面局部状态使用 `@State`/`@Binding`；SwiftData 使用 `@Query` 和 `ModelContext`；不建立全局 ViewModel。
 - 编辑器使用 `sheet(item:)`，由 sheet 自己校验、保存并 `dismiss()`。
 
@@ -32,6 +37,7 @@
 
 - `RoutineFactory` 把 routine 复制成新的进行中训练；动作名称和默认参数形成快照。
 - `NutritionSummary` 是纯值计算：按本地日历范围汇总日志，计算已摄入、剩余和超标值。
+- Settings 手动目标使用 `ManualNutritionGoalEditing` 捕获 `goalRevisionState`，以 `applyGoalRevision` 同一事务保留历史并更新当前值。过期状态保留草稿，要求载入最新目标后再次确认；不修改自动/建议模式。B 的分析页采用、撤销及旧营养汇总历史查询仍待装配。
 - 固定餐应用操作在一个 ModelContext 保存周期内展开全部食物日志；任一条校验失败则整批不保存。
 - 完成训练前执行领域校验；进行中状态在每次编辑后持久化，不依赖页面仍在内存。
 
@@ -44,8 +50,10 @@
 
 ## 隐私与许可证
 
-- 所有健康相关记录仅保存在 App 沙盒，不上传、不分析、不记录内容日志。
-- 不请求网络、相机、HealthKit、通知或定位权限。
+- 手动记录保存在生产 SwiftData；健康缓存/读取锚点与同意在独立本机存储，不写内容日志。
+- 主动连接后请求七种 HealthKit 只读类型。无真实 AI 代理配置时无报告网络发送；不请求相机或定位。
+- `HealthFeatureAccess` 在报告入口可用前安装 derived-data invalidator；健康断开使用完整 `disconnectAndDelete`。AI 撤回同步取消请求，本机写失败仍尝试服务器撤回，失败提示重试。
+- AI 生命周期通过 `AIReportLifecycle` 等待 E 的实装适配。当前 `LocalOnlyReportAccess` 不含网络、凭据或缓存；不是假装工作的 DeepSeek provider。
 - 不把用户饮食或训练内容写入控制台。
 - 不复制上游 `images/`、`videos/`、`image` 或 `gif_url` 字段，因为仓库许可证明确说明媒体需要单独授权。
 
@@ -65,7 +73,7 @@
 
 ## 验收标准
 
-- App 无第三方依赖和运行时网络流量。
+- App 无第三方 Swift Package；真实 AI 启用之前保持本地报告边界。
 - 根部只有一个生产 `ModelContainer`，Preview/测试使用独立内存容器。
 - 页面没有不必要的共享 ViewModel，Tab 导航历史相互独立。
 - 动作目录和用户历史使用稳定 ID/快照关联，修改模板不污染历史。

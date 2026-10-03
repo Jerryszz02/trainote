@@ -44,9 +44,24 @@ final class DailyUseUpgradeUITests: XCTestCase {
   }
 
   func testBodyweightAndDurationModesCanBeCompleted() {
-    app.tabBars.buttons["训练"].tap()
-    app.buttons["training.start"].tap()
-    app.buttons["training.startBlank"].tap()
+    let training = app.tabBars.buttons["训练"]
+    let ready = XCTNSPredicateExpectation(
+      predicate: NSPredicate { _, _ in
+        self.app.buttons["today.startWorkout"].isHittable && training.isHittable
+      }, object: nil)
+    XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 15), .completed, "首页与训练标签应已就绪")
+    // Observe one destination element while navigation settles. Three independent AX queries
+    // inside one predicate exhausted CI's wait even though the video showed Training selected.
+    training.press(forDuration: 0.15)
+    let start = app.buttons["training.start"]
+    XCTAssertTrue(start.waitForExistence(timeout: 10), "训练页应显示开始训练入口")
+    XCTAssertTrue(training.isSelected, "训练标签应已选中")
+    XCTAssertTrue(app.navigationBars["训练"].exists)
+    XCTAssertTrue(start.isHittable, "开始训练入口应可点击")
+    start.tap()
+    let blank = app.buttons["training.startBlank"]
+    XCTAssertTrue(blank.waitForExistence(timeout: 3))
+    blank.tap()
     app.buttons["workout.addExercise"].tap()
     fill(app.searchFields.firstMatch, "mountain climber")
     app.buttons["exercisePicker.item.0630"].tap()
@@ -206,7 +221,8 @@ final class DailyUseUpgradeUITests: XCTestCase {
   }
 
   func testFixedMealPortionAndCopyToAnotherMeal() {
-    app.tabBars.buttons["资料库"].tap()
+    app.tabBars.buttons["今日"].tap()
+    app.buttons["today.library"].tap()
     app.segmentedControls.buttons["饮食"].tap()
     app.buttons["foodLibrary.create"].tap()
     fill(app.textFields["foodPreset.name"], "固定餐燕麦")

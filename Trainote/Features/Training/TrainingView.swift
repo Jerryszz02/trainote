@@ -31,6 +31,12 @@ struct TrainingView: View {
 
   var body: some View {
     List {
+      Section("资料库") {
+        NavigationLink("动作目录", destination: LibraryView(initialSection: .exercises))
+          .accessibilityIdentifier("training.exercises")
+        NavigationLink("训练模板", destination: LibraryView(initialSection: .routines))
+          .accessibilityIdentifier("training.routines")
+      }
       if let activeWorkout {
         Section("进行中") {
           NavigationLink {

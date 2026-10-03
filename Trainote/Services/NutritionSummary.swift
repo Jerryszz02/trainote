@@ -65,17 +65,22 @@ struct DailyNutritionSummary {
   let goal: NutritionValues?
 
   init(entries: [FoodLogEntry], goal: NutritionGoal?) {
+    self.init(entries: entries, historicalTargets: NutritionGoalHistory.targets(from: goal))
+  }
+
+  init(entries: [FoodLogEntry], historicalTargets: NutritionTargets?) {
+    self.init(
+      entries: entries,
+      historicalValues: historicalTargets.map {
+        NutritionValues(
+          calories: $0.calories, carbohydrates: $0.carbohydrates,
+          protein: $0.protein, fat: $0.fat)
+      })
+  }
+
+  init(entries: [FoodLogEntry], historicalValues: NutritionValues?) {
     consumed = NutritionMath.totals(of: entries)
-    if let goal {
-      self.goal = NutritionValues(
-        calories: goal.calories,
-        carbohydrates: goal.carbohydrates,
-        protein: goal.protein,
-        fat: goal.fat
-      )
-    } else {
-      self.goal = nil
-    }
+    goal = historicalValues
   }
 
   func remaining(for nutrient: NutrientKind) -> Double? {

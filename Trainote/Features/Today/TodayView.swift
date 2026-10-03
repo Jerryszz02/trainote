@@ -1,12 +1,6 @@
 import SwiftData
 import SwiftUI
 
-private enum TodaySheet: String, Identifiable {
-  case settings
-
-  var id: String { rawValue }
-}
-
 struct TodayView: View {
   @Environment(\.modelContext) private var modelContext
   @Environment(\.scenePhase) private var scenePhase
@@ -24,12 +18,18 @@ struct TodayView: View {
 
   @Query(sort: \NutritionGoal.updatedAt, order: .reverse)
   private var goals: [NutritionGoal]
-
-  @State private var presentedSheet: TodaySheet?
+  @Query(sort: \NutritionGoalRevision.effectiveAt, order: .reverse)
+  private var goalRevisions: [NutritionGoalRevision]
 
   let onStartWorkout: () -> Void
   let onLogFood: () -> Void
   var onOpenTemplates: () -> Void = {}
+  var onOpenRecovery: () -> Void = {}
+  var onOpenSettings: () -> Void = {}
+  var onOpenCheckIn: (CheckInValue, @escaping () -> Void) -> Void = { _, _ in }
+  var recoveryIntegration: HealthRecoveryIntegration? = nil
+  var trainingAdvice: TrainingAdviceController? = nil
+  var reportIntegration: HealthReportIntegration? = nil
 
   private var todayEntries: [FoodLogEntry] {
     foodEntries.filter { Calendar.current.isDate($0.loggedAt, inSameDayAs: currentDate) }
@@ -40,7 +40,11 @@ struct TodayView: View {
   }
 
   private var summary: DailyNutritionSummary {
-    DailyNutritionSummary(entries: todayEntries, goal: goals.first)
+    DailyNutritionSummary(
+      entries: todayEntries,
+      historicalTargets: NutritionGoalHistory.targets(
+        on: currentDate, history: goalRevisions.map(\.value),
+        legacyCurrent: NutritionGoalHistory.targets(from: goals.first)))
   }
 
   var body: some View {
@@ -48,11 +52,30 @@ struct TodayView: View {
       LazyVStack(alignment: .leading, spacing: 20) {
         header
         quickActions
+        if let recoveryIntegration {
+          TodayRecoveryCard(
+            integration: recoveryIntegration, advice: trainingAdvice,
+            hasRoutines: !routines.isEmpty,
+            onOpenTemplates: onOpenTemplates, onOpenRecovery: onOpenRecovery,
+            onOpenCheckIn: onOpenCheckIn)
+        } else {
+          recommendationCard
+        }
         if !onboardingDismissed && workouts.isEmpty && foodEntries.isEmpty { gettingStarted }
         nutrientGrid
         routineShortcuts
         trainingSummary
         weeklyLink
+        if let reportIntegration {
+          NavigationLink {
+            HealthReportsView(integration: reportIntegration)
+          } label: {
+            Label("基础报告与历史", systemImage: "text.document")
+              .frame(maxWidth: .infinity, alignment: .leading)
+              .padding().background(.background, in: RoundedRectangle(cornerRadius: 16))
+          }
+          .accessibilityIdentifier("today.analysisReports")
+        }
       }
       .padding()
     }
@@ -61,8 +84,16 @@ struct TodayView: View {
     .navigationBarTitleDisplayMode(dynamicTypeSize.isAccessibilitySize ? .inline : .large)
     .toolbar {
       ToolbarItem(placement: .topBarTrailing) {
+        NavigationLink {
+          LibraryView()
+        } label: {
+          Label("资料库", systemImage: "books.vertical")
+        }
+        .accessibilityIdentifier("today.library")
+      }
+      ToolbarItem(placement: .topBarTrailing) {
         Button("设置", systemImage: "gearshape") {
-          presentedSheet = .settings
+          onOpenSettings()
         }
         .accessibilityIdentifier("today.settings")
       }
@@ -80,12 +111,24 @@ struct TodayView: View {
     } message: {
       Text(saveError ?? "请重试。")
     }
-    .sheet(item: $presentedSheet) { sheet in
-      switch sheet {
-      case .settings:
-        SettingsView()
+  }
+
+  private var recommendationCard: some View {
+    Button(action: routines.isEmpty ? onOpenTemplates : onOpenRecovery) {
+      HStack(alignment: .top, spacing: 12) {
+        Image(systemName: "lightbulb").font(.title2)
+        VStack(alignment: .leading, spacing: 4) {
+          Text("今日建议").font(.headline)
+          Text(routines.isEmpty ? "先选择一套训练模板，按自己的安排开始。" : "结合训练记录与体感，查看今天的恢复状态。")
+            .font(.subheadline).foregroundStyle(.secondary)
+        }
+        Spacer(minLength: 0)
+        Image(systemName: "chevron.right").font(.caption)
       }
+      .padding().background(.background, in: RoundedRectangle(cornerRadius: 16))
     }
+    .buttonStyle(.plain)
+    .accessibilityIdentifier("today.recommendation")
   }
 
   private var gettingStarted: some View {
@@ -101,7 +144,7 @@ struct TodayView: View {
       Button("建立训练模板", systemImage: "list.bullet.rectangle", action: onOpenTemplates)
         .accessibilityIdentifier("today.createRoutine")
       Button("记录第一餐", systemImage: "fork.knife", action: onLogFood)
-      Button("设置每日营养目标", systemImage: "target") { presentedSheet = .settings }
+      Button("设置每日营养目标", systemImage: "target", action: onOpenSettings)
     }
     .padding()
     .background(Color.accentColor.opacity(0.08), in: RoundedRectangle(cornerRadius: 16))
@@ -114,7 +157,8 @@ struct TodayView: View {
         HStack {
           Text("常用训练模板").font(.headline)
           Spacer()
-          Button("管理", action: onOpenTemplates).font(.subheadline)
+          Button("管理模板", action: onOpenTemplates).font(.subheadline)
+            .accessibilityIdentifier("today.manageTemplates")
         }
         ForEach(routines.prefix(3)) { routine in
           Button {
@@ -183,7 +227,7 @@ struct TodayView: View {
           .font(.headline)
         Spacer()
         if goals.first == nil {
-          Button("设置目标") { presentedSheet = .settings }
+          Button("设置目标", action: onOpenSettings)
             .font(.subheadline)
         }
       }
@@ -296,8 +340,10 @@ private struct NutrientProgressCard: View {
         .font(.title2.bold())
         .monospacedDigit()
 
-      ProgressView(value: summary.progress(for: nutrient))
-        .tint(remainingIsNegative ? .orange : .accentColor)
+      if target != nil {
+        ProgressView(value: summary.progress(for: nutrient))
+          .tint(remainingIsNegative ? .orange : .accentColor)
+      }
 
       if let target, let remaining = summary.remaining(for: nutrient) {
         Text(
@@ -317,6 +363,7 @@ private struct NutrientProgressCard: View {
     .background(.background, in: RoundedRectangle(cornerRadius: 16))
     .accessibilityElement(children: .combine)
     .accessibilityLabel(accessibilityText)
+    .accessibilityIdentifier("today.nutrient.\(nutrient.rawValue)")
   }
 
   private var remainingIsNegative: Bool {

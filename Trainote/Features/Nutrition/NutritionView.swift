@@ -59,6 +59,10 @@ struct NutritionView: View {
   var body: some View {
     List {
       Section {
+        NavigationLink("常用食物与固定餐", destination: LibraryView(initialSection: .foods))
+          .accessibilityIdentifier("nutrition.library")
+      }
+      Section {
         DatePicker(
           "记录日期",
           selection: $selectedDate,
