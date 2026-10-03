@@ -1,12 +1,6 @@
 import SwiftData
 import SwiftUI
 
-private enum TodaySheet: String, Identifiable {
-  case settings
-
-  var id: String { rawValue }
-}
-
 struct TodayView: View {
   @Environment(\.modelContext) private var modelContext
   @Environment(\.scenePhase) private var scenePhase
@@ -27,12 +21,12 @@ struct TodayView: View {
   @Query(sort: \NutritionGoalRevision.effectiveAt, order: .reverse)
   private var goalRevisions: [NutritionGoalRevision]
 
-  @State private var presentedSheet: TodaySheet?
-
   let onStartWorkout: () -> Void
   let onLogFood: () -> Void
   var onOpenTemplates: () -> Void = {}
   var onOpenRecovery: () -> Void = {}
+  var onOpenSettings: () -> Void = {}
+  var onOpenCheckIn: (CheckInValue, @escaping () -> Void) -> Void = { _, _ in }
   var recoveryIntegration: HealthRecoveryIntegration? = nil
   var trainingAdvice: TrainingAdviceController? = nil
   var reportIntegration: HealthReportIntegration? = nil
@@ -62,7 +56,8 @@ struct TodayView: View {
           TodayRecoveryCard(
             integration: recoveryIntegration, advice: trainingAdvice,
             hasRoutines: !routines.isEmpty,
-            onOpenTemplates: onOpenTemplates, onOpenRecovery: onOpenRecovery)
+            onOpenTemplates: onOpenTemplates, onOpenRecovery: onOpenRecovery,
+            onOpenCheckIn: onOpenCheckIn)
         } else {
           recommendationCard
         }
@@ -98,7 +93,7 @@ struct TodayView: View {
       }
       ToolbarItem(placement: .topBarTrailing) {
         Button("设置", systemImage: "gearshape") {
-          presentedSheet = .settings
+          onOpenSettings()
         }
         .accessibilityIdentifier("today.settings")
       }
@@ -115,18 +110,6 @@ struct TodayView: View {
       Button("知道了", role: .cancel) { saveError = nil }
     } message: {
       Text(saveError ?? "请重试。")
-    }
-    .sheet(
-      item: $presentedSheet,
-      onDismiss: {
-        recoveryIntegration?.reloadToday()
-        trainingAdvice?.refresh()
-      }
-    ) { sheet in
-      switch sheet {
-      case .settings:
-        SettingsView()
-      }
     }
   }
 
@@ -161,7 +144,7 @@ struct TodayView: View {
       Button("建立训练模板", systemImage: "list.bullet.rectangle", action: onOpenTemplates)
         .accessibilityIdentifier("today.createRoutine")
       Button("记录第一餐", systemImage: "fork.knife", action: onLogFood)
-      Button("设置每日营养目标", systemImage: "target") { presentedSheet = .settings }
+      Button("设置每日营养目标", systemImage: "target", action: onOpenSettings)
     }
     .padding()
     .background(Color.accentColor.opacity(0.08), in: RoundedRectangle(cornerRadius: 16))
@@ -244,7 +227,7 @@ struct TodayView: View {
           .font(.headline)
         Spacer()
         if goals.first == nil {
-          Button("设置目标") { presentedSheet = .settings }
+          Button("设置目标", action: onOpenSettings)
             .font(.subheadline)
         }
       }

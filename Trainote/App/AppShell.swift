@@ -8,12 +8,27 @@ enum AppTab: Hashable {
   case recovery
 }
 
+private enum AppSheet: Identifiable {
+  case healthOnboarding
+  case settings
+  case checkIn(CheckInValue)
+
+  var id: String {
+    switch self {
+    case .healthOnboarding: return "healthOnboarding"
+    case .settings: return "settings"
+    case .checkIn(let draft): return "checkIn.\(draft.id)"
+    }
+  }
+}
+
 struct AppShell: View {
   @State private var selectedTab: AppTab = .today
   @State private var startWorkoutRequest = 0
   @State private var logFoodRequest = 0
   @State private var todayPath: [LibrarySection] = []
-  @State private var showHealthOnboarding = false
+  @State private var presentedSheet: AppSheet?
+  @State private var sheetDismissal: (() -> Void)?
   @AppStorage("health.onboarding.v1.completed") private var healthOnboardingCompleted = false
   var analysisDestinations: HealthAnalysisDestinations = .pending
   var recoveryIntegration: HealthRecoveryIntegration? = nil
@@ -36,6 +51,17 @@ struct AppShell: View {
             todayPath.append(.routines)
           },
           onOpenRecovery: { selectedTab = .recovery },
+          onOpenSettings: {
+            sheetDismissal = {
+              recoveryIntegration?.reloadToday()
+              trainingAdvice?.refresh()
+            }
+            presentedSheet = .settings
+          },
+          onOpenCheckIn: { draft, onDismiss in
+            sheetDismissal = onDismiss
+            presentedSheet = .checkIn(draft)
+          },
           recoveryIntegration: recoveryIntegration, trainingAdvice: trainingAdvice,
           reportIntegration: reportIntegration
         )
@@ -80,17 +106,37 @@ struct AppShell: View {
     .task {
       #if DEBUG
         if ProcessInfo.processInfo.arguments.contains(where: { $0.hasPrefix("-ui-testing") }) {
-          showHealthOnboarding = ProcessInfo.processInfo.arguments.contains("-health-onboarding")
+          presentedSheet =
+            ProcessInfo.processInfo.arguments.contains("-health-onboarding")
+            ? .healthOnboarding : nil
           return
         }
       #endif
-      showHealthOnboarding = !healthOnboardingCompleted
+      if !healthOnboardingCompleted { presentedSheet = .healthOnboarding }
     }
-    .sheet(isPresented: $showHealthOnboarding) {
-      HealthOnboardingView {
-        healthOnboardingCompleted = true
-        showHealthOnboarding = false
+    // Keep modal content outside the tab navigation stacks' presentation environment.
+    .sheet(item: $presentedSheet, onDismiss: finishSheet) { sheet in
+      switch sheet {
+      case .healthOnboarding:
+        HealthOnboardingView {
+          healthOnboardingCompleted = true
+          presentedSheet = nil
+        }
+      case .settings:
+        SettingsView()
+      case .checkIn(let draft):
+        if let recoveryIntegration {
+          RecoveryCheckInView(
+            repository: recoveryIntegration.repository,
+            suggestedMuscles: recoveryIntegration.suggestedMuscles(), draft: draft)
+        }
       }
     }
+  }
+
+  private func finishSheet() {
+    let completion = sheetDismissal
+    sheetDismissal = nil
+    completion?()
   }
 }

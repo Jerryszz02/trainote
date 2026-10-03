@@ -7,7 +7,7 @@ struct TodayRecoveryCard: View {
   let hasRoutines: Bool
   let onOpenTemplates: () -> Void
   let onOpenRecovery: () -> Void
-  @State private var checkInDraft: CheckInValue?
+  let onOpenCheckIn: (CheckInValue, @escaping () -> Void) -> Void
   @State private var showPrompt = false
   @State private var error: String?
 
@@ -60,18 +60,6 @@ struct TodayRecoveryCard: View {
     ) {
       _ in reload()
     }
-    .sheet(
-      item: $checkInDraft,
-      onDismiss: {
-        integration.reloadToday()
-        advice?.refresh()
-        showPrompt = false
-      }
-    ) { draft in
-      RecoveryCheckInView(
-        repository: integration.repository,
-        suggestedMuscles: integration.suggestedMuscles(), draft: draft)
-    }
     .alert("体感暂时无法打开", isPresented: Binding(get: { error != nil }, set: { if !$0 { error = nil } }))
     {
       Button("知道了", role: .cancel) { error = nil }
@@ -82,7 +70,14 @@ struct TodayRecoveryCard: View {
 
   private var checkInButton: some View {
     Button("记录或修改十秒体感", systemImage: "heart.text.clipboard") {
-      do { checkInDraft = try integration.checkInDraft() } catch { self.error = "未能读取已有体感，请稍后重试。" }
+      do {
+        let draft = try integration.checkInDraft()
+        onOpenCheckIn(draft) {
+          integration.reloadToday()
+          advice?.refresh()
+          showPrompt = false
+        }
+      } catch { self.error = "未能读取已有体感，请稍后重试。" }
     }
     .font(.subheadline)
     .accessibilityIdentifier("today.checkIn.open")
