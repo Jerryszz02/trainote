@@ -203,17 +203,19 @@ enum UITestTextInput {
       XCTFail("Keyboard did not appear for input: \(field.identifier)")
       return
     }
-    // SwiftUI can leave the focused row underneath the keyboard accessory toolbar.
-    // Move the row into the visible form before opening its text-selection menu.
-    for _ in 0..<4 {
-      let safeBottom = app.keyboards.firstMatch.frame.minY - 80
-      if field.frame.maxY < safeBottom { break }
-      let origin = app.coordinate(withNormalizedOffset: .zero)
-      let start = origin.withOffset(CGVector(dx: app.frame.width * 0.15, dy: safeBottom - 20))
-      let end = origin.withOffset(CGVector(dx: app.frame.width * 0.15, dy: safeBottom - 220))
-      start.press(forDuration: 0.05, thenDragTo: end)
+    // Search bars stay pinned beside the keyboard; scrolling their results cannot move the field.
+    // Only form rows need to move above a keyboard accessory before text selection.
+    if field.elementType != .searchField {
+      for _ in 0..<4 {
+        let safeBottom = app.keyboards.firstMatch.frame.minY - 80
+        if field.frame.maxY < safeBottom { break }
+        let origin = app.coordinate(withNormalizedOffset: .zero)
+        let start = origin.withOffset(CGVector(dx: app.frame.width * 0.15, dy: safeBottom - 20))
+        let end = origin.withOffset(CGVector(dx: app.frame.width * 0.15, dy: safeBottom - 220))
+        start.press(forDuration: 0.05, thenDragTo: end)
+      }
+      field.tap()
     }
-    field.tap()
 
     let current = field.value as? String ?? ""
     // Numeric SwiftUI fields can expose "0" as both their value and placeholder.
@@ -238,7 +240,43 @@ enum UITestTextInput {
     }
 
     field.typeText(value)
-    let actual = field.value as? String ?? ""
+    var actual = field.value as? String ?? ""
+    func matchesExpected(_ text: String) -> Bool {
+      if let expected = Double(value),
+        let observed = Double(text.replacingOccurrences(of: ",", with: ""))
+      {
+        return abs(observed - expected) <= 0.000_001
+      }
+      return text == value
+    }
+    if !matchesExpected(actual) {
+      // Event synthesis can finish before the bound value/AX snapshot settles. Observe only:
+      // never append a missing suffix, retype the phrase, or accept a prefix as success.
+      let started = Date()
+      var observations = ["0s: \(actual)"]
+      let readBack = XCTNSPredicateExpectation(
+        predicate: NSPredicate { _, _ in
+          let observed = field.value as? String ?? ""
+          if observed != actual && observations.count < 32 {
+            observations.append("\(Date().timeIntervalSince(started))s: \(observed)")
+          }
+          actual = observed
+          return matchesExpected(actual)
+        }, object: nil)
+      if XCTWaiter.wait(for: [readBack], timeout: 10) != .completed {
+        XCTContext.runActivity(named: "Text input did not reach the expected value") { activity in
+          let trace = XCTAttachment(
+            string:
+              "expected: \(value)\nactual: \(actual)\nobservations: \(observations)\nfield: \(field.identifier), \(field.frame), hittable=\(field.isHittable)\nkeyboard present: \(keyboard.exists)"
+          )
+          trace.lifetime = .keepAlways
+          activity.add(trace)
+          let screenshot = XCTAttachment(screenshot: app.screenshot())
+          screenshot.lifetime = .keepAlways
+          activity.add(screenshot)
+        }
+      }
+    }
     if let expectedNumber = Double(value),
       let actualNumber = Double(actual.replacingOccurrences(of: ",", with: ""))
     {
