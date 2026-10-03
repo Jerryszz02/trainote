@@ -60,6 +60,29 @@ Test fixtures are synthetic. Dedicated Simulator: `56CCDE13-528E-4012-AABA-D0559
 
 The merge preserves main's shared contracts, consent store, report builder, foundation handoff, input helpers and BodyMap implementation byte for byte. The history-factory conflict retains C's role/RIR behavior: historical edits preserve them, while a new training copy clears RIR and changes an unknown historical role to working. All C production code and mapping remain identical to the reviewed `b78e3f4` version. The RIR UI test now uses main's verified `UITestTextInput` helper. XcodeGen regenerated the project from the unchanged `project.yml`; the diff against main adds 92 registration lines without removing entries or changing build settings. The complete PR diff contains 24 module/test/resource/handoff/project files, with no shared foundation or renderer changes. The 1,324-entry tracking-mode audit and `git diff --check` passed.
 
+Focused main-integration command (use a new result-bundle path for a repeat run):
+
+```sh
+xcodebuild -project Trainote.xcodeproj -scheme Trainote \
+  -destination 'platform=iOS Simulator,id=56CCDE13-528E-4012-AABA-D0559816F5AB' \
+  -derivedDataPath /tmp/trainote-recovery-c-derived \
+  -resultBundlePath /tmp/trainote-recovery-c-main-b24cd10-focused.xcresult \
+  -parallel-testing-enabled NO \
+  -only-testing:TrainoteTests/RecoveryCalculatorTests \
+  -only-testing:TrainoteTests/RecoveryCalibrationTests \
+  -only-testing:TrainoteTests/RecoverySystemicTests \
+  -only-testing:TrainoteTests/RecoveryWorkflowTests \
+  -only-testing:TrainoteTests/TrainingUpgradeTests \
+  -only-testing:TrainoteTests/BodyMapTests \
+  -only-testing:TrainoteTests/RecommendationSnapshotTests \
+  -only-testing:TrainoteTests/ConsentPersistenceTests \
+  -only-testing:TrainoteUITests/RecoveryRIRUITests \
+  -only-testing:TrainoteUITests/DailyUseUpgradeUITests/testRepeatedWorkoutCreatesPRAndHistoryEditingCanCancel \
+  -only-testing:TrainoteUITests/DailyUseUpgradeUITests/testBodyweightAndDurationModesCanBeCompleted \
+  -only-testing:TrainoteUITests/DailyUseUpgradeUITests/testReusedCardioRequiresExplicitCompletion \
+  CODE_SIGNING_ALLOWED=NO test
+```
+
 The new external-strength coverage regression was first observed failing (non-nil score and missing dependency), then passed after preserving the unknown load and full eligibility lineage. The coordinator's feedback-clearing P2 is covered at repository/analysis and real UI levels. First empty drafts remain unsaved; clearing an existing record persists nil/empty values; skip leaves persisted state intact.
 
 Coverage includes filtering/invalid times, RIR and historical role priors, unknown versus 100, deduplicated muscle weights, monotonic decay, edit/delete, independent pain/limitation, feedback persistence/prompt skip, temporal holdout rejection/reset, HRV source separation, complete dependencies and fresh-report removal, real RIR/history/repeat UI, and standalone recovery-page UI (body selection, pain override, feedback save/cancel and empty-state skip).
