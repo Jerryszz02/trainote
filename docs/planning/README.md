@@ -4,7 +4,7 @@
 
 Trainote 是一款中文优先、以本地记录为基础的 iPhone 健身与饮食 App，记录力量/有氧训练、训练模板及每日卡路里、碳水、蛋白质和脂肪。动作目录来自 `hasaneyldrm/exercises-dataset` 的固定版本，只内置 MIT 许可覆盖的文字和结构化数据，不分发需要单独授权的图片或 GIF。
 
-**2026-10-03：F 已装配真实 A/B/C/D/E 服务，提供五 Tab、趋势/恢复分析、训练建议、历史营养目标及本地报告入口；联合验收仍在进行。** 默认无远程 AI transport，真实 DeepSeek 未启用。规划 PR #3、A 的 #4、B 的 #6、D 的 #5/#10 已合并，C/E/F PR 仍开放；详见 [交付快照](health-analysis-delivery.md)。所有实施对话使用 max。分支实现、工程测试、科学验证、默认分支与发布是不同状态。
+**2026-10-03：F 已装配真实 A/B/C/D/E 服务，提供五 Tab、趋势/恢复分析、训练建议、历史营养目标及本地报告入口；联合验收仍在进行。** 默认无远程 AI transport，真实 DeepSeek 未启用。规划 PR #3、A 的 #4、B 的 #6、D 的 #5/#10、E 的 #7 已合并，C/F PR 仍开放；详见 [交付快照](health-analysis-delivery.md)。所有实施对话使用 max。分支实现、工程测试、科学验证、默认分支与发布是不同状态。
 
 ## 文档信息
 
@@ -12,7 +12,7 @@ Trainote 是一款中文优先、以本地记录为基础的 iPhone 健身与饮
 - 工作模式：执行已批准的 F 集成任务，保留 v1 / 1.1 的历史设计与验证记录。
 - canonical 项目根目录：`/Users/jerryszz/Desktop/Projects/trainote`
 - 本次 F 工作树：`/Users/jerryszz/.codex/worktrees/392a/trainote`
-- 固定代码基线：初始 `967fa5351838240b2bb6ca0c5cb8e777530e54c4`，后按主对话批准 SHA 普通合并 A/B/C/D/E；分支 `agent/health-integration` 已本地普通合并正式 main `b24cd108222134d3cd3ba1d4169031cebc6226b3`，PR #9 base 已改为 `main`。公共 helper 和训练等待已各有独立修复；剩余两项健康 UI 失败按主协调要求补充诊断，审阅前暂不推送。各固定点见交付快照及交接。
+- 固定代码基线：初始 `967fa5351838240b2bb6ca0c5cb8e777530e54c4`，后按主对话批准 SHA 普通合并 A/B/C/D/E；分支 `agent/health-integration` 已普通合并正式 main `60c02d7b9e4a5a0bb9f118eb162caadf7c0e38f5`（A/B/E/D），PR #9 base 为 `main`。公共 helper、训练等待两项修复和独立健康 UI 诊断已获主协调审阅；本轮推送后需完整 CI 取证，健康两项尚未宣称修复。各固定点见交付快照及交接。
 - 本次检查证据：Git 状态与工作树、根 README、`project.yml`、已提交 Xcode 工程、AppShell/TrainoteApp、训练与营养模型、动作目录服务、备份服务、资料库/首页/设置页面、现有测试及 CI 配置；原始论文与研究仓库见证据矩阵。
 - F 已执行 Simulator 构建及单元/UI 测试；逐项结果在 [交接](../health-integration-handoff.md)。签名、真机和发布状态未验证，旧 1.1 记录仍为历史证据。
 
@@ -72,6 +72,6 @@ F 实施记录（2026-10-03）：B/C/E 已实际连接，训练建议会复核�
 - 用户已确认提案和分工，授权审阅及当前提交 CI 通过后合并本范围 PR；由主对话统一协调。尚未授权付费采购、正式部署或发布。
 - 外部条件：AI 代理部署/预算、DeepSeek API 数据处理安排、真机/签名与专业审查，见提案。3D 已使用仓库原创 MIT 资产，许可不再列为未知；真机展示验收仍未完成。
 - 当前代码配置 Swift 5.9 language mode、最低 iOS 17；F 在 Xcode 26.6 / Swift 6.3.3 / iOS 26.5 的独立 Simulator 验证，详细结果见交接。
-- B/C/E 已装配；B 的 PR #6 已合入 main `c4e805dc718242f04d6889005fa519fb7f79ae91`，C/E 尚未正式合入。F 等待主协调指定最终 main SHA 一次同步，所以当前工作树仍停在 A 合并后的基础。历史完整回归、后续 UI 定向结果和当前 head CI 分别记录；最新提交的 CI 和统一合并验收由主对话按 PR 当前检查确认，真机与发布条件另列。
+- B/C/E 已装配；A/B/E/D 已合入正式 main `60c02d7`，F 经 `43d11e4` 普通同步。C 已获主协调指定同一 main 进行同步，尚未正式合并；F 本轮 CI 完整结束并保存产物后才同步 C 的最终 main。历史完整回归、后续 UI 定向结果和当前 head CI 分别记录；最新提交的 CI 和统一合并验收由主对话按 PR 当前检查确认，真机与发布条件另列。
 - 临时 Bundle ID 为 `com.jerryszz.trainote`，正式分发前需要与 Apple Developer 账号中的标识一致。
 - v1 只支持 iPhone、iOS 17+、简体中文 UI、公斤和公里。

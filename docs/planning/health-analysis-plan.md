@@ -2,9 +2,9 @@
 
 ## 1. 状态、范围与阅读顺序
 
-- 日期：2026-10-03；状态：**实现已集成，交付验收中**。规划 PR #3、A 的 #4、B 的 #6、D 的 #5/#10 已合并；F 已在独立分支装配实际 B/C/E 服务并普通合并正式 main `b24cd108222134d3cd3ba1d4169031cebc6226b3`。历史完整回归、后续显示/UI 定向结果与当前 head CI 分别记录，统一合并验收由主对话确认。
+- 日期：2026-10-03；状态：**实现已集成，交付验收中**。规划 PR #3、A 的 #4、B 的 #6、D 的 #5/#10、E 的 #7 已合并；F 已在独立分支装配实际 B/C/E 服务并普通合并正式 main `60c02d7b9e4a5a0bb9f118eb162caadf7c0e38f5`。历史完整回归、后续显示/UI 定向结果与当前 head CI 分别记录，统一合并验收由主对话确认。
 - 来源：本对话用户确认的 Apple 健康入口、DeepSeek + 计算模块、可选体感校正、两个分析 Tab 和首页今日建议。
-- 原始规划基线为 `origin/main` / `e00208e`；当前实现核查使用 F 的 `agent/health-integration`。B 已正式合入 main `c4e805dc718242f04d6889005fa519fb7f79ae91`，C/E 尚未合入；F 暂未同步该较新 main，等待主协调指定最终 SHA。纳入的不可变提交、PR 状态和运行产物见 [交付记录](health-analysis-delivery.md) 与 [F 集成交接](../health-integration-handoff.md)，不能据此推断默认分支已包含所有功能。
+- 原始规划基线为 `origin/main` / `e00208e`；当前实现核查使用 F 的 `agent/health-integration`。A/B/E/D 已正式合入 main `60c02d7`，F 已经 `43d11e4` 同步；C 正按主协调指定的同一基础同步，尚未正式合入。F 两项健康 UI 失败仍待诊断，本轮 CI 完整取证后再消费 C 最终 main。纳入的不可变提交、PR 状态和运行产物见 [交付记录](health-analysis-delivery.md) 与 [F 集成交接](../health-integration-handoff.md)，不能据此推断默认分支已包含所有功能。
 - 当前集成源码：SwiftUI + SwiftData、iOS 17+、五个 Tab、原有本地记录及可选 HealthKit 读取。真实 B/C 计算和 E 报告组件已装配，默认无远程 transport；本地报告链路已通过组合测试与真实 UI，真实 AI 未开通。
 - [研究证据与使用边界](health-analysis-evidence.md)维护文献和研究仓库；[并行实施与交付计划](health-analysis-delivery.md)维护工作树、职责和合并依赖。本文是产品行为、计算规则和接口的唯一规划基线。
 - v1 / 1.1 的历史基线仍见 [PRD](prd.md)、[技术设计](technical-design.md)、[数据库设计](database-design.md)。本文维护已批准行为及当前差距，不把旧版本非目标误当成永久禁止。
