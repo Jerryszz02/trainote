@@ -50,19 +50,18 @@ final class DailyUseUpgradeUITests: XCTestCase {
         self.app.buttons["today.startWorkout"].isHittable && training.isHittable
       }, object: nil)
     XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 15), .completed, "首页与训练标签应已就绪")
-    // The first CI tap was synthesized but left Today selected. Send one deliberate touch,
-    // then require the actual destination before starting the unchanged workout flow.
+    // Observe one destination element while navigation settles. Three independent AX queries
+    // inside one predicate exhausted CI's wait even though the video showed Training selected.
     training.press(forDuration: 0.15)
-    let opened = XCTNSPredicateExpectation(
-      predicate: NSPredicate { _, _ in
-        training.isSelected && self.app.navigationBars["训练"].exists
-          && self.app.buttons["training.start"].isHittable
-      }, object: nil)
-    XCTAssertEqual(
-      XCTWaiter.wait(for: [opened], timeout: 10), .completed,
-      "训练标签应已选中，且开始训练入口可点击。\n\(app.debugDescription)")
-    app.buttons["training.start"].tap()
-    app.buttons["training.startBlank"].tap()
+    let start = app.buttons["training.start"]
+    XCTAssertTrue(start.waitForExistence(timeout: 10), "训练页应显示开始训练入口")
+    XCTAssertTrue(training.isSelected, "训练标签应已选中")
+    XCTAssertTrue(app.navigationBars["训练"].exists)
+    XCTAssertTrue(start.isHittable, "开始训练入口应可点击")
+    start.tap()
+    let blank = app.buttons["training.startBlank"]
+    XCTAssertTrue(blank.waitForExistence(timeout: 3))
+    blank.tap()
     app.buttons["workout.addExercise"].tap()
     fill(app.searchFields.firstMatch, "mountain climber")
     app.buttons["exercisePicker.item.0630"].tap()
