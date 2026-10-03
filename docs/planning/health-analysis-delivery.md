@@ -2,7 +2,7 @@
 
 ## 状态和授权边界
 
-- 日期：2026-10-03；状态：**A–F 已实施，F 联合验收进行中**。规划 PR #3、A 基础 PR #4、B 趋势 PR #6、D 资产 PR #5 和拆卸修复 PR #10、E 报告 PR #7 已合并；C/F PR 仍开放，具体状态见文末快照。
+- 日期：2026-10-03；状态：**A–F 已实施，F 联合验收进行中**。规划 PR #3、A 基础 PR #4、B 趋势 PR #6、C 恢复 PR #8、D 资产 PR #5 和拆卸修复 PR #10、E 报告 PR #7 已合并；F PR #9 仍开放，具体状态见文末快照。
 - 需求基线：[实施提案](health-analysis-plan.md)；研究来源：[证据矩阵](health-analysis-evidence.md)。
 - 已执行的用户决策：A、D 形成可构建固定提交后启动 B/C/E/F，无需等待 A/D 合入主线。后四个任务在各自独立工作树消费主对话批准的不可变 SHA，不追逐可变分支头。
 - 原 `agent/health-analysis-plan` 是已合并的规划分支。F 当前工作树为 `/Users/jerryszz/.codex/worktrees/392a/trainote`，分支 `agent/health-integration`；已普通合并主协调批准的正式 main `60c02d7b9e4a5a0bb9f118eb162caadf7c0e38f5`，PR #9 base 为 `main`。两项有证据支持的 UI 修复与独立健康诊断均已获主协调审阅，本轮推送后运行完整 CI；两项健康失败仍未闭合。
@@ -169,27 +169,28 @@ CI 命令沿用仓库 iOS 工作流，实施时先枚举实际 Simulator，使�
 
 ## 实施与 PR 快照
 
-2026-10-03 10:29（Asia/Shanghai）通过 GitHub PR API 与本地 Git 核对（包含 E 于 10:24 的合并）；后续状态以相应 PR 的当前 head 为准。
+2026-10-03 12:09（Asia/Shanghai）通过 GitHub PR API、本地 Git 及原始测试产物核对（包含 C 于 11:05:58 的合并）；后续状态以相应 PR 的当前 head 为准。
 
 | 工作流 | PR / 当时状态 | F 已消费或核实的固定点 |
 | --- | --- | --- |
 | 规划 | [#3](https://github.com/Jerryszz02/trainote/pull/3) 已合并 | 2026-10-03 02:56 合并，实施授权与分工已执行 |
 | A | [#4](https://github.com/Jerryszz02/trainote/pull/4) 已合并 | head `4ebdd3fe1a12b7cb4e5b1073aa36158a9949acad` 经当前提交 CI 后于 09:21 squash 为 main `b24cd108222134d3cd3ba1d4169031cebc6226b3`；F 普通合入 `f81651bf10951952725e12a3dae53b1bfac5d300`，保留已消费契约、持久撤回和 F 完整装配 |
 | B | [#6](https://github.com/Jerryszz02/trainote/pull/6) 已合并 | head `f98b27c5618264f2c4eb7f5c250ecfc684c4f1fd` 于 09:54 squash 为 main `c4e805dc718242f04d6889005fa519fb7f79ae91`；F 已含早期批准的 B 实现及显示精度 `94b502f` / `92b017e`，现已随批准的 main `60c02d7` 普通合入 F |
-| C | [#8](https://github.com/Jerryszz02/trainote/pull/8) 开放 | F 已普通消费 `2d2703ef28033d952d0d61a3b950003afe5e97f2` 并装配真实恢复页/反馈/RIR；主协调已交付 main `60c02d7` 供 C 同步，最终正式合并待其当前 head 检查 |
+| C | [#8](https://github.com/Jerryszz02/trainote/pull/8) 已合并 | head `bd2915ebacb5afe2abe75e35b754fa08bb628b7b` 经当前提交 CI 后于 11:05:58 squash 为 main `c439350e52baf15d3c1d5a3528be112c1ea6928d`；F 经 `f66997b` 普通同步，仅新增上游交接及 RIR UI 对现有公共 helper 的调用，真实恢复页/反馈/RIR 装配保留 |
 | D | [#5](https://github.com/Jerryszz02/trainote/pull/5)、[#10](https://github.com/Jerryszz02/trainote/pull/10) 已合并 | 04:27 / 06:04 合并；F 纳入 `a363195d480d1412d496336b674efc7c09dafaa8`，原 SceneKit 拆卸崩溃路径通过 |
 | E | [#7](https://github.com/Jerryszz02/trainote/pull/7) 已合并 | head `205f9295f2e5d122d4f3a21d6b5b77b419b7a7a9` 于 10:24 squash 为 main `60c02d7b9e4a5a0bb9f118eb162caadf7c0e38f5`；F 经 `43d11e4` 普通同步，已装配的 E 生产代码与测试均无新增差异 |
-| F | [#9](https://github.com/Jerryszz02/trainote/pull/9) 开放、ready，base main | `43d11e4` 普通合并准确 main `60c02d7`；独立修复 `e9b2d5b` / `9c53b39` 与仅 DEBUG UI 测试诊断 `82580ee` 均获审阅。本轮完整 CI 待取证，45 分钟工作流和所有业务断言保留；健康两项未称修复 |
+| F | [#9](https://github.com/Jerryszz02/trainote/pull/9) 开放、ready，base main | `f66997b` 普通合并准确 main `c439350`；`3df6541` CI 为 297/299 通过，仅余两条健康弹窗路径。`d1a3433` 修复已获主协调审阅，匹配运行时健康/RIR 11/11 及独立 26.5 兼容回归 2/2 通过；新 head 完整 CI 待验证，45 分钟工作流、825 诊断和所有业务断言保留 |
 
 上表的消费提交与各模块 PR 当前 head 可以不同：公共测试辅助修复会分别纳入各分支，不能未经协调直接合并更新后的整个分支。完整 SHA、测试产物与后续结果见 [F 集成交接](../health-integration-handoff.md)。
-A/B/E/D 已正式合并并同步到 F；C 尚未正式合入。F 本轮 CI 完整结束并保存新日志/诊断后再按主协调的准确 SHA 同步 C 最终 main，期间不再通过文档推送取消这轮证据。
+A/B/C/D/E 已正式合并并同步到 F。上一 CI 已完整结束并保留日志、原始 xcresult、App 阶段记录与附件；本轮源代码修复及文档提交将一次推送，保持新 head 不变直至完整 CI 结束。
 
 ## 当前验证与仍需完成
 
 - F 历史固定代码 `405d2f4` 已完成无排除项完整回归：268 单元、31 UI，299 passed、0 failed、0 skipped。包含真实目标 2000→2240→撤销恢复 2000、分量/周回顾、公共 helper `7dd8390` 和设置/体感转场 `c97e4f7`；后续 B 显示取整补丁已通过含 +240 断言的同一实际趋势 UI。
-- 后续 `18793f4` 的 CI 为 268 单元通过、31 UI 中 4 失败，非超时。英文 runner / US region 定向运行复现其中日期格式差异；`d0fd48b` / `5aca4aa` 修复后四条路径本地 4/4 通过，日期参考时刻最终调整后趋势路径另 1/1 通过。`5aca4aa` 的完整 CI 仍为 268 单元通过、31 UI 中 4 失败，趋势日期已通过但新增固定餐名称读回失败；后续已定位训练复合 AX 查询被外层等待中断，以及输入框重复聚焦打开自动填充弹层；分别独立提交 `9c53b39` / `e9b2d5b`。原业务断言保留，定向 3/3 和 2/2 通过，但其中两项健康用例未改，不能视为修复；断开确认与体感菜单仍需 App 动作阶段诊断。诊断已获主协调审阅并批准推送，新 head 的 CI 仍须独立验证。
+- 后续 `18793f4` 的 CI 为 268 单元通过、31 UI 中 4 失败，非超时。英文 runner / US region 定向运行复现其中日期格式差异；`d0fd48b` / `5aca4aa` 修复后四条路径本地 4/4 通过，日期参考时刻最终调整后趋势路径另 1/1 通过。`5aca4aa` 的完整 CI 仍为 268 单元通过、31 UI 中 4 失败，趋势日期已通过但新增固定餐名称读回失败；后续已定位训练复合 AX 查询被外层等待中断，以及输入框重复聚焦打开自动填充弹层；分别独立提交 `9c53b39` / `e9b2d5b`。原业务断言保留，定向 3/3 和 2/2 通过，当时两项健康用例未改，不能视为修复。后续完整 CI `37090341843` 在 `3df6541` 上为 297 passed、2 failed、0 skipped：训练与固定餐路径已通过，仅断开确认和体感菜单失败，非超时；详细阶段记录、同运行时复现及实际修复见下条。
+- 健康弹窗修复 `d1a3433`：先在独立 iOS 26.4.1/23E254a 运行原两项测试，未修改健康源码的 `f66997b` 为 0/2 通过；AppShell 在 NavigationStack 外统一呈现今日设置/体感后原两项 2/2 通过，完整 HealthIntegration + RIR 11/11 通过、0 跳过。主协调接受的源码 tree 相同，并在独立 iOS 26.5/23F77 运行原两项兼容回归，2/2 通过。原控件、数据服务、模板导航、关闭回调及测试断言保留；临时探针已移除，三个 Swift 文件严格格式检查通过。此证据支持当前呈现方式修复，不证明 Apple 内部实现机制；新 head 完整 CI 仍待通过。产物见 [F 集成交接](../health-integration-handoff.md)。
 - 独立诊断 `82580ee` 只在 DEBUG 与 `-ui-testing` 同时成立时记录无敏感数据的事件/阶段；两条原健康 UI 2/2 通过并读回正常阶段记录，失败附件经临时探针验证后已移除探针，Release 构建和诊断标记排除检查通过。它不改变生产逻辑或原业务断言，不能称为健康失败修复；主协调已审阅并批准随新 head 推送，以取得 iOS 26.4.1 的行为证据。
-- 本轮普通合并准确 main `60c02d7` 为 `43d11e4`，相对 F 前一提交只变化 B/E 两份交接文档。工程经 XcodeGen 重生后与合并前相同，业务源码、所有测试、诊断和工作流均不变；不因祖先/文档同步重复本地整套测试。
+- 普通合并 main `60c02d7` 为 `43d11e4` 只变化 B/E 两份交接文档；后续合入准确 main `c439350` 为 `f66997b` 只变化 C 交接及 RIR UI 对公共 helper 的调用。两次工程经 XcodeGen 重生后均与合并前相同，业务源码、诊断和工作流不变；同步本身不声称修复健康失败。新增 RIR UI 调用包含在本轮 11 项回归中，不因祖先/文档同步重复本地全部 299 项。
 - 正式 main 合并 `f81651b` 的源码及生成工程与 `5aca4aa` 完全相同；仅对实际历史复制冲突运行现有回归，1/1 通过，未重复全部 299 项本地测试。精确 tree、运行链接及产物见交接。
 - E `52fbb321` 的真实 B 日桶边界已通过 F 的 9 项联合单元和真实基础报告→依据→只读历史 UI；补充 UI 已验证实际保存的 70 kg 与手动来源。旧失败产物及后续替代证据保留在交接文档。
 - 代理已运行 65 项 Node 测试和 synthetic-offline demo，没有真实 DeepSeek 请求。原创 3D 资产许可已记录；D 独立组件与 F 实际页证据分别保留。
