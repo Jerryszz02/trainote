@@ -2,11 +2,16 @@ import XCTest
 
 final class TrendAdoptionUITests: XCTestCase {
   private var app: XCUIApplication!
+  private let appLocale = Locale(identifier: "zh_Hans_CN")
 
   override func setUpWithError() throws {
     continueAfterFailure = false
     app = XCUIApplication()
-    app.launchArguments = ["-ui-testing", "-ui-testing-legacy-goal"]
+    app.launchArguments = [
+      "-ui-testing", "-ui-testing-legacy-goal",
+      "-AppleLanguages", "(zh-Hans)", "-AppleLocale", appLocale.identifier,
+    ]
+    app.launchEnvironment["TZ"] = TimeZone.current.identifier
     app.launch()
   }
 
@@ -64,6 +69,7 @@ final class TrendAdoptionUITests: XCTestCase {
     XCTAssertTrue(undo.isHittable, "有旧目标时应提供撤销入口")
     capture("已采用建议与可撤销历史")
 
+    let undoRequestedAt = Date()
     undo.tap()
     let restored = targetRow(prefix: "当前", calories: 2000)
     reveal(restored)
@@ -80,8 +86,15 @@ final class TrendAdoptionUITests: XCTestCase {
     ).firstMatch
     reveal(review)
     XCTAssertTrue(review.exists, "撤销后应显示下次复核日期")
-    let expectedReview = Calendar.current.date(byAdding: .day, value: 7, to: Date())!
-      .formatted(date: .abbreviated, time: .omitted)
+    // The app's development language is Chinese; the CI test runner's is English.
+    // Compare the real seven-day date using the app's explicit locale and local time zone.
+    var calendar = Calendar(identifier: .gregorian)
+    calendar.timeZone = .current
+    let expectedReview = calendar.date(byAdding: .day, value: 7, to: undoRequestedAt)!
+      .formatted(
+        Date.FormatStyle(
+          date: .abbreviated, time: .omitted, locale: appLocale,
+          calendar: calendar, timeZone: calendar.timeZone))
     XCTAssertTrue(
       app.descendants(matching: .any).matching(
         NSPredicate(format: "label CONTAINS %@", expectedReview)

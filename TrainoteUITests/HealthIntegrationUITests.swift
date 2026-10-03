@@ -75,14 +75,11 @@ final class HealthIntegrationUITests: XCTestCase {
     disconnect.tap()
     let confirmation = app.buttons["断开并删除"]
     XCTAssertTrue(confirmation.waitForExistence(timeout: 3))
-    confirmation.tap()
+    XCTAssertTrue(confirmation.isHittable)
+    // CI dismissed this popover after a 50 ms tap without producing an operation result.
+    // Touch it once, then require the success message; never replay a deletion on timeout.
+    confirmation.press(forDuration: 0.15)
     XCTAssertTrue(confirmation.waitForNonExistence(timeout: 3))
-    let finished = XCTNSPredicateExpectation(
-      predicate: NSPredicate { _, _ in
-        self.app.alerts["操作未完成"].exists || (disconnect.exists && disconnect.isEnabled)
-      }, object: nil)
-    XCTAssertEqual(XCTWaiter.wait(for: [finished], timeout: 10), .completed)
-    XCTAssertFalse(app.alerts["操作未完成"].exists, "健康断开与删除未成功")
 
     // The result is a dynamic Form row directly below help. Locate this stable neighbor first;
     // searching for an unmaterialized row by repeatedly swiping can scroll past it entirely.
@@ -98,7 +95,9 @@ final class HealthIntegrationUITests: XCTestCase {
       predicate: NSPredicate { _, _ in
         status.exists || self.app.alerts["操作未完成"].exists
       }, object: nil)
-    XCTAssertEqual(XCTWaiter.wait(for: [result], timeout: 10), .completed)
+    XCTAssertEqual(
+      XCTWaiter.wait(for: [result], timeout: 10), .completed,
+      "确认后应出现操作结果，按钮重新可点不代表成功。\n\(app.debugDescription)")
     XCTAssertFalse(app.alerts["操作未完成"].exists, "健康断开与删除未成功")
     reveal(status)
     XCTAssertTrue(status.isHittable)
@@ -165,7 +164,7 @@ final class HealthIntegrationUITests: XCTestCase {
     let feeling = app.buttons["recovery.checkIn.feeling"]
     XCTAssertTrue(feeling.waitForExistence(timeout: 3))
     waitUntilHittable(feeling)
-    feeling.tap()
+    feeling.press(forDuration: 0.15)
     let tired = app.buttons["疲惫"]
     XCTAssertTrue(tired.waitForExistence(timeout: 3), "整体感觉选项未打开")
     waitUntilHittable(tired)
@@ -182,7 +181,7 @@ final class HealthIntegrationUITests: XCTestCase {
     XCTAssertTrue(app.navigationBars["十秒体感"].waitForExistence(timeout: 3))
     waitUntilHittable(feeling)
     XCTAssertTrue(feeling.label.contains("疲惫"))
-    feeling.tap()
+    feeling.press(forDuration: 0.15)
     let good = app.buttons["好"]
     XCTAssertTrue(good.waitForExistence(timeout: 3), "整体感觉选项未打开")
     waitUntilHittable(good)
@@ -196,7 +195,7 @@ final class HealthIntegrationUITests: XCTestCase {
     XCTAssertTrue(app.navigationBars["十秒体感"].waitForExistence(timeout: 3))
     waitUntilHittable(feeling)
     XCTAssertTrue(feeling.label.contains("疲惫"))
-    feeling.tap()
+    feeling.press(forDuration: 0.15)
     let unanswered = app.buttons["未回答"]
     XCTAssertTrue(unanswered.waitForExistence(timeout: 3), "整体感觉选项未打开")
     waitUntilHittable(unanswered)
