@@ -1,7 +1,7 @@
 # Health integration (task F)
 
 2026-10-03：B/C/E 真实生产装配已进入 PR #9，分支 `agent/health-integration`，工作树 `392a/trainote`。
-本任务交付可审阅 PR，由主协调统一审阅和合并。包含 E 日统计窗口、A 持久撤回及真实报告服务重启回归的固定代码 `405d2f4` 已通过全部 268 项单元与 31 项 UI，零失败、零跳过；随后 B 的显示取整补丁及新增 +240 UI 断言也已定向通过。最新提交的 CI 以 [PR #9 检查](https://github.com/Jerryszz02/trainote/pull/9/checks) 为准；真机、科学有效性和发布验收仍未完成。
+本任务交付可审阅 PR，由主协调统一审阅和合并。A 的 PR #4 已于 09:21（Asia/Shanghai）合入正式 main；F 普通合并准确 main `b24cd108222134d3cd3ba1d4169031cebc6226b3` 为 `f81651bf10951952725e12a3dae53b1bfac5d300`，合并 tree 与 `5aca4aa` 完全相同。包含 E 日统计窗口、A 持久撤回及真实报告服务重启回归的历史固定代码 `405d2f4` 曾完整通过 268 单元和 31 UI；后续 UI 修复另有定向证据。最新提交的 CI 以 [PR #9 检查](https://github.com/Jerryszz02/trainote/pull/9/checks) 为准，不能借用旧 head 的通过结果；真机、科学有效性和发布验收仍未完成。
 
 ## 固定依赖与工程
 
@@ -19,9 +19,10 @@
 | E 日桶边界 | `52fbb32110874f54d62d1c017f000b18149a4da0` | 保留真实 B 本地事实/依赖，仅 wire 投影已观测窗口，拒绝未来原始值 |
 | E 重启撤回回归 | `415db319170247189bc9b8a9d270693ab38f33f5` | 真实 AIReportService 配合 fake transport，覆盖主授权文件写入失败、远端删除成功后的重启 |
 | D 生命周期 | `a363195d480d1412d496336b674efc7c09dafaa8` | 普通合入 `e794a3c` 的 SceneKit teardown 修复 |
+| 正式 main / A PR #4 | `b24cd108222134d3cd3ba1d4169031cebc6226b3`，普通合入 `f81651bf10951952725e12a3dae53b1bfac5d300` | A head `4ebdd3fe1a12b7cb4e5b1073aa36158a9949acad` 经 CI 后 squash 合并；保留 F 完整装配、历史复制语义、公共 helper `18793f4`、UI 修复 `d0fd48b` / `5aca4aa` 和 45 分钟工作流 |
 
 `.pbxproj` 仅使用本树 XcodeGen 2.46.0 完整运行时从 `project.yml` 机械生成，工程登记单独提交；schema、entitlements 未改。主协调在确认旧 CI 30 分钟被取消后，授权仅把 `.github/workflows/ios.yml` 的作业时限改为 45 分钟，独立提交 `b3b2a1b`，测试/审计/证据上传步骤未减少。
-PR base 保持 `agent/health-foundation-integration`，由主协调处理后续合并。
+2026-10-03 10:24（Asia/Shanghai）交付快照：PR #9 的 base 已改为 `main`。`5aca4aa` 的 CI 完整结束并保留失败证据；main 合并、两项实际 UI 修复仍只在本地；其余两项健康控件失败按主协调要求补充最小诊断，固定诊断提交经审阅后再推送新 head。B 的 PR #6 已于 09:54 squash 为 main `c4e805dc718242f04d6889005fa519fb7f79ae91`，C/E 尚未正式合入。F 等待主协调指定最终 main SHA 一次同步，由主协调统一审阅和合并。
 
 ## 页面与数据入口
 
@@ -56,7 +57,11 @@ PR base 保持 `agent/health-foundation-integration`，由主协调处理后续�
 
 E `ReportFactSelection.wireWindow` 原先拒绝真实 B 当日 `weight.smoothed` 等日桶，导致本地报告失败。`52fbb321` 已普通合入 `27d7e17`，工程登记为 `f0e6346`；B 本地事实和依赖完整保留，wire 只投影已观测区间，未来原始健康数据仍拒绝。原 5 项 F 报告组合测试和 4 项 E 日期/DST 边界测试全部通过，真实基础报告→查看依据→只读历史 UI 也通过。
 
-公共输入 helper 修复 `7dd8390` 仅改原测试文件：等待可点击状态与键盘退场，重新呈现后有界获取焦点，并把输入框滚到键盘工具栏上方后全选；保留严格读回和业务断言。双次搜索、固定餐、手动目标及分量→编辑→最近记录→周回顾均已定向通过。主协调另已复现 LocalConsentStore 写盘失败后重启读回旧 granted 的路径，由 A `149bbdb0` 统一修复，F 已普通合入 `7f84015` 并用 `35ec339` 登记测试。主状态写盘失败时已持久的日志仍覆盖旧授权；不在 F 建立第二套标记。
+公共输入 helper 由 F 单独维护。`7dd8390` 的焦点/键盘处理之后，`18793f4ca2f2e780273aed98649ba5fc8d3f713e` 将固定搜索框排除出表单行滚动，并在一次输入后等待精确读回，未降低业务断言。后续 `d0fd48b3ca51c7d3f302f39662c2aff006c89372` / `5aca4aa749273a5600534b903aa6914c187b8aa6` 只修改三份 UI 测试：等待训练导航就绪、使用单次 0.15 秒触按并核对实际结果，以及固定趋势日期断言的中文 locale、同一本地时区和点击撤销前采样的参考时间。这些早期触按调整的根因当时未证明，不能将本地通过视为 CI 闭合。后续证据确认当前训练失败时页面实际已切换，是复合 AX 查询被外层等待中断；`9c53b39b6a437d99bacf8ae2a48060ff1c0ab460` 改为等待唯一目的页控件，再分别断言原有导航状态。固定餐输入前的无滚动重复聚焦打开自动填充弹层；`e9b2d5be41c32becf8275dc1d7f163845c29e407` 仅在实际滚动后重新聚焦，保留一次输入和精确读回。断开确认和体感菜单仍缺少 App 动作阶段证据，未宣称修复。
+
+诊断提交 `82580eea264b7d18f64cc8f3719a5d89d0b62343` 单独记录缺失的 App 动作阶段，仅在 DEBUG 且既有 `-ui-testing` 开关启用时输出事件名、单调时间和布尔值；不记录健康内容、不持久化日志、不增加业务状态或触按。断开确认记录 closure 入口、执行开始/成功/失败/结束；体感记录页面出现/退出与选择变化。两条原 UI 用例失败时各只补一份画面、完整控件树和原生菜单查询结果。该提交用于取得 CI iOS 26.4.1 的缺失证据，不是两项健康失败的修复；主协调审阅前不推送。
+
+主协调复现的 LocalConsentStore 写盘失败后重启读回旧 granted 路径由 A `149bbdb0` 统一修复，F 已普通合入 `7f84015` 并用 `35ec339` 登记测试。主状态写盘失败时已持久的日志仍覆盖旧授权；不在 F 建立第二套标记。
 
 E `415db319` 已普通合入 `405d2f4`，没有修改生产报告逻辑。测试重新打开实际存储、缓存和服务，在 transport 待撤回标记已清除时仍拒绝 AI 授权，并确认远端请求与健康 fresh 请求均为零、独立健康授权保留。该合并仅新增这项测试；重新生成工程无差异。
 
@@ -64,10 +69,16 @@ E `415db319` 已普通合入 `405d2f4`，没有修改生产报告逻辑。测试
 
 环境：Xcode 26.6 / iOS 26.5；专用模拟器 `B4FF3837-B382-4AD5-A24A-FEAC05A0ECAB`，DerivedData `/tmp/trainote-health-integration-derived`。其他工作树、服务和模拟器未操作。
 
-- **完整运行**：`405d2f4` 的全部 268 单元、31 UI 通过，07:24 完成；`/tmp/trainote-health-integration-full-final.xcresult` 汇总为 299 passed、0 failed、0 skipped。命令没有 `only-testing` 或排除项，完整覆盖 E 真实服务重启撤回、建议采用、真实报告、D 场景拆卸、体感、目标历史、原训练/饮食/备份及趋势采用/撤销。
+- **正式 main 同步**：`f81651b` 的第二父提交是准确 `b24cd108222134d3cd3ba1d4169031cebc6226b3`。App 装配和历史复制冲突保留已有 F 实现，工程重新经 XcodeGen 生成后无差异；其 tree 与 `5aca4aa` 同为 `bb5d9d35253513966c441f77ccfa1e393bffc2de`。实际冲突定向回归 `RecoveryWorkflowTests.testNewWorkoutDefaultsWorkingHistoryPreservesRoleAndRIRAndRepeatClearsThem` 于 09:26 通过，1 项、0 失败，证据 `/tmp/trainote-f-main-b24-history-conflict.xcresult`。源码完全相同，因此未重复本地整套 299 项。
+- **后续 UI 修复**：编辑前使用英文 runner / US region 复现趋势日期断言的中文与英文格式差异，3 项 UI 中 2 通过、1 失败，证据 `/tmp/trainote-f-ci-187-locale-repro.xcresult`；三个触按失败未本地复现。`d0fd48b` / `5aca4aa` 的四条原 CI 失败路径随后 4/4 通过（221.548 秒）；最后把日期参考点固定为点击撤销前，趋势采用/撤销另 1/1 通过（108.100 秒）。对应产物 `/tmp/trainote-f-ci-187-four-path-fix.xcresult`、`/tmp/trainote-f-ci-187-trend-final.xcresult`。主协调确认接受树 `f0da9ab3f775246b3e997fce1deb5658b56444a9` 与 `5aca4aa` tree 相同；该代码审阅不等同 CI 通过。
+- **历史 CI 失败**：`18793f4` 的 [iOS run 37079917932](https://github.com/Jerryszz02/trainote/actions/runs/37079917932) 于 08:36 结束，268 单元通过，31 UI 中 4 项失败，非超时。截图与日志显示三次触按未产生预期结果及一次日期格式差异；保留原失败证据，不因本地通过将该运行写成成功。
+- **当前失败 CI**：`5aca4aa` 的 [iOS run 37084609179](https://github.com/Jerryszz02/trainote/actions/runs/37084609179) 于 09:38:53 结束，268 单元通过，31 UI 中 4 失败，未超时；趋势日期路径已通过。同 head 的 [服务端 run 37084609091](https://github.com/Jerryszz02/trainote/actions/runs/37084609091) 已通过。失败为训练标签就绪等待、固定餐名称精确读回、断开确认后的结果等待、体感菜单出现等待。第一项已确认训练页和标签正确，AX 查询分别耗时 5.765 秒和 2.870 秒，第三项查询被外层 10 秒等待中断；固定餐视频显示第二次聚焦出现自动填充弹层。两项健康失败中，断开弹层消失但没有结果，体感触按进入 UIKit 菜单处理但没有持续可见的选项；现有证据不能证明断开动作是否执行或菜单为何关闭。原日志 `/tmp/trainote-f-ios-ci-37084609179.log`、完整 xcresult `/tmp/trainote-f-ci-37084609179-evidence` 已保留；CI 为 iOS 26.4.1，本地仅有 iOS 26.5。修复后新 head 仍须独立通过 CI。
+- **本轮两个实际修复**：`e9b2d5b` 的固定餐与分量/历史路径 2/2 通过（191.408 秒），证据 `/tmp/trainote-f-ci-5aca-helper-focus.xcresult`。专用模拟器冷启动后，`9c53b39` 的训练路径与两条未改健康路径 3/3 通过（114.188 秒），证据 `/tmp/trainote-f-ci-5aca-cold-transitions.xcresult`；健康路径的本地成功不闭合 CI 失败。主协调已独立审阅两笔固定 diff 和原始证据并接受，无需因相同源码再跑全部 299 项。
+- **独立诊断验证**：`82580ee` 的两条原健康路径 2/2 通过（62.318 秒），产物 `/tmp/trainote-f-health-diagnostics-normal.xcresult`，13 条 App 事件摘录 `/tmp/trainote-f-health-diagnostics-normal-trace.txt`。一次临时 `XCTExpectFailure` 探针验证了单次三份可读附件，产物 `/tmp/trainote-f-health-diagnostics-attachment-probe.xcresult`；探针已移除，不计作业务回归或 CI 复现。Release Simulator 构建通过，Debug 中的 10 个诊断标记在 Release 二进制均不存在，记录 `/tmp/trainote-f-health-diagnostics-release-exclusion.json`。三个修改 Swift 文件严格 lint 通过；SettingsView 与父提交有相同的 8 项既存格式问题，没有新增 lint 项；diff 空白检查通过。
+- **历史完整运行**：`405d2f4` 的全部 268 单元、31 UI 通过，07:24 完成；`/tmp/trainote-health-integration-full-final.xcresult` 汇总为 299 passed、0 failed、0 skipped。命令没有 `only-testing` 或排除项，完整覆盖 E 真实服务重启撤回、建议采用、真实报告、D 场景拆卸、体感、目标历史、原训练/饮食/备份及趋势采用/撤销。
 - **后续显示修复**：主协调从截图发现 2240 与 2000 的目标显示配上 +242 原始差值；B `94b502f` 统一显示取整后，现有 `TrendAdoptionUITests` 增加精确“热量调整 +240 kcal”可见断言，同一真实采用/撤销路径再次通过。证据 `/tmp/trainote-health-integration-displayed-delta.xcresult`；内部计算与保存值未改，未无故重复整套本地回归。
 - **主协调独立验收**：在与 `13619fc` tree 完全相同的接受树上，三个旧 CI 转场路径和趋势采用/撤销共 4/4 UI 通过，产物 `/tmp/trainote-health-acceptance-final-ui-13619fc.xcresult`；E `415db319` 真实服务撤回回归另独立 1/1 通过。该证据与 F 自身完整运行分开记录。
-- 当前提交的 CI 结果见 PR 检查；服务端 65 项测试和 synthetic-offline demo、规划链接审计、1,324 条动作记录方式审计、变更 Swift lint 与 diff 空白检查已通过。下列保留历史失败及修复定位，不将分批结果相加替代完整运行。
+- 当前提交的 CI 结果见 PR 检查；服务端历史 65 项测试和 synthetic-offline demo、规划链接审计、1,324 条动作记录方式审计已通过；本轮格式与 diff 检查范围见上述诊断验证。下列保留历史失败及修复定位，不将分批结果相加替代完整运行。
 - 初始骨架 94 单元、原子目标接入后 113 单元、C 真实装配后 145 单元分别通过；这些是历史阶段结果，不当作最终 head 全量回归。
 - 公共 UI 输入修复 `3a093ed7c3b4f421fdb824d88e0d592c577063ff` 仅改两个原有测试文件。中心点击、等待键盘、全选替换、数值零/占位语义和回读验证，保留业务断言。取消编辑后重新打开原训练核对名称。四条原失败路径全部通过：`/tmp/trainote-health-integration-ui-input-final.xcresult`。
 - 采用修复 `491a991` 的 8 项真实仓库/C 集成测试全部通过，含同 ID 修改体感/睡眠/轻微酸痛拒绝、仅前进 2 秒成功。`/tmp/trainote-health-integration-report-boundary.xcresult` 同时记录了 4 项报告边界失败，不是整次成功。
