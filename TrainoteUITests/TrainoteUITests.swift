@@ -211,6 +211,7 @@ enum UITestTextInput {
     // Search bars stay pinned beside the keyboard; scrolling their results cannot move the field.
     // Only form rows need to move above a keyboard accessory before text selection.
     if field.elementType != .searchField {
+      var didScroll = false
       for _ in 0..<4 {
         let safeBottom = app.keyboards.firstMatch.frame.minY - 80
         if field.frame.maxY < safeBottom { break }
@@ -218,8 +219,13 @@ enum UITestTextInput {
         let start = origin.withOffset(CGVector(dx: app.frame.width * 0.15, dy: safeBottom - 20))
         let end = origin.withOffset(CGVector(dx: app.frame.width * 0.15, dy: safeBottom - 220))
         start.press(forDuration: 0.05, thenDragTo: end)
+        didScroll = true
       }
-      field.tap()
+      // A second tap on an already focused empty field opens AutoFill's editing menu.
+      // Reacquire focus only when scrolling actually moved this form row.
+      if didScroll {
+        field.tap()
+      }
     }
 
     let current = field.value as? String ?? ""
