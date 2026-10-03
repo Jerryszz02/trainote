@@ -1,6 +1,18 @@
 import Foundation
 import Observation
 
+#if DEBUG
+  /// Temporary, local UI-test diagnostics; never records health values or persists data.
+  enum HealthUITestTrace {
+    static func record(_ event: String, flags: [(String, Bool)] = []) {
+      guard ProcessInfo.processInfo.arguments.contains("-ui-testing") else { return }
+      let time = String(format: "%.6f", ProcessInfo.processInfo.systemUptime)
+      let phases = flags.map { "\($0.0)=\($0.1)" }.joined(separator: " ")
+      print("[health-ui] t=\(time) event=\(event) \(phases)")
+    }
+  }
+#endif
+
 /// E supplies this adapter when its verified implementation is installed.
 /// Construction/availability inspection must never register consent or send health data.
 @MainActor
@@ -93,6 +105,18 @@ final class HealthFeatureAccess {
   }
 
   func disconnectHealth() async {
+    #if DEBUG
+      HealthUITestTrace.record(
+        "disconnect.begin", flags: [("busy", isBusy), ("serviceAvailable", health != nil)])
+      defer {
+        HealthUITestTrace.record(
+          "disconnect.end",
+          flags: [
+            ("busy", isBusy), ("statusSet", statusMessage != nil),
+            ("errorSet", errorMessage != nil), ("retry", healthDeletionNeedsRetry),
+          ])
+      }
+    #endif
     guard !isBusy else { return }
     guard let health else {
       errorMessage = "健康数据服务不可用，尚未完成删除。请重新启动后重试。"
@@ -107,9 +131,15 @@ final class HealthFeatureAccess {
       try await health.disconnectAndDelete()
       healthDeletionNeedsRetry = false
       statusMessage = "已断开并删除健康导入数据及相关报告。手动记录已保留。"
+      #if DEBUG
+        HealthUITestTrace.record("disconnect.success")
+      #endif
     } catch {
       healthDeletionNeedsRetry = true
       errorMessage = "已停止本次同步，但部分删除或保存未完成。请重试“断开并删除”，不要把本次操作视为删除成功。"
+      #if DEBUG
+        HealthUITestTrace.record("disconnect.failure")
+      #endif
     }
   }
 

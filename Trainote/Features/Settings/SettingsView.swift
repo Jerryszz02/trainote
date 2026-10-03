@@ -112,7 +112,12 @@ struct SettingsView: View {
         Text(importMessage ?? "")
       }
       .confirmationDialog("断开并删除健康导入数据？", isPresented: $showHealthDeletion, titleVisibility: .visible) {
-        Button("断开并删除", role: .destructive) { Task { await healthAccess.disconnectHealth() } }
+        Button("断开并删除", role: .destructive) {
+          #if DEBUG
+            HealthUITestTrace.record("disconnect.confirmationAction")
+          #endif
+          Task { await healthAccess.disconnectHealth() }
+        }
         Button("取消", role: .cancel) {}
       } message: {
         Text("停止同步并清除导入缓存、锚点和相关报告；保留手动记录，不改动 Apple 健康中的原始数据。")

@@ -53,6 +53,13 @@ struct RecoveryCheckInView: View {
         }
       }
     }
+    #if DEBUG
+      .onAppear { HealthUITestTrace.record("checkIn.appear") }
+      .onDisappear { HealthUITestTrace.record("checkIn.disappear") }
+      .onChange(of: draft.feeling) { _, feeling in
+        HealthUITestTrace.record("checkIn.feelingChanged", flags: [("answered", feeling != nil)])
+      }
+    #endif
   }
   private var visibleMuscles: [MuscleID] {
     showAllMuscles

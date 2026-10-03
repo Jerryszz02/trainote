@@ -2,6 +2,33 @@ import XCTest
 
 final class HealthIntegrationUITests: XCTestCase {
   private var app: XCUIApplication!
+  private var capturedFailureDiagnostics = false
+
+  override func record(_ issue: XCTIssue) {
+    let isHealthControlTest =
+      name.contains("testDisconnectConfirmationAndOfflineHelp")
+      || name.contains("testTodayCheckInUpdatesRecoveryAndSkipPreservesSavedFeeling")
+    if isHealthControlTest && !capturedFailureDiagnostics, let app {
+      capturedFailureDiagnostics = true
+      capture("健康控件失败时画面")
+      let hierarchy = XCTAttachment(string: app.debugDescription)
+      hierarchy.name = "健康控件失败时完整控件树"
+      hierarchy.lifetime = .keepAlways
+      add(hierarchy)
+      let nativeMenu = XCTAttachment(
+        string: """
+          menus=\(app.menus.count)
+          tiredInMenus=\(app.menus.buttons.matching(identifier: "疲惫").count)
+          tiredButtons=\(app.buttons.matching(identifier: "疲惫").count)
+          operationError=\(app.alerts["操作未完成"].exists)
+          """)
+      nativeMenu.name = "健康控件失败时原生菜单查询"
+      nativeMenu.lifetime = .keepAlways
+      add(nativeMenu)
+    }
+    super.record(issue)
+  }
+
   override func setUpWithError() throws {
     continueAfterFailure = false
     app = XCUIApplication()
@@ -97,7 +124,7 @@ final class HealthIntegrationUITests: XCTestCase {
       }, object: nil)
     XCTAssertEqual(
       XCTWaiter.wait(for: [result], timeout: 10), .completed,
-      "确认后应出现操作结果，按钮重新可点不代表成功。\n\(app.debugDescription)")
+      "确认后应出现操作结果，按钮重新可点不代表成功。")
     XCTAssertFalse(app.alerts["操作未完成"].exists, "健康断开与删除未成功")
     reveal(status)
     XCTAssertTrue(status.isHittable)
