@@ -1,6 +1,6 @@
 # Trend module handoff (B)
 
-Built from the approved A/D base `967fa5351838240b2bb6ca0c5cb8e777530e54c4`, then ordinarily merged the approved fixed foundation `28500cfaba534d2d09a1415f8c6d1cb1d904a10e` and its precise-backup-date patch `59766ea61bb063c1f5898f5ac31ab2b3dc91842f`. P values in `TrendRules` are engineering defaults, not validated physiological accuracy.
+Based on formal main `b24cd108222134d3cd3ba1d4169031cebc6226b3`, ordinarily merged into the existing B branch. Shared contracts, durable withdrawal, fresh-report snapshots and the complete UI input helper retain main's approved versions; XcodeGen regenerates the combined project. P values in `TrendRules` are engineering defaults, not validated physiological accuracy.
 
 ## Consumer entry points
 
@@ -36,7 +36,7 @@ The first version uses the approved default protein/fat distribution and support
 - Local outlier screen: at least five nearby representatives within ±10 days, threshold `max(3 kg, 6 × MAD)`. Raw outliers remain visible with `requiresReview`; explicit selection can override the statistical screen. Calculator range 25–350 kg, BMI 18.5–<30, age 18–78 and target-rate bounds are conservative P policy choices awaiting professional review. Other values remain recordable while formulas hold.
 - Weight coverage: at least 14 actual days' span, 8 observed days, 3 in each last completed week. Diet: at least 12 explicit confirmations in the last 14 completed days. Food edits invalidate confirmation. A no-log day's zero intake requires explicit UI confirmation.
 - Compare mean complete-day intake with the mean target for those same historical days. Unknown target history or >15% difference holds. Adjust by the sign of target rate minus observed rate, at most `min(100 kcal, 5%)`, no more than once per seven calendar days. The floor is `max(current REE, configuration-cycle initial prior × 80%)`; later weight changes never replace that initial prior.
-- Watch calories are not added back. Average observed intake is an intake reference, never measured TDEE. Full target precision is retained; display calories to 10 kcal/macros to 1 g. Protein is fixed within each proposal, then fat/remaining carbohydrate are derived. Negative carbohydrate budget holds.
+- Watch calories are not added back. Average observed intake is an intake reference, never measured TDEE. Full target precision is retained; display calories to 10 kcal/macros to 1 g. The displayed calorie adjustment subtracts those same rounded target values. Protein is fixed within each proposal, then fat/remaining carbohydrate are derived. Negative carbohydrate budget holds.
 - Proposal IDs hash normalized evidence, local day, version, profile and history, excluding clock/read bookkeeping. Reopening unchanged facts produces the same ID; the outer result still carries A's original fingerprint for report consistency.
 - Weight/energy facts retain manual-record or HealthKit-sample dependencies. New reports call A's fresh snapshot builder with this calculator; never reuse `TrendViewModel.result` as a new-report snapshot. A real-builder regression confirms removed health samples and their derived energy facts disappear even while the old cache remains.
 
@@ -51,6 +51,6 @@ Fixture clock: `2026-10-03T12:00:00Z`, UTC. Synthetic adult: 70 kg, 175 cm, age 
 
 ## Verification and remaining integration
 
-Dedicated Simulator: `A0F6045D-2E01-42C0-88A1-DB89CB85FF36` (Trainote Trend B, iPhone 17/iOS 26.5). DerivedData: `/tmp/trainote-trend-b-derived`; Xcode 26.6. XcodeGen 2.46.0 registration is committed separately; project.yml and CI thresholds are unchanged.
+Dedicated Simulator: `A0F6045D-2E01-42C0-88A1-DB89CB85FF36` (Trainote Trend B, iPhone 17/iOS 26.5). DerivedData: `/tmp/trainote-trend-b-derived`; Xcode 26.6. The project is registered with XcodeGen 2.46.0; project.yml and CI thresholds are unchanged.
 
 Exact final checks are in the PR. Tests cover pure calculations, real repository adoption/undo/automatic cadence, profile cycles, stale state, actual read-only save rollback, post-commit read failure, fresh report rebuilding and empty/populated/accessibility-size render attachments. Hosting/render checks do not replace F's full navigation/interaction acceptance. The precise-date backup correction is included. Main coordinates latest-head CI, final integration and any physical-device/scientific validation. No module-specific shared DTO/transaction blocker remains.
