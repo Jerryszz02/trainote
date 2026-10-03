@@ -29,7 +29,8 @@ enum RoutineFactory {
             orderIndex: index,
             weightKilograms: max(item.defaultWeightKilograms, 0),
             repetitions: max(item.defaultRepetitions, 1),
-            durationSeconds: max(item.defaultDurationSeconds, 0)
+            durationSeconds: max(item.defaultDurationSeconds, 0),
+            setRole: .working
           )
           strengthSet.exercise = exercise
           exercise.strengthSets.append(strengthSet)
@@ -62,7 +63,7 @@ enum RoutineFactory {
       trackingMode: mode
     )
     if mode.usesSets {
-      let strengthSet = StrengthSet(orderIndex: 0)
+      let strengthSet = StrengthSet(orderIndex: 0, setRole: .working)
       strengthSet.exercise = exercise
       exercise.strengthSets.append(strengthSet)
     } else {

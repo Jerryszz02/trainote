@@ -139,6 +139,8 @@ struct ActiveWorkoutView: View {
         value.append(String(describing: set.repetitions))
         value.append(String(describing: set.durationSeconds))
         value.append(String(describing: set.isCompleted))
+        value.append(String(describing: set.rir))
+        value.append(set.setRoleRaw)
       }
       for cardio in exercise.cardioEntries {
         value.append(String(describing: cardio.id))
@@ -329,14 +331,14 @@ private struct WorkoutExerciseEditor: View {
       Button("切换") { applyMode() }
       Button("取消", role: .cancel) { pendingMode = nil }
     } message: {
-      Text("会保留各方式已填写的数值，并重置组的完成状态。请确认当前方式的实际完成数据。")
+      Text("会保留各方式已填写的数值，并重置组的完成状态与 RIR。请确认当前方式的实际完成数据。")
     }
     .confirmationDialog("用上次数据替换当前参数？", isPresented: $confirmingPrevious, titleVisibility: .visible)
     {
       Button("沿用并重置完成状态") { copyPrevious() }
       Button("取消", role: .cancel) {}
     } message: {
-      Text("复制后的组需要重新标记完成。")
+      Text("复制后的组需要重新标记完成，RIR 可按本次感受填写。")
     }
     .confirmationDialog("移除这个动作和已记录的组？", isPresented: $confirmingDelete, titleVisibility: .visible)
     {
@@ -349,7 +351,8 @@ private struct WorkoutExerciseEditor: View {
     let last = exercise.sortedStrengthSets.last
     let set = StrengthSet(
       orderIndex: exercise.strengthSets.count, weightKilograms: last?.weightKilograms ?? 0,
-      repetitions: last?.repetitions ?? 8, durationSeconds: last?.durationSeconds ?? 30)
+      repetitions: last?.repetitions ?? 8, durationSeconds: last?.durationSeconds ?? 30,
+      setRole: .working)
     set.exercise = exercise
     exercise.strengthSets.append(set)
   }
@@ -357,7 +360,10 @@ private struct WorkoutExerciseEditor: View {
   private func applyMode() {
     guard let mode = pendingMode else { return }
     exercise.trackingMode = mode
-    for set in exercise.strengthSets { set.isCompleted = false }
+    for set in exercise.strengthSets {
+      set.isCompleted = false
+      set.rir = nil
+    }
     if mode.usesSets && exercise.strengthSets.isEmpty { addSet() }
     if mode == .cardio && exercise.cardioEntries.isEmpty {
       let cardio = CardioEntry()
@@ -376,7 +382,8 @@ private struct WorkoutExerciseEditor: View {
       }.enumerated().map { index, old in
         let set = StrengthSet(
           orderIndex: index, weightKilograms: old.weightKilograms, repetitions: old.repetitions,
-          durationSeconds: old.durationSeconds)
+          durationSeconds: old.durationSeconds,
+          setRole: old.setRole == .unknown ? .working : old.setRole)
         set.exercise = exercise
         return set
       }
@@ -413,6 +420,25 @@ private struct StrengthSetRow: View {
         Spacer()
         Button("删除组", systemImage: "trash", role: .destructive, action: onDelete)
           .labelStyle(.iconOnly).buttonStyle(.borderless)
+      }
+      Picker("组类型", selection: Binding(
+        get: { strengthSet.setRole }, set: { strengthSet.setRole = $0 }
+      )) {
+        Text("工作组").tag(SetRole.working)
+        Text("热身组").tag(SetRole.warmup)
+        if strengthSet.setRole == .unknown { Text("历史未区分").tag(SetRole.unknown) }
+      }
+      .accessibilityIdentifier("strengthSet.role.\(strengthSet.id.uuidString)")
+      if mode == .strength || mode == .repetitions {
+        Picker("保留次数 RIR", selection: $strengthSet.rir) {
+          Text("未记录").tag(Int?.none)
+          ForEach(0...5, id: \.self) { value in
+            Text(value == 5 ? "5 次或以上" : "\(value) 次").tag(Optional(value))
+          }
+        }
+        .accessibilityIdentifier("strengthSet.rir.\(strengthSet.id.uuidString)")
+        Text("这组结束时，估计还能再完成几次。可跳过。")
+          .font(.caption).foregroundStyle(.secondary)
       }
       if mode == .strength {
         HStack {

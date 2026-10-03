@@ -24,6 +24,8 @@ final class TrainingUpgradeTests: XCTestCase {
     workout.exercises[0].strengthSets[0].isCompleted = true
     let second = RoutineFactory.workout(from: routine)
     XCTAssertFalse(second.exercises[0].strengthSets[0].isCompleted)
+    XCTAssertEqual(second.exercises[0].strengthSets[0].setRole, .working)
+    XCTAssertNil(second.exercises[0].strengthSets[0].rir)
   }
 
   func testDurationAndRepetitionSnapshotsKeepIndependentRows() {
