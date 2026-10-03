@@ -44,7 +44,23 @@ final class DailyUseUpgradeUITests: XCTestCase {
   }
 
   func testBodyweightAndDurationModesCanBeCompleted() {
-    app.tabBars.buttons["训练"].tap()
+    let training = app.tabBars.buttons["训练"]
+    let ready = XCTNSPredicateExpectation(
+      predicate: NSPredicate { _, _ in
+        self.app.buttons["today.startWorkout"].isHittable && training.isHittable
+      }, object: nil)
+    XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 15), .completed, "首页与训练标签应已就绪")
+    // The first CI tap was synthesized but left Today selected. Send one deliberate touch,
+    // then require the actual destination before starting the unchanged workout flow.
+    training.press(forDuration: 0.15)
+    let opened = XCTNSPredicateExpectation(
+      predicate: NSPredicate { _, _ in
+        training.isSelected && self.app.navigationBars["训练"].exists
+          && self.app.buttons["training.start"].isHittable
+      }, object: nil)
+    XCTAssertEqual(
+      XCTWaiter.wait(for: [opened], timeout: 10), .completed,
+      "训练标签应已选中，且开始训练入口可点击。\n\(app.debugDescription)")
     app.buttons["training.start"].tap()
     app.buttons["training.startBlank"].tap()
     app.buttons["workout.addExercise"].tap()
