@@ -1,0 +1,3444 @@
+{
+  "examples" : [
+    {
+      "asOf" : 1790985600000,
+      "day" : {
+        "end" : 1791072000000,
+        "start" : 1790985600000
+      },
+      "name" : "empty-midnight",
+      "sampleIDs" : [
+        "00000000-0000-0000-0000-000000004999"
+      ],
+      "timeZone" : "UTC",
+      "trend" : {
+        "calculationVersion" : "trend-p-v1",
+        "facts" : [
+          {
+            "dependencies" : [
+
+            ],
+            "id" : "trend.weight.smoothed.4ee900f53e674c274a16",
+            "metric" : "weight.smoothed",
+            "quality" : [
+              "missing"
+            ],
+            "sources" : [
+
+            ],
+            "unit" : "kilograms",
+            "window" : {
+              "end" : 1791072000000,
+              "start" : 1790985600000
+            }
+          },
+          {
+            "dependencies" : [
+
+            ],
+            "id" : "trend.weight.weeklyChange.d7650a8d9ec22812f524",
+            "metric" : "weight.weeklyChange",
+            "quality" : [
+              "insufficientHistory"
+            ],
+            "sources" : [
+
+            ],
+            "unit" : "kilogramsPerWeek",
+            "window" : {
+              "end" : 1790985600000,
+              "start" : 1789171200000
+            }
+          },
+          {
+            "dependencies" : [
+
+            ],
+            "id" : "trend.weight.weeklyChangePercent.4d1f03f4e1df06d59092",
+            "metric" : "weight.weeklyChangePercent",
+            "quality" : [
+              "insufficientHistory"
+            ],
+            "sources" : [
+
+            ],
+            "unit" : "percentPerWeek",
+            "window" : {
+              "end" : 1790985600000,
+              "start" : 1789171200000
+            }
+          },
+          {
+            "dependencies" : [
+
+            ],
+            "id" : "trend.diet.completeDays.a90b147cbbecaeef5020",
+            "metric" : "diet.completeDays",
+            "quality" : [
+              "partial"
+            ],
+            "sources" : [
+
+            ],
+            "unit" : "count",
+            "value" : 0,
+            "window" : {
+              "end" : 1790985600000,
+              "start" : 1789776000000
+            }
+          },
+          {
+            "dependencies" : [
+
+            ],
+            "id" : "trend.diet.calibratedIntakeReference.fdf5488b67a858ca1104",
+            "metric" : "diet.calibratedIntakeReference",
+            "quality" : [
+              "missing"
+            ],
+            "sources" : [
+
+            ],
+            "unit" : "kilocalories",
+            "window" : {
+              "end" : 1790985600000,
+              "start" : 1789776000000
+            }
+          }
+        ],
+        "holdReason" : "insufficientWeights",
+        "inputFingerprint" : "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "points" : [
+
+        ]
+      }
+    },
+    {
+      "asOf" : 1791028800000,
+      "day" : {
+        "end" : 1791072000000,
+        "start" : 1790985600000
+      },
+      "name" : "health-history",
+      "sampleIDs" : [
+        "00000000-0000-0000-0000-000000004000",
+        "00000000-0000-0000-0000-000000004001",
+        "00000000-0000-0000-0000-000000004002",
+        "00000000-0000-0000-0000-000000004003",
+        "00000000-0000-0000-0000-000000004004",
+        "00000000-0000-0000-0000-000000004005",
+        "00000000-0000-0000-0000-000000004006",
+        "00000000-0000-0000-0000-000000004007",
+        "00000000-0000-0000-0000-000000004008",
+        "00000000-0000-0000-0000-000000004009",
+        "00000000-0000-0000-0000-000000004010",
+        "00000000-0000-0000-0000-000000004011",
+        "00000000-0000-0000-0000-000000004012",
+        "00000000-0000-0000-0000-000000004013",
+        "00000000-0000-0000-0000-000000004014",
+        "00000000-0000-0000-0000-000000004015",
+        "00000000-0000-0000-0000-000000004016",
+        "00000000-0000-0000-0000-000000004017",
+        "00000000-0000-0000-0000-000000004018",
+        "00000000-0000-0000-0000-000000004019",
+        "00000000-0000-0000-0000-000000004020",
+        "00000000-0000-0000-0000-000000004021",
+        "00000000-0000-0000-0000-000000004022",
+        "00000000-0000-0000-0000-000000004023",
+        "00000000-0000-0000-0000-000000004024",
+        "00000000-0000-0000-0000-000000004025",
+        "00000000-0000-0000-0000-000000004026",
+        "00000000-0000-0000-0000-000000004027",
+        "00000000-0000-0000-0000-000000004999"
+      ],
+      "timeZone" : "UTC",
+      "trend" : {
+        "calculationVersion" : "trend-p-v1",
+        "facts" : [
+          {
+            "dependencies" : [
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004027",
+                "kind" : "healthSample"
+              }
+            ],
+            "id" : "trend.weight.representative.57e7894ebb3000fdffe5",
+            "metric" : "weight.representative",
+            "quality" : [
+
+            ],
+            "sources" : [
+              {
+                "identifier" : "org.example.synthetic-scale",
+                "kind" : "healthKit"
+              }
+            ],
+            "unit" : "kilograms",
+            "value" : 70,
+            "window" : {
+              "end" : 1788739200000,
+              "start" : 1788652800000
+            }
+          },
+          {
+            "dependencies" : [
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004026",
+                "kind" : "healthSample"
+              }
+            ],
+            "id" : "trend.weight.representative.9aab6658b5422298e68b",
+            "metric" : "weight.representative",
+            "quality" : [
+
+            ],
+            "sources" : [
+              {
+                "identifier" : "org.example.synthetic-scale",
+                "kind" : "healthKit"
+              }
+            ],
+            "unit" : "kilograms",
+            "value" : 70,
+            "window" : {
+              "end" : 1788825600000,
+              "start" : 1788739200000
+            }
+          },
+          {
+            "dependencies" : [
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004025",
+                "kind" : "healthSample"
+              }
+            ],
+            "id" : "trend.weight.representative.3dc71ba0a56c15b9d555",
+            "metric" : "weight.representative",
+            "quality" : [
+
+            ],
+            "sources" : [
+              {
+                "identifier" : "org.example.synthetic-scale",
+                "kind" : "healthKit"
+              }
+            ],
+            "unit" : "kilograms",
+            "value" : 70,
+            "window" : {
+              "end" : 1788912000000,
+              "start" : 1788825600000
+            }
+          },
+          {
+            "dependencies" : [
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004024",
+                "kind" : "healthSample"
+              }
+            ],
+            "id" : "trend.weight.representative.4029e2a1c4dd1551e04a",
+            "metric" : "weight.representative",
+            "quality" : [
+
+            ],
+            "sources" : [
+              {
+                "identifier" : "org.example.synthetic-scale",
+                "kind" : "healthKit"
+              }
+            ],
+            "unit" : "kilograms",
+            "value" : 70,
+            "window" : {
+              "end" : 1788998400000,
+              "start" : 1788912000000
+            }
+          },
+          {
+            "dependencies" : [
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004023",
+                "kind" : "healthSample"
+              }
+            ],
+            "id" : "trend.weight.representative.fdb61fcd3e7d0a4d41a1",
+            "metric" : "weight.representative",
+            "quality" : [
+
+            ],
+            "sources" : [
+              {
+                "identifier" : "org.example.synthetic-scale",
+                "kind" : "healthKit"
+              }
+            ],
+            "unit" : "kilograms",
+            "value" : 70,
+            "window" : {
+              "end" : 1789084800000,
+              "start" : 1788998400000
+            }
+          },
+          {
+            "dependencies" : [
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004022",
+                "kind" : "healthSample"
+              }
+            ],
+            "id" : "trend.weight.representative.ed0a96ff8f3ce5152cf5",
+            "metric" : "weight.representative",
+            "quality" : [
+
+            ],
+            "sources" : [
+              {
+                "identifier" : "org.example.synthetic-scale",
+                "kind" : "healthKit"
+              }
+            ],
+            "unit" : "kilograms",
+            "value" : 70,
+            "window" : {
+              "end" : 1789171200000,
+              "start" : 1789084800000
+            }
+          },
+          {
+            "dependencies" : [
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004021",
+                "kind" : "healthSample"
+              }
+            ],
+            "id" : "trend.weight.representative.acd5919f8d0877952c07",
+            "metric" : "weight.representative",
+            "quality" : [
+
+            ],
+            "sources" : [
+              {
+                "identifier" : "org.example.synthetic-scale",
+                "kind" : "healthKit"
+              }
+            ],
+            "unit" : "kilograms",
+            "value" : 70,
+            "window" : {
+              "end" : 1789257600000,
+              "start" : 1789171200000
+            }
+          },
+          {
+            "dependencies" : [
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004020",
+                "kind" : "healthSample"
+              }
+            ],
+            "id" : "trend.weight.representative.abcfd0670bf9ce6767cb",
+            "metric" : "weight.representative",
+            "quality" : [
+
+            ],
+            "sources" : [
+              {
+                "identifier" : "org.example.synthetic-scale",
+                "kind" : "healthKit"
+              }
+            ],
+            "unit" : "kilograms",
+            "value" : 70,
+            "window" : {
+              "end" : 1789344000000,
+              "start" : 1789257600000
+            }
+          },
+          {
+            "dependencies" : [
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004019",
+                "kind" : "healthSample"
+              }
+            ],
+            "id" : "trend.weight.representative.26b27d7662ce359efcde",
+            "metric" : "weight.representative",
+            "quality" : [
+
+            ],
+            "sources" : [
+              {
+                "identifier" : "org.example.synthetic-scale",
+                "kind" : "healthKit"
+              }
+            ],
+            "unit" : "kilograms",
+            "value" : 70,
+            "window" : {
+              "end" : 1789430400000,
+              "start" : 1789344000000
+            }
+          },
+          {
+            "dependencies" : [
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004018",
+                "kind" : "healthSample"
+              }
+            ],
+            "id" : "trend.weight.representative.d941b61780355a9f3d6d",
+            "metric" : "weight.representative",
+            "quality" : [
+
+            ],
+            "sources" : [
+              {
+                "identifier" : "org.example.synthetic-scale",
+                "kind" : "healthKit"
+              }
+            ],
+            "unit" : "kilograms",
+            "value" : 70,
+            "window" : {
+              "end" : 1789516800000,
+              "start" : 1789430400000
+            }
+          },
+          {
+            "dependencies" : [
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004017",
+                "kind" : "healthSample"
+              }
+            ],
+            "id" : "trend.weight.representative.eb9b9dcdff88ffaea223",
+            "metric" : "weight.representative",
+            "quality" : [
+
+            ],
+            "sources" : [
+              {
+                "identifier" : "org.example.synthetic-scale",
+                "kind" : "healthKit"
+              }
+            ],
+            "unit" : "kilograms",
+            "value" : 70,
+            "window" : {
+              "end" : 1789603200000,
+              "start" : 1789516800000
+            }
+          },
+          {
+            "dependencies" : [
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004016",
+                "kind" : "healthSample"
+              }
+            ],
+            "id" : "trend.weight.representative.3db8989a4fd5ced9ec79",
+            "metric" : "weight.representative",
+            "quality" : [
+
+            ],
+            "sources" : [
+              {
+                "identifier" : "org.example.synthetic-scale",
+                "kind" : "healthKit"
+              }
+            ],
+            "unit" : "kilograms",
+            "value" : 70,
+            "window" : {
+              "end" : 1789689600000,
+              "start" : 1789603200000
+            }
+          },
+          {
+            "dependencies" : [
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004015",
+                "kind" : "healthSample"
+              }
+            ],
+            "id" : "trend.weight.representative.9194b66dbe146b722f95",
+            "metric" : "weight.representative",
+            "quality" : [
+
+            ],
+            "sources" : [
+              {
+                "identifier" : "org.example.synthetic-scale",
+                "kind" : "healthKit"
+              }
+            ],
+            "unit" : "kilograms",
+            "value" : 70,
+            "window" : {
+              "end" : 1789776000000,
+              "start" : 1789689600000
+            }
+          },
+          {
+            "dependencies" : [
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004014",
+                "kind" : "healthSample"
+              }
+            ],
+            "id" : "trend.weight.representative.e65e9fcbbdafa7593721",
+            "metric" : "weight.representative",
+            "quality" : [
+
+            ],
+            "sources" : [
+              {
+                "identifier" : "org.example.synthetic-scale",
+                "kind" : "healthKit"
+              }
+            ],
+            "unit" : "kilograms",
+            "value" : 70,
+            "window" : {
+              "end" : 1789862400000,
+              "start" : 1789776000000
+            }
+          },
+          {
+            "dependencies" : [
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004013",
+                "kind" : "healthSample"
+              }
+            ],
+            "id" : "trend.weight.representative.c7718b251e5c6aa346b5",
+            "metric" : "weight.representative",
+            "quality" : [
+
+            ],
+            "sources" : [
+              {
+                "identifier" : "org.example.synthetic-scale",
+                "kind" : "healthKit"
+              }
+            ],
+            "unit" : "kilograms",
+            "value" : 70,
+            "window" : {
+              "end" : 1789948800000,
+              "start" : 1789862400000
+            }
+          },
+          {
+            "dependencies" : [
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004012",
+                "kind" : "healthSample"
+              }
+            ],
+            "id" : "trend.weight.representative.36c8f34e56c59050e6ad",
+            "metric" : "weight.representative",
+            "quality" : [
+
+            ],
+            "sources" : [
+              {
+                "identifier" : "org.example.synthetic-scale",
+                "kind" : "healthKit"
+              }
+            ],
+            "unit" : "kilograms",
+            "value" : 70,
+            "window" : {
+              "end" : 1790035200000,
+              "start" : 1789948800000
+            }
+          },
+          {
+            "dependencies" : [
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004011",
+                "kind" : "healthSample"
+              }
+            ],
+            "id" : "trend.weight.representative.4411eb6956721d006887",
+            "metric" : "weight.representative",
+            "quality" : [
+
+            ],
+            "sources" : [
+              {
+                "identifier" : "org.example.synthetic-scale",
+                "kind" : "healthKit"
+              }
+            ],
+            "unit" : "kilograms",
+            "value" : 70,
+            "window" : {
+              "end" : 1790121600000,
+              "start" : 1790035200000
+            }
+          },
+          {
+            "dependencies" : [
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004010",
+                "kind" : "healthSample"
+              }
+            ],
+            "id" : "trend.weight.representative.3739f02edca84f92f070",
+            "metric" : "weight.representative",
+            "quality" : [
+
+            ],
+            "sources" : [
+              {
+                "identifier" : "org.example.synthetic-scale",
+                "kind" : "healthKit"
+              }
+            ],
+            "unit" : "kilograms",
+            "value" : 70,
+            "window" : {
+              "end" : 1790208000000,
+              "start" : 1790121600000
+            }
+          },
+          {
+            "dependencies" : [
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004009",
+                "kind" : "healthSample"
+              }
+            ],
+            "id" : "trend.weight.representative.db6fbe1072ce0eafa954",
+            "metric" : "weight.representative",
+            "quality" : [
+
+            ],
+            "sources" : [
+              {
+                "identifier" : "org.example.synthetic-scale",
+                "kind" : "healthKit"
+              }
+            ],
+            "unit" : "kilograms",
+            "value" : 70,
+            "window" : {
+              "end" : 1790294400000,
+              "start" : 1790208000000
+            }
+          },
+          {
+            "dependencies" : [
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004008",
+                "kind" : "healthSample"
+              }
+            ],
+            "id" : "trend.weight.representative.cc3037e48b3746b29bfc",
+            "metric" : "weight.representative",
+            "quality" : [
+
+            ],
+            "sources" : [
+              {
+                "identifier" : "org.example.synthetic-scale",
+                "kind" : "healthKit"
+              }
+            ],
+            "unit" : "kilograms",
+            "value" : 70,
+            "window" : {
+              "end" : 1790380800000,
+              "start" : 1790294400000
+            }
+          },
+          {
+            "dependencies" : [
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004007",
+                "kind" : "healthSample"
+              }
+            ],
+            "id" : "trend.weight.representative.bba3caaaa624f57ff04c",
+            "metric" : "weight.representative",
+            "quality" : [
+
+            ],
+            "sources" : [
+              {
+                "identifier" : "org.example.synthetic-scale",
+                "kind" : "healthKit"
+              }
+            ],
+            "unit" : "kilograms",
+            "value" : 70,
+            "window" : {
+              "end" : 1790467200000,
+              "start" : 1790380800000
+            }
+          },
+          {
+            "dependencies" : [
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004006",
+                "kind" : "healthSample"
+              }
+            ],
+            "id" : "trend.weight.representative.900f8fe11bee11fc49a2",
+            "metric" : "weight.representative",
+            "quality" : [
+
+            ],
+            "sources" : [
+              {
+                "identifier" : "org.example.synthetic-scale",
+                "kind" : "healthKit"
+              }
+            ],
+            "unit" : "kilograms",
+            "value" : 70,
+            "window" : {
+              "end" : 1790553600000,
+              "start" : 1790467200000
+            }
+          },
+          {
+            "dependencies" : [
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004005",
+                "kind" : "healthSample"
+              }
+            ],
+            "id" : "trend.weight.representative.77b8e61e44b4fd05f593",
+            "metric" : "weight.representative",
+            "quality" : [
+
+            ],
+            "sources" : [
+              {
+                "identifier" : "org.example.synthetic-scale",
+                "kind" : "healthKit"
+              }
+            ],
+            "unit" : "kilograms",
+            "value" : 70,
+            "window" : {
+              "end" : 1790640000000,
+              "start" : 1790553600000
+            }
+          },
+          {
+            "dependencies" : [
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004004",
+                "kind" : "healthSample"
+              }
+            ],
+            "id" : "trend.weight.representative.aedee07ac9d332f6a6bc",
+            "metric" : "weight.representative",
+            "quality" : [
+
+            ],
+            "sources" : [
+              {
+                "identifier" : "org.example.synthetic-scale",
+                "kind" : "healthKit"
+              }
+            ],
+            "unit" : "kilograms",
+            "value" : 70,
+            "window" : {
+              "end" : 1790726400000,
+              "start" : 1790640000000
+            }
+          },
+          {
+            "dependencies" : [
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004003",
+                "kind" : "healthSample"
+              }
+            ],
+            "id" : "trend.weight.representative.c76c8b766b68efac4bdd",
+            "metric" : "weight.representative",
+            "quality" : [
+
+            ],
+            "sources" : [
+              {
+                "identifier" : "org.example.synthetic-scale",
+                "kind" : "healthKit"
+              }
+            ],
+            "unit" : "kilograms",
+            "value" : 70,
+            "window" : {
+              "end" : 1790812800000,
+              "start" : 1790726400000
+            }
+          },
+          {
+            "dependencies" : [
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004002",
+                "kind" : "healthSample"
+              }
+            ],
+            "id" : "trend.weight.representative.71e07af21d7b4e692b58",
+            "metric" : "weight.representative",
+            "quality" : [
+
+            ],
+            "sources" : [
+              {
+                "identifier" : "org.example.synthetic-scale",
+                "kind" : "healthKit"
+              }
+            ],
+            "unit" : "kilograms",
+            "value" : 70,
+            "window" : {
+              "end" : 1790899200000,
+              "start" : 1790812800000
+            }
+          },
+          {
+            "dependencies" : [
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004001",
+                "kind" : "healthSample"
+              }
+            ],
+            "id" : "trend.weight.representative.554e1f736db368c19aae",
+            "metric" : "weight.representative",
+            "quality" : [
+
+            ],
+            "sources" : [
+              {
+                "identifier" : "org.example.synthetic-scale",
+                "kind" : "healthKit"
+              }
+            ],
+            "unit" : "kilograms",
+            "value" : 70,
+            "window" : {
+              "end" : 1790985600000,
+              "start" : 1790899200000
+            }
+          },
+          {
+            "dependencies" : [
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004000",
+                "kind" : "healthSample"
+              }
+            ],
+            "id" : "trend.weight.representative.970a469f1930e7a947d1",
+            "metric" : "weight.representative",
+            "quality" : [
+
+            ],
+            "sources" : [
+              {
+                "identifier" : "org.example.synthetic-scale",
+                "kind" : "healthKit"
+              }
+            ],
+            "unit" : "kilograms",
+            "value" : 70,
+            "window" : {
+              "end" : 1791072000000,
+              "start" : 1790985600000
+            }
+          },
+          {
+            "dependencies" : [
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004000",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004001",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004002",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004003",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004004",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004005",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004006",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004007",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004008",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004009",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004010",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004011",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004012",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004013",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004014",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004015",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004016",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004017",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004018",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004019",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004020",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004021",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004022",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004023",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004024",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004025",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004026",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004027",
+                "kind" : "healthSample"
+              }
+            ],
+            "id" : "trend.weight.smoothed.7ff35c492992e6e9bb02",
+            "metric" : "weight.smoothed",
+            "quality" : [
+              "estimated"
+            ],
+            "sources" : [
+              {
+                "identifier" : "org.example.synthetic-scale",
+                "kind" : "healthKit"
+              }
+            ],
+            "unit" : "kilograms",
+            "value" : 70,
+            "window" : {
+              "end" : 1791072000000,
+              "start" : 1788652800000
+            }
+          },
+          {
+            "dependencies" : [
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004001",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004002",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004003",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004004",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004005",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004006",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004007",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004008",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004009",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004010",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004011",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004012",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004013",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004014",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004015",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004016",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004017",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004018",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004019",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004020",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004021",
+                "kind" : "healthSample"
+              }
+            ],
+            "id" : "trend.weight.weeklyChange.7dbe47c3613d525742f2",
+            "metric" : "weight.weeklyChange",
+            "quality" : [
+
+            ],
+            "sources" : [
+              {
+                "identifier" : "org.example.synthetic-scale",
+                "kind" : "healthKit"
+              }
+            ],
+            "unit" : "kilogramsPerWeek",
+            "value" : 0,
+            "window" : {
+              "end" : 1790985600000,
+              "start" : 1789171200000
+            }
+          },
+          {
+            "dependencies" : [
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004001",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004002",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004003",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004004",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004005",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004006",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004007",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004008",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004009",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004010",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004011",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004012",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004013",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004014",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004015",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004016",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004017",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004018",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004019",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004020",
+                "kind" : "healthSample"
+              },
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004021",
+                "kind" : "healthSample"
+              }
+            ],
+            "id" : "trend.weight.weeklyChangePercent.d7e7a829093bd4b97604",
+            "metric" : "weight.weeklyChangePercent",
+            "quality" : [
+
+            ],
+            "sources" : [
+              {
+                "identifier" : "org.example.synthetic-scale",
+                "kind" : "healthKit"
+              }
+            ],
+            "unit" : "percentPerWeek",
+            "value" : 0,
+            "window" : {
+              "end" : 1790985600000,
+              "start" : 1789171200000
+            }
+          },
+          {
+            "dependencies" : [
+
+            ],
+            "id" : "trend.diet.completeDays.a90b147cbbecaeef5020",
+            "metric" : "diet.completeDays",
+            "quality" : [
+              "partial"
+            ],
+            "sources" : [
+
+            ],
+            "unit" : "count",
+            "value" : 0,
+            "window" : {
+              "end" : 1790985600000,
+              "start" : 1789776000000
+            }
+          },
+          {
+            "dependencies" : [
+
+            ],
+            "id" : "trend.diet.calibratedIntakeReference.fdf5488b67a858ca1104",
+            "metric" : "diet.calibratedIntakeReference",
+            "quality" : [
+              "missing"
+            ],
+            "sources" : [
+
+            ],
+            "unit" : "kilocalories",
+            "window" : {
+              "end" : 1790985600000,
+              "start" : 1789776000000
+            }
+          },
+          {
+            "dependencies" : [
+              {
+                "id" : "00000000-0000-0000-0000-000000000009",
+                "kind" : "manualRecord"
+              },
+              {
+                "id" : "trend.weight.smoothed.7ff35c492992e6e9bb02",
+                "kind" : "metricFact"
+              }
+            ],
+            "id" : "trend.energy.initialEstimate.39b39143d176f5e1d617",
+            "metric" : "energy.initialEstimate",
+            "quality" : [
+              "estimated"
+            ],
+            "sources" : [
+              {
+                "identifier" : "org.example.synthetic-scale",
+                "kind" : "healthKit"
+              },
+              {
+                "identifier" : "trainote.manual",
+                "kind" : "manual"
+              }
+            ],
+            "unit" : "kilocalories",
+            "value" : 2638,
+            "window" : {
+              "end" : 1791072000000,
+              "start" : 1790985600000
+            }
+          },
+          {
+            "dependencies" : [
+              {
+                "id" : "00000000-0000-0000-0000-000000000009",
+                "kind" : "manualRecord"
+              }
+            ],
+            "id" : "trend.weight.targetWeeklyChangePercent.b3250cdf7590feac3782",
+            "metric" : "weight.targetWeeklyChangePercent",
+            "quality" : [
+
+            ],
+            "sources" : [
+              {
+                "identifier" : "trainote.manual",
+                "kind" : "manual"
+              }
+            ],
+            "unit" : "percentPerWeek",
+            "value" : 0,
+            "window" : {
+              "end" : 1791072000000,
+              "start" : 1790985600000
+            }
+          }
+        ],
+        "inputFingerprint" : "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "points" : [
+          {
+            "date" : 1788654600000,
+            "observedKilograms" : 70,
+            "sampleIDs" : [
+              "00000000-0000-0000-0000-000000004027"
+            ],
+            "smoothedKilograms" : 70
+          },
+          {
+            "date" : 1788741000000,
+            "observedKilograms" : 70,
+            "sampleIDs" : [
+              "00000000-0000-0000-0000-000000004026"
+            ],
+            "smoothedKilograms" : 70
+          },
+          {
+            "date" : 1788827400000,
+            "observedKilograms" : 70,
+            "sampleIDs" : [
+              "00000000-0000-0000-0000-000000004025"
+            ],
+            "smoothedKilograms" : 70
+          },
+          {
+            "date" : 1788913800000,
+            "observedKilograms" : 70,
+            "sampleIDs" : [
+              "00000000-0000-0000-0000-000000004024"
+            ],
+            "smoothedKilograms" : 70
+          },
+          {
+            "date" : 1789000200000,
+            "observedKilograms" : 70,
+            "sampleIDs" : [
+              "00000000-0000-0000-0000-000000004023"
+            ],
+            "smoothedKilograms" : 70
+          },
+          {
+            "date" : 1789086600000,
+            "observedKilograms" : 70,
+            "sampleIDs" : [
+              "00000000-0000-0000-0000-000000004022"
+            ],
+            "smoothedKilograms" : 70
+          },
+          {
+            "date" : 1789173000000,
+            "observedKilograms" : 70,
+            "sampleIDs" : [
+              "00000000-0000-0000-0000-000000004021"
+            ],
+            "smoothedKilograms" : 70
+          },
+          {
+            "date" : 1789259400000,
+            "observedKilograms" : 70,
+            "sampleIDs" : [
+              "00000000-0000-0000-0000-000000004020"
+            ],
+            "smoothedKilograms" : 70
+          },
+          {
+            "date" : 1789345800000,
+            "observedKilograms" : 70,
+            "sampleIDs" : [
+              "00000000-0000-0000-0000-000000004019"
+            ],
+            "smoothedKilograms" : 70
+          },
+          {
+            "date" : 1789432200000,
+            "observedKilograms" : 70,
+            "sampleIDs" : [
+              "00000000-0000-0000-0000-000000004018"
+            ],
+            "smoothedKilograms" : 70
+          },
+          {
+            "date" : 1789518600000,
+            "observedKilograms" : 70,
+            "sampleIDs" : [
+              "00000000-0000-0000-0000-000000004017"
+            ],
+            "smoothedKilograms" : 70
+          },
+          {
+            "date" : 1789605000000,
+            "observedKilograms" : 70,
+            "sampleIDs" : [
+              "00000000-0000-0000-0000-000000004016"
+            ],
+            "smoothedKilograms" : 70
+          },
+          {
+            "date" : 1789691400000,
+            "observedKilograms" : 70,
+            "sampleIDs" : [
+              "00000000-0000-0000-0000-000000004015"
+            ],
+            "smoothedKilograms" : 70
+          },
+          {
+            "date" : 1789777800000,
+            "observedKilograms" : 70,
+            "sampleIDs" : [
+              "00000000-0000-0000-0000-000000004014"
+            ],
+            "smoothedKilograms" : 70
+          },
+          {
+            "date" : 1789864200000,
+            "observedKilograms" : 70,
+            "sampleIDs" : [
+              "00000000-0000-0000-0000-000000004013"
+            ],
+            "smoothedKilograms" : 70
+          },
+          {
+            "date" : 1789950600000,
+            "observedKilograms" : 70,
+            "sampleIDs" : [
+              "00000000-0000-0000-0000-000000004012"
+            ],
+            "smoothedKilograms" : 70
+          },
+          {
+            "date" : 1790037000000,
+            "observedKilograms" : 70,
+            "sampleIDs" : [
+              "00000000-0000-0000-0000-000000004011"
+            ],
+            "smoothedKilograms" : 70
+          },
+          {
+            "date" : 1790123400000,
+            "observedKilograms" : 70,
+            "sampleIDs" : [
+              "00000000-0000-0000-0000-000000004010"
+            ],
+            "smoothedKilograms" : 70
+          },
+          {
+            "date" : 1790209800000,
+            "observedKilograms" : 70,
+            "sampleIDs" : [
+              "00000000-0000-0000-0000-000000004009"
+            ],
+            "smoothedKilograms" : 70
+          },
+          {
+            "date" : 1790296200000,
+            "observedKilograms" : 70,
+            "sampleIDs" : [
+              "00000000-0000-0000-0000-000000004008"
+            ],
+            "smoothedKilograms" : 70
+          },
+          {
+            "date" : 1790382600000,
+            "observedKilograms" : 70,
+            "sampleIDs" : [
+              "00000000-0000-0000-0000-000000004007"
+            ],
+            "smoothedKilograms" : 70
+          },
+          {
+            "date" : 1790469000000,
+            "observedKilograms" : 70,
+            "sampleIDs" : [
+              "00000000-0000-0000-0000-000000004006"
+            ],
+            "smoothedKilograms" : 70
+          },
+          {
+            "date" : 1790555400000,
+            "observedKilograms" : 70,
+            "sampleIDs" : [
+              "00000000-0000-0000-0000-000000004005"
+            ],
+            "smoothedKilograms" : 70
+          },
+          {
+            "date" : 1790641800000,
+            "observedKilograms" : 70,
+            "sampleIDs" : [
+              "00000000-0000-0000-0000-000000004004"
+            ],
+            "smoothedKilograms" : 70
+          },
+          {
+            "date" : 1790728200000,
+            "observedKilograms" : 70,
+            "sampleIDs" : [
+              "00000000-0000-0000-0000-000000004003"
+            ],
+            "smoothedKilograms" : 70
+          },
+          {
+            "date" : 1790814600000,
+            "observedKilograms" : 70,
+            "sampleIDs" : [
+              "00000000-0000-0000-0000-000000004002"
+            ],
+            "smoothedKilograms" : 70
+          },
+          {
+            "date" : 1790901000000,
+            "observedKilograms" : 70,
+            "sampleIDs" : [
+              "00000000-0000-0000-0000-000000004001"
+            ],
+            "smoothedKilograms" : 70
+          },
+          {
+            "date" : 1790987400000,
+            "observedKilograms" : 70,
+            "sampleIDs" : [
+              "00000000-0000-0000-0000-000000004000"
+            ],
+            "smoothedKilograms" : 70
+          }
+        ],
+        "proposal" : {
+          "calculationVersion" : "trend-p-v1",
+          "effectiveAt" : 1790985600000,
+          "id" : "trend-c2c7c68fca78ba90625f67836b2a868d87ae2c14fabc3129d774fa43a537dd4e",
+          "reasonFactIDs" : [
+            "trend.weight.smoothed.7ff35c492992e6e9bb02",
+            "trend.energy.initialEstimate.39b39143d176f5e1d617",
+            "trend.weight.targetWeeklyChangePercent.b3250cdf7590feac3782"
+          ],
+          "targets" : {
+            "calories" : 2638,
+            "carbohydrates" : 368.625,
+            "fat" : 73.27777777777777,
+            "protein" : 126
+          }
+        },
+        "weeklyChangeKilograms" : 0,
+        "weeklyChangePercent" : 0
+      }
+    },
+    {
+      "asOf" : 1791028800000,
+      "day" : {
+        "end" : 1791043200000,
+        "start" : 1790956800000
+      },
+      "name" : "shanghai",
+      "sampleIDs" : [
+        "00000000-0000-0000-0000-000000004000",
+        "00000000-0000-0000-0000-000000004999"
+      ],
+      "timeZone" : "Asia/Shanghai",
+      "trend" : {
+        "calculationVersion" : "trend-p-v1",
+        "facts" : [
+          {
+            "dependencies" : [
+              {
+                "id" : "00000000-0000-0000-0000-000000004000",
+                "kind" : "manualRecord"
+              }
+            ],
+            "id" : "trend.weight.representative.78bfef8c6b34a4879918",
+            "metric" : "weight.representative",
+            "quality" : [
+
+            ],
+            "sources" : [
+              {
+                "identifier" : "trainote.manual",
+                "kind" : "manual"
+              }
+            ],
+            "unit" : "kilograms",
+            "value" : 70,
+            "window" : {
+              "end" : 1791043200000,
+              "start" : 1790956800000
+            }
+          },
+          {
+            "dependencies" : [
+              {
+                "id" : "00000000-0000-0000-0000-000000004000",
+                "kind" : "manualRecord"
+              }
+            ],
+            "id" : "trend.weight.smoothed.78bc8667aeba93fe1745",
+            "metric" : "weight.smoothed",
+            "quality" : [
+              "estimated"
+            ],
+            "sources" : [
+              {
+                "identifier" : "trainote.manual",
+                "kind" : "manual"
+              }
+            ],
+            "unit" : "kilograms",
+            "value" : 70,
+            "window" : {
+              "end" : 1791043200000,
+              "start" : 1790956800000
+            }
+          },
+          {
+            "dependencies" : [
+
+            ],
+            "id" : "trend.weight.weeklyChange.fc85e624e064aa308b8c",
+            "metric" : "weight.weeklyChange",
+            "quality" : [
+              "insufficientHistory"
+            ],
+            "sources" : [
+
+            ],
+            "unit" : "kilogramsPerWeek",
+            "window" : {
+              "end" : 1790956800000,
+              "start" : 1789142400000
+            }
+          },
+          {
+            "dependencies" : [
+
+            ],
+            "id" : "trend.weight.weeklyChangePercent.496fe589a962af4dd4a3",
+            "metric" : "weight.weeklyChangePercent",
+            "quality" : [
+              "insufficientHistory"
+            ],
+            "sources" : [
+
+            ],
+            "unit" : "percentPerWeek",
+            "window" : {
+              "end" : 1790956800000,
+              "start" : 1789142400000
+            }
+          },
+          {
+            "dependencies" : [
+
+            ],
+            "id" : "trend.diet.completeDays.bcac2faa848cec335277",
+            "metric" : "diet.completeDays",
+            "quality" : [
+              "partial"
+            ],
+            "sources" : [
+
+            ],
+            "unit" : "count",
+            "value" : 0,
+            "window" : {
+              "end" : 1790956800000,
+              "start" : 1789747200000
+            }
+          },
+          {
+            "dependencies" : [
+
+            ],
+            "id" : "trend.diet.calibratedIntakeReference.d0dcef1d50c9bd9d4bfa",
+            "metric" : "diet.calibratedIntakeReference",
+            "quality" : [
+              "missing"
+            ],
+            "sources" : [
+
+            ],
+            "unit" : "kilocalories",
+            "window" : {
+              "end" : 1790956800000,
+              "start" : 1789747200000
+            }
+          },
+          {
+            "dependencies" : [
+              {
+                "id" : "00000000-0000-0000-0000-000000000009",
+                "kind" : "manualRecord"
+              },
+              {
+                "id" : "trend.weight.smoothed.78bc8667aeba93fe1745",
+                "kind" : "metricFact"
+              }
+            ],
+            "id" : "trend.energy.initialEstimate.e4e625702760e2aa9534",
+            "metric" : "energy.initialEstimate",
+            "quality" : [
+              "estimated"
+            ],
+            "sources" : [
+              {
+                "identifier" : "trainote.manual",
+                "kind" : "manual"
+              }
+            ],
+            "unit" : "kilocalories",
+            "value" : 2638,
+            "window" : {
+              "end" : 1791043200000,
+              "start" : 1790956800000
+            }
+          },
+          {
+            "dependencies" : [
+              {
+                "id" : "00000000-0000-0000-0000-000000000009",
+                "kind" : "manualRecord"
+              }
+            ],
+            "id" : "trend.weight.targetWeeklyChangePercent.5bff249715ce180d8007",
+            "metric" : "weight.targetWeeklyChangePercent",
+            "quality" : [
+
+            ],
+            "sources" : [
+              {
+                "identifier" : "trainote.manual",
+                "kind" : "manual"
+              }
+            ],
+            "unit" : "percentPerWeek",
+            "value" : 0,
+            "window" : {
+              "end" : 1791043200000,
+              "start" : 1790956800000
+            }
+          }
+        ],
+        "inputFingerprint" : "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "points" : [
+          {
+            "date" : 1790958600000,
+            "observedKilograms" : 70,
+            "sampleIDs" : [
+              "00000000-0000-0000-0000-000000004000"
+            ],
+            "smoothedKilograms" : 70
+          }
+        ],
+        "proposal" : {
+          "calculationVersion" : "trend-p-v1",
+          "effectiveAt" : 1790956800000,
+          "id" : "trend-d1e194296ceb81a2321be6e0828dad8e5ab92e9eb28560ee09b09cbb0a629146",
+          "reasonFactIDs" : [
+            "trend.weight.smoothed.78bc8667aeba93fe1745",
+            "trend.energy.initialEstimate.e4e625702760e2aa9534",
+            "trend.weight.targetWeeklyChangePercent.5bff249715ce180d8007"
+          ],
+          "targets" : {
+            "calories" : 2638,
+            "carbohydrates" : 368.625,
+            "fat" : 73.27777777777777,
+            "protein" : 126
+          }
+        }
+      }
+    },
+    {
+      "asOf" : 1791025200000,
+      "day" : {
+        "end" : 1791108000000,
+        "start" : 1791021600000
+      },
+      "name" : "kiritimati-next-day",
+      "sampleIDs" : [
+        "00000000-0000-0000-0000-000000004000",
+        "00000000-0000-0000-0000-000000004999"
+      ],
+      "timeZone" : "Pacific/Kiritimati",
+      "trend" : {
+        "calculationVersion" : "trend-p-v1",
+        "facts" : [
+          {
+            "dependencies" : [
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004000",
+                "kind" : "healthSample"
+              }
+            ],
+            "id" : "trend.weight.representative.ffd7d844452041341db8",
+            "metric" : "weight.representative",
+            "quality" : [
+
+            ],
+            "sources" : [
+              {
+                "identifier" : "org.example.synthetic-scale",
+                "kind" : "healthKit"
+              }
+            ],
+            "unit" : "kilograms",
+            "value" : 70,
+            "window" : {
+              "end" : 1791108000000,
+              "start" : 1791021600000
+            }
+          },
+          {
+            "dependencies" : [
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004000",
+                "kind" : "healthSample"
+              }
+            ],
+            "id" : "trend.weight.smoothed.5fecef6b3863ec3d0650",
+            "metric" : "weight.smoothed",
+            "quality" : [
+              "estimated"
+            ],
+            "sources" : [
+              {
+                "identifier" : "org.example.synthetic-scale",
+                "kind" : "healthKit"
+              }
+            ],
+            "unit" : "kilograms",
+            "value" : 70,
+            "window" : {
+              "end" : 1791108000000,
+              "start" : 1791021600000
+            }
+          },
+          {
+            "dependencies" : [
+
+            ],
+            "id" : "trend.weight.weeklyChange.e3a3322d7b7bbba19fd5",
+            "metric" : "weight.weeklyChange",
+            "quality" : [
+              "insufficientHistory"
+            ],
+            "sources" : [
+
+            ],
+            "unit" : "kilogramsPerWeek",
+            "window" : {
+              "end" : 1791021600000,
+              "start" : 1789207200000
+            }
+          },
+          {
+            "dependencies" : [
+
+            ],
+            "id" : "trend.weight.weeklyChangePercent.f6ca0cde4b1abc5f9091",
+            "metric" : "weight.weeklyChangePercent",
+            "quality" : [
+              "insufficientHistory"
+            ],
+            "sources" : [
+
+            ],
+            "unit" : "percentPerWeek",
+            "window" : {
+              "end" : 1791021600000,
+              "start" : 1789207200000
+            }
+          },
+          {
+            "dependencies" : [
+
+            ],
+            "id" : "trend.diet.completeDays.0d24d8af59c648d17f22",
+            "metric" : "diet.completeDays",
+            "quality" : [
+              "partial"
+            ],
+            "sources" : [
+
+            ],
+            "unit" : "count",
+            "value" : 0,
+            "window" : {
+              "end" : 1791021600000,
+              "start" : 1789812000000
+            }
+          },
+          {
+            "dependencies" : [
+
+            ],
+            "id" : "trend.diet.calibratedIntakeReference.94c123fd39131bdca49e",
+            "metric" : "diet.calibratedIntakeReference",
+            "quality" : [
+              "missing"
+            ],
+            "sources" : [
+
+            ],
+            "unit" : "kilocalories",
+            "window" : {
+              "end" : 1791021600000,
+              "start" : 1789812000000
+            }
+          },
+          {
+            "dependencies" : [
+              {
+                "id" : "00000000-0000-0000-0000-000000000009",
+                "kind" : "manualRecord"
+              },
+              {
+                "id" : "trend.weight.smoothed.5fecef6b3863ec3d0650",
+                "kind" : "metricFact"
+              }
+            ],
+            "id" : "trend.energy.initialEstimate.3395549f0d31b9c1c7a7",
+            "metric" : "energy.initialEstimate",
+            "quality" : [
+              "estimated"
+            ],
+            "sources" : [
+              {
+                "identifier" : "org.example.synthetic-scale",
+                "kind" : "healthKit"
+              },
+              {
+                "identifier" : "trainote.manual",
+                "kind" : "manual"
+              }
+            ],
+            "unit" : "kilocalories",
+            "value" : 2638,
+            "window" : {
+              "end" : 1791108000000,
+              "start" : 1791021600000
+            }
+          },
+          {
+            "dependencies" : [
+              {
+                "id" : "00000000-0000-0000-0000-000000000009",
+                "kind" : "manualRecord"
+              }
+            ],
+            "id" : "trend.weight.targetWeeklyChangePercent.34d01744bbaa1567e5dc",
+            "metric" : "weight.targetWeeklyChangePercent",
+            "quality" : [
+
+            ],
+            "sources" : [
+              {
+                "identifier" : "trainote.manual",
+                "kind" : "manual"
+              }
+            ],
+            "unit" : "percentPerWeek",
+            "value" : 0,
+            "window" : {
+              "end" : 1791108000000,
+              "start" : 1791021600000
+            }
+          }
+        ],
+        "inputFingerprint" : "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "points" : [
+          {
+            "date" : 1791023400000,
+            "observedKilograms" : 70,
+            "sampleIDs" : [
+              "00000000-0000-0000-0000-000000004000"
+            ],
+            "smoothedKilograms" : 70
+          }
+        ],
+        "proposal" : {
+          "calculationVersion" : "trend-p-v1",
+          "effectiveAt" : 1791021600000,
+          "id" : "trend-e3464be2c71d77991cc17744021a033d447338ecaa61787c7f7fa2b3f8fee4de",
+          "reasonFactIDs" : [
+            "trend.weight.smoothed.5fecef6b3863ec3d0650",
+            "trend.energy.initialEstimate.3395549f0d31b9c1c7a7",
+            "trend.weight.targetWeeklyChangePercent.34d01744bbaa1567e5dc"
+          ],
+          "targets" : {
+            "calories" : 2638,
+            "carbohydrates" : 368.625,
+            "fat" : 73.27777777777777,
+            "protein" : 126
+          }
+        }
+      }
+    },
+    {
+      "asOf" : 1791050400000,
+      "day" : {
+        "end" : 1791051300000,
+        "start" : 1790964900000
+      },
+      "name" : "kathmandu-quarter-hour",
+      "sampleIDs" : [
+        "00000000-0000-0000-0000-000000004000",
+        "00000000-0000-0000-0000-000000004999"
+      ],
+      "timeZone" : "Asia/Kathmandu",
+      "trend" : {
+        "calculationVersion" : "trend-p-v1",
+        "facts" : [
+          {
+            "dependencies" : [
+              {
+                "id" : "00000000-0000-0000-0000-000000004000",
+                "kind" : "manualRecord"
+              }
+            ],
+            "id" : "trend.weight.representative.b46f217e3724ed56aa77",
+            "metric" : "weight.representative",
+            "quality" : [
+
+            ],
+            "sources" : [
+              {
+                "identifier" : "trainote.manual",
+                "kind" : "manual"
+              }
+            ],
+            "unit" : "kilograms",
+            "value" : 70,
+            "window" : {
+              "end" : 1791051300000,
+              "start" : 1790964900000
+            }
+          },
+          {
+            "dependencies" : [
+              {
+                "id" : "00000000-0000-0000-0000-000000004000",
+                "kind" : "manualRecord"
+              }
+            ],
+            "id" : "trend.weight.smoothed.1823de268b1f0f3f9d29",
+            "metric" : "weight.smoothed",
+            "quality" : [
+              "estimated"
+            ],
+            "sources" : [
+              {
+                "identifier" : "trainote.manual",
+                "kind" : "manual"
+              }
+            ],
+            "unit" : "kilograms",
+            "value" : 70,
+            "window" : {
+              "end" : 1791051300000,
+              "start" : 1790964900000
+            }
+          },
+          {
+            "dependencies" : [
+
+            ],
+            "id" : "trend.weight.weeklyChange.87d99d09a17d414aea46",
+            "metric" : "weight.weeklyChange",
+            "quality" : [
+              "insufficientHistory"
+            ],
+            "sources" : [
+
+            ],
+            "unit" : "kilogramsPerWeek",
+            "window" : {
+              "end" : 1790964900000,
+              "start" : 1789150500000
+            }
+          },
+          {
+            "dependencies" : [
+
+            ],
+            "id" : "trend.weight.weeklyChangePercent.c10d73b73b7c266557d9",
+            "metric" : "weight.weeklyChangePercent",
+            "quality" : [
+              "insufficientHistory"
+            ],
+            "sources" : [
+
+            ],
+            "unit" : "percentPerWeek",
+            "window" : {
+              "end" : 1790964900000,
+              "start" : 1789150500000
+            }
+          },
+          {
+            "dependencies" : [
+
+            ],
+            "id" : "trend.diet.completeDays.f6de9cf394407c8d9219",
+            "metric" : "diet.completeDays",
+            "quality" : [
+              "partial"
+            ],
+            "sources" : [
+
+            ],
+            "unit" : "count",
+            "value" : 0,
+            "window" : {
+              "end" : 1790964900000,
+              "start" : 1789755300000
+            }
+          },
+          {
+            "dependencies" : [
+
+            ],
+            "id" : "trend.diet.calibratedIntakeReference.7c83a6e75495fdaff309",
+            "metric" : "diet.calibratedIntakeReference",
+            "quality" : [
+              "missing"
+            ],
+            "sources" : [
+
+            ],
+            "unit" : "kilocalories",
+            "window" : {
+              "end" : 1790964900000,
+              "start" : 1789755300000
+            }
+          },
+          {
+            "dependencies" : [
+              {
+                "id" : "00000000-0000-0000-0000-000000000009",
+                "kind" : "manualRecord"
+              },
+              {
+                "id" : "trend.weight.smoothed.1823de268b1f0f3f9d29",
+                "kind" : "metricFact"
+              }
+            ],
+            "id" : "trend.energy.initialEstimate.7f2bbeabcb888283c75e",
+            "metric" : "energy.initialEstimate",
+            "quality" : [
+              "estimated"
+            ],
+            "sources" : [
+              {
+                "identifier" : "trainote.manual",
+                "kind" : "manual"
+              }
+            ],
+            "unit" : "kilocalories",
+            "value" : 2638,
+            "window" : {
+              "end" : 1791051300000,
+              "start" : 1790964900000
+            }
+          },
+          {
+            "dependencies" : [
+              {
+                "id" : "00000000-0000-0000-0000-000000000009",
+                "kind" : "manualRecord"
+              }
+            ],
+            "id" : "trend.weight.targetWeeklyChangePercent.cafc8e6e058bae4af608",
+            "metric" : "weight.targetWeeklyChangePercent",
+            "quality" : [
+
+            ],
+            "sources" : [
+              {
+                "identifier" : "trainote.manual",
+                "kind" : "manual"
+              }
+            ],
+            "unit" : "percentPerWeek",
+            "value" : 0,
+            "window" : {
+              "end" : 1791051300000,
+              "start" : 1790964900000
+            }
+          }
+        ],
+        "inputFingerprint" : "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "points" : [
+          {
+            "date" : 1790966700000,
+            "observedKilograms" : 70,
+            "sampleIDs" : [
+              "00000000-0000-0000-0000-000000004000"
+            ],
+            "smoothedKilograms" : 70
+          }
+        ],
+        "proposal" : {
+          "calculationVersion" : "trend-p-v1",
+          "effectiveAt" : 1790964900000,
+          "id" : "trend-a009500593428fe5fde085b1570991304fc30150ddad9b4823bb5a9066a3996e",
+          "reasonFactIDs" : [
+            "trend.weight.smoothed.1823de268b1f0f3f9d29",
+            "trend.energy.initialEstimate.7f2bbeabcb888283c75e",
+            "trend.weight.targetWeeklyChangePercent.cafc8e6e058bae4af608"
+          ],
+          "targets" : {
+            "calories" : 2638,
+            "carbohydrates" : 368.625,
+            "fat" : 73.27777777777777,
+            "protein" : 126
+          }
+        }
+      }
+    },
+    {
+      "asOf" : 1772951400000,
+      "day" : {
+        "end" : 1773028800000,
+        "start" : 1772946000000
+      },
+      "name" : "new-york-spring",
+      "sampleIDs" : [
+        "00000000-0000-0000-0000-000000004000",
+        "00000000-0000-0000-0000-000000004999"
+      ],
+      "timeZone" : "America/New_York",
+      "trend" : {
+        "calculationVersion" : "trend-p-v1",
+        "facts" : [
+          {
+            "dependencies" : [
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004000",
+                "kind" : "healthSample"
+              }
+            ],
+            "id" : "trend.weight.representative.84f253ced667c0f7aed4",
+            "metric" : "weight.representative",
+            "quality" : [
+
+            ],
+            "sources" : [
+              {
+                "identifier" : "org.example.synthetic-scale",
+                "kind" : "healthKit"
+              }
+            ],
+            "unit" : "kilograms",
+            "value" : 70,
+            "window" : {
+              "end" : 1773028800000,
+              "start" : 1772946000000
+            }
+          },
+          {
+            "dependencies" : [
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004000",
+                "kind" : "healthSample"
+              }
+            ],
+            "id" : "trend.weight.smoothed.e96b68ea8cec84bec6bd",
+            "metric" : "weight.smoothed",
+            "quality" : [
+              "estimated"
+            ],
+            "sources" : [
+              {
+                "identifier" : "org.example.synthetic-scale",
+                "kind" : "healthKit"
+              }
+            ],
+            "unit" : "kilograms",
+            "value" : 70,
+            "window" : {
+              "end" : 1773028800000,
+              "start" : 1772946000000
+            }
+          },
+          {
+            "dependencies" : [
+
+            ],
+            "id" : "trend.weight.weeklyChange.ad9c92a2a68841b194e8",
+            "metric" : "weight.weeklyChange",
+            "quality" : [
+              "insufficientHistory"
+            ],
+            "sources" : [
+
+            ],
+            "unit" : "kilogramsPerWeek",
+            "window" : {
+              "end" : 1772946000000,
+              "start" : 1771131600000
+            }
+          },
+          {
+            "dependencies" : [
+
+            ],
+            "id" : "trend.weight.weeklyChangePercent.7acef52082990a3005bf",
+            "metric" : "weight.weeklyChangePercent",
+            "quality" : [
+              "insufficientHistory"
+            ],
+            "sources" : [
+
+            ],
+            "unit" : "percentPerWeek",
+            "window" : {
+              "end" : 1772946000000,
+              "start" : 1771131600000
+            }
+          },
+          {
+            "dependencies" : [
+
+            ],
+            "id" : "trend.diet.completeDays.d1350814e328b98c013c",
+            "metric" : "diet.completeDays",
+            "quality" : [
+              "partial"
+            ],
+            "sources" : [
+
+            ],
+            "unit" : "count",
+            "value" : 0,
+            "window" : {
+              "end" : 1772946000000,
+              "start" : 1771736400000
+            }
+          },
+          {
+            "dependencies" : [
+
+            ],
+            "id" : "trend.diet.calibratedIntakeReference.6389198267f63b6c94b8",
+            "metric" : "diet.calibratedIntakeReference",
+            "quality" : [
+              "missing"
+            ],
+            "sources" : [
+
+            ],
+            "unit" : "kilocalories",
+            "window" : {
+              "end" : 1772946000000,
+              "start" : 1771736400000
+            }
+          },
+          {
+            "dependencies" : [
+              {
+                "id" : "00000000-0000-0000-0000-000000000009",
+                "kind" : "manualRecord"
+              },
+              {
+                "id" : "trend.weight.smoothed.e96b68ea8cec84bec6bd",
+                "kind" : "metricFact"
+              }
+            ],
+            "id" : "trend.energy.initialEstimate.cc9b27dab5cc88ef209e",
+            "metric" : "energy.initialEstimate",
+            "quality" : [
+              "estimated"
+            ],
+            "sources" : [
+              {
+                "identifier" : "org.example.synthetic-scale",
+                "kind" : "healthKit"
+              },
+              {
+                "identifier" : "trainote.manual",
+                "kind" : "manual"
+              }
+            ],
+            "unit" : "kilocalories",
+            "value" : 2638,
+            "window" : {
+              "end" : 1773028800000,
+              "start" : 1772946000000
+            }
+          },
+          {
+            "dependencies" : [
+              {
+                "id" : "00000000-0000-0000-0000-000000000009",
+                "kind" : "manualRecord"
+              }
+            ],
+            "id" : "trend.weight.targetWeeklyChangePercent.d3ccdbbd49353ae22932",
+            "metric" : "weight.targetWeeklyChangePercent",
+            "quality" : [
+
+            ],
+            "sources" : [
+              {
+                "identifier" : "trainote.manual",
+                "kind" : "manual"
+              }
+            ],
+            "unit" : "percentPerWeek",
+            "value" : 0,
+            "window" : {
+              "end" : 1773028800000,
+              "start" : 1772946000000
+            }
+          }
+        ],
+        "inputFingerprint" : "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "points" : [
+          {
+            "date" : 1772947800000,
+            "observedKilograms" : 70,
+            "sampleIDs" : [
+              "00000000-0000-0000-0000-000000004000"
+            ],
+            "smoothedKilograms" : 70
+          }
+        ],
+        "proposal" : {
+          "calculationVersion" : "trend-p-v1",
+          "effectiveAt" : 1772946000000,
+          "id" : "trend-6b9f115e0716d5b22627679751a27afee8e5fba0bb2b5b0b537a508be99d3dbd",
+          "reasonFactIDs" : [
+            "trend.weight.smoothed.e96b68ea8cec84bec6bd",
+            "trend.energy.initialEstimate.cc9b27dab5cc88ef209e",
+            "trend.weight.targetWeeklyChangePercent.d3ccdbbd49353ae22932"
+          ],
+          "targets" : {
+            "calories" : 2638,
+            "carbohydrates" : 368.625,
+            "fat" : 73.27777777777777,
+            "protein" : 126
+          }
+        }
+      }
+    },
+    {
+      "asOf" : 1793511000000,
+      "day" : {
+        "end" : 1793595600000,
+        "start" : 1793505600000
+      },
+      "name" : "new-york-fall-first-hour",
+      "sampleIDs" : [
+        "00000000-0000-0000-0000-000000004000",
+        "00000000-0000-0000-0000-000000004999"
+      ],
+      "timeZone" : "America/New_York",
+      "trend" : {
+        "calculationVersion" : "trend-p-v1",
+        "facts" : [
+          {
+            "dependencies" : [
+              {
+                "id" : "00000000-0000-0000-0000-000000004000",
+                "kind" : "manualRecord"
+              }
+            ],
+            "id" : "trend.weight.representative.128274fcd27740911ceb",
+            "metric" : "weight.representative",
+            "quality" : [
+
+            ],
+            "sources" : [
+              {
+                "identifier" : "trainote.manual",
+                "kind" : "manual"
+              }
+            ],
+            "unit" : "kilograms",
+            "value" : 70,
+            "window" : {
+              "end" : 1793595600000,
+              "start" : 1793505600000
+            }
+          },
+          {
+            "dependencies" : [
+              {
+                "id" : "00000000-0000-0000-0000-000000004000",
+                "kind" : "manualRecord"
+              }
+            ],
+            "id" : "trend.weight.smoothed.4f7589f9169638e6afd6",
+            "metric" : "weight.smoothed",
+            "quality" : [
+              "estimated"
+            ],
+            "sources" : [
+              {
+                "identifier" : "trainote.manual",
+                "kind" : "manual"
+              }
+            ],
+            "unit" : "kilograms",
+            "value" : 70,
+            "window" : {
+              "end" : 1793595600000,
+              "start" : 1793505600000
+            }
+          },
+          {
+            "dependencies" : [
+
+            ],
+            "id" : "trend.weight.weeklyChange.78f0ccbdf431d6e5bae4",
+            "metric" : "weight.weeklyChange",
+            "quality" : [
+              "insufficientHistory"
+            ],
+            "sources" : [
+
+            ],
+            "unit" : "kilogramsPerWeek",
+            "window" : {
+              "end" : 1793505600000,
+              "start" : 1791691200000
+            }
+          },
+          {
+            "dependencies" : [
+
+            ],
+            "id" : "trend.weight.weeklyChangePercent.45c3bc32ce6f186e5788",
+            "metric" : "weight.weeklyChangePercent",
+            "quality" : [
+              "insufficientHistory"
+            ],
+            "sources" : [
+
+            ],
+            "unit" : "percentPerWeek",
+            "window" : {
+              "end" : 1793505600000,
+              "start" : 1791691200000
+            }
+          },
+          {
+            "dependencies" : [
+
+            ],
+            "id" : "trend.diet.completeDays.fc5bae02434a2606b014",
+            "metric" : "diet.completeDays",
+            "quality" : [
+              "partial"
+            ],
+            "sources" : [
+
+            ],
+            "unit" : "count",
+            "value" : 0,
+            "window" : {
+              "end" : 1793505600000,
+              "start" : 1792296000000
+            }
+          },
+          {
+            "dependencies" : [
+
+            ],
+            "id" : "trend.diet.calibratedIntakeReference.0692a81cc319ad4583fa",
+            "metric" : "diet.calibratedIntakeReference",
+            "quality" : [
+              "missing"
+            ],
+            "sources" : [
+
+            ],
+            "unit" : "kilocalories",
+            "window" : {
+              "end" : 1793505600000,
+              "start" : 1792296000000
+            }
+          },
+          {
+            "dependencies" : [
+              {
+                "id" : "00000000-0000-0000-0000-000000000009",
+                "kind" : "manualRecord"
+              },
+              {
+                "id" : "trend.weight.smoothed.4f7589f9169638e6afd6",
+                "kind" : "metricFact"
+              }
+            ],
+            "id" : "trend.energy.initialEstimate.e677c566507e8f4a4c3e",
+            "metric" : "energy.initialEstimate",
+            "quality" : [
+              "estimated"
+            ],
+            "sources" : [
+              {
+                "identifier" : "trainote.manual",
+                "kind" : "manual"
+              }
+            ],
+            "unit" : "kilocalories",
+            "value" : 2638,
+            "window" : {
+              "end" : 1793595600000,
+              "start" : 1793505600000
+            }
+          },
+          {
+            "dependencies" : [
+              {
+                "id" : "00000000-0000-0000-0000-000000000009",
+                "kind" : "manualRecord"
+              }
+            ],
+            "id" : "trend.weight.targetWeeklyChangePercent.b921024e32cb2c27a15b",
+            "metric" : "weight.targetWeeklyChangePercent",
+            "quality" : [
+
+            ],
+            "sources" : [
+              {
+                "identifier" : "trainote.manual",
+                "kind" : "manual"
+              }
+            ],
+            "unit" : "percentPerWeek",
+            "value" : 0,
+            "window" : {
+              "end" : 1793595600000,
+              "start" : 1793505600000
+            }
+          }
+        ],
+        "inputFingerprint" : "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "points" : [
+          {
+            "date" : 1793507400000,
+            "observedKilograms" : 70,
+            "sampleIDs" : [
+              "00000000-0000-0000-0000-000000004000"
+            ],
+            "smoothedKilograms" : 70
+          }
+        ],
+        "proposal" : {
+          "calculationVersion" : "trend-p-v1",
+          "effectiveAt" : 1793505600000,
+          "id" : "trend-b49f0c8a02f6eebc3795c985dcbd78d7e5678ce07b2be9d806971809aae0f85d",
+          "reasonFactIDs" : [
+            "trend.weight.smoothed.4f7589f9169638e6afd6",
+            "trend.energy.initialEstimate.e677c566507e8f4a4c3e",
+            "trend.weight.targetWeeklyChangePercent.b921024e32cb2c27a15b"
+          ],
+          "targets" : {
+            "calories" : 2638,
+            "carbohydrates" : 368.625,
+            "fat" : 73.27777777777777,
+            "protein" : 126
+          }
+        }
+      }
+    },
+    {
+      "asOf" : 1793514600000,
+      "day" : {
+        "end" : 1793595600000,
+        "start" : 1793505600000
+      },
+      "name" : "new-york-fall-second-hour",
+      "sampleIDs" : [
+        "00000000-0000-0000-0000-000000004000",
+        "00000000-0000-0000-0000-000000004999"
+      ],
+      "timeZone" : "America/New_York",
+      "trend" : {
+        "calculationVersion" : "trend-p-v1",
+        "facts" : [
+          {
+            "dependencies" : [
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004000",
+                "kind" : "healthSample"
+              }
+            ],
+            "id" : "trend.weight.representative.97176803e949afd5c41c",
+            "metric" : "weight.representative",
+            "quality" : [
+
+            ],
+            "sources" : [
+              {
+                "identifier" : "org.example.synthetic-scale",
+                "kind" : "healthKit"
+              }
+            ],
+            "unit" : "kilograms",
+            "value" : 70,
+            "window" : {
+              "end" : 1793595600000,
+              "start" : 1793505600000
+            }
+          },
+          {
+            "dependencies" : [
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004000",
+                "kind" : "healthSample"
+              }
+            ],
+            "id" : "trend.weight.smoothed.4bd7482620569cddad76",
+            "metric" : "weight.smoothed",
+            "quality" : [
+              "estimated"
+            ],
+            "sources" : [
+              {
+                "identifier" : "org.example.synthetic-scale",
+                "kind" : "healthKit"
+              }
+            ],
+            "unit" : "kilograms",
+            "value" : 70,
+            "window" : {
+              "end" : 1793595600000,
+              "start" : 1793505600000
+            }
+          },
+          {
+            "dependencies" : [
+
+            ],
+            "id" : "trend.weight.weeklyChange.78f0ccbdf431d6e5bae4",
+            "metric" : "weight.weeklyChange",
+            "quality" : [
+              "insufficientHistory"
+            ],
+            "sources" : [
+
+            ],
+            "unit" : "kilogramsPerWeek",
+            "window" : {
+              "end" : 1793505600000,
+              "start" : 1791691200000
+            }
+          },
+          {
+            "dependencies" : [
+
+            ],
+            "id" : "trend.weight.weeklyChangePercent.45c3bc32ce6f186e5788",
+            "metric" : "weight.weeklyChangePercent",
+            "quality" : [
+              "insufficientHistory"
+            ],
+            "sources" : [
+
+            ],
+            "unit" : "percentPerWeek",
+            "window" : {
+              "end" : 1793505600000,
+              "start" : 1791691200000
+            }
+          },
+          {
+            "dependencies" : [
+
+            ],
+            "id" : "trend.diet.completeDays.fc5bae02434a2606b014",
+            "metric" : "diet.completeDays",
+            "quality" : [
+              "partial"
+            ],
+            "sources" : [
+
+            ],
+            "unit" : "count",
+            "value" : 0,
+            "window" : {
+              "end" : 1793505600000,
+              "start" : 1792296000000
+            }
+          },
+          {
+            "dependencies" : [
+
+            ],
+            "id" : "trend.diet.calibratedIntakeReference.0692a81cc319ad4583fa",
+            "metric" : "diet.calibratedIntakeReference",
+            "quality" : [
+              "missing"
+            ],
+            "sources" : [
+
+            ],
+            "unit" : "kilocalories",
+            "window" : {
+              "end" : 1793505600000,
+              "start" : 1792296000000
+            }
+          },
+          {
+            "dependencies" : [
+              {
+                "id" : "00000000-0000-0000-0000-000000000009",
+                "kind" : "manualRecord"
+              },
+              {
+                "id" : "trend.weight.smoothed.4bd7482620569cddad76",
+                "kind" : "metricFact"
+              }
+            ],
+            "id" : "trend.energy.initialEstimate.ea8be51eef1ecd546758",
+            "metric" : "energy.initialEstimate",
+            "quality" : [
+              "estimated"
+            ],
+            "sources" : [
+              {
+                "identifier" : "org.example.synthetic-scale",
+                "kind" : "healthKit"
+              },
+              {
+                "identifier" : "trainote.manual",
+                "kind" : "manual"
+              }
+            ],
+            "unit" : "kilocalories",
+            "value" : 2638,
+            "window" : {
+              "end" : 1793595600000,
+              "start" : 1793505600000
+            }
+          },
+          {
+            "dependencies" : [
+              {
+                "id" : "00000000-0000-0000-0000-000000000009",
+                "kind" : "manualRecord"
+              }
+            ],
+            "id" : "trend.weight.targetWeeklyChangePercent.b921024e32cb2c27a15b",
+            "metric" : "weight.targetWeeklyChangePercent",
+            "quality" : [
+
+            ],
+            "sources" : [
+              {
+                "identifier" : "trainote.manual",
+                "kind" : "manual"
+              }
+            ],
+            "unit" : "percentPerWeek",
+            "value" : 0,
+            "window" : {
+              "end" : 1793595600000,
+              "start" : 1793505600000
+            }
+          }
+        ],
+        "inputFingerprint" : "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "points" : [
+          {
+            "date" : 1793507400000,
+            "observedKilograms" : 70,
+            "sampleIDs" : [
+              "00000000-0000-0000-0000-000000004000"
+            ],
+            "smoothedKilograms" : 70
+          }
+        ],
+        "proposal" : {
+          "calculationVersion" : "trend-p-v1",
+          "effectiveAt" : 1793505600000,
+          "id" : "trend-f88ee9ef33927acd26b2761e3fd0d361f3239d142eec77103a0d040d606d3d70",
+          "reasonFactIDs" : [
+            "trend.weight.smoothed.4bd7482620569cddad76",
+            "trend.energy.initialEstimate.ea8be51eef1ecd546758",
+            "trend.weight.targetWeeklyChangePercent.b921024e32cb2c27a15b"
+          ],
+          "targets" : {
+            "calories" : 2638,
+            "carbohydrates" : 368.625,
+            "fat" : 73.27777777777777,
+            "protein" : 126
+          }
+        }
+      }
+    },
+    {
+      "asOf" : 1791039600000,
+      "day" : {
+        "end" : 1791118800000,
+        "start" : 1791034200000
+      },
+      "name" : "lord-howe-half-hour",
+      "sampleIDs" : [
+        "00000000-0000-0000-0000-000000004000",
+        "00000000-0000-0000-0000-000000004999"
+      ],
+      "timeZone" : "Australia/Lord_Howe",
+      "trend" : {
+        "calculationVersion" : "trend-p-v1",
+        "facts" : [
+          {
+            "dependencies" : [
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004000",
+                "kind" : "healthSample"
+              }
+            ],
+            "id" : "trend.weight.representative.8c9725e3595b2e765e92",
+            "metric" : "weight.representative",
+            "quality" : [
+
+            ],
+            "sources" : [
+              {
+                "identifier" : "org.example.synthetic-scale",
+                "kind" : "healthKit"
+              }
+            ],
+            "unit" : "kilograms",
+            "value" : 70,
+            "window" : {
+              "end" : 1791118800000,
+              "start" : 1791034200000
+            }
+          },
+          {
+            "dependencies" : [
+              {
+                "healthType" : "bodyMass",
+                "id" : "00000000-0000-0000-0000-000000004000",
+                "kind" : "healthSample"
+              }
+            ],
+            "id" : "trend.weight.smoothed.9bd2423c5cef94443126",
+            "metric" : "weight.smoothed",
+            "quality" : [
+              "estimated"
+            ],
+            "sources" : [
+              {
+                "identifier" : "org.example.synthetic-scale",
+                "kind" : "healthKit"
+              }
+            ],
+            "unit" : "kilograms",
+            "value" : 70,
+            "window" : {
+              "end" : 1791118800000,
+              "start" : 1791034200000
+            }
+          },
+          {
+            "dependencies" : [
+
+            ],
+            "id" : "trend.weight.weeklyChange.2ad9beeddf80089ee5d4",
+            "metric" : "weight.weeklyChange",
+            "quality" : [
+              "insufficientHistory"
+            ],
+            "sources" : [
+
+            ],
+            "unit" : "kilogramsPerWeek",
+            "window" : {
+              "end" : 1791034200000,
+              "start" : 1789219800000
+            }
+          },
+          {
+            "dependencies" : [
+
+            ],
+            "id" : "trend.weight.weeklyChangePercent.ccf41c5c466ab05ca04c",
+            "metric" : "weight.weeklyChangePercent",
+            "quality" : [
+              "insufficientHistory"
+            ],
+            "sources" : [
+
+            ],
+            "unit" : "percentPerWeek",
+            "window" : {
+              "end" : 1791034200000,
+              "start" : 1789219800000
+            }
+          },
+          {
+            "dependencies" : [
+
+            ],
+            "id" : "trend.diet.completeDays.18d994248f5b5dffed3e",
+            "metric" : "diet.completeDays",
+            "quality" : [
+              "partial"
+            ],
+            "sources" : [
+
+            ],
+            "unit" : "count",
+            "value" : 0,
+            "window" : {
+              "end" : 1791034200000,
+              "start" : 1789824600000
+            }
+          },
+          {
+            "dependencies" : [
+
+            ],
+            "id" : "trend.diet.calibratedIntakeReference.e3a7233d2822ff8d1c1c",
+            "metric" : "diet.calibratedIntakeReference",
+            "quality" : [
+              "missing"
+            ],
+            "sources" : [
+
+            ],
+            "unit" : "kilocalories",
+            "window" : {
+              "end" : 1791034200000,
+              "start" : 1789824600000
+            }
+          },
+          {
+            "dependencies" : [
+              {
+                "id" : "00000000-0000-0000-0000-000000000009",
+                "kind" : "manualRecord"
+              },
+              {
+                "id" : "trend.weight.smoothed.9bd2423c5cef94443126",
+                "kind" : "metricFact"
+              }
+            ],
+            "id" : "trend.energy.initialEstimate.6b12cd68827c14c6266e",
+            "metric" : "energy.initialEstimate",
+            "quality" : [
+              "estimated"
+            ],
+            "sources" : [
+              {
+                "identifier" : "org.example.synthetic-scale",
+                "kind" : "healthKit"
+              },
+              {
+                "identifier" : "trainote.manual",
+                "kind" : "manual"
+              }
+            ],
+            "unit" : "kilocalories",
+            "value" : 2638,
+            "window" : {
+              "end" : 1791118800000,
+              "start" : 1791034200000
+            }
+          },
+          {
+            "dependencies" : [
+              {
+                "id" : "00000000-0000-0000-0000-000000000009",
+                "kind" : "manualRecord"
+              }
+            ],
+            "id" : "trend.weight.targetWeeklyChangePercent.e1c7d6260116cac841e4",
+            "metric" : "weight.targetWeeklyChangePercent",
+            "quality" : [
+
+            ],
+            "sources" : [
+              {
+                "identifier" : "trainote.manual",
+                "kind" : "manual"
+              }
+            ],
+            "unit" : "percentPerWeek",
+            "value" : 0,
+            "window" : {
+              "end" : 1791118800000,
+              "start" : 1791034200000
+            }
+          }
+        ],
+        "inputFingerprint" : "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "points" : [
+          {
+            "date" : 1791036000000,
+            "observedKilograms" : 70,
+            "sampleIDs" : [
+              "00000000-0000-0000-0000-000000004000"
+            ],
+            "smoothedKilograms" : 70
+          }
+        ],
+        "proposal" : {
+          "calculationVersion" : "trend-p-v1",
+          "effectiveAt" : 1791034200000,
+          "id" : "trend-dadbe61fa9b17e891dc61bc1111dd03ae680a38291186fd9175e71fddfa7b248",
+          "reasonFactIDs" : [
+            "trend.weight.smoothed.9bd2423c5cef94443126",
+            "trend.energy.initialEstimate.6b12cd68827c14c6266e",
+            "trend.weight.targetWeeklyChangePercent.e1c7d6260116cac841e4"
+          ],
+          "targets" : {
+            "calories" : 2638,
+            "carbohydrates" : 368.625,
+            "fat" : 73.27777777777777,
+            "protein" : 126
+          }
+        }
+      }
+    },
+    {
+      "asOf" : 1791071970000,
+      "day" : {
+        "end" : 1791072000000,
+        "start" : 1790985600000
+      },
+      "name" : "near-midnight",
+      "sampleIDs" : [
+        "00000000-0000-0000-0000-000000004000",
+        "00000000-0000-0000-0000-000000004999"
+      ],
+      "timeZone" : "UTC",
+      "trend" : {
+        "calculationVersion" : "trend-p-v1",
+        "facts" : [
+          {
+            "dependencies" : [
+              {
+                "id" : "00000000-0000-0000-0000-000000004000",
+                "kind" : "manualRecord"
+              }
+            ],
+            "id" : "trend.weight.representative.59b8f48d1efd045c6127",
+            "metric" : "weight.representative",
+            "quality" : [
+
+            ],
+            "sources" : [
+              {
+                "identifier" : "trainote.manual",
+                "kind" : "manual"
+              }
+            ],
+            "unit" : "kilograms",
+            "value" : 70,
+            "window" : {
+              "end" : 1791072000000,
+              "start" : 1790985600000
+            }
+          },
+          {
+            "dependencies" : [
+              {
+                "id" : "00000000-0000-0000-0000-000000004000",
+                "kind" : "manualRecord"
+              }
+            ],
+            "id" : "trend.weight.smoothed.243ea78720f39c05fd13",
+            "metric" : "weight.smoothed",
+            "quality" : [
+              "estimated"
+            ],
+            "sources" : [
+              {
+                "identifier" : "trainote.manual",
+                "kind" : "manual"
+              }
+            ],
+            "unit" : "kilograms",
+            "value" : 70,
+            "window" : {
+              "end" : 1791072000000,
+              "start" : 1790985600000
+            }
+          },
+          {
+            "dependencies" : [
+
+            ],
+            "id" : "trend.weight.weeklyChange.d7650a8d9ec22812f524",
+            "metric" : "weight.weeklyChange",
+            "quality" : [
+              "insufficientHistory"
+            ],
+            "sources" : [
+
+            ],
+            "unit" : "kilogramsPerWeek",
+            "window" : {
+              "end" : 1790985600000,
+              "start" : 1789171200000
+            }
+          },
+          {
+            "dependencies" : [
+
+            ],
+            "id" : "trend.weight.weeklyChangePercent.4d1f03f4e1df06d59092",
+            "metric" : "weight.weeklyChangePercent",
+            "quality" : [
+              "insufficientHistory"
+            ],
+            "sources" : [
+
+            ],
+            "unit" : "percentPerWeek",
+            "window" : {
+              "end" : 1790985600000,
+              "start" : 1789171200000
+            }
+          },
+          {
+            "dependencies" : [
+
+            ],
+            "id" : "trend.diet.completeDays.a90b147cbbecaeef5020",
+            "metric" : "diet.completeDays",
+            "quality" : [
+              "partial"
+            ],
+            "sources" : [
+
+            ],
+            "unit" : "count",
+            "value" : 0,
+            "window" : {
+              "end" : 1790985600000,
+              "start" : 1789776000000
+            }
+          },
+          {
+            "dependencies" : [
+
+            ],
+            "id" : "trend.diet.calibratedIntakeReference.fdf5488b67a858ca1104",
+            "metric" : "diet.calibratedIntakeReference",
+            "quality" : [
+              "missing"
+            ],
+            "sources" : [
+
+            ],
+            "unit" : "kilocalories",
+            "window" : {
+              "end" : 1790985600000,
+              "start" : 1789776000000
+            }
+          },
+          {
+            "dependencies" : [
+              {
+                "id" : "00000000-0000-0000-0000-000000000009",
+                "kind" : "manualRecord"
+              },
+              {
+                "id" : "trend.weight.smoothed.243ea78720f39c05fd13",
+                "kind" : "metricFact"
+              }
+            ],
+            "id" : "trend.energy.initialEstimate.64244d872d762145cba9",
+            "metric" : "energy.initialEstimate",
+            "quality" : [
+              "estimated"
+            ],
+            "sources" : [
+              {
+                "identifier" : "trainote.manual",
+                "kind" : "manual"
+              }
+            ],
+            "unit" : "kilocalories",
+            "value" : 2638,
+            "window" : {
+              "end" : 1791072000000,
+              "start" : 1790985600000
+            }
+          },
+          {
+            "dependencies" : [
+              {
+                "id" : "00000000-0000-0000-0000-000000000009",
+                "kind" : "manualRecord"
+              }
+            ],
+            "id" : "trend.weight.targetWeeklyChangePercent.b3250cdf7590feac3782",
+            "metric" : "weight.targetWeeklyChangePercent",
+            "quality" : [
+
+            ],
+            "sources" : [
+              {
+                "identifier" : "trainote.manual",
+                "kind" : "manual"
+              }
+            ],
+            "unit" : "percentPerWeek",
+            "value" : 0,
+            "window" : {
+              "end" : 1791072000000,
+              "start" : 1790985600000
+            }
+          }
+        ],
+        "inputFingerprint" : "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "points" : [
+          {
+            "date" : 1790987400000,
+            "observedKilograms" : 70,
+            "sampleIDs" : [
+              "00000000-0000-0000-0000-000000004000"
+            ],
+            "smoothedKilograms" : 70
+          }
+        ],
+        "proposal" : {
+          "calculationVersion" : "trend-p-v1",
+          "effectiveAt" : 1790985600000,
+          "id" : "trend-ea1590bdba052498fd23a796635054f9cc40a81b5018f500e2992f4cdee39cc1",
+          "reasonFactIDs" : [
+            "trend.weight.smoothed.243ea78720f39c05fd13",
+            "trend.energy.initialEstimate.64244d872d762145cba9",
+            "trend.weight.targetWeeklyChangePercent.b3250cdf7590feac3782"
+          ],
+          "targets" : {
+            "calories" : 2638,
+            "carbohydrates" : 368.625,
+            "fat" : 73.27777777777777,
+            "protein" : 126
+          }
+        }
+      }
+    }
+  ],
+  "sourceCommit" : "a7e418c6749e6930255370cc9beb4ba737e92594"
+}
