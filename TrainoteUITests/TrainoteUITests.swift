@@ -274,7 +274,11 @@ enum UITestTextInput {
           actual = observed
           return matchesExpected(actual)
         }, object: nil)
-      if XCTWaiter.wait(for: [readBack], timeout: 10) != .completed {
+      _ = XCTWaiter.wait(for: [readBack], timeout: 10)
+      // The outer waiter can interrupt an in-flight AX query and leave its cached value empty.
+      // Read independently after observation ends before asserting the field's current value.
+      actual = field.value as? String ?? ""
+      if !matchesExpected(actual) {
         XCTContext.runActivity(named: "Text input did not reach the expected value") { activity in
           let trace = XCTAttachment(
             string:
