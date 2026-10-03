@@ -7,13 +7,29 @@ struct BodyMapPreviewApp: App {
     WindowGroup {
       Group {
         if ProcessInfo.processInfo.arguments.contains("-fixture-large-text") {
-          BodyMapPreviewScreen().dynamicTypeSize(.accessibility3)
+          BodyMapPreviewRoot().dynamicTypeSize(.accessibility3)
         } else {
-          BodyMapPreviewScreen()
+          BodyMapPreviewRoot()
         }
       }
       .preferredColorScheme(
         ProcessInfo.processInfo.arguments.contains("-fixture-dark") ? .dark : nil)
+    }
+  }
+}
+
+private struct BodyMapPreviewRoot: View {
+  var body: some View {
+    NavigationStack {
+      if ProcessInfo.processInfo.arguments.contains("-fixture-navigation") {
+        NavigationLink("打开恢复分析") {
+          BodyMapPreviewScreen()
+        }
+        .accessibilityIdentifier("preview.openRecovery")
+        .navigationTitle("生命周期验收")
+      } else {
+        BodyMapPreviewScreen()
+      }
     }
   }
 }
@@ -45,38 +61,36 @@ struct BodyMapPreviewScreen: View {
   }
 
   var body: some View {
-    NavigationStack {
-      ScrollView {
-        VStack(alignment: .leading, spacing: 18) {
-          BodyMapView(
-            presentation: input,
-            onSelect: {
-              selected = $0
-              callbackCount += 1
-            }, constrainedPolicy: policy)
-          VStack(alignment: .leading, spacing: 10) {
-            if ProcessInfo.processInfo.arguments.contains("-fixture-benchmark") {
-              Text(performance).font(.caption.monospaced())
-                .accessibilityIdentifier("preview.performance")
-            }
-            Text("独立组件预览 · 全部为合成数据").font(.caption).foregroundStyle(Color.primary.opacity(0.75))
-            Picker("固定数据", selection: $fixture) {
-              Text("混合状态").tag("mixed")
-              Text("全部未知").tag("unknown")
-              Text("全部零分").tag("zero")
-            }
-            .pickerStyle(.segmented)
-            .accessibilityIdentifier("preview.fixture")
-            Text("选择回调：\(selected?.rawValue ?? "none") · \(callbackCount)")
-              .font(.caption.monospaced()).accessibilityIdentifier("preview.callback")
+    ScrollView {
+      VStack(alignment: .leading, spacing: 18) {
+        BodyMapView(
+          presentation: input,
+          onSelect: {
+            selected = $0
+            callbackCount += 1
+          }, constrainedPolicy: policy)
+        VStack(alignment: .leading, spacing: 10) {
+          if ProcessInfo.processInfo.arguments.contains("-fixture-benchmark") {
+            Text(performance).font(.caption.monospaced())
+              .accessibilityIdentifier("preview.performance")
           }
+          Text("独立组件预览 · 全部为合成数据").font(.caption).foregroundStyle(Color.primary.opacity(0.75))
+          Picker("固定数据", selection: $fixture) {
+            Text("混合状态").tag("mixed")
+            Text("全部未知").tag("unknown")
+            Text("全部零分").tag("zero")
+          }
+          .pickerStyle(.segmented)
+          .accessibilityIdentifier("preview.fixture")
+          Text("选择回调：\(selected?.rawValue ?? "none") · \(callbackCount)")
+            .font(.caption.monospaced()).accessibilityIdentifier("preview.callback")
         }
-        .padding(16)
       }
-      .background(Color(uiColor: .systemGroupedBackground))
-      .navigationTitle("恢复分析")
-      .navigationBarTitleDisplayMode(.inline)
+      .padding(16)
     }
+    .background(Color(uiColor: .systemGroupedBackground))
+    .navigationTitle("恢复分析")
+    .navigationBarTitleDisplayMode(.inline)
     .task {
       if ProcessInfo.processInfo.arguments.contains("-fixture-benchmark") {
         try? await Task.sleep(for: .milliseconds(600))
