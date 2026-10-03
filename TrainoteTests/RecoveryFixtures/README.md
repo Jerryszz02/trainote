@@ -1,6 +1,6 @@
 # Recovery C handoff
 
-Started at `967fa5351838240b2bb6ca0c5cb8e777530e54c4`; normally merged the coordinator-approved fixed foundation `28500cfaba534d2d09a1415f8c6d1cb1d904a10e`, including A/D and goal transactions. This module does not wire AppShell, Settings, AI transport, the shared schema or D's renderer. F owns production navigation and candidate generation.
+Based on official `main` at `60c02d7b9e4a5a0bb9f118eb162caadf7c0e38f5`, incorporated by an ordinary two-parent merge with the released A/B/D/E modules. PR #8 targets `main`. This module does not wire AppShell, Settings, AI transport, the shared schema or D's renderer. F owns production navigation and candidate generation; no unmerged F patch is included.
 
 ## Consumer assembly
 
@@ -56,12 +56,35 @@ Expand the explicit reviewed table and regenerate only after reviewing each adde
 
 ## Verification
 
-Test fixtures are synthetic. Dedicated Simulator: `56CCDE13-528E-4012-AABA-D0559816F5AB` (Trainote Recovery C, iOS 26.5). DerivedData: `/tmp/trainote-recovery-c-derived`; Xcode 26.6. Current merged source passed **112 unit tests and 1 real RIR UI test**, 0 failures: `/tmp/trainote-recovery-c-reviewed-final.xcresult`. The standalone recovery preview passed **3 UI tests**, including clearing an existing only answer and cancellation semantics: `/tmp/trainote-recovery-c-preview-final.xcresult`. Earlier, the same training code passed the 3 existing repeated-workout/bodyweight-duration/cardio-confirmation UI regressions in `/tmp/trainote-recovery-c-final-1.xcresult` (before the fixed foundation merge). No current-head remote CI result is implied by these local runs.
+Test fixtures are synthetic. Dedicated Simulator: `56CCDE13-528E-4012-AABA-D0559816F5AB` (Trainote Recovery C, iOS 26.5). DerivedData: `/tmp/trainote-recovery-c-derived`; Xcode 26.6. After merging official `main` at `60c02d7b9e4a5a0bb9f118eb162caadf7c0e38f5`, the Simulator Debug build, **39 focused unit tests and 1 UI test** passed with 0 failures: `/tmp/trainote-recovery-c-main-60c02d7-focused.xcresult` (matching `.log`). The selected suites cover all recovery calculations/workflows, training factories, the captured recovery/report contract and trend/report boundaries; the UI test covers RIR/history/repeat. No previous-head CI result is implied for the new merge head.
+
+Prior fixed head `1bdcb85244ef5137a1726e7f3982f0318d1f72bd`, on the earlier `b24cd10` base, passed remote run `37087103303` attempt 1: **139 unit tests and 18 UI tests**, 0 failures/skips. The original logs, metadata and downloaded `.xcresult` are retained under `/tmp/trainote-recovery-c-ci-37087103303/`. That head also passed 57 focused local unit tests and 7 UI tests, including the standalone recovery preview's explicit answer clearing, body rendering/selection, pain override, save/skip and empty state. Those earlier results remain labelled by their original head; the new main merge requires its own full CI.
+
+The only conflict in the latest merge was the generated project. All C production code, mapping and tests remain byte-identical to `1bdcb85`; every other main file, including the A/B/D/E modules, shared contracts, input helpers, project specification and workflows, matches `60c02d7` byte for byte. Historical edits still preserve role/RIR, while a new training copy clears RIR and changes an unknown historical role to working. XcodeGen regenerated the project from the unchanged `project.yml`; the diff against main adds 92 registration lines without removing entries or changing build settings. The complete PR diff contains 24 module/test/resource/handoff/project files, with no shared foundation, trend, report or renderer changes. The 1,324-entry tracking-mode audit and `git diff --check` passed.
+
+Focused main-integration command (use a new result-bundle path for a repeat run):
+
+```sh
+xcodebuild -project Trainote.xcodeproj -scheme Trainote \
+  -destination 'platform=iOS Simulator,id=56CCDE13-528E-4012-AABA-D0559816F5AB' \
+  -derivedDataPath /tmp/trainote-recovery-c-derived \
+  -resultBundlePath /tmp/trainote-recovery-c-main-60c02d7-focused.xcresult \
+  -parallel-testing-enabled NO \
+  -only-testing:TrainoteTests/RecoveryCalculatorTests \
+  -only-testing:TrainoteTests/RecoveryCalibrationTests \
+  -only-testing:TrainoteTests/RecoverySystemicTests \
+  -only-testing:TrainoteTests/RecoveryWorkflowTests \
+  -only-testing:TrainoteTests/TrainingUpgradeTests \
+  -only-testing:TrainoteTests/AIReportRealContractTests \
+  -only-testing:TrainoteTests/AIReportTrendBoundaryTests \
+  -only-testing:TrainoteUITests/RecoveryRIRUITests \
+  CODE_SIGNING_ALLOWED=NO test
+```
 
 The new external-strength coverage regression was first observed failing (non-nil score and missing dependency), then passed after preserving the unknown load and full eligibility lineage. The coordinator's feedback-clearing P2 is covered at repository/analysis and real UI levels. First empty drafts remain unsaved; clearing an existing record persists nil/empty values; skip leaves persisted state intact.
 
 Coverage includes filtering/invalid times, RIR and historical role priors, unknown versus 100, deduplicated muscle weights, monotonic decay, edit/delete, independent pain/limitation, feedback persistence/prompt skip, temporal holdout rejection/reset, HRV source separation, complete dependencies and fresh-report removal, real RIR/history/repeat UI, and standalone recovery-page UI (body selection, pain override, feedback save/cancel and empty-state skip).
 
-Production navigation/help wiring, final combined CI with the other tasks, physical-device HealthKit behavior, professional review and physiological/forecast validity remain distinct acceptance items. The approved sleep/activity normalization and goal transaction updates are merged. A's separately announced backup precision patch remains coordinated by the parent.
+Production navigation/help wiring, final combined CI with the other tasks, physical-device HealthKit behavior, professional review and physiological/forecast validity remain distinct acceptance items. Official main includes the approved foundation, trend, report and BodyMap modules. The recovery module requires no additional shared API, DTO or schema change.
 
 Standalone preview: `python3 TrainoteTests/RecoveryFixtures/prepare_preview.py --xcodegen /path/to/xcodegen` then build/test `build/recovery-preview/TrainoteRecoveryPreview.xcodeproj`, scheme `TrainoteRecoveryPreview`, with a dedicated Simulator and DerivedData. All preview state is synthetic and in memory; `RECOVERY_PREVIEW` / `RECOVERY_PREVIEW_TESTS` keep the harness entry point and UI tests outside production. The generator extracts the current persistence declaration mechanically and excludes the production `@main` file.
