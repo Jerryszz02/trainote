@@ -18,62 +18,73 @@ struct RecoveryView: View {
   @State private var confirmingReset = false
 
   var body: some View {
-    ScrollView {
-      VStack(alignment: .leading, spacing: 20) {
-        if let error {
-          ContentUnavailableView(
-            "暂时无法更新分析", systemImage: "arrow.clockwise",
-            description: Text(error))
-          Button("重试") { reload() }
-        } else if let result {
-          VStack(alignment: .leading, spacing: 8) {
-            Text("恢复指数").font(.title2.bold())
-            Text("选择肌群查看最近负荷与体感").foregroundStyle(.secondary)
-          }
-          BodyMapView(presentation: result.bodyMapPresentation(selected: selected)) { muscle in
-            selected = muscle
-          }
-          if let muscle = result.muscles.first(where: { $0.muscleID == selected }) {
-            RecoveryMuscleDetail(
-              muscle: muscle, result: result, onFeedback: { openCheckIn(muscle.muscleID) },
-              onShowMethods: onShowMethods)
-          }
-          RecoverySystemicCard(result: result)
-          if healthReadFailed {
-            Text("健康数据暂时无法读取，当前显示本地记录。").font(.caption).foregroundStyle(.secondary)
-          }
-          if showPrompt {
-            HStack {
-              VStack(alignment: .leading) {
-                Text("今天感觉如何？").font(.headline)
-                Text("十秒补充体感，也可以跳过。").font(.caption).foregroundStyle(.secondary)
-              }
-              Spacer()
-              Button("填写") { openCheckIn() }
-              Button("跳过") { showPrompt = false }
+    ScrollViewReader { scroll in
+      ScrollView {
+        VStack(alignment: .leading, spacing: 20) {
+          if let error {
+            ContentUnavailableView(
+              "暂时无法更新分析", systemImage: "arrow.clockwise",
+              description: Text(error))
+            Button("重试") { reload() }
+          } else if let result {
+            VStack(alignment: .leading, spacing: 8) {
+              Text("恢复指数").font(.title2.bold())
+              Text("选择肌群查看最近负荷与体感").foregroundStyle(.secondary)
             }
-          }
-          Button("记录或修改今日体感") { openCheckIn() }
-            .accessibilityIdentifier("recovery.checkIn.open")
-          if let resetCalibration {
-            Button("重置个体校准") { confirmingReset = true }
-              .confirmationDialog(
-                "从现在重新积累校准记录？", isPresented: $confirmingReset, titleVisibility: .visible
-              ) {
-                Button("重置校准") {
-                  resetCalibration()
-                  reload()
-                }
-                Button("取消", role: .cancel) {}
-              } message: {
-                Text("训练和体感历史会保留，恢复指数先使用基础参数。")
+            BodyMapView(presentation: result.bodyMapPresentation(selected: selected)) { muscle in
+              if selected == muscle {
+                withAnimation { scroll.scrollTo(detailAnchor(for: muscle), anchor: .top) }
+              } else {
+                selected = muscle
               }
+            }
+            if let muscle = result.muscles.first(where: { $0.muscleID == selected }) {
+              RecoveryMuscleDetail(
+                muscle: muscle, result: result, onFeedback: { openCheckIn(muscle.muscleID) },
+                onShowMethods: onShowMethods)
+                .id(detailAnchor(for: muscle.muscleID))
+            }
+            RecoverySystemicCard(result: result)
+            if healthReadFailed {
+              Text("健康数据暂时无法读取，当前显示本地记录。").font(.caption).foregroundStyle(.secondary)
+            }
+            if showPrompt {
+              HStack {
+                VStack(alignment: .leading) {
+                  Text("今天感觉如何？").font(.headline)
+                  Text("十秒补充体感，也可以跳过。").font(.caption).foregroundStyle(.secondary)
+                }
+                Spacer()
+                Button("填写") { openCheckIn() }
+                Button("跳过") { showPrompt = false }
+              }
+            }
+            Button("记录或修改今日体感") { openCheckIn() }
+              .accessibilityIdentifier("recovery.checkIn.open")
+            if let resetCalibration {
+              Button("重置个体校准") { confirmingReset = true }
+                .confirmationDialog(
+                  "从现在重新积累校准记录？", isPresented: $confirmingReset, titleVisibility: .visible
+                ) {
+                  Button("重置校准") {
+                    resetCalibration()
+                    reload()
+                  }
+                  Button("取消", role: .cancel) {}
+                } message: {
+                  Text("训练和体感历史会保留，恢复指数先使用基础参数。")
+                }
+            }
+            if let onShowMethods { Button("计算方法与数据使用", action: onShowMethods) }
+          } else {
+            ProgressView("正在读取本地记录")
           }
-          if let onShowMethods { Button("计算方法与数据使用", action: onShowMethods) }
-        } else {
-          ProgressView("正在读取本地记录")
-        }
-      }.padding()
+        }.padding()
+      }
+      .onChange(of: selected) { _, muscle in
+        guard let muscle else { return }
+        withAnimation { scroll.scrollTo(detailAnchor(for: muscle), anchor: .top) }
+      }
     }
     .navigationTitle("恢复分析")
     .accessibilityIdentifier("recovery.screen")
@@ -83,6 +94,10 @@ struct RecoveryView: View {
     .sheet(item: $checkInDraft, onDismiss: { reload() }) { draft in
       RecoveryCheckInView(repository: repository, suggestedMuscles: suggestedMuscles, draft: draft)
     }
+  }
+
+  private func detailAnchor(for muscle: MuscleID) -> String {
+    "recovery.selectedDetail.\(muscle.rawValue)"
   }
 
   private var suggestedMuscles: [MuscleID] {

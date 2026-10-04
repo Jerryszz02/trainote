@@ -19,7 +19,7 @@ struct TrainingView: View {
   @State private var queuedWorkout: Workout?
   @State private var saveError: String?
 
-  let startRequest: Int
+  @Binding var startRequested: Bool
 
   private var activeWorkout: Workout? {
     workouts.first { $0.status == .inProgress }
@@ -73,10 +73,12 @@ struct TrainingView: View {
       }
     }
     .navigationTitle("训练")
-    .onChange(of: startRequest, initial: true) { _, newValue in
-      if newValue > 0 {
-        if let activeWorkout { selectedWorkout = activeWorkout } else { presentedSheet = .start }
-      }
+    .onChange(of: startRequested, initial: true) { _, requested in
+      guard requested else { return }
+      // Consume the intent before navigating. The list's initial callback can run again
+      // when a completed workout dismisses back to it.
+      startRequested = false
+      if let activeWorkout { selectedWorkout = activeWorkout } else { presentedSheet = .start }
     }
     .toolbar {
       ToolbarItem(placement: .topBarTrailing) {

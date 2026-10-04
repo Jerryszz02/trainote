@@ -53,6 +53,8 @@ final class TrainingRecommendationTests: XCTestCase {
     let result = try evaluate(score: 100, pain: true)
     XCTAssertEqual(result.candidates.map(\.action), [.rest])
     XCTAssertTrue(result.plansByAction.isEmpty)
+    XCTAssertEqual(
+      result.primaryReasonsByAction[result.candidates[0].id], .restrictedMuscles([.chest]))
   }
   func testTodayPainFeedbackOverridesCalculatorAndFutureFeedbackIsIgnored() throws {
     var input = self.input
@@ -83,23 +85,52 @@ final class TrainingRecommendationTests: XCTestCase {
     let context = TrainingRecommendationContext(
       selectedPlan: plan,
       availableWeekdays: [], exerciseMuscles: ["0025": [.chest]])
+    let unavailable = try evaluate(context: context)
+    XCTAssertEqual(unavailable.candidates.map(\.action), [.rest, .lightActivity])
     XCTAssertEqual(
-      try evaluate(context: context).candidates.map(\.action), [.rest, .lightActivity])
-    XCTAssertEqual(try evaluate(systemic: .limited).candidates.map(\.action), [.rest])
+      unavailable.primaryReasonsByAction[unavailable.candidates[0].id], .unavailableToday)
+    let limited = try evaluate(systemic: .limited)
+    XCTAssertEqual(limited.candidates.map(\.action), [.rest])
+    XCTAssertEqual(limited.primaryReasonsByAction[limited.candidates[0].id], .systemicLimited)
+  }
+  func testTiredCheckInIsTheDisplayedRestReasonEvenWithPain() throws {
+    var input = self.input
+    let timeZone = try XCTUnwrap(TimeZone(identifier: input.calendarTimeZone))
+    input.checkIns = [
+      .init(
+        id: AnalysisFixtures.id(51),
+        localDate: AnalysisFingerprint.localDate(input.asOf, timeZone: timeZone),
+        timeZoneIdentifier: input.calendarTimeZone, feeling: .tired,
+        muscleFeedback: [
+          .init(id: AnalysisFixtures.id(50), muscleID: .chest,
+                hasPain: true, recordedAt: input.asOf)
+        ], updatedAt: input.asOf)
+    ]
+    let result = try evaluate(input: input, score: 100, pain: true)
+    XCTAssertEqual(result.candidates.map(\.action), [.rest])
+    XCTAssertEqual(result.primaryReasonsByAction[result.candidates[0].id], .tiredCheckIn)
+    XCTAssertEqual(result.blockedMuscles, [.chest])
+    let fact = try XCTUnwrap(result.facts.first { $0.id == "recommendation.feeling.tired" })
+    XCTAssertEqual(fact.value, 1)
+    XCTAssertTrue(fact.dependencies.contains(
+      .init(kind: .manualRecord, id: input.checkIns[0].id.uuidString)))
   }
   func testModerateReadinessProducesBoundedOptions() throws {
     let result = try evaluate(score: 60, state: .moderate)
     XCTAssertEqual(result.candidates.map(\.action), [.reduceSets, .increaseRIR])
     XCTAssertEqual(result.candidates[0].allowedParameters[0].minimum, 50)
     XCTAssertEqual(result.candidates[1].allowedParameters[0].maximum, 4)
+    XCTAssertEqual(result.primaryReasonsByAction[result.candidates[0].id], .reducedReadiness)
   }
   func testOnlyCompletedRecentWorkIsCounted() throws {
     var input = AnalysisFixtures.input(.manualOnly)
     input.workouts[0].isCompleted = false
     XCTAssertEqual(try evaluate(input: input).candidates.map(\.action), [.keepPlan])
     input.workouts[0].isCompleted = true
+    let reduced = try evaluate(input: input)
+    XCTAssertEqual(reduced.candidates.map(\.action), [.reduceSets, .increaseRIR])
     XCTAssertEqual(
-      try evaluate(input: input).candidates.map(\.action), [.reduceSets, .increaseRIR])
+      reduced.primaryReasonsByAction[reduced.candidates[0].id], .recentWorkingSets(1))
     input.workouts[0].exercises[0].sets[0].role = .warmup
     XCTAssertEqual(try evaluate(input: input).candidates.map(\.action), [.keepPlan])
     input.workouts[0].exercises[0].sets[0].role = .working

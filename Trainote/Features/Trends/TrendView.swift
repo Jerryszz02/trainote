@@ -105,6 +105,10 @@ struct TrendView: View {
         Text("记录体重后开始建立趋势").foregroundStyle(.secondary)
       }
       LabeledContent("目标方向", value: model.input?.profile?.goalDirection?.trendTitle ?? "待设置")
+      if model.needsProfileCompletion {
+        Button("完善资料") { showProfile = true }
+          .accessibilityIdentifier("trend.completeProfile")
+      }
       if let rate = model.result?.weeklyChangePercent {
         LabeledContent("近 21 天变化速度", value: String(format: "%+.2f%% / 周", rate))
       }
@@ -158,12 +162,12 @@ struct TrendView: View {
   private var dietSection: some View {
     Section("摄入完整度") {
       if let value = model.result?.facts.first(where: { $0.metric == "diet.completeDays" })?.value {
-        LabeledContent("最近 14 个完整日", value: "\(Int(value)) / 14 天已确认")
+        LabeledContent("截至昨天的 14 天", value: "\(Int(value)) / 14 天已确认")
       }
       DatePicker("确认日期", selection: $dietDate, in: ...model.now(), displayedComponents: .date)
       let selected = model.input?.nutrition.first { $0.localDate == model.calendar.key(dietDate) }
       if selected?.isComplete == true {
-        Label("当天已确认完整", systemImage: "checkmark.circle.fill").foregroundStyle(.green)
+        Label("所选日期已确认完整", systemImage: "checkmark.circle.fill").foregroundStyle(.green)
       } else {
         Button("当天饮食已记完整") {
           if selected?.logIDs.isEmpty != false {

@@ -72,6 +72,7 @@ private final class ReportTestHTTP: ReportHTTPPerforming {
     case "/v1/reports":
       var report = LocalReportGenerator().make(try ReportWireInput(input).validationInput)
       report.reportID = UUID().uuidString; report.model = AIReportPolicy.model; report.isLocalFallback = false
+      report.summary = ReportText.summary(try ReportWireInput(input).validationInput)
       return (try AIReportPolicy.encoder().encode(report), 200)
     case "/v1/consent":
       if request.httpMethod == "DELETE" && deleteFails { status = 503 }

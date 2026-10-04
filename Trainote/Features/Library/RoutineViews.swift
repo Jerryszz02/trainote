@@ -13,13 +13,26 @@ struct RoutinesView: View {
 
   @Query(sort: \Routine.updatedAt, order: .reverse)
   private var routines: [Routine]
+  @Query private var workouts: [Workout]
 
   @State private var presentation: RoutinePresentation?
   @State private var pendingDeletion: Routine?
   @State private var deletionError: String?
+  @State private var selectedWorkout: Workout?
+  @State private var startError: String?
+
+  private var activeWorkout: Workout? { workouts.first { $0.status == .inProgress } }
 
   var body: some View {
     List {
+      if let activeWorkout {
+        Section("已有进行中的训练") {
+          Text("完成或放弃「\(activeWorkout.title)」后，即可开始另一场训练。")
+            .font(.subheadline).foregroundStyle(.secondary)
+          Button("继续训练", systemImage: "play.fill") { selectedWorkout = activeWorkout }
+            .accessibilityIdentifier("routine.continueWorkout")
+        }
+      }
       if routines.isEmpty {
         ContentUnavailableView(
           "还没有训练模板",
@@ -28,25 +41,33 @@ struct RoutinesView: View {
         )
       } else {
         ForEach(routines) { routine in
-          Button {
-            presentation = RoutinePresentation(
-              routine: draft(of: routine), original: routine, isNew: false)
-          } label: {
-            HStack {
-              VStack(alignment: .leading, spacing: 4) {
-                Text(routine.name).font(.body.weight(.medium))
-                Text("\(routine.exercises.count) 个动作")
-                  .font(.caption)
-                  .foregroundStyle(.secondary)
+          VStack(alignment: .leading, spacing: 12) {
+            Button {
+              presentation = RoutinePresentation(
+                routine: draft(of: routine), original: routine, isNew: false)
+            } label: {
+              HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                  Text(routine.name).font(.body.weight(.medium))
+                  Text("\(routine.exercises.count) 个动作")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                }
+                Spacer()
+                Image(systemName: "chevron.right")
+                  .font(.caption.bold())
+                  .foregroundStyle(.tertiary)
               }
-              Spacer()
-              Image(systemName: "chevron.right")
-                .font(.caption.bold())
-                .foregroundStyle(.tertiary)
+              .contentShape(Rectangle())
             }
-            .contentShape(Rectangle())
+            .buttonStyle(.plain)
+            .accessibilityIdentifier("routine.edit.\(routine.id.uuidString)")
+            Button("开始训练", systemImage: "play.fill") { start(routine) }
+              .buttonStyle(.borderless)
+              .disabled(activeWorkout != nil)
+              .accessibilityIdentifier("routine.start.\(routine.id.uuidString)")
           }
-          .buttonStyle(.plain)
+          .padding(.vertical, 4)
           .swipeActions {
             Button("删除", role: .destructive) { pendingDeletion = routine }
           }
@@ -61,6 +82,15 @@ struct RoutinesView: View {
     }
     .sheet(item: $presentation) { value in
       RoutineEditorView(routine: value.routine, original: value.original, isNew: value.isNew)
+    }
+    .navigationDestination(item: $selectedWorkout) { ActiveWorkoutView(workout: $0) }
+    .alert(
+      "无法开始训练",
+      isPresented: Binding(get: { startError != nil }, set: { if !$0 { startError = nil } })
+    ) {
+      Button("知道了", role: .cancel) {}
+    } message: {
+      Text(startError ?? "请重试。")
     }
     .alert("删除这个训练模板？", isPresented: deletionAlertBinding, presenting: pendingDeletion) {
       routine in
@@ -88,6 +118,29 @@ struct RoutinesView: View {
 
   private var deletionAlertBinding: Binding<Bool> {
     Binding(get: { pendingDeletion != nil }, set: { if !$0 { pendingDeletion = nil } })
+  }
+
+  private func start(_ routine: Routine) {
+    do {
+      // Check the store again at the action boundary, even if the displayed list is stale.
+      if let active = try modelContext.fetch(FetchDescriptor<Workout>()).first(where: {
+        $0.status == .inProgress
+      }) {
+        selectedWorkout = active
+        return
+      }
+      guard !routine.exercises.isEmpty, routine.exercises.allSatisfy(\.hasValidDefaults) else {
+        startError = "模板包含无效参数，请先编辑修正。"
+        return
+      }
+      let workout = RoutineFactory.workout(from: routine)
+      modelContext.insert(workout)
+      try modelContext.save()
+      selectedWorkout = workout
+    } catch {
+      modelContext.rollback()
+      startError = error.localizedDescription
+    }
   }
 
   private func createRoutine() {

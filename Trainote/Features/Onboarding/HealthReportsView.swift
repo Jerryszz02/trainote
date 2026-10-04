@@ -176,7 +176,7 @@ enum HealthReportCopy {
     if label == nil, fact.metric.hasSuffix(".soreness") { label = "酸痛记录" }
     if label == nil, fact.metric.hasSuffix(".pain") { label = "疼痛记录" }
     if label == nil, fact.metric.hasSuffix(".movementLimitation") { label = "活动限制" }
-    if label == nil, fact.metric.hasPrefix("recommendation.goal.") { label = "目标方向记录" }
+    if label == nil, fact.metric.hasPrefix("recommendation.goal.") { label = "目标方向" }
     if label == nil, fact.metric.hasPrefix("recommendation.systemic.") { label = "全身状态" }
     if label == nil, fact.metric.hasPrefix("recovery.systemic.") {
       let measure =

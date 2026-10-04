@@ -21,9 +21,9 @@ final class TrendAdoptionUITests: XCTestCase {
     XCTAssertTrue(enable.waitForExistence(timeout: 5), "升级态应先显示显式启用入口")
     enable.tap()
 
-    let profile = app.buttons["trend.profile"]
+    let profile = app.buttons["trend.completeProfile"]
     reveal(profile)
-    XCTAssertTrue(profile.isHittable, "趋势页应允许通过真实表单建立身体资料")
+    XCTAssertTrue(profile.isHittable, "缺资料提示旁应能直接打开身体资料表单")
     profile.tap()
     UITestTextInput.replace(app.textFields["trend.profile.height"], with: "175", in: app)
     UITestTextInput.replace(app.textFields["trend.profile.age"], with: "30", in: app)
@@ -48,19 +48,25 @@ final class TrendAdoptionUITests: XCTestCase {
     let oldTarget = targetRow(prefix: "当前", calories: 2000)
     reveal(oldTarget)
     XCTAssertTrue(oldTarget.exists, "采用前应保留旧版 2000 kcal 目标")
-    let proposal = targetRow(prefix: "建议", calories: 2240)
+    let proposal = targetRow(prefix: "建议", calories: 2242)
     reveal(proposal)
     XCTAssertTrue(proposal.exists, "建议应来自实际趋势计算")
-    let adjustment = app.staticTexts["热量调整 +240 kcal"]
+    let adjustment = app.staticTexts["热量调整 +242 kcal"]
     reveal(adjustment)
-    XCTAssertTrue(adjustment.isHittable, "调整量应等于展示目标之差：2240 − 2000 = 240")
+    XCTAssertTrue(adjustment.isHittable, "调整量应等于展示目标之差：2242 − 2000 = 242")
     capture("旧目标与真实初始建议")
 
     reveal(adopt)
     adopt.tap()
-    let adopted = targetRow(prefix: "当前", calories: 2240)
+    let adopted = targetRow(prefix: "当前", calories: 2242)
     reveal(adopted)
     XCTAssertTrue(adopted.waitForExistence(timeout: 5), "采用后当前目标应切换为建议值")
+    app.tabBars.buttons["今日"].tap()
+    let adoptedTodayCalories = app.descendants(matching: .any)["today.nutrient.calories"].firstMatch
+    reveal(adoptedTodayCalories)
+    XCTAssertTrue(adoptedTodayCalories.label.contains("目标 2,242")
+      || adoptedTodayCalories.label.contains("目标 2242"), "今日目标与趋势建议应按同一整数精度显示")
+    app.tabBars.buttons["趋势"].tap()
     let adoptedHistory = app.staticTexts["已采用建议"]
     reveal(adoptedHistory)
     XCTAssertTrue(adoptedHistory.exists, "采用应写入建议目标历史")
@@ -113,6 +119,37 @@ final class TrendAdoptionUITests: XCTestCase {
       todayCalories.label.contains("目标 2,000") || todayCalories.label.contains("目标 2000"),
       "今日页应读到撤销后恢复的 2000 kcal 目标")
     capture("今日页已恢复旧目标")
+  }
+
+  func testNutritionPageConfirmsTodayWhileTrendWindowEndsYesterday() {
+    app.tabBars.buttons["饮食"].tap()
+    let confirm = app.buttons["nutrition.confirmDiet"]
+    reveal(confirm)
+    XCTAssertTrue(confirm.isHittable)
+    confirm.tap()
+    app.buttons["确认当天没有摄入，标记完整"].tap()
+    XCTAssertTrue(app.descendants(matching: .any)["nutrition.dietComplete"].firstMatch
+      .waitForExistence(timeout: 3))
+    app.tabBars.buttons["趋势"].tap()
+    let enable = app.buttons["trend.enableSuggestions"]
+    if enable.exists { enable.tap() }
+    let window = app.descendants(matching: .any).matching(
+      NSPredicate(format: "label CONTAINS %@", "截至昨天的 14 天")
+    ).firstMatch
+    reveal(window)
+    XCTAssertTrue(window.exists)
+    let pastCount = app.descendants(matching: .any).matching(
+      NSPredicate(format: "label CONTAINS %@", "0 / 14 天已确认")
+    ).firstMatch
+    XCTAssertTrue(pastCount.exists, "今天的确认不应计入截至昨天的 14 天")
+    app.tabBars.buttons["饮食"].tap()
+    app.buttons["nutrition.add"].tap()
+    app.buttons["nutrition.add.direct"].tap()
+    UITestTextInput.replace(app.textFields["nutrition.entry.name"], with: "回归测试食物", in: app)
+    app.buttons["nutrition.entry.save"].tap()
+    let reconfirm = app.buttons["nutrition.confirmDiet"]
+    reveal(reconfirm)
+    XCTAssertTrue(reconfirm.waitForExistence(timeout: 3), "补记饮食后，先前的完整确认应失效")
   }
 
   private func targetRow(prefix: String, calories: Int) -> XCUIElement {

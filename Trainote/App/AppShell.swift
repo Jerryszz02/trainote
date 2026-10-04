@@ -24,7 +24,7 @@ private enum AppSheet: Identifiable {
 
 struct AppShell: View {
   @State private var selectedTab: AppTab = .today
-  @State private var startWorkoutRequest = 0
+  @State private var startWorkoutRequested = false
   @State private var logFoodRequest = 0
   @State private var todayPath: [LibrarySection] = []
   @State private var presentedSheet: AppSheet?
@@ -41,7 +41,7 @@ struct AppShell: View {
         TodayView(
           onStartWorkout: {
             selectedTab = .training
-            startWorkoutRequest += 1
+            startWorkoutRequested = true
           },
           onLogFood: {
             selectedTab = .nutrition
@@ -71,7 +71,7 @@ struct AppShell: View {
       .tag(AppTab.today)
 
       NavigationStack {
-        TrainingView(startRequest: startWorkoutRequest)
+        TrainingView(startRequested: $startWorkoutRequested)
       }
       .tabItem { Label("训练", systemImage: "figure.strengthtraining.traditional") }
       .tag(AppTab.training)
@@ -92,7 +92,7 @@ struct AppShell: View {
         analysisDestinations.recovery(
           { _ in
             selectedTab = .training
-            startWorkoutRequest += 1
+            startWorkoutRequested = true
           }, { selectedTab = .trends })
       }
       .tabItem { Label("恢复", systemImage: "figure.stand") }

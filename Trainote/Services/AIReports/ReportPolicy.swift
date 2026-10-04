@@ -49,6 +49,37 @@ enum AIReportFailure: Error, Equatable {
 
 /// The fresh dependency closure stays local. Send summary facts and every approved candidate's reasons.
 enum ReportFactSelection {
+  /// The report card shows a scope-specific preview. The full dependency closure stays in
+  /// `facts(_:)` for the evidence page and remote contract.
+  static func highlights(_ input: ReportInput) -> [MetricFact] {
+    let selected = facts(input)
+    let priorities: [String]
+    switch input.reportType {
+    case .today:
+      let feelingRecorded = selected.contains { $0.metric == "recovery.feeling" && $0.value != nil }
+      priorities = ["recommendation.availableToday", "recovery.feeling"]
+        + (input.goalDirection.map { ["recommendation.goal.\($0.rawValue)"] } ?? [])
+        + (feelingRecorded ? [] : ["recommendation.feeling.tired"])
+    case .trend:
+      priorities = ["weight.smoothed", "weight.weeklyChangePercent", "diet.completeDays"]
+    case .recovery:
+      priorities = ["recovery.feeling", "recovery.sleepFeeling", "recovery.readiness"]
+    case .weekly:
+      priorities = ["diet.completeDays", "weight.weeklyChangePercent", "recovery.feeling"]
+    }
+    let preferred = priorities.compactMap { metric in
+      selected.filter { $0.metric == metric }.sorted {
+        if ($0.value != nil) != ($1.value != nil) { return $0.value != nil }
+        if metric == "recovery.readiness", let left = $0.value, let right = $1.value,
+          left != right { return left < right }
+        if $0.window.end != $1.window.end { return $0.window.end > $1.window.end }
+        return $0.id < $1.id
+      }.first
+    }
+    return Array((preferred + selected.filter { fact in
+      !preferred.contains(where: { $0.id == fact.id })
+    }).prefix(3))
+  }
   private static func isTrendBucket(_ fact: MetricFact) -> Bool {
     // B deliberately preserves whole calendar buckets and hashes each derived fact's content.
     // Its sources describe the original readings, so they can be manual, HealthKit or empty.
@@ -246,6 +277,23 @@ struct ReportRequestEnvelope: Encodable {
 }
 
 enum ReportText {
+  static func localSummary(_ input: ReportInput) -> String {
+    switch input.reportType {
+    case .today:
+      return "今日安排与体感来自当前记录；请结合报告依据查看可用事实。"
+    case .trend:
+      let metrics = Set(input.facts.filter { $0.value != nil }.map(\.metric))
+      if !metrics.contains("weight.weeklyChangePercent") {
+        let rules = TrendRules()
+        return "趋势记录不足：需至少 \(Int(rules.minimumSpanDays)) 天跨度、\(rules.minimumWeightDays) 个称重日，且最近两周各至少 \(rules.minimumWeightDaysPerWeek) 天。"
+      }
+      return "趋势重点查看体重变化和截至昨天的饮食完整记录。"
+    case .recovery:
+      return "恢复重点查看今日体感、睡眠与肌群记录；缺失项保持未知。"
+    case .weekly:
+      return "本周回顾结合体重变化、饮食完整度与恢复记录。"
+    }
+  }
   static func summary(_ input: ReportInput) -> String {
     ReportFactSelection.facts(input).contains { $0.value != nil }
       ? "根据当前记录，可查看以下事实与候选建议。" : "当前记录不足，补充记录后再看变化。"
@@ -270,12 +318,89 @@ enum ReportText {
     var text = observation.text
     for fact in facts where observation.evidenceIDs.contains(fact.id) {
       let number = fact.value.map { $0.formatted(.number.precision(.fractionLength(0...2))) } ?? "未知"
+      var meaning = semanticValue(fact)
+      if let value = fact.value {
+        switch fact.metric {
+        case "recommendation.selectedPlan":
+          if value == 1 { meaning = "本次模板：已选择" }
+        case "recommendation.significantSoreness":
+          if value == 0 || value == 1 { meaning = value == 1 ? "明显酸痛：有" : "明显酸痛：无" }
+        case "recovery.residualLoad", "recovery.lastSessionLoad":
+          meaning = "负荷值：\(number)"
+        default:
+          if fact.metric.hasPrefix("recommendation.systemic."), value == 1,
+            let state = RecoveryState(rawValue: String(fact.metric.dropFirst("recommendation.systemic.".count))) {
+            switch state {
+            case .ready: meaning = "全身状态：状态较好"
+            case .moderate: meaning = "全身状态：留意体感与近期变化"
+            case .low: meaning = "全身状态：优先恢复"
+            case .limited: meaning = "全身状态：训练受限"
+            case .unknown: break
+            }
+          } else if fact.metric.hasPrefix("recovery."), fact.metric.hasSuffix(".soreness") {
+            switch value {
+            case 0: meaning = "酸痛：无"
+            case 1: meaning = "酸痛：轻微"
+            case 2: meaning = "酸痛：明显"
+            default: break
+            }
+          } else if fact.metric.hasPrefix("recovery."),
+            fact.metric.hasSuffix(".pain") || fact.metric.hasSuffix(".movementLimitation"),
+            value == 0 || value == 1 {
+            let name = fact.metric.hasSuffix(".pain") ? "疼痛" : "活动限制"
+            meaning = "\(name)：\(value == 1 ? "有" : "无")"
+          } else if fact.metric.hasPrefix("recovery.systemic."),
+            fact.metric.hasSuffix(".sustainedDeviation"), value == 0 || value == 1 {
+            meaning = "连续偏离个人基线：\(value == 1 ? "是" : "否")"
+          }
+        }
+      }
+      if let meaning {
+        text = text.replacingOccurrences(of: "记录值：{{fact:\(fact.id)}}", with: meaning)
+          .replacingOccurrences(of: "记录仍有缺失或估计：{{fact:\(fact.id)}}", with: meaning)
+        continue
+      }
       let units: [MetricUnit: String] = [.kilograms: "kg", .centimeters: "cm", .kilocalories: "kcal",
         .grams: "g", .seconds: "秒", .milliseconds: "ms", .beatsPerMinute: "次/分", .count: "次",
         .percent: "%", .score: "分", .kilogramsPerWeek: "kg/周", .percentPerWeek: "%/周", .none: ""]
-      text = text.replacingOccurrences(of: "{{fact:\(fact.id)}}", with: "\(number)\(fact.value == nil ? "" : units[fact.unit] ?? "")")
+      let countUnit: String? = switch fact.metric {
+      case "recommendation.trainingDaysPerWeek": "天/周"
+      case "recommendation.painOrLimitation": "个肌群"
+      case "recommendation.recentWorkingSets": "组"
+      default: nil
+      }
+      text = text.replacingOccurrences(of: "{{fact:\(fact.id)}}",
+        with: "\(number)\(fact.value == nil ? "" : countUnit ?? units[fact.unit] ?? "")")
     }
     return text
+  }
+
+  private static func semanticValue(_ fact: MetricFact) -> String? {
+    guard let value = fact.value else { return nil }
+    if fact.metric.hasPrefix("recommendation.goal.") {
+      switch String(fact.metric.dropFirst("recommendation.goal.".count)) {
+      case "maintain": return "目标：维持"
+      case "lose": return "目标：减脂"
+      case "gain": return "目标：增肌"
+      default: return nil
+      }
+    }
+    if fact.metric == "recovery.feeling" {
+      return "今日体感：\(value == 0 ? "疲惫" : value == 1 ? "一般" : "良好")"
+    }
+    if fact.metric == "recovery.sleepFeeling" {
+      return "主观睡眠：\(value == 0 ? "较差" : value == 1 ? "一般" : "良好")"
+    }
+    if fact.metric == "recommendation.feeling.tired" {
+      return value == 1 ? "今日体感：疲惫" : "今日体感未标记疲惫"
+    }
+    if fact.metric == "recommendation.availableToday" {
+      return value == 1 ? "日程：允许训练" : "日程：未安排训练"
+    }
+    if fact.metric == "diet.completeDays" {
+      return "截至昨天的 14 天：\(Int(value)) 天已确认完整"
+    }
+    return nil
   }
 }
 
@@ -283,9 +408,11 @@ struct LocalReportGenerator: ReportGenerating {
   func generate(_ input: ReportInput) async throws -> ReportResult { make(input) }
   func make(_ input: ReportInput) -> ReportResult {
     .init(reportID: "local-" + UUID().uuidString, inputFingerprint: input.inputFingerprint,
-      model: "local", promptVersion: AIReportPolicy.promptVersion, summary: ReportText.summary(input),
-      observations: ReportFactSelection.facts(input).prefix(3).map { .init(text: ReportText.observation($0), evidenceIDs: [$0.id]) },
-      recommendations: input.candidates.prefix(3).map {
+      model: "local", promptVersion: AIReportPolicy.promptVersion, summary: ReportText.localSummary(input),
+      observations: ReportFactSelection.highlights(input).map { .init(text: ReportText.observation($0), evidenceIDs: [$0.id]) },
+      recommendations: input.candidates.filter {
+        input.reportType != .trend || $0.action == .reviewNutrition
+      }.prefix(3).map {
         .init(text: ReportText.action($0.action), actionID: $0.actionID)
       }, generatedAt: input.asOf, validUntil: input.asOf.addingTimeInterval(AIReportPolicy.reportLifetime),
       isLocalFallback: true)

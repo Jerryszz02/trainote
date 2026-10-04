@@ -52,6 +52,7 @@ final class AIReportRealContractTests: XCTestCase {
     result.reportID = UUID().uuidString
     result.model = AIReportPolicy.model
     result.isLocalFallback = false
+    result.summary = ReportText.summary(input)
     return result
   }
   private func freshPreparedInput() async throws -> ReportInput {

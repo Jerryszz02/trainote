@@ -210,14 +210,43 @@ final class DailyUseUpgradeUITests: XCTestCase {
     XCTAssertTrue(app.staticTexts["workout.restRemaining"].waitForExistence(timeout: 3))
     app.terminate()
     app.launch()
-    app.tabBars.buttons["训练"].tap()
-    app.buttons["training.activeWorkout"].tap()
+    let resume = app.buttons["today.startWorkout"]
+    XCTAssertTrue(resume.waitForExistence(timeout: 5))
+    XCTAssertTrue(resume.label.contains("继续训练"))
+    resume.tap()
     XCTAssertEqual(app.textFields["workout.title"].value as? String, title)
     XCTAssertTrue(app.staticTexts["workout.restRemaining"].exists)
     XCTAssertTrue(prefix("strengthSet.complete.").label.contains("已完成"))
-    reveal(app.buttons["workout.discard"])
-    app.buttons["workout.discard"].tap()
-    app.buttons["放弃并删除"].tap()
+    app.buttons["workout.finish"].tap()
+    assertFinishedWithoutRestart(title: title)
+  }
+
+  func testTodayStartContinueAndFinishConsumesRequest() {
+    app.buttons["today.startWorkout"].tap()
+    app.buttons["training.startBlank"].tap()
+    XCTAssertTrue(app.buttons["workout.addExercise"].waitForExistence(timeout: 5))
+    app.buttons["workout.addExercise"].tap()
+    app.buttons["exercisePicker.item.0001"].tap()
+    // Return to the training root before taking the distinct Today continuation route.
+    app.navigationBars.buttons.element(boundBy: 0).tap()
+    app.tabBars.buttons["今日"].tap()
+    app.buttons["today.startWorkout"].tap()
+    prefix("strengthSet.complete.").tap()
+    app.buttons["workout.finish"].tap()
+    assertFinishedWithoutRestart(title: "自由训练")
+  }
+
+  func testTodayContinueWhileTrainingDetailRemainsOpenFinishesWithoutRestart() {
+    app.tabBars.buttons["训练"].tap()
+    app.buttons["training.start"].tap()
+    app.buttons["training.startBlank"].tap()
+    app.buttons["workout.addExercise"].tap()
+    app.buttons["exercisePicker.item.0001"].tap()
+    app.tabBars.buttons["今日"].tap()
+    app.buttons["today.startWorkout"].tap()
+    prefix("strengthSet.complete.").tap()
+    app.buttons["workout.finish"].tap()
+    assertFinishedWithoutRestart(title: "自由训练")
   }
 
   func testFixedMealPortionAndCopyToAnotherMeal() {
@@ -265,6 +294,19 @@ final class DailyUseUpgradeUITests: XCTestCase {
   private var historyRow: XCUIElement {
     app.buttons.matching(NSPredicate(format: "label CONTAINS '已完成' AND label CONTAINS '自由训练'"))
       .firstMatch
+  }
+  private func assertFinishedWithoutRestart(title: String) {
+    let completed = app.buttons.matching(
+      NSPredicate(format: "label CONTAINS '已完成' AND label CONTAINS %@", title))
+    XCTAssertTrue(completed.firstMatch.waitForExistence(timeout: 5))
+    XCTAssertEqual(completed.count, 1)
+    XCTAssertFalse(app.buttons["training.activeWorkout"].exists)
+    XCTAssertFalse(app.buttons["training.startBlank"].waitForExistence(timeout: 2))
+    capture("今日继续完成后保留历史")
+    // A later explicit start must still work after the previous intent was consumed.
+    app.buttons["training.start"].tap()
+    XCTAssertTrue(app.buttons["training.startBlank"].waitForExistence(timeout: 3))
+    app.buttons["取消"].tap()
   }
   private func prefix(_ identifier: String, type: XCUIElement.ElementType = .button) -> XCUIElement
   {

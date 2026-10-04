@@ -77,7 +77,7 @@ enum TrendNutrition {
   }
   static func displayed(_ value: NutritionTargets) -> NutritionTargets {
     .init(
-      calories: (value.calories / 10).rounded() * 10,
+      calories: value.calories.rounded(),
       carbohydrates: value.carbohydrates.rounded(), protein: value.protein.rounded(),
       fat: value.fat.rounded())
   }

@@ -34,6 +34,14 @@ final class TrendViewModel {
     self.timeZone = timeZone
   }
   var canApplyGoals: Bool { goalState != nil && errorMessage == nil }
+  var needsProfileCompletion: Bool {
+    guard let profile = input?.profile else { return true }
+    return !profile.isActive || profile.heightCentimeters == nil || profile.formulaSex == nil
+      || profile.activityLevel == nil || profile.goalDirection == nil
+      || profile.trainingDaysPerWeek == nil
+      || (profile.ageYears == nil && profile.birthYear == nil)
+      || profile.isAdultGeneralFitness == nil
+  }
   var calendar: TrendCalendar { TrendCalendar(identifier: timeZone().identifier)! }
   var today: DailyNutrition? {
     input?.nutrition.first {

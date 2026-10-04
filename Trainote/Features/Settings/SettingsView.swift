@@ -29,10 +29,18 @@ struct SettingsView: View {
         }
 
         Section("健康与分析") {
-          LabeledContent("Apple 健康", value: healthAccess.healthConnected ? "已连接，可读类型以实际样本为准" : "未连接")
-          Button("连接 Apple 健康") { Task { await healthAccess.connectHealth() } }
-            .accessibilityIdentifier("settings.connectHealth")
-            .disabled(healthAccess.isBusy || healthAccess.health == nil)
+          LabeledContent("Apple 健康", value: healthAccess.healthConnectionLabel)
+          if let detail = healthAccess.healthConnectionDetail {
+            Text(detail).font(.footnote).foregroundStyle(.secondary)
+          }
+          Text("管理读取权限：“健康”App → 摘要 → 头像 → App → Trainote。")
+            .font(.footnote).foregroundStyle(.secondary)
+            .accessibilityIdentifier("settings.healthPermissionHelp")
+          Button(healthAccess.healthConnected ? "刷新健康读取" : "连接 Apple 健康") {
+            Task { await healthAccess.connectHealth() }
+          }
+          .accessibilityIdentifier("settings.connectHealth")
+          .disabled(healthAccess.isBusy || healthAccess.health == nil)
           Button(healthAccess.healthDeletionNeedsRetry ? "重试断开并删除健康导入数据" : "断开并删除健康导入数据", role: .destructive) {
             showHealthDeletion = true
           }
