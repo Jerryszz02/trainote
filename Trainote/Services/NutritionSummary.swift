@@ -88,6 +88,12 @@ struct DailyNutritionSummary {
     return goal.value(for: nutrient) - consumed.value(for: nutrient)
   }
 
+  /// Use the same integer precision as the two values shown on Today's card.
+  func displayedRemaining(for nutrient: NutrientKind) -> Double? {
+    guard let goal else { return nil }
+    return goal.value(for: nutrient).rounded() - consumed.value(for: nutrient).rounded()
+  }
+
   func progress(for nutrient: NutrientKind) -> Double {
     guard let goal else { return 0 }
     let target = goal.value(for: nutrient)

@@ -37,11 +37,30 @@ struct TrainingRecommendationEvaluation: Equatable, Sendable {
   var candidates: [RecommendationCandidate]
   var facts: [MetricFact]
   var plansByAction: [String: RecommendationPlan]
+  /// The rule that actually selected each action, kept separate from supporting facts.
+  var primaryReasonsByAction: [String: TrainingAdviceReason]
   var contextFingerprint: String
   var localDay: String
   var blockedMuscles: [MuscleID]
   /// Semantic answers in today's effective check-in; excludes read/edit timestamps.
   var feedbackIdentity: String
+}
+
+enum TrainingAdviceReason: Equatable, Sendable {
+  case unavailableToday
+  case noWeeklyTrainingDays
+  case tiredCheckIn
+  case systemicLimited
+  case systemicLow
+  case restrictedMuscles([MuscleID])
+  case unverifiedMappingWithRestriction
+  case significantSoreness
+  case recentWorkingSets(Int)
+  case reducedReadiness
+  case insufficientCoverage
+  case noSelectedPlan
+  case ready
+  case nutritionDifference
 }
 
 enum TrainingRecommendationPolicy {
@@ -191,6 +210,7 @@ struct TrainingRecommendationRules: RecommendationProviding {
       dependencies: recovery.systemicFactIDs.map { .init(kind: .metricFact, id: $0) })
     var candidates = [RecommendationCandidate]()
     var plans = [String: RecommendationPlan]()
+    var primaryReasons = [String: TrainingAdviceReason]()
     let commonFacts = [
       planFact, goalFact, frequencyFact, scheduleFact, feelingFact, painFact, systemicFact,
     ]
@@ -201,7 +221,7 @@ struct TrainingRecommendationRules: RecommendationProviding {
     func append(
       _ action: RecommendationAction, plan: RecommendationPlan? = nil,
       muscles: [MuscleID] = [], reasons: [String] = [], parameters: [AllowedParameter] = [],
-      exclusions: [String] = []
+      exclusions: [String] = [], primaryReason: TrainingAdviceReason
     ) {
       let actionID =
         "\(TrainingRecommendationPolicy.version).\(action.rawValue)."
@@ -216,19 +236,29 @@ struct TrainingRecommendationRules: RecommendationProviding {
           allowedParameters: parameters, exclusionCodes: exclusions.sorted(),
           dependencies: reasonIDs.map { .init(kind: .metricFact, id: $0) }))
       if let plan { plans[actionID] = plan }
+      primaryReasons[actionID] = primaryReason
     }
-    func restOptions(reasons: [String] = []) {
-      append(.rest, reasons: reasons, exclusions: ["no_training_snapshot"])
+    func restOptions(reasons: [String] = [], primaryReason: TrainingAdviceReason) {
+      append(
+        .rest, reasons: reasons, exclusions: ["no_training_snapshot"],
+        primaryReason: primaryReason)
       if blocked.isEmpty && recovery.systemicState != .limited {
         append(
-          .lightActivity, reasons: reasons, exclusions: ["no_prescribed_intensity", "stop_if_pain"])
+          .lightActivity, reasons: reasons, exclusions: ["no_prescribed_intensity", "stop_if_pain"],
+          primaryReason: primaryReason)
       }
     }
     if todayAvailable == false || input.profile?.trainingDaysPerWeek == 0
       || recovery.systemicState == .limited || recovery.systemicState == .low
       || checkIn?.feeling == .tired
     {
-      restOptions()
+      let reason: TrainingAdviceReason
+      if todayAvailable == false { reason = .unavailableToday }
+      else if input.profile?.trainingDaysPerWeek == 0 { reason = .noWeeklyTrainingDays }
+      else if checkIn?.feeling == .tired { reason = .tiredCheckIn }
+      else if recovery.systemicState == .limited { reason = .systemicLimited }
+      else { reason = .systemicLow }
+      restOptions(primaryReason: reason)
     } else if let plan = context.selectedPlan, !plan.exerciseIDs.isEmpty {
       let muscles = mappedMuscles(plan)
       let isMapped = isFullyMapped(plan)
@@ -262,10 +292,17 @@ struct TrainingRecommendationRules: RecommendationProviding {
             append(
               .swapTrainingDay, plan: alternative, muscles: alternativeMuscles,
               reasons: readinessFacts + alternativeFacts,
-              exclusions: ["exclude_painful_muscles", "requires_explicit_template_choice"])
+              exclusions: ["exclude_painful_muscles", "requires_explicit_template_choice"],
+              primaryReason: overlap.isEmpty
+                ? .unverifiedMappingWithRestriction
+                : .restrictedMuscles(overlap.sorted { $0.rawValue < $1.rawValue }))
           }
         }
-        restOptions(reasons: readinessFacts)
+        restOptions(
+          reasons: readinessFacts,
+          primaryReason: overlap.isEmpty
+            ? .unverifiedMappingWithRestriction
+            : .restrictedMuscles(overlap.sorted { $0.rawValue < $1.rawValue }))
       } else if !isMapped || hasUnallocatedRecords || selectedRecovery.count != muscles.count
         || selectedRecovery.contains(where: {
           $0.state == .unknown || $0.score == nil || $0.score?.isFinite == false
@@ -273,7 +310,8 @@ struct TrainingRecommendationRules: RecommendationProviding {
       {
         append(
           .choosePlan, plan: plan, muscles: muscles, reasons: readinessFacts,
-          exclusions: ["readiness_unknown", "review_exercise_coverage", "no_automatic_workout"])
+          exclusions: ["readiness_unknown", "review_exercise_coverage", "no_automatic_workout"],
+          primaryReason: .insufficientCoverage)
       } else {
         let recent = completedRecentWorkouts(input, involving: Set(muscles))
         let setCount = recent.flatMap(\.exercises).filter {
@@ -302,6 +340,8 @@ struct TrainingRecommendationRules: RecommendationProviding {
             $0.state == .low || $0.state == .moderate || $0.state == .limited
           }
         if needsReduction {
+          let reductionReason: TrainingAdviceReason = soreness ? .significantSoreness
+            : setCount > 0 ? .recentWorkingSets(setCount) : .reducedReadiness
           append(
             .reduceSets, plan: plan, muscles: muscles,
             reasons: readinessFacts + [recentFact, sorenessFact],
@@ -311,7 +351,8 @@ struct TrainingRecommendationRules: RecommendationProviding {
                 minimum: TrainingRecommendationPolicy.retainedSetPercent.lowerBound,
                 maximum: TrainingRecommendationPolicy.retainedSetPercent.upperBound, unit: .percent)
             ],
-            exclusions: ["no_load_increase", "exclude_painful_muscles"])
+            exclusions: ["no_load_increase", "exclude_painful_muscles"],
+            primaryReason: reductionReason)
           append(
             .increaseRIR, plan: plan, muscles: muscles,
             reasons: readinessFacts + [recentFact, sorenessFact],
@@ -320,24 +361,29 @@ struct TrainingRecommendationRules: RecommendationProviding {
                 name: "minimumRIR", minimum: TrainingRecommendationPolicy.suggestedRIR.lowerBound,
                 maximum: TrainingRecommendationPolicy.suggestedRIR.upperBound, unit: .count)
             ],
-            exclusions: ["do_not_record_target_as_measured_rir", "exclude_painful_muscles"])
+            exclusions: ["do_not_record_target_as_measured_rir", "exclude_painful_muscles"],
+            primaryReason: reductionReason)
         } else {
           append(
             .keepPlan, plan: plan, muscles: muscles,
             reasons: readinessFacts + [recentFact, sorenessFact],
-            exclusions: ["no_load_increase", "exclude_painful_muscles"])
+            exclusions: ["no_load_increase", "exclude_painful_muscles"], primaryReason: .ready)
         }
       }
     } else {
-      append(.choosePlan, exclusions: ["no_existing_plan", "requires_explicit_template_choice"])
+      append(
+        .choosePlan, exclusions: ["no_existing_plan", "requires_explicit_template_choice"],
+        primaryReason: .noSelectedPlan)
     }
     if !context.nutritionReviewFactIDs.isEmpty {
       append(
         .reviewNutrition, reasons: context.nutritionReviewFactIDs,
-        exclusions: ["no_automatic_goal_change", "not_a_muscle_score_penalty"])
+        exclusions: ["no_automatic_goal_change", "not_a_muscle_score_penalty"],
+        primaryReason: .nutritionDifference)
     }
     return .init(
       candidates: candidates, facts: facts, plansByAction: plans,
+      primaryReasonsByAction: primaryReasons,
       contextFingerprint: context.fingerprint,
       localDay: AnalysisFingerprint.localDate(input.asOf, timeZone: timeZone),
       blockedMuscles: blocked.sorted { $0.rawValue < $1.rawValue },

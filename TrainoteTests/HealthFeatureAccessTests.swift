@@ -121,6 +121,38 @@ final class HealthFeatureAccessTests: XCTestCase {
     XCTAssertFalse(access.healthDeletionNeedsRetry)
     XCTAssertTrue(try health.localSnapshot(window: AnalysisFixtures.window).samples.isEmpty)
   }
+  func testHealthStatusSeparatesRequestEmptySamplesImportedDataAndSyncFailure() async throws {
+    let consent = try LocalConsentStore(url: directory.appendingPathComponent("consent.json"))
+    let cache = try HealthCacheStore(
+      url: directory.appendingPathComponent("cache.json"), syncStart: AnalysisFixtures.window.start)
+    let client = FakeHealthQueryClient()
+    let health = HealthDataService(client: client, cache: cache, consent: consent)
+    let access = HealthFeatureAccess(
+      consent: consent, health: health, reports: TestReportLifecycle()) { _ in }
+    XCTAssertEqual(access.healthConnectionLabel, "未连接")
+
+    await access.connectHealth()
+    XCTAssertTrue(access.healthConnected, "本地同意只说明已请求健康读取")
+    XCTAssertEqual(access.healthConnectionLabel, "暂未读取到健康样本")
+    XCTAssertTrue(access.healthConnectionDetail?.contains("最近同步已完成") == true)
+    XCTAssertTrue(access.healthConnectionDetail?.contains("可能是未授权或没有数据") == true)
+
+    let sample = AnalysisFixtures.health(.complete).samples[0]
+    client.batches[.bodyMass] = .init(
+      type: .bodyMass, added: [sample], deletedIDs: [],
+      newAnchor: Data([1]), queriedAt: AnalysisFixtures.asOf)
+    try await health.refresh()
+    XCTAssertEqual(access.healthConnectionLabel, "本机已有健康导入数据")
+    XCTAssertTrue(access.healthConnectionDetail?.contains("不代表当前读取许可仍有效") == true)
+
+    client.failedTypes = [.sleep]
+    do {
+      try await health.refresh()
+      XCTFail("Expected the sleep query to fail")
+    } catch {}
+    XCTAssertEqual(access.healthConnectionLabel, "部分健康数据同步未完成")
+    XCTAssertTrue(access.healthConnectionDetail?.contains("最近同步部分失败") == true)
+  }
   func testDisconnectFailureIsNotReportedAsSuccessfulDeletion() async throws {
     let reports = TestReportLifecycle()
     let access = HealthFeatureAccess(consent: nil, health: nil, reports: reports) { _ in }

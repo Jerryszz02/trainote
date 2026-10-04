@@ -97,6 +97,9 @@ final class HealthIntegrationUITests: XCTestCase {
   func testDisconnectConfirmationAndOfflineHelp() {
     app.buttons["today.settings"].tap()
     XCTAssertTrue(app.navigationBars["设置"].waitForExistence(timeout: 3))
+    let permissionHelp = app.staticTexts["settings.healthPermissionHelp"]
+    reveal(permissionHelp)
+    XCTAssertTrue(permissionHelp.label.contains("“健康”App → 摘要 → 头像 → App → Trainote"))
     let disconnect = app.buttons["settings.disconnectHealth"]
     reveal(disconnect)
     disconnect.tap()

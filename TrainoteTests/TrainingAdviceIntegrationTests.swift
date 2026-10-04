@@ -89,6 +89,47 @@ final class TrainingAdviceIntegrationTests: XCTestCase {
     XCTAssertEqual(try context.fetch(FetchDescriptor<Workout>()).count, 2)
   }
 
+  func testExistingWorkoutIsShownBeforeAdoptionAndStillBlocksDuplicateCreation() throws {
+    let (controller, _, context, _, _) = try setup()
+    let candidate = try XCTUnwrap(
+      controller.evaluation?.candidates.first { $0.action == .keepPlan })
+    let active = Workout(title: "进行中", startedAt: baseTime, status: .inProgress)
+    context.insert(active)
+    try context.save()
+    controller.loadRoutines()
+    XCTAssertEqual(controller.activeWorkout?.id, active.id)
+    XCTAssertThrowsError(try controller.adopt(actionID: candidate.id)) {
+      guard case TrainingAdviceAdoptionError.inProgressWorkout = $0 else {
+        return XCTFail("Expected the specific in-progress conflict")
+      }
+    }
+    XCTAssertEqual(try context.fetch(FetchDescriptor<Workout>()).count, 2)
+  }
+
+  func testTemplateEditAndRecordEditHaveDifferentAdoptionErrors() throws {
+    let (templateController, _, templateContext, routine, _) = try setup()
+    let templateCandidate = try XCTUnwrap(
+      templateController.evaluation?.candidates.first { $0.action == .keepPlan })
+    routine.exercises[0].defaultWeightKilograms = 10
+    try templateContext.save()
+    XCTAssertThrowsError(try templateController.adopt(actionID: templateCandidate.id)) {
+      guard case TrainingAdviceAdoptionError.templateChanged = $0 else {
+        return XCTFail("Expected a template change")
+      }
+    }
+    let (recordController, repository, _, _, _) = try setup()
+    let recordCandidate = try XCTUnwrap(
+      recordController.evaluation?.candidates.first { $0.action == .keepPlan })
+    var profile = try XCTUnwrap(AnalysisFixtures.input(.manualOnly).profile)
+    profile.updatedAt = baseTime
+    try repository.saveProfile(profile)
+    XCTAssertThrowsError(try recordController.adopt(actionID: recordCandidate.id)) {
+      guard case TrainingAdviceAdoptionError.recordsChanged = $0 else {
+        return XCTFail("Expected a record change")
+      }
+    }
+  }
+
   func testNewPainRejectsDisplayedActionBeforeSaving() throws {
     let (controller, repository, context, _, _) = try setup()
     let candidate = try XCTUnwrap(

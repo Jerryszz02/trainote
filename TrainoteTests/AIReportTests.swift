@@ -35,6 +35,7 @@ private final class ReportTestTransport: AIReportTransport {
     report.reportID = UUID().uuidString
     report.model = AIReportPolicy.model
     report.isLocalFallback = false
+    report.summary = ReportText.summary(input)
     if tamper { report.summary = "You are completely recovered at 100%." }
     // Deliberately don't enforce cancellation here; the service must reject a late uncooperative result.
     return report
@@ -97,6 +98,95 @@ final class AIReportTests: XCTestCase {
     XCTAssertFalse(ReportText.display(result.observations[1], facts: input.facts).contains("0"))
     let data = try JSONSerialization.data(withJSONObject: fixture["report"]!)
     XCTAssertEqual(try ReportResultValidator.decode(data, input: input, now: input.asOf), result)
+  }
+  func testLocalReportShowsStateMeaningAndScopeSpecificFacts() throws {
+    func fact(_ metric: String, _ value: Double?, unit: MetricUnit = .count,
+      id: String? = nil) -> MetricFact {
+      .init(id: id ?? metric, metric: metric, value: value, unit: unit,
+        window: AnalysisFixtures.window, sources: [.manual])
+    }
+    var input = AnalysisFixtures.report
+    input.goalDirection = .lose
+    input.facts = [
+      fact("recommendation.goal.lose", 1), fact("recommendation.feeling.tired", 1),
+      fact("recommendation.availableToday", 0), fact("recovery.feeling", 0),
+      fact("recovery.readiness", nil, unit: .score, id: "recovery.abs.readiness"),
+      fact("recovery.readiness", 67, unit: .score, id: "recovery.legs.readiness"),
+      fact("recovery.readiness", 58, unit: .score, id: "recovery.chest.readiness"),
+      fact("weight.smoothed", 70, unit: .kilograms),
+      fact("weight.weeklyChangePercent", nil, unit: .percentPerWeek),
+      fact("diet.completeDays", 0),
+    ]
+    let today = LocalReportGenerator().make(input)
+    XCTAssertEqual(today.observations.first?.evidenceIDs, ["recommendation.availableToday"])
+    XCTAssertEqual(today.observations.map(\.evidenceIDs),
+      [["recommendation.availableToday"], ["recovery.feeling"], ["recommendation.goal.lose"]])
+    let tired = try XCTUnwrap(today.observations.first { $0.evidenceIDs == ["recovery.feeling"] })
+    XCTAssertEqual(ReportText.display(tired, facts: input.facts), "今日体感：疲惫。")
+    let goal = try XCTUnwrap(input.facts.first { $0.metric == "recommendation.goal.lose" })
+    XCTAssertEqual(ReportText.display(.init(text: ReportText.observation(goal), evidenceIDs: [goal.id]), facts: input.facts), "目标：减脂。")
+    input.reportType = .trend
+    let trend = LocalReportGenerator().make(input)
+    XCTAssertEqual(trend.observations.map(\.evidenceIDs),
+      [["weight.smoothed"], ["weight.weeklyChangePercent"], ["diet.completeDays"]])
+    XCTAssertTrue(trend.summary.contains("14 天"))
+    input.reportType = .recovery
+    let recovery = LocalReportGenerator().make(input)
+    XCTAssertEqual(recovery.observations.first?.evidenceIDs, ["recovery.feeling"])
+    XCTAssertTrue(recovery.observations.contains { $0.evidenceIDs == ["recovery.chest.readiness"] },
+      "恢复预览应挑选有值且较低的肌群准备度")
+    XCTAssertFalse(recovery.observations.contains { $0.evidenceIDs == ["recovery.abs.readiness"] })
+    XCTAssertNotEqual(today.observations.map(\.evidenceIDs), recovery.observations.map(\.evidenceIDs))
+  }
+  func testLocalTrendSummaryRespectsCalculatedHistoryQuality() throws {
+    for weightDays in [[], [-2, -1], Array(-21 ... -1)] {
+      var analysis = TrendTestData.input()
+      analysis.weights = weightDays.map { TrendTestData.weight($0) }
+      let trend = try TrendCalculator().calculate(analysis)
+      let rate = try XCTUnwrap(trend.facts.first { $0.metric == "weight.weeklyChangePercent" })
+      let input = ReportInput(reportType: .trend, asOf: analysis.asOf,
+        inputFingerprint: trend.inputFingerprint, facts: trend.facts, candidates: [],
+        knowledgeVersion: AIReportPolicy.knowledgeVersion,
+        calculationVersions: [trend.calculationVersion], missingData: [])
+      let summary = LocalReportGenerator().make(input).summary
+      if weightDays.count < TrendRules().minimumWeightDays {
+        XCTAssertTrue(rate.quality.contains(.insufficientHistory))
+        if weightDays.count == 2 { XCTAssertNotNil(rate.value, "两天记录已能计算斜率，但不足以建立趋势") }
+        XCTAssertTrue(summary.contains("趋势记录不足"), summary)
+        XCTAssertTrue(summary.contains("14 天跨度"), summary)
+        XCTAssertTrue(summary.contains("8 个称重日"), summary)
+        XCTAssertTrue(summary.contains("最近两周各至少 3 天"), summary)
+      } else {
+        XCTAssertNotNil(rate.value)
+        XCTAssertFalse(rate.quality.contains(.insufficientHistory))
+        XCTAssertFalse(summary.contains("趋势记录不足"), summary)
+        XCTAssertTrue(summary.contains("趋势重点查看"), summary)
+      }
+    }
+  }
+  func testReportEvidenceDisplaysStatesAndCountsByMeaning() {
+    let examples: [(String, Double, MetricUnit, String)] = [
+      ("recommendation.selectedPlan", 1, .count, "本次模板：已选择。"),
+      ("recommendation.systemic.low", 1, .count, "全身状态：优先恢复。"),
+      ("recommendation.significantSoreness", 0, .count, "明显酸痛：无。"),
+      ("recommendation.significantSoreness", 1, .count, "明显酸痛：有。"),
+      ("recovery.chest.soreness", 2, .none, "酸痛：明显。"),
+      ("recovery.chest.pain", 1, .none, "疼痛：有。"),
+      ("recovery.chest.movementLimitation", 0, .none, "活动限制：无。"),
+      ("recovery.systemic.restingHeartRate.sustainedDeviation", 1, .none,
+        "连续偏离个人基线：是。"),
+      ("diet.completeDays", 0, .count, "截至昨天的 14 天：0 天已确认完整。"),
+      ("recommendation.trainingDaysPerWeek", 3, .count, "记录值：3天/周。"),
+      ("recommendation.painOrLimitation", 2, .count, "记录值：2个肌群。"),
+      ("recommendation.recentWorkingSets", 5, .count, "记录值：5组。"),
+      ("recovery.residualLoad", 4.5, .count, "负荷值：4.5。"),
+    ]
+    for (metric, value, unit, expected) in examples {
+      let fact = MetricFact(id: metric, metric: metric, value: value, unit: unit,
+        window: AnalysisFixtures.window, sources: [.manual])
+      let observation = ReportObservation(text: ReportText.observation(fact), evidenceIDs: [fact.id])
+      XCTAssertEqual(ReportText.display(observation, facts: [fact]), expected, metric)
+    }
   }
   func testRealFractionalDatesAreEncodedAsIntegerMilliseconds() throws {
     struct Value: Encodable { var grantedAt: Date }

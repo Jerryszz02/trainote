@@ -44,7 +44,8 @@ struct TodayView: View {
       entries: todayEntries,
       historicalTargets: NutritionGoalHistory.targets(
         on: currentDate, history: goalRevisions.map(\.value),
-        legacyCurrent: NutritionGoalHistory.targets(from: goals.first)))
+        legacyCurrent: NutritionGoalHistory.targets(from: goals.first))
+        .map(TrendNutrition.displayed))
   }
 
   var body: some View {
@@ -336,7 +337,7 @@ private struct NutrientProgressCard: View {
           .foregroundStyle(.secondary)
       }
 
-      Text(consumed, format: .number.precision(.fractionLength(0)))
+      Text(consumed.rounded(), format: .number.precision(.fractionLength(0)))
         .font(.title2.bold())
         .monospacedDigit()
 
@@ -345,11 +346,11 @@ private struct NutrientProgressCard: View {
           .tint(remainingIsNegative ? .orange : .accentColor)
       }
 
-      if let target, let remaining = summary.remaining(for: nutrient) {
+      if let target, let remaining = summary.displayedRemaining(for: nutrient) {
         Text(
           remaining >= 0
-            ? "剩余 \(remaining, format: .number.precision(.fractionLength(0))) / \(target, format: .number.precision(.fractionLength(0)))"
-            : "超出 \((-remaining), format: .number.precision(.fractionLength(0))) / \(target, format: .number.precision(.fractionLength(0)))"
+            ? "剩余 \(remaining, format: .number.precision(.fractionLength(0))) / \(target.rounded(), format: .number.precision(.fractionLength(0)))"
+            : "超出 \((-remaining), format: .number.precision(.fractionLength(0))) / \(target.rounded(), format: .number.precision(.fractionLength(0)))"
         )
         .font(.caption)
         .foregroundStyle(remaining >= 0 ? Color.secondary : Color.orange)
@@ -367,16 +368,16 @@ private struct NutrientProgressCard: View {
   }
 
   private var remainingIsNegative: Bool {
-    (summary.remaining(for: nutrient) ?? 0) < 0
+    (summary.displayedRemaining(for: nutrient) ?? 0) < 0
   }
 
   private var accessibilityText: String {
-    if let target, let remaining = summary.remaining(for: nutrient) {
+    if let target, let remaining = summary.displayedRemaining(for: nutrient) {
       return
-        "\(nutrient.title)，已摄入 \(consumed.formatted(.number.precision(.fractionLength(0)))) \(nutrient.unit)，目标 \(target.formatted(.number.precision(.fractionLength(0))))，\(remaining >= 0 ? "剩余" : "超出") \(abs(remaining).formatted(.number.precision(.fractionLength(0))))"
+        "\(nutrient.title)，已摄入 \(consumed.rounded().formatted(.number.precision(.fractionLength(0)))) \(nutrient.unit)，目标 \(target.rounded().formatted(.number.precision(.fractionLength(0))))，\(remaining >= 0 ? "剩余" : "超出") \(abs(remaining).formatted(.number.precision(.fractionLength(0))))"
     }
     return
-      "\(nutrient.title)，已摄入 \(consumed.formatted(.number.precision(.fractionLength(0)))) \(nutrient.unit)，尚未设置目标"
+      "\(nutrient.title)，已摄入 \(consumed.rounded().formatted(.number.precision(.fractionLength(0)))) \(nutrient.unit)，尚未设置目标"
   }
 }
 

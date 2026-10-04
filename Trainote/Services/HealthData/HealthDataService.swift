@@ -14,6 +14,7 @@ final class HealthDataService: HealthDataProviding {
   private var pendingTypes = Set<HealthDataType>()
   private var invalidators: [any HealthDerivedDataInvalidating] = []
   private(set) var lastFailure: AnalysisFailure?
+  var isSyncing: Bool { !syncTasks.isEmpty }
 
   init(
     client: any HealthQueryClient, cache: HealthCacheStore, consent: LocalConsentStore,

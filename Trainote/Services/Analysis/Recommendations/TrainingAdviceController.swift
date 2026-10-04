@@ -2,6 +2,12 @@ import Foundation
 import Observation
 import SwiftData
 
+enum TrainingAdviceAdoptionError: Error {
+  case inProgressWorkout
+  case templateChanged
+  case recordsChanged
+}
+
 /// Reads one current local snapshot for display and a new one immediately before adoption.
 @MainActor
 @Observable
@@ -16,6 +22,8 @@ final class TrainingAdviceController {
   private(set) var routines: [Routine] = []
   private(set) var evaluation: TrainingRecommendationEvaluation?
   private(set) var errorMessage: String?
+  private(set) var activeWorkout: Workout?
+  private var displayedPlans: [UUID: RecommendationPlan] = [:]
   @ObservationIgnored var onSelectionChange: (() -> Void)?
   var selectedRoutineID: UUID? {
     didSet { if selectedRoutineID != oldValue { selectionChanged() } }
@@ -30,6 +38,7 @@ final class TrainingAdviceController {
 
   private func selectionChanged() {
     evaluation = nil
+    displayedPlans = [:]
     onSelectionChange?()
   }
 
@@ -49,6 +58,7 @@ final class TrainingAdviceController {
   func loadRoutines() {
     do {
       routines = try currentRoutines()
+      activeWorkout = try currentInProgressWorkout()
       let ids = Set(routines.map(\.id))
       if selectedRoutineID.map({ !ids.contains($0) }) == true { selectedRoutineID = nil }
       alternativeRoutineIDs.formIntersection(ids)
@@ -56,6 +66,7 @@ final class TrainingAdviceController {
     } catch {
       routines = []
       evaluation = nil
+      activeWorkout = nil
       errorMessage = "暂时无法读取训练模板，请重试。"
     }
   }
@@ -63,10 +74,13 @@ final class TrainingAdviceController {
   func refresh() {
     do {
       routines = try currentRoutines()
+      activeWorkout = try currentInProgressWorkout()
       evaluation = try evaluate(routines: routines, at: now())
+      displayedPlans = selectedPlans(in: routines)
       errorMessage = nil
     } catch {
       evaluation = nil
+      displayedPlans = [:]
       errorMessage = "暂时无法计算建议，请检查本地记录后重试。"
     }
   }
@@ -81,19 +95,28 @@ final class TrainingAdviceController {
   /// Re-reads repository, HealthKit's local snapshot and templates on the same actor before save.
   @discardableResult
   func adopt(actionID: String, parameters: [String: Double] = [:]) throws -> Workout {
-    guard let displayed = evaluation else { throw AnalysisFailure.staleSnapshot }
+    guard let displayed = evaluation else { throw TrainingAdviceAdoptionError.recordsChanged }
     let startedAt = now()
+    activeWorkout = try currentInProgressWorkout()
+    guard activeWorkout == nil else { throw TrainingAdviceAdoptionError.inProgressWorkout }
     let freshRoutines = try currentRoutines()
-    guard try !hasInProgressWorkout(),
-      let selected = displayed.candidates.first(where: { $0.actionID == actionID }),
+    guard selectedPlans(in: freshRoutines) == displayedPlans else {
+      throw TrainingAdviceAdoptionError.templateChanged
+    }
+    guard let selected = displayed.candidates.first(where: { $0.actionID == actionID }),
       let plan = displayed.plansByAction[actionID],
       let routine = freshRoutines.first(where: { $0.id == plan.id }),
       [.keepPlan, .reduceSets, .increaseRIR, .swapTrainingDay].contains(selected.action)
-    else { throw AnalysisFailure.staleSnapshot }
-    let workout = try RecommendationWorkoutFactory.make(
-      routine: routine, displayed: displayed, actionID: actionID,
-      parameters: parameters, startedAt: startedAt
-    ) { try self.evaluate(routines: freshRoutines, at: startedAt) }
+    else { throw TrainingAdviceAdoptionError.recordsChanged }
+    let workout: Workout
+    do {
+      workout = try RecommendationWorkoutFactory.make(
+        routine: routine, displayed: displayed, actionID: actionID,
+        parameters: parameters, startedAt: startedAt
+      ) { try self.evaluate(routines: freshRoutines, at: startedAt) }
+    } catch AnalysisFailure.staleSnapshot {
+      throw TrainingAdviceAdoptionError.recordsChanged
+    }
     modelContext.insert(workout)
     do {
       try modelContext.save()
@@ -102,6 +125,8 @@ final class TrainingAdviceController {
       throw AnalysisFailure.storageFailed
     }
     evaluation = nil
+    displayedPlans = [:]
+    activeWorkout = workout
     return workout
   }
 
@@ -109,8 +134,14 @@ final class TrainingAdviceController {
     try modelContext.fetch(FetchDescriptor<Routine>(sortBy: [SortDescriptor(\Routine.name)]))
   }
 
-  private func hasInProgressWorkout() throws -> Bool {
-    try modelContext.fetch(FetchDescriptor<Workout>()).contains { $0.status == .inProgress }
+  private func currentInProgressWorkout() throws -> Workout? {
+    try modelContext.fetch(FetchDescriptor<Workout>()).first { $0.status == .inProgress }
+  }
+
+  private func selectedPlans(in routines: [Routine]) -> [UUID: RecommendationPlan] {
+    let selectedIDs = alternativeRoutineIDs.union(selectedRoutineID.map { [$0] } ?? [])
+    return Dictionary(uniqueKeysWithValues: routines.filter { selectedIDs.contains($0.id) }
+      .map { ($0.id, RecommendationPlan.snapshot($0)) })
   }
 
   private func evaluate(routines: [Routine], at asOf: Date) throws

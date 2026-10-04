@@ -56,6 +56,7 @@ final class TrendCalculatorTests: XCTestCase {
       proposal.targets.protein * 4
         + proposal.targets.carbohydrates * 4 + proposal.targets.fat * 9, accuracy: 1e-8)
     let display = TrendNutrition.displayed(proposal.targets)
+    XCTAssertEqual(display.calories, 2242)
     XCTAssertLessThanOrEqual(
       abs(
         display.calories - 4 * display.protein

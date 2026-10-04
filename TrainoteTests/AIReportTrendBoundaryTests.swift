@@ -57,6 +57,7 @@ final class AIReportTrendBoundaryTests: XCTestCase {
       XCTAssertFalse(input.facts.flatMap(\.dependencies).contains { $0.id == AnalysisFixtures.id(4999).uuidString })
       var remote = LocalReportGenerator().make(wire.validationInput)
       remote.reportID = UUID().uuidString; remote.model = AIReportPolicy.model; remote.isLocalFallback = false
+      remote.summary = ReportText.summary(wire.validationInput)
       let restored = try ReportResultValidator.decode(AIReportPolicy.encoder().encode(remote), input: input, now: input.asOf)
       XCTAssertTrue(restored.observations.flatMap(\.evidenceIDs).allSatisfy(Set(input.facts.map(\.id)).contains))
       XCTAssertEqual(input.facts, example.trend.facts)

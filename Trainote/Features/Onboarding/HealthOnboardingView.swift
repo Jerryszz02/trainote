@@ -14,7 +14,12 @@ struct HealthOnboardingView: View {
         }
         Section("Apple 健康") {
           Text("读取你选择共享的体重、睡眠、静息心率、HRV、步数、活动能量和训练，用于本机分析。不向 Apple 健康写入。")
-          Button(access.healthConnected ? "重新选择健康读取范围" : "连接 Apple 健康") {
+          LabeledContent("读取状态", value: access.healthConnectionLabel)
+          if access.healthConnected {
+            Text("管理权限：在“健康”App 的摘要中点头像 → App → Trainote。")
+              .font(.footnote).foregroundStyle(.secondary)
+          }
+          Button(access.healthConnected ? "刷新健康读取" : "连接 Apple 健康") {
             Task { await access.connectHealth() }
           }
           .accessibilityIdentifier("health.connect")

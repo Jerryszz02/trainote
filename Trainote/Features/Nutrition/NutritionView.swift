@@ -40,11 +40,13 @@ struct NutritionView: View {
 
   @Query(sort: \FoodLogEntry.loggedAt, order: .reverse)
   private var entries: [FoodLogEntry]
+  @Query private var dietConfirmations: [DietLogCompleteness]
 
   @State private var selectedDate = Date.now
   @State private var presentedSheet: NutritionSheet?
   @State private var pendingDeletion: FoodLogEntry?
   @State private var actionErrorMessage: String?
+  @State private var showEmptyDietConfirmation = false
 
   let addRequest: Int
 
@@ -54,6 +56,18 @@ struct NutritionView: View {
 
   private var dayTotals: NutritionValues {
     NutritionMath.totals(of: dayEntries)
+  }
+
+  private var selectedDayKey: String {
+    AnalysisFingerprint.localDate(selectedDate, timeZone: .current)
+  }
+
+  private var confirmedToday: Bool {
+    guard let fingerprint = try? AnalysisFingerprint.foodLogs(dayEntries) else { return false }
+    return dietConfirmations.contains {
+      $0.localDate == selectedDayKey && $0.timeZoneIdentifier == TimeZone.current.identifier
+        && $0.foodLogFingerprint == fingerprint
+    }
   }
 
   var body: some View {
@@ -140,6 +154,14 @@ struct NutritionView: View {
     } message: {
       Text(actionErrorMessage ?? "")
     }
+    .confirmationDialog(
+      "这一天没有饮食记录", isPresented: $showEmptyDietConfirmation, titleVisibility: .visible
+    ) {
+      Button("确认当天没有摄入，标记完整") { confirmSelectedDay() }
+      Button("继续补记", role: .cancel) {}
+    } message: {
+      Text("缺少记录不会自动按 0 kcal 处理；仅在确认没有摄入时使用此操作。")
+    }
   }
 
   private var daySummarySection: some View {
@@ -152,6 +174,20 @@ struct NutritionView: View {
         Text("当天记录都未填写营养")
           .font(.caption)
           .foregroundStyle(.secondary)
+      }
+      if confirmedToday {
+        Label("所选日期饮食已确认完整", systemImage: "checkmark.circle.fill")
+          .foregroundStyle(.green)
+          .accessibilityIdentifier("nutrition.dietComplete")
+      } else {
+        Button("确认所选日期饮食已记完整") {
+          if dayEntries.isEmpty { showEmptyDietConfirmation = true }
+          else { confirmSelectedDay() }
+        }
+        .disabled(selectedDayKey > AnalysisFingerprint.localDate(.now, timeZone: .current))
+        .accessibilityIdentifier("nutrition.confirmDiet")
+        Text("编辑饮食后需重新确认；趋势统计只计截至昨天的 14 天。")
+          .font(.caption).foregroundStyle(.secondary)
       }
     }
   }
@@ -215,6 +251,26 @@ struct NutritionView: View {
       modelContext.rollback()
       pendingDeletion = nil
       actionErrorMessage = "删除失败：\(error.localizedDescription)。请重试。"
+    }
+  }
+
+  private func confirmSelectedDay() {
+    do {
+      let fingerprint = try AnalysisFingerprint.foodLogs(dayEntries)
+      let zone = TimeZone.current.identifier
+      let existing = dietConfirmations.first {
+        $0.localDate == selectedDayKey && $0.timeZoneIdentifier == zone
+      }
+      let value = DietCompletenessValue(
+        id: existing?.id ?? UUID(), localDate: selectedDayKey,
+        timeZoneIdentifier: zone, confirmedAt: .now, foodLogFingerprint: fingerprint)
+      try ManualRecordValidation.validate(value)
+      if let existing { existing.apply(value) }
+      else { modelContext.insert(DietLogCompleteness(value: value)) }
+      try modelContext.save()
+    } catch {
+      modelContext.rollback()
+      actionErrorMessage = "未能确认饮食完整，请重试。"
     }
   }
 }

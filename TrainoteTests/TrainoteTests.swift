@@ -146,6 +146,13 @@ final class TrainoteDomainTests: XCTestCase {
     XCTAssertEqual(summary.remaining(for: .calories), -200)
     XCTAssertEqual(summary.progress(for: .calories), 1)
     XCTAssertEqual(summary.remaining(for: .protein), 10)
+    XCTAssertEqual(summary.displayedRemaining(for: .calories), -200)
+    let fractional = DailyNutritionSummary(
+      entries: [FoodLogEntry(loggedAt: .now, mealType: .dinner, name: "测试",
+        servingDescription: "1 份", quantity: 1, calories: 1_000.6,
+        carbohydrates: 0, protein: 0, fat: 0)],
+      historicalTargets: .init(calories: 1_962.3, carbohydrates: 0, protein: 0, fat: 0))
+    XCTAssertEqual(fractional.displayedRemaining(for: .calories), 961)
   }
 
   func testWorkoutCompletionRequiresValidResult() {

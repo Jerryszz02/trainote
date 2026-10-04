@@ -35,6 +35,7 @@ final class TrainoteUITests: XCTestCase {
     app.buttons["workout.finish"].tap()
 
     XCTAssertTrue(app.staticTexts["已完成"].waitForExistence(timeout: 3))
+    XCTAssertFalse(app.buttons["training.startBlank"].waitForExistence(timeout: 2))
   }
 
   func testCanCompleteCardioWorkout() {
@@ -61,12 +62,23 @@ final class TrainoteUITests: XCTestCase {
     app.buttons["exercisePicker.item.0001"].tap()
     app.buttons["routine.save"].tap()
 
-    app.tabBars.buttons["训练"].tap()
-    app.buttons["training.start"].tap()
-    app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH 'training.startRoutine.'"))
-      .firstMatch.tap()
+    let edit = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH 'routine.edit.'"))
+      .firstMatch
+    XCTAssertTrue(edit.waitForExistence(timeout: 3))
+    edit.tap()
+    XCTAssertTrue(app.navigationBars["编辑训练模板"].waitForExistence(timeout: 3))
+    app.buttons["routine.save"].tap()
+    let start = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH 'routine.start.'"))
+      .firstMatch
+    XCTAssertTrue(start.waitForExistence(timeout: 3))
+    start.tap()
 
     XCTAssertTrue(app.navigationBars["进行中"].waitForExistence(timeout: 5))
+    app.navigationBars.buttons.element(boundBy: 0).tap()
+    XCTAssertTrue(app.buttons["routine.continueWorkout"].waitForExistence(timeout: 3))
+    XCTAssertFalse(start.isEnabled)
+    app.buttons["routine.continueWorkout"].tap()
+    XCTAssertTrue(app.navigationBars["进行中"].waitForExistence(timeout: 3))
   }
 
   func testFoodEntryCanBeAddedEditedAndDeleted() {
@@ -114,6 +126,8 @@ final class TrainoteUITests: XCTestCase {
     app.buttons["nutrition.preset.log"].tap()
     XCTAssertTrue(app.navigationBars["记录常用食物"].waitForNonExistence(timeout: 5))
     let rows = app.buttons.matching(NSPredicate(format: "label CONTAINS '测试香蕉'"))
+    // Materialize both saved rows below the summary before checking the List's count.
+    for _ in 0..<4 where rows.count < 2 { app.swipeUp() }
     let updated = XCTNSPredicateExpectation(
       predicate: NSPredicate { _, _ in rows.count == 2 }, object: nil)
     XCTAssertEqual(XCTWaiter.wait(for: [updated], timeout: 5), .completed)
