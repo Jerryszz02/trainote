@@ -153,13 +153,22 @@ final class RecoveryRIRUITests: XCTestCase {
   }
 
   private func revealAbove(_ element: XCUIElement, in app: XCUIApplication) {
-    for _ in 0..<8 where !element.isHittable { app.swipeDown() }
+    // iOS 26.4 can report a row as hittable while it is behind the navigation bar.
+    let visibleTop = app.navigationBars.firstMatch.frame.maxY
+    for _ in 0..<8 where !element.isHittable || element.frame.minY < visibleTop {
+      app.swipeDown()
+    }
     XCTAssertTrue(element.isHittable)
+    XCTAssertGreaterThanOrEqual(element.frame.minY, visibleTop)
   }
 
   private func revealBelow(_ element: XCUIElement, in app: XCUIApplication) {
-    for _ in 0..<8 where !element.isHittable { app.swipeUp() }
+    let visibleBottom = app.tabBars.firstMatch.frame.minY
+    for _ in 0..<8 where !element.isHittable || element.frame.maxY > visibleBottom {
+      app.swipeUp()
+    }
     XCTAssertTrue(element.isHittable)
+    XCTAssertLessThanOrEqual(element.frame.maxY, visibleBottom)
   }
 
   func testRIRAndRoleSurviveHistoricalEditAndNewTrainingResetsRIR() {

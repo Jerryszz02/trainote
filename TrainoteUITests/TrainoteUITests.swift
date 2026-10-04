@@ -126,6 +126,8 @@ final class TrainoteUITests: XCTestCase {
     app.buttons["nutrition.preset.log"].tap()
     XCTAssertTrue(app.navigationBars["记录常用食物"].waitForNonExistence(timeout: 5))
     let rows = app.buttons.matching(NSPredicate(format: "label CONTAINS '测试香蕉'"))
+    // Materialize both saved rows below the summary before checking the List's count.
+    for _ in 0..<4 where rows.count < 2 { app.swipeUp() }
     let updated = XCTNSPredicateExpectation(
       predicate: NSPredicate { _, _ in rows.count == 2 }, object: nil)
     XCTAssertEqual(XCTWaiter.wait(for: [updated], timeout: 5), .completed)

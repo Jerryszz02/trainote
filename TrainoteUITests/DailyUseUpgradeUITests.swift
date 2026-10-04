@@ -287,6 +287,8 @@ final class DailyUseUpgradeUITests: XCTestCase {
     reveal(app.buttons["nutrition.copy.confirm"])
     app.buttons["nutrition.copy.confirm"].tap()
     app.buttons["复制"].tap()
+    // List exposes rows lazily; the diet-completeness section can push dinner offscreen.
+    for _ in 0..<4 where rows.count < 2 { app.swipeUp() }
     waitForCount(rows, 2)
     capture("固定餐与复制一餐")
   }

@@ -138,6 +138,32 @@ final class AIReportTests: XCTestCase {
     XCTAssertFalse(recovery.observations.contains { $0.evidenceIDs == ["recovery.abs.readiness"] })
     XCTAssertNotEqual(today.observations.map(\.evidenceIDs), recovery.observations.map(\.evidenceIDs))
   }
+  func testLocalTrendSummaryRespectsCalculatedHistoryQuality() throws {
+    for weightDays in [[], [-2, -1], Array(-21 ... -1)] {
+      var analysis = TrendTestData.input()
+      analysis.weights = weightDays.map { TrendTestData.weight($0) }
+      let trend = try TrendCalculator().calculate(analysis)
+      let rate = try XCTUnwrap(trend.facts.first { $0.metric == "weight.weeklyChangePercent" })
+      let input = ReportInput(reportType: .trend, asOf: analysis.asOf,
+        inputFingerprint: trend.inputFingerprint, facts: trend.facts, candidates: [],
+        knowledgeVersion: AIReportPolicy.knowledgeVersion,
+        calculationVersions: [trend.calculationVersion], missingData: [])
+      let summary = LocalReportGenerator().make(input).summary
+      if weightDays.count < TrendRules().minimumWeightDays {
+        XCTAssertTrue(rate.quality.contains(.insufficientHistory))
+        if weightDays.count == 2 { XCTAssertNotNil(rate.value, "两天记录已能计算斜率，但不足以建立趋势") }
+        XCTAssertTrue(summary.contains("趋势记录不足"), summary)
+        XCTAssertTrue(summary.contains("14 天跨度"), summary)
+        XCTAssertTrue(summary.contains("8 个称重日"), summary)
+        XCTAssertTrue(summary.contains("最近两周各至少 3 天"), summary)
+      } else {
+        XCTAssertNotNil(rate.value)
+        XCTAssertFalse(rate.quality.contains(.insufficientHistory))
+        XCTAssertFalse(summary.contains("趋势记录不足"), summary)
+        XCTAssertTrue(summary.contains("趋势重点查看"), summary)
+      }
+    }
+  }
   func testReportEvidenceDisplaysStatesAndCountsByMeaning() {
     let examples: [(String, Double, MetricUnit, String)] = [
       ("recommendation.selectedPlan", 1, .count, "本次模板：已选择。"),

@@ -282,8 +282,11 @@ enum ReportText {
     case .today:
       return "今日安排与体感来自当前记录；请结合报告依据查看可用事实。"
     case .trend:
-      let metrics = Set(input.facts.filter { $0.value != nil }.map(\.metric))
-      if !metrics.contains("weight.weeklyChangePercent") {
+      let hasTrendHistory = input.facts.contains {
+        $0.metric == "weight.weeklyChangePercent" && $0.value != nil
+          && !$0.quality.contains(.insufficientHistory)
+      }
+      if !hasTrendHistory {
         let rules = TrendRules()
         return "趋势记录不足：需至少 \(Int(rules.minimumSpanDays)) 天跨度、\(rules.minimumWeightDays) 个称重日，且最近两周各至少 \(rules.minimumWeightDaysPerWeek) 天。"
       }
