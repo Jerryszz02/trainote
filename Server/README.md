@@ -24,6 +24,7 @@ After the deployment gates below pass, `npm run build && npm start` starts the p
 | --- | --- |
 | `APPLE_APP_ID` | Exact App ID prefix plus bundle identifier, checked against the signed RP ID |
 | `APPLE_BUNDLE_VERSIONS` | Comma-separated exact permitted CFBundleVersion values |
+| `APPLE_ALLOW_DEVELOPMENT_BUILDS` | Optional exact `true` to additionally admit development-signed builds (category 3); absent or `false` retains TestFlight/App Store only. Other values fail startup. Requires restart. |
 | `DEEPSEEK_API_KEY` | Provider credential in the server secret manager only |
 | `REPORT_STATE_DIR` | Dedicated writable directory for technical metadata and process lock |
 | `REPORTS_ENABLED` | Must equal `true` to admit reports and consent grants |
@@ -31,7 +32,15 @@ After the deployment gates below pass, `npm run build && npm start` starts the p
 | `PORT` | Optional loopback listener port; default 8787 |
 | `NODE_ENV` | Set to `production` in a deployment; never a bypass switch |
 
-Both enable switches default off. Creating `DISABLED` in the state directory rejects new reports immediately and cancels in-flight jobs within a second. Authenticated consent deletion remains available. No endpoint, model, system prompt, trust root, development authentication or fake provider environment option exists. App Attest unsupported/failure uses local reporting.
+Both report enable switches default off. Creating `DISABLED` in the state directory rejects new reports immediately and cancels in-flight jobs within a second. Authenticated consent deletion remains available. No endpoint, model, system prompt, trust root, authentication bypass or fake provider environment option exists. App Attest unsupported/failure uses local reporting.
+
+### Xcode-installed development builds
+
+Set `APPLE_ALLOW_DEVELOPMENT_BUILDS=true` on the intended proxy and restart it. This admits category 3 alongside TestFlight (2) and App Store (4), only for the configured `APPLE_APP_ID` and exact `APPLE_BUNDLE_VERSIONS`. The app's checked-in entitlement explicitly selects **production App Attest**, even for Debug builds; its signing profile must support that capability. Development **signing** and the App Attest **environment** are independent: sandbox proofs/receipts remain rejected. Do not use `NODE_ENV` as an authentication selector.
+
+The opt-in is enforced on registration and every assertion. Setting it back to `false` and restarting blocks new development assertions even for registered keys; the restart also clears short sessions and grants. Apple certificate, nonce, identity, version, request-binding and replay checks remain in force. The flag admits matching developer-signed builds, not arbitrary apps, and does not enable report generation, configure a provider credential, grant data consent or inject the app's currently absent proxy URL.
+
+On 2026-10-10, synthetic signed-proof and configuration regressions plus the existing service suite passed **71 tests**. These fixtures exercise cryptographic verification but do not prove a physical device's Apple proof format or signing eligibility. Real device verification and actual provider/deployment gates below still apply. If a prior test used sandbox keys, do not reuse those keys for production App Attest or erase pending revocation state to force registration.
 
 ## Frozen HTTP contract
 
@@ -94,7 +103,7 @@ Error responses contain only a fixed `error` code: 400 invalid contract/facts, 4
 
 1. Explicit provider API terms, retention/deletion arrangements, processing region, disclosure wording and user consent approval. The app must show remote reporting as unavailable until these are settled.
 2. Approved budget, account secret management, domain/TLS, single-process durable hosting, edge logging/rate policy, monitoring using technical counters only, recovery procedure and deployment authorization. No resources were provisioned or deployed.
-3. Production App Attest capability, correct App ID prefix/build allowlist, signed physical TestFlight/App Store device tests, and supported-OS proof formats. [App Attest verification notes](APP_ATTEST.md) detail current Apple example inconsistencies and the strict handling of new extensions. Missing extensions fail closed, including potentially older iOS 17 devices. No entitlement or shared Xcode configuration is changed by this task.
+3. Production App Attest capability, correct App ID prefix/build allowlist, signed physical-device tests for the selected distribution policy, and supported-OS proof formats. Development-signed installs require the explicit server opt-in above. [App Attest verification notes](APP_ATTEST.md) detail current Apple example inconsistencies and the strict handling of new extensions. Missing extensions fail closed, including potentially older iOS 17 devices. The app now declares production App Attest; signed provisioning and real Apple proofs remain unverified.
 4. Real DeepSeek synthetic-data round trip and measured cost/latency after credentials are authorized. Local tests prove contract and cancellation behavior, not provider availability or physiological accuracy.
 5. Coordinator integration with B/C/F and the separately pending A boundary fixes, current-head iOS CI, full app acceptance and real-device health disconnection checks.
 

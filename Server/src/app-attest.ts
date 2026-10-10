@@ -39,6 +39,8 @@ export interface AppleAppAttestConfig {
   appID: string;
   /** Exact CFBundleVersion values permitted by the server release policy. */
   bundleVersions: string[];
+  /** Explicit server policy: also accept development-signed builds using production App Attest. */
+  allowDevelopmentBuilds?: boolean;
   /** Synthetic trust root injection, restricted to node:test; never server configuration. */
   rootPEM?: string;
   now?: () => number;
@@ -190,6 +192,7 @@ export class AppleAppAttestVerifier {
   private readonly appID: string;
   private readonly rpID: Buffer;
   private readonly versions: ReadonlySet<string>;
+  private readonly allowDevelopmentBuilds: boolean;
   private readonly root: X509Certificate;
   private readonly receiptRoot: X509Certificate;
   private readonly now: () => number;
@@ -197,11 +200,13 @@ export class AppleAppAttestVerifier {
   constructor(config: AppleAppAttestConfig) {
     requireThat(/^[A-Z0-9]{10}\.[A-Za-z0-9.-]+$/.test(config.appID));
     requireThat(config.bundleVersions.length > 0 && config.bundleVersions.length <= 20 && config.bundleVersions.every((version) => /^[A-Za-z0-9.-]{1,64}$/.test(version)));
+    requireThat(config.allowDevelopmentBuilds === undefined || typeof config.allowDevelopmentBuilds === "boolean");
     // This seam is solely for synthetic certificate tests, never a production setting.
     requireThat(config.rootPEM === undefined || (Boolean(process.env.NODE_TEST_CONTEXT) && process.env.NODE_ENV !== "production"));
     this.appID = config.appID;
     this.rpID = hash(Buffer.from(config.appID));
     this.versions = new Set(config.bundleVersions);
+    this.allowDevelopmentBuilds = config.allowDevelopmentBuilds === true;
     this.root = new X509Certificate(config.rootPEM ?? readFileSync(new URL("../../certs/Apple_App_Attestation_Root_CA.pem", import.meta.url)));
     this.receiptRoot = new X509Certificate(config.rootPEM ?? APPLE_RECEIPT_ROOT);
     if (config.rootPEM === undefined) {
@@ -291,8 +296,9 @@ export class AppleAppAttestVerifier {
     const extensions = exactMap(value, names);
     const rawCategory = extensions.get(names[0]);
     const category = Buffer.isBuffer(rawCategory) && rawCategory.length === 4 ? rawCategory.readUInt32LE() : rawCategory;
-    // Only TestFlight and App Store distribution are permitted for this iPhone service.
-    requireThat(category === 2 || category === 4);
+    // Development signing is an explicit policy choice, never an authentication bypass.
+    // This check runs for registration AND each assertion, including previously registered keys.
+    requireThat(category === 2 || category === 4 || (category === 3 && this.allowDevelopmentBuilds));
     const version = extensions.get(names[1]);
     requireThat(typeof version === "string" && this.versions.has(version));
   }
