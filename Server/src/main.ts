@@ -1,6 +1,7 @@
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { AppleAppAttestVerifier } from './app-attest.js';
+import { developmentBuildsAllowed } from './configuration.js';
 import { DeepSeekProvider } from './provider.js';
 import { FileMetadataStore } from './store.js';
 import { httpServer, ReportService } from './service.js';
@@ -8,7 +9,7 @@ import { httpServer, ReportService } from './service.js';
 function required(name: string) {
   const value = process.env[name]; if (!value) throw new Error(`missing_configuration:${name}`); return value;
 }
-// Configuration is deployment-owned. There is deliberately no development-auth or fake-provider flag.
+// Configuration is deployment-owned. Development builds still require genuine Apple proofs.
 try {
   const directory = required('REPORT_STATE_DIR');
   const appID = required('APPLE_APP_ID');
@@ -16,7 +17,8 @@ try {
   const versions = required('APPLE_BUNDLE_VERSIONS').split(',');
   if (!versions.length || versions.some(v => !/^[0-9.]{1,32}$/.test(v))) throw new Error('invalid_bundle_versions');
   const provider = new DeepSeekProvider(required('DEEPSEEK_API_KEY'));
-  const verifier = new AppleAppAttestVerifier({ appID, bundleVersions: versions });
+  const allowDevelopmentBuilds = developmentBuildsAllowed(process.env.APPLE_ALLOW_DEVELOPMENT_BUILDS);
+  const verifier = new AppleAppAttestVerifier({ appID, bundleVersions: versions, allowDevelopmentBuilds });
   const port = Number(process.env.PORT ?? '8787');
   if (!Number.isSafeInteger(port) || port < 1 || port > 65535) throw new Error('invalid_port');
   const store = new FileMetadataStore(directory);

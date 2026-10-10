@@ -175,6 +175,75 @@ test("allows both documented category encodings and exact allowed TestFlight/App
   assert.equal(verifier().attest(keyID, challenge, attestation({ authMutate: (auth) => { auth[32] = 0x40; } })).publicKeyPEM, publicKeyPEM);
 });
 
+test("development attestation requires explicit server opt-in and retains distribution support", () => {
+  for (const category of [3, Buffer.from([3, 0, 0, 0])]) {
+    const extensions = defaultExtensions();
+    extensions.set("apple_validation_category_01", category);
+    const proof = attestation({ extensions });
+    for (const allowDevelopmentBuilds of [undefined, false]) {
+      assert.throws(() => verifier({ allowDevelopmentBuilds }).attest(keyID, challenge, proof), invalidProof);
+    }
+    assert.equal(verifier({ allowDevelopmentBuilds: true }).attest(keyID, challenge, proof).publicKeyPEM, publicKeyPEM);
+  }
+  for (const category of [2, 4]) {
+    const extensions = defaultExtensions();
+    extensions.set("apple_validation_category_01", category);
+    assert.equal(verifier({ allowDevelopmentBuilds: true }).attest(keyID, challenge, attestation({ extensions })).publicKeyPEM, publicKeyPEM);
+  }
+});
+
+test("development assertions require opt-in on every request including previously registered keys", () => {
+  for (const names of [["apple_validation_category_01", "apple_bundle_version_01"], ["validationCategory", "bundleVersion"]]) {
+    for (const category of [3, Buffer.from([3, 0, 0, 0])]) {
+      const extensions = new Map<string, unknown>([[names[0]!, category], [names[1]!, "17"]]);
+      const proof = assertion(1, clientData, { extensions });
+      assert.equal(verifier({ allowDevelopmentBuilds: true }).assertion(publicKeyPEM, 0, clientData, proof), 1);
+      // Existing public keys cannot bypass a subsequently disabled policy.
+      assert.throws(() => verifier({ allowDevelopmentBuilds: false }).assertion(publicKeyPEM, 0, clientData, proof), invalidProof);
+      assert.throws(() => verifier().assertion(publicKeyPEM, 0, clientData, proof), invalidProof);
+      assert.throws(() => verifier({ allowDevelopmentBuilds: true }).assertion(publicKeyPEM, 1, clientData, proof), invalidProof);
+    }
+  }
+});
+
+test("development opt-in still rejects unapproved categories, versions, and malformed extensions", () => {
+  const cases = [
+    ...[0, 1, 5, 6, 10, "3", Buffer.from([0, 0, 0, 3]), Buffer.from([3]), null].map(category =>
+      new Map<string, unknown>([["apple_validation_category_01", category], ["apple_bundle_version_01", "17"]])),
+    ...["18", "17.0", " 17", 17, null].map(version =>
+      new Map<string, unknown>([["apple_validation_category_01", 3], ["apple_bundle_version_01", version]])),
+    new Map<string, unknown>([["apple_validation_category_01", 3], ["apple_bundle_version_01", "17"], ["validationCategory", 3]]),
+  ];
+  for (const extensions of cases) {
+    const check = verifier({ allowDevelopmentBuilds: true });
+    assert.throws(() => check.attest(keyID, challenge, attestation({ extensions })), invalidProof);
+    assert.throws(() => check.assertion(publicKeyPEM, 0, clientData, assertion(1, clientData, { extensions })), invalidProof);
+  }
+});
+
+test("development-signed proofs retain identity, production environment, signature, and nonce checks", () => {
+  const extensions = defaultExtensions();
+  extensions.set("apple_validation_category_01", 3);
+  const check = verifier({ allowDevelopmentBuilds: true });
+  for (const options of [
+    { authMutate: (auth: Buffer) => { auth[0]! ^= 1; } },
+    { authMutate: (auth: Buffer) => { Buffer.from("appattestdevelop").copy(auth, 37); } },
+    { badNonce: true }, { expired: true },
+    { receipt: { environment: "development" } },
+    { receipt: { badSignature: true } }, { receipt: { differentRoot: true } },
+  ]) {
+    assert.throws(() => check.attest(keyID, challenge, attestation({ ...options, extensions })), invalidProof);
+  }
+  const proof = attestation({ extensions });
+  assert.throws(() => check.attest(keyID, Buffer.alloc(32), proof), invalidProof);
+  assert.throws(() => verifier({ allowDevelopmentBuilds: true, appID: "OTHERAPP00.example.invalid" }).attest(keyID, challenge, proof), invalidProof);
+  assert.throws(() => check.attest(keyID, challenge, attestation({ extensions: null })), invalidProof);
+  for (const options of [{ wrongRP: true }, { wrongKey: true }, { doubleHash: true }, { extensions: null }]) {
+    assert.throws(() => check.assertion(publicKeyPEM, 0, clientData, assertion(1, clientData, { extensions, ...options })), invalidProof);
+  }
+  assert.throws(() => check.assertion(publicKeyPEM, 0, Buffer.from("different request"), assertion(1, clientData, { extensions })), invalidProof);
+});
+
 test("rejects forged/mismatched attestation identity, format, certificate, and challenge", async (t) => {
   const cases: [string, AttestationOptions][] = [
     ["wrong RP", { authMutate: (auth) => { auth[0]! ^= 1; } }],

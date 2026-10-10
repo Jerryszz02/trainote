@@ -1,8 +1,12 @@
 # 真实 AI 报告接通计划
 
-状态：**计划中，待用户审核**。核查日期：2026-10-10（Europe/London）。
+状态：**开发签名访问规则已实现并通过本地验证，尚未合并/部署；完整 AI 接通仍为计划中**。核查日期：2026-10-10（Europe/London）。
 
-来源：用户要求“把真实的 AI 报告接通还需要做哪些事情，先给一版计划”。本次只编写计划；不改产品代码，不配置凭据，不部署，不调用真实模型，不上传健康记录，不发布 App。基线为本次 fetch 后的 `origin/main` / canonical `main`：`170ad07bf7c5f4113c81a1ea213f12d1dd5544b4`。
+来源：先按用户要求编写接通计划，随后用户明确要求实现“允许开发版也能调用 AI 服务”的校验规则。本轮仅实施该认证策略与对应 App entitlement、测试和说明；不配置凭据、不部署、不调用真实模型、不上传健康记录、不发布 App。基线为本次 fetch 后的 `origin/main` / canonical `main`：`170ad07bf7c5f4113c81a1ea213f12d1dd5544b4`。
+
+本轮设计：增加服务端 `APPLE_ALLOW_DEVELOPMENT_BUILDS`，仅精确 `true` 开启，未配置或 `false` 保留现有 TestFlight/App Store 策略，其他值拒绝启动。开启时额外接受 Apple 签名证明中的 development 类别 3；attestation 与每次 assertion 均执行同一规则。App 明确配置 production App Attest，服务器继续只接收 production AAGUID/receipt，保留 Apple 信任根、App ID、精确构建号、nonce、请求签名和防重放校验。报告保持重点事实/建议加固定文案；不增加匿名访问或跳过认证的路径。
+
+验收：用带真实密码学签名的本地合成证明复现默认拒绝开发类别，再验证显式开启后 attestation/assertion 通过；关闭开关后旧开发 key 的新 assertion 仍被拒绝。默认分发路径、非法类别/版本、伪造签名、错误身份、sandbox 环境和重放回归必须保持通过。真机签名及 Apple 服务实证另列，不能以合成测试代替。
 
 ## 1. 目标与推荐范围
 
@@ -10,9 +14,9 @@
 
 第一版沿用现有计算与报告契约：数学规则计算趋势和恢复，AI 从已有事实和规则允许的建议中挑选重点，服务端用固定中文模板呈现，最多三项观察和三项建议。**接通并不等于新增长篇自由分析或聊天能力。** 若目标是自然语言教练式报告，应另行设计有证据引用的文本契约和验收，不在本计划中顺带扩展。
 
-推荐先做个人真机私测，保留现有生产认证策略；具备相应 Apple 账号和分发条件时使用 TestFlight。公开 App Store 发布、多用户运营、订阅收费、扩充算法和自由文本报告不属于第一阶段目标。是否采用 TestFlight 仍需用户确认；本计划不授权上传构建。
+用户已选择允许开发直装版本访问，并确认保留重点事实/建议加固定文案。先做个人真机私测：开发签名使用 production App Attest，由服务端显式允许 category 3。TestFlight 仍可沿用默认策略，不是本轮前置要求。公开发布、多用户运营、订阅收费、扩充算法和自由文本报告不属于第一阶段目标。
 
-## 2. 本次代码核查与实际缺口
+## 2. 基线代码核查与实际缺口（实施前 `170ad07`）
 
 | 环节 | 本次确认的事实 | 接通前需要完成 |
 | --- | --- | --- |
@@ -28,16 +32,16 @@
 
 代码依据：[App 装配](../../Trainote/Features/Onboarding/HealthReportIntegration.swift)、[报告页](../../Trainote/Features/Onboarding/HealthReportsView.swift)、[授权流程](../../Trainote/Features/Onboarding/HealthFeatureAccess.swift)、[客户端装配](../../Trainote/Services/AIReports/AIReportAssembly.swift)、[客户端传输](../../Trainote/Services/AIReports/ProxyReportTransport.swift)、[认证验证器](../../Server/src/app-attest.ts)、[服务入口](../../Server/src/main.ts)、[模型适配](../../Server/src/provider.ts)、[entitlements](../../Trainote/Trainote.entitlements)。
 
-现有测试和历史合成验证说明代码有覆盖，不证明真实服务或真机链路可用。本次没有读取账户密钥、核查在线部署、运行产品测试或复验以前的真机安装状态。
+基线核查没有读取账户密钥或复验真机安装状态。本轮实现后的验证见文末；合成验证不证明真实服务或真机链路可用。
 
 ## 3. 分阶段实施
 
 ### P0：确认使用路径，优先排除设备认证阻塞
 
-1. 确认首批仅个人自用，还是需要其他测试者；确认采用 TestFlight 或保留 Xcode 直装。
+1. 开发直装路径已获确认；扩大到其他测试者仍需确定使用范围。
 2. 核对实际 Apple 账号、签名能力、App ID prefix（不能直接假定等于 Team ID）、Bundle ID、构建号与手机系统版本。生成的工程与 `project.yml` 保持一致。
-3. 按当前代码策略，优先验证 TestFlight 的 production App Attest。先使用不含健康事实的认证流程完成 challenge、attestation、assertion、session，并验证错误构建号、重放和错误签名被拒绝。
-4. 若用户只接受开发签名直装，则先提交独立的测试环境设计：独立域名/状态/凭据，显式匹配开发环境和开发分发类别，保留 Apple 签名验证；不向生产加入关闭鉴权、共享明文 token 或假证书开关。账号是否支持所需能力以实际签名配置为准。
+3. 验证开发签名 + production App Attest + 服务端显式开关。先使用不含健康事实的认证流程完成 challenge、attestation、assertion、session，并验证错误构建号、重放和错误签名被拒绝。
+4. 本轮采用单一 production App Attest 环境，不引入 sandbox 兼容或鉴权绕过。账号是否支持所需 capability 以实际签名配置为准；首次开通使用明确指定的私测代理与独立状态目录。部署开关和客户端 entitlement 必须匹配。
 5. 真机核对当前验证器要求的 signed category / bundle-version 扩展与 receipt 格式。对缺少扩展的系统保留本地报告，不能为通过测试直接删除校验；如需调整兼容策略，先记录证据与决策。
 
 **验收**：目标分发方式下的真实手机完成认证往返，记录构建号、系统、服务提交和结果；账号、签名或证明格式不满足时明确阻塞，不能宣布“只差 API Key”。认证需要的私测服务须先按 P2 准备，报告开关保持关闭。
@@ -94,7 +98,7 @@
 
 已存在的服务端检查命令为 `npm test` 与 `npm run demo`（在 `Server/` 运行并使用其固定 Node 版本）。demo 是离线假响应，不能充当真实调用证据。iOS 定向测试完成后运行对应 PR head 的必要 CI；最低 iOS 17 和目标真机的 App Attest 兼容性单独验收。不将本次文档检查写成产品测试通过。
 
-建议拆成三个实现交付：认证/部署准备、App 配置与用户流程、真实验证与开通记录。每批按仓库规则独立分支、检查、提交和 ready PR；开通/发布前呈现具体配置和验收结果，由用户确认相应动作。当前计划 PR 的合并不代表实施、部署或发布授权。
+建议拆成三个实现交付：认证/部署准备、App 配置与用户流程、真实验证与开通记录。每批按仓库规则独立分支、检查、提交和 ready PR；开通/发布前呈现具体配置和验收结果，由用户确认相应动作。本轮仅获授权实施开发版准入规则；该 PR 的合并不代表部署、真实数据上传或发布授权。
 
 现有 API 与运维细节继续以 [Server README](../../Server/README.md)、[认证说明](../../Server/APP_ATTEST.md) 和 [客户端交接](../../Trainote/Services/AIReports/README.md) 为入口。后续实施时修正其中历史“待集成”状态，并同步发布清单；本次不复制整套 API 或增加重复 runbook。
 
@@ -103,10 +107,10 @@
 | 事项 | 本计划建议 | 待确认信息 |
 | --- | --- | --- |
 | 使用范围 | 先本人 iPhone 私测 | 是否需要其他测试者 |
-| 安装方式 | 能满足账号条件时，沿用 TestFlight 认证路径 | Apple Developer 能力、是否接受 TestFlight；若坚持 Xcode 直装则另审隔离测试设计 |
+| 安装方式 | 已确认允许开发直装，使用 production App Attest | 实际 Apple 账号/capability、签名和真机证明格式 |
 | 服务位置 | 优先现有可持久化主机 | 主机、域名、运行环境及是否允许部署 |
 | 费用 | 先限制合成试验，再设置日/月上限 | 已有 DeepSeek 账号、试验额度及每月总预算；本次不要求提供密钥 |
-| 报告形态 | 先保留事实选择和固定文案 | 若期待长篇自然语言分析，需要另行确认范围 |
+| 报告形态 | 已确认重点事实/建议加固定文案 | 无；长篇自由分析不在本轮范围 |
 
 成本由主机/域名、实际 token 用量和所选分发路径的账号成本组成；尚无真实测量或资源选择，不给出虚构月费和固定交付日期。工期主要受账号/分发准备、真机证明格式、托管资源与条款核查影响。
 
@@ -114,9 +118,9 @@
 
 2026-10-10 查询官方资料：
 
-- [Apple App Attest Environment](https://developer.apple.com/documentation/bundleresources/entitlements/com.apple.developer.devicecheck.appattest-environment)：开发可选择 production 环境；环境选择不等于改变代码分发类别。当前仅接受 TestFlight/App Store 是本项目验证器的限制。
+- [Apple App Attest Environment](https://developer.apple.com/documentation/bundleresources/entitlements/com.apple.developer.devicecheck.appattest-environment)：开发可选择 production 环境；环境选择不等于改变代码分发类别。默认仅接受 TestFlight/App Store 是本项目策略；本轮已增加开发签名显式准入开关。
 - [Apple Preparing to use App Attest](https://developer.apple.com/documentation/devicecheck/preparing-to-use-the-app-attest-service)：开发/生产密钥隔离，真实设备认证需与对应环境匹配。
 - [DeepSeek 模型与价格](https://api-docs.deepseek.com/quick_start/pricing/)：本次官方检索结果仍列出 `deepseek-flash`；实施前再次核对模型和计费。
 - [DeepSeek JSON Output](https://api-docs.deepseek.com/guides/json_mode/)：JSON 输出仍须处理空内容和截断，不能跳过本地 schema/引用检查。
 
-本次完成源码、配置、历史文档和远端基线的只读核查，仅修改本计划及规划索引。文档验证为 `git diff --check` 和 planning 索引/本地链接审计；未运行产品测试、签名构建、真实模型请求或部署探针。后续真实状态以当前提交的运行证据和受控部署验收为准，历史测试数量不代替本次验证。
+本轮先用新增的开发 attestation/assertion 用例复现失败，再实现显式开关。Node 22.23.1 下 `npm test` 通过 71 项（0 失败/跳过），离线 `npm run demo` 通过；Debug generic iOS 的 `CODE_SIGNING_ALLOWED=NO` 构建通过，entitlements 通过 `plutil -lint`。测试日志 `/tmp/trainote-dev-attest-tests.log`，构建日志 `/tmp/trainote-dev-attest-build.log`。文档检查为 `git diff --check` 和 planning 索引/本地链接审计。未执行签名构建、真机 Apple 认证、真实模型请求或部署探针；当前 App 仍以 `proxy: nil` 运行。PR 当前 head 的 CI 结果另行核实，不能把本地构建当作实际签名/接通成功。
