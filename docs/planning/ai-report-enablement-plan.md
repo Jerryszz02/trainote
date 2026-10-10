@@ -44,7 +44,7 @@
 4. 本轮采用单一 production App Attest 环境，不引入 sandbox 兼容或鉴权绕过。账号是否支持所需 capability 以实际签名配置为准；首次开通使用明确指定的私测代理与独立状态目录。部署开关和客户端 entitlement 必须匹配。
 5. 真机核对当前验证器要求的 signed category / bundle-version 扩展与 receipt 格式。对缺少扩展的系统保留本地报告，不能为通过测试直接删除校验；如需调整兼容策略，先记录证据与决策。
 
-**验收**：目标分发方式下的真实手机完成认证往返，记录构建号、系统、服务提交和结果；账号、签名或证明格式不满足时明确阻塞，不能宣布“只差 API Key”。认证需要的私测服务须先按 P2 准备，报告开关保持关闭。
+**验收**：目标分发方式下的真实手机完成认证往返，记录构建号、系统、服务提交和结果；账号、签名或证明格式不满足时明确阻塞，不能宣布“只差 API Key”。认证需要的隔离私测服务须先按 P2 准备并完成 P1 的处理说明确认。当前 `Server/src/service.ts` 在禁用时也拒绝新注册和普通 session challenge，因此认证验收期间须临时设置 `REPORTS_ENABLED=true`、`AI_DISCLOSURE_CONFIRMED=true`，且状态目录不能有 `DISABLED`。测试环境同时在网关拒绝 `POST /v1/reports` 并阻断服务进程到供应商的出站访问；这两项隔离须先验证有效。仅执行不含健康事实的 challenge、attestation、assertion 和 session 请求，不调用报告生成。结束后恢复禁用；后续真实报告验收另行满足 P1/P4 条件并显式解除上述隔离。不得把生产服务的鉴权改成可绕过路径。
 
 ### P1：确认 DeepSeek 与数据处理，合成数据验证
 
@@ -61,7 +61,7 @@
 
 1. 推荐沿用当前 Node 单进程和持久化目录，使用支持常驻进程与持久卷的主机。优先评估用户已有主机；不在此阶段默认采购云资源或迁移数据库。无持久磁盘的函数实例不能直接承载当前文件状态实现。
 2. 配置域名与 HTTPS、loopback 反向代理、secret 注入、权限和进程停止/重启策略。部署包包含编译输出、运行依赖和 Apple 公共证书文件。
-3. 配置 `APPLE_APP_ID`、`APPLE_BUNDLE_VERSIONS`、`REPORT_STATE_DIR`、`DEEPSEEK_API_KEY`；初始保持 `REPORTS_ENABLED` 与 `AI_DISCLOSURE_CONFIRMED` 关闭。在独立验证环境满足条件后才允许合成报告。
+3. 配置 `APPLE_APP_ID`、`APPLE_BUNDLE_VERSIONS`、`REPORT_STATE_DIR`、`DEEPSEEK_API_KEY`；初始保持 `REPORTS_ENABLED` 与 `AI_DISCLOSURE_CONFIRMED` 关闭。P0 认证验收按其隔离步骤临时开启并随后关闭；在独立验证环境满足条件后才允许合成报告。
 4. 验证单实例锁、磁盘故障、重启清除服务端授权但保留配额/计数器的行为。恢复备份不能回滚认证计数器或复活撤回状态，具体恢复方法在部署 runbook 中确定；崩溃锁仅在确认进程已退出后处理。
 5. 保留每设备密钥每天五次、单设备一次并发的现有默认值。该配额按 key 计数，不能视为严格的“每人五次”或全局账单上限；上线前补齐与批准预算一致的全局限制/供应商限制及停用方法。
 6. 检查反向代理共享 loopback 地址导致全局每分钟 60 请求的效果；边缘限流不信任外部随意提供的转发头。一次报告包含多个认证请求，容量测试必须按完整链路计数。
