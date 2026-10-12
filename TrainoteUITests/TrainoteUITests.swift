@@ -124,20 +124,16 @@ final class TrainoteUITests: XCTestCase {
     let row = app.buttons.matching(NSPredicate(format: "label CONTAINS '测试早餐'"))
       .firstMatch
     XCTAssertTrue(row.waitForExistence(timeout: 3))
+    revealFoodRow(row)
     row.tap()
+    XCTAssertTrue(app.navigationBars["编辑饮食"].waitForExistence(timeout: 5))
     replaceText(in: app.textFields["nutrition.entry.name"], with: "测试早午餐")
     app.buttons["nutrition.entry.save"].tap()
 
     let editedRow = app.buttons.matching(NSPredicate(format: "label CONTAINS '测试早午餐'"))
       .firstMatch
     XCTAssertTrue(editedRow.waitForExistence(timeout: 3))
-    // On a small screen the row can extend underneath the floating tab bar.
-    // Scroll it fully into the list before performing a horizontal gesture.
-    for _ in 0..<3 {
-      if editedRow.frame.maxY < app.tabBars.firstMatch.frame.minY { break }
-      app.swipeUp()
-    }
-    XCTAssertLessThan(editedRow.frame.maxY, app.tabBars.firstMatch.frame.minY)
+    revealFoodRow(editedRow)
     editedRow.swipeLeft()
     app.buttons["删除"].tap()
     app.alerts.buttons["删除"].tap()
@@ -222,6 +218,17 @@ final class TrainoteUITests: XCTestCase {
     app.buttons["nutrition.add.direct"].tap()
   }
 
+  private func revealFoodRow(_ row: XCUIElement) {
+    // XCTest's implicit scroll can finish after its tap coordinates were computed.
+    // Materialize the complete row above the floating tab bar before any gesture.
+    for _ in 0..<4 {
+      if row.isHittable && row.frame.maxY < app.tabBars.firstMatch.frame.minY - 8 { break }
+      app.swipeUp()
+    }
+    XCTAssertTrue(row.isHittable)
+    XCTAssertLessThan(row.frame.maxY, app.tabBars.firstMatch.frame.minY - 8)
+  }
+
   private func reveal(_ element: XCUIElement) {
     for _ in 0..<8 {
       if element.exists && element.isHittable { return }
@@ -300,6 +307,13 @@ enum UITestTextInput {
     }
 
     field.typeText(value)
+    if field.elementType == .searchField {
+      // A searchable sheet can replace its AX search element while filtering. Query the
+      // complete value afresh instead of polling a snapshot captured midway through typing.
+      let entered = app.searchFields.matching(NSPredicate(format: "value == %@", value)).firstMatch
+      XCTAssertTrue(entered.waitForExistence(timeout: 10), "Search input must equal: \(value)")
+      return
+    }
     var actual = field.value as? String ?? ""
     func matchesExpected(_ text: String) -> Bool {
       if let expected = Double(value),

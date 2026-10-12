@@ -30,6 +30,8 @@
 
 功能验收包括营养自动计算／保存／再次记录／固定餐份量，恢复页选择肌群／疼痛约束／大字号列表，以及动作视频播放、暂停、返回后查看无素材动作的文字说明。播放器启动时异步入队造成的误失败已复现并修复。资源缺失、坏视频、离页期间加载完成等边界由单元测试覆盖。
 
+PR #14 修复复验：小肌群的触摸区域扩大至至少 44 点，重叠时选择距离原始肌肉路径最近的肌群，插图外观保持不变。CI 录像确认搜索文本已完整输入但测试读取了旧快照，现改为查询完整搜索值；食物编辑测试先将记录完整滚到浮动标签栏上方，再点击并等待编辑页。iPhone 17 Pro / iOS 26.4.1 上通过 290 项单元测试和 5 项相关 UI 回归，0 失败、0 跳过；结果包为 `/tmp/trainote-pr14-repair-targeted.xcresult`。完整 CI 另以 PR 当前提交的检查为准。
+
 结果包（本机临时目录）：`/tmp/trainote-visual-targeted.xcresult`（五项饮食／恢复 UI 通过）、`/tmp/trainote-visual-retest.xcresult`（287 项单元通过）、`/tmp/trainote-exercise-ui-final.xcresult`（动作 UI 最终通过）、`/tmp/trainote-anatomy-visuals.xcresult`（两项预览 UI 通过）。前两次执行中的已修复失败保留在原结果包中，不能将它们当成整包绿色结果。
 
 所有截图中的训练／营养数据均为测试数据，不是用户实际健康记录。下面的恢复彩色图来自独立组件的合成分数；[正式恢复页未知状态](visuals/2026-10-12/recovery-unknown.png)、[暗色预览](visuals/2026-10-12/recovery-dark.png)也保留供评审。

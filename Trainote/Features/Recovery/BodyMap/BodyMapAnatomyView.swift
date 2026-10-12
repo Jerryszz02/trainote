@@ -102,10 +102,85 @@ struct BodyMapAnatomyView: UIViewRepresentable {
   }
 }
 
+/// Touch geometry only; the anatomical artwork and status paths remain unchanged.
+struct BodyMapAnatomyHitTarget {
+  let original: CGPath
+  let touchPaths: [CGPath]
+  let frame: CGRect
+  private let padding: CGFloat
+
+  init(path: CGPath, minimumSize: CGFloat = 44) {
+    original = path
+    var components: [CGPath] = []
+    var component = CGMutablePath()
+    path.applyWithBlock { element in
+      let element = element.pointee
+      switch element.type {
+      case .moveToPoint:
+        if !component.isEmpty { components.append(component) }
+        component = CGMutablePath()
+        component.move(to: element.points[0])
+      case .addLineToPoint: component.addLine(to: element.points[0])
+      case .addQuadCurveToPoint:
+        component.addQuadCurve(to: element.points[1], control: element.points[0])
+      case .addCurveToPoint:
+        component.addCurve(to: element.points[2], control1: element.points[0], control2: element.points[1])
+      case .closeSubpath: component.closeSubpath()
+      @unknown default: break
+      }
+    }
+    if !component.isEmpty { components.append(component) }
+    var areas = [CGPath]()
+    var bounds = CGRect.null
+    var largestPadding: CGFloat = 0
+    for component in components {
+      let box = component.boundingBoxOfPath
+      let padding = max(0, (minimumSize - min(box.width, box.height)) / 2)
+      areas.append(component)
+      if padding > 0 {
+        areas.append(component.copy(strokingWithWidth: padding * 2,
+          lineCap: .round, lineJoin: .round, miterLimit: 0))
+      }
+      bounds = bounds.union(box.insetBy(dx: -padding, dy: -padding))
+      largestPadding = max(largestPadding, padding)
+    }
+    touchPaths = areas
+    frame = bounds
+    padding = largestPadding
+  }
+
+  func contains(_ point: CGPoint) -> Bool {
+    touchPaths.contains { $0.contains(point) }
+  }
+
+  static func closest(to point: CGPoint, among targets: [Self]) -> Int? {
+    var nearest: (index: Int, distance: CGFloat)?
+    for (index, target) in targets.enumerated() where target.contains(point) {
+      let distance = target.distance(to: point)
+      if nearest == nil || distance < nearest!.distance { nearest = (index, distance) }
+    }
+    return nearest?.index
+  }
+
+  /// Native curve distance, bounded by the touch padding; no centre-of-bounds approximation.
+  func distance(to point: CGPoint) -> CGFloat {
+    if original.contains(point) { return 0 }
+    var low: CGFloat = 0
+    var high = padding + 0.01
+    for _ in 0..<12 {
+      let middle = (low + high) / 2
+      let stroke = original.copy(strokingWithWidth: middle * 2,
+        lineCap: .round, lineJoin: .round, miterLimit: 0)
+      if stroke.contains(point) { high = middle } else { low = middle }
+    }
+    return high
+  }
+}
+
 private final class AnatomyMuscleButton: UIButton {
-  var musclePath = CGPath(rect: .zero, transform: nil)
+  var touchPaths: [CGPath] = []
   override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
-    musclePath.contains(point)
+    touchPaths.contains { $0.contains(point) }
   }
 }
 
@@ -117,6 +192,7 @@ final class BodyMapAnatomyContainer: UIView {
   private var images: [String: UIImage] = [:]
   private var paths: [String: [MuscleID: CGPath]] = [:]
   private var buttons: [String: AnatomyMuscleButton] = [:]
+  private var hitTargets: [String: BodyMapAnatomyHitTarget] = [:]
 
   override init(frame: CGRect) {
     super.init(frame: frame)
@@ -170,12 +246,27 @@ final class BodyMapAnatomyContainer: UIView {
         var transform = transform(side: side)
         let projected = path.copy(using: &transform)!
         let button = buttons["\(side).\(muscle.rawValue)"]!
-        button.frame = projected.boundingBoxOfPath
+        let target = BodyMapAnatomyHitTarget(path: projected)
+        hitTargets["\(side).\(muscle.rawValue)"] = target
+        button.frame = target.frame
         var local = CGAffineTransform(translationX: -button.frame.minX, y: -button.frame.minY)
-        button.musclePath = projected.copy(using: &local)!
+        button.touchPaths = target.touchPaths.compactMap { $0.copy(using: &local) }
       }
     }
     setNeedsDisplay()
+  }
+
+  override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+    guard isUserInteractionEnabled, !isHidden, alpha > 0.01,
+      self.point(inside: point, with: event)
+    else { return nil }
+    // Resolve all overlapping expanded regions before UIKit chooses a subview by z-order.
+    let keys = ["front", "back"].flatMap { side in
+      MuscleID.allCases.map { "\(side).\($0.rawValue)" }
+    }.filter { hitTargets[$0] != nil }
+    let targets = keys.compactMap { hitTargets[$0] }
+    guard let index = BodyMapAnatomyHitTarget.closest(to: point, among: targets) else { return self }
+    return buttons[keys[index]] ?? self
   }
 
   override func draw(_ rect: CGRect) {
