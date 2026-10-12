@@ -10,118 +10,139 @@ struct ActiveWorkoutView: View {
   @Bindable var workout: Workout
   var isHistoricalEdit = false
   var saveHistory: (() throws -> Void)?
+  @State private var showingDetails = false
   @State private var showingPicker = false
+  @State private var addedExerciseID: UUID?
   @State private var showingDiscard = false
   @State private var message: String?
   @AppStorage("training.restSeconds") private var restDuration = 90
 
   var body: some View {
-    List {
-      Section("训练信息") {
-        TextField("训练名称", text: $workout.title).accessibilityIdentifier("workout.title")
-        TextField("备注（可选）", text: $workout.notes, axis: .vertical)
-        if isHistoricalEdit {
-          DatePicker("开始时间", selection: $workout.startedAt, in: ...Date.now)
-          DatePicker(
-            "结束时间",
-            selection: Binding(
-              get: { workout.endedAt ?? workout.startedAt }, set: { workout.endedAt = $0 }),
-            in: workout.startedAt...max(workout.startedAt, Date.now))
-        } else {
-          LabeledContent("已用时") {
-            Text(workout.startedAt, style: .timer).monospacedDigit()
-          }
-        }
-      }
-      if !isHistoricalEdit {
-        Section("组间休息") {
-          Picker("完成组后休息", selection: $restDuration) {
-            Text("60 秒").tag(60)
-            Text("90 秒").tag(90)
-            Text("120 秒").tag(120)
-          }.pickerStyle(.segmented)
-          if let end = workout.restEndsAt {
+    ScrollViewReader { scroll in
+      List {
+        if !isHistoricalEdit, let end = workout.restEndsAt {
+          Section {
             TimelineView(.periodic(from: .now, by: 1)) { timeline in
               let remaining = max(Int(end.timeIntervalSince(timeline.date).rounded(.up)), 0)
               HStack {
                 Label(remaining > 0 ? "休息中" : "休息结束", systemImage: "timer")
                 Spacer()
-                Text("\(remaining) 秒").monospacedDigit().accessibilityIdentifier(
-                  "workout.restRemaining")
+                Text("\(remaining) 秒").monospacedDigit()
+                  .accessibilityIdentifier("workout.restRemaining")
               }
             }
-            HStack {
-              Button("+30 秒") { workout.restEndsAt = max(end, .now).addingTimeInterval(30) }
-              Spacer()
-              Button("结束休息") { workout.restEndsAt = nil }
+            Button("结束休息") { workout.restEndsAt = nil }
+          }
+        }
+        ForEach(workout.sortedExercises) { exercise in
+          WorkoutExerciseEditor(
+            exercise: exercise, workout: workout, history: history,
+            isDraft: isHistoricalEdit, restDuration: restDuration, reportError: { message = $0 }
+          ) {
+            workout.exercises.removeAll { $0.id == exercise.id }
+            if !isHistoricalEdit { modelContext.delete(exercise) }
+            for (index, value) in workout.sortedExercises.enumerated() { value.orderIndex = index }
+          }
+          .id(exercise.id)
+        }
+        Section {
+          Button("添加动作", systemImage: "plus.circle.fill") { showingPicker = true }
+            .accessibilityIdentifier("workout.addExercise")
+        }
+        Button { showingDetails.toggle() } label: {
+          Label("训练设置与备注", systemImage: showingDetails ? "chevron.down" : "chevron.right")
+            .frame(minHeight: 44)
+        }
+        .accessibilityValue(showingDetails ? "已展开" : "已收起")
+        .accessibilityIdentifier("workout.details")
+        if showingDetails {
+          Section("训练信息") {
+            TextField("训练名称", text: $workout.title).accessibilityIdentifier("workout.title")
+            TextField("备注（可选）", text: $workout.notes, axis: .vertical)
+            if isHistoricalEdit {
+              DatePicker("开始时间", selection: $workout.startedAt, in: ...Date.now)
+              DatePicker(
+                "结束时间",
+                selection: Binding(
+                  get: { workout.endedAt ?? workout.startedAt }, set: { workout.endedAt = $0 }),
+                in: workout.startedAt...max(workout.startedAt, Date.now))
+            } else {
+              LabeledContent("已用时") {
+                Text(workout.startedAt, style: .timer).monospacedDigit()
+              }
+            }
+          }
+          if !isHistoricalEdit {
+            Section("组间休息") {
+              Picker("完成组后休息", selection: $restDuration) {
+                Text("60 秒").tag(60)
+                Text("90 秒").tag(90)
+                Text("120 秒").tag(120)
+              }.pickerStyle(.segmented)
+              if let end = workout.restEndsAt {
+                Button("+30 秒") { workout.restEndsAt = max(end, .now).addingTimeInterval(30) }
+              }
             }
           }
         }
-      }
-      ForEach(workout.sortedExercises) { exercise in
-        WorkoutExerciseEditor(
-          exercise: exercise, workout: workout, history: history,
-          isDraft: isHistoricalEdit, restDuration: restDuration, reportError: { message = $0 }
-        ) {
-          workout.exercises.removeAll { $0.id == exercise.id }
-          if !isHistoricalEdit { modelContext.delete(exercise) }
-          for (index, value) in workout.sortedExercises.enumerated() { value.orderIndex = index }
+        if !isHistoricalEdit {
+          Section {
+            Button("放弃这场训练", role: .destructive) { showingDiscard = true }
+              .accessibilityIdentifier("workout.discard")
+          }
         }
       }
-      Section {
-        Button("添加动作", systemImage: "plus.circle.fill") { showingPicker = true }
-          .accessibilityIdentifier("workout.addExercise")
-      }
-      if !isHistoricalEdit {
-        Section {
-          Button("放弃这场训练", role: .destructive) { showingDiscard = true }
-            .accessibilityIdentifier("workout.discard")
+      .navigationTitle(isHistoricalEdit ? "编辑训练" : "进行中")
+      .navigationBarTitleDisplayMode(.inline)
+      .toolbar {
+        ToolbarItem(placement: .confirmationAction) {
+          Button(isHistoricalEdit ? "保存" : "结束训练", action: finish).accessibilityIdentifier(
+            "workout.finish")
+        }
+        if isHistoricalEdit {
+          ToolbarItem(placement: .cancellationAction) {
+            Button("取消") { dismiss() }.accessibilityIdentifier("workout.edit.cancel")
+          }
+        }
+        ToolbarItemGroup(placement: .keyboard) {
+          Spacer()
+          Button("收起键盘") {
+            UIApplication.shared.sendAction(
+              #selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+          }
         }
       }
-    }
-    .navigationTitle(isHistoricalEdit ? "编辑训练" : "进行中")
-    .navigationBarTitleDisplayMode(.inline)
-    .toolbar {
-      ToolbarItem(placement: .confirmationAction) {
-        Button(isHistoricalEdit ? "保存" : "完成", action: finish).accessibilityIdentifier(
-          "workout.finish")
-      }
-      if isHistoricalEdit {
-        ToolbarItem(placement: .cancellationAction) {
-          Button("取消") { dismiss() }.accessibilityIdentifier("workout.edit.cancel")
+      .onChange(of: showingPicker) { wasShowing, isShowing in
+        if wasShowing && !isShowing, let addedExerciseID {
+          scroll.scrollTo(addedExerciseID, anchor: .top)
+          self.addedExerciseID = nil
         }
       }
-      ToolbarItemGroup(placement: .keyboard) {
-        Spacer()
-        Button("收起键盘") {
-          UIApplication.shared.sendAction(
-            #selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+      .sheet(isPresented: $showingPicker) {
+        ExercisePickerView(title: "添加训练动作") { item in
+          let exercise = RoutineFactory.workoutExercise(
+            from: item, orderIndex: workout.exercises.count)
+          exercise.workout = workout
+          workout.exercises.append(exercise)
+          addedExerciseID = exercise.id
         }
       }
-    }
-    .sheet(isPresented: $showingPicker) {
-      ExercisePickerView(title: "添加训练动作") { item in
-        let exercise = RoutineFactory.workoutExercise(
-          from: item, orderIndex: workout.exercises.count)
-        exercise.workout = workout
-        workout.exercises.append(exercise)
+      .confirmationDialog("放弃这场训练？", isPresented: $showingDiscard, titleVisibility: .visible) {
+        Button("放弃并删除", role: .destructive, action: discard)
+        Button("继续训练", role: .cancel) {}
       }
+      .alert(
+        "请检查记录", isPresented: Binding(get: { message != nil }, set: { if !$0 { message = nil } })
+      ) {
+        if !isHistoricalEdit { Button("重试保存") { persist() } }
+        Button("知道了", role: .cancel) { message = nil }
+      } message: {
+        Text(message ?? "请重试。")
+      }
+      .onChange(of: editFingerprint) { _, _ in persist() }
+      .onChange(of: scenePhase) { _, phase in if phase != .active { persist() } }
+      .onDisappear { persist() }
     }
-    .confirmationDialog("放弃这场训练？", isPresented: $showingDiscard, titleVisibility: .visible) {
-      Button("放弃并删除", role: .destructive, action: discard)
-      Button("继续训练", role: .cancel) {}
-    }
-    .alert(
-      "请检查记录", isPresented: Binding(get: { message != nil }, set: { if !$0 { message = nil } })
-    ) {
-      if !isHistoricalEdit { Button("重试保存") { persist() } }
-      Button("知道了", role: .cancel) { message = nil }
-    } message: {
-      Text(message ?? "请重试。")
-    }
-    .onChange(of: editFingerprint) { _, _ in persist() }
-    .onChange(of: scenePhase) { _, phase in if phase != .active { persist() } }
-    .onDisappear { persist() }
   }
 
   private var editFingerprint: [String] {
@@ -398,6 +419,8 @@ private struct WorkoutExerciseEditor: View {
 }
 
 private struct StrengthSetRow: View {
+  @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+  @State private var showOptions = false
   @Bindable var strengthSet: StrengthSet
   let mode: TrackingMode
   let onComplete: () -> Void
@@ -407,63 +430,57 @@ private struct StrengthSetRow: View {
       HStack {
         Button(action: onComplete) {
           Label(
-            "第 \(strengthSet.orderIndex + 1) 组",
+            "第 \(strengthSet.orderIndex + 1) 组 · \(strengthSet.isCompleted ? "已完成" : "完成本组")",
             systemImage: strengthSet.isCompleted ? "checkmark.circle.fill" : "circle"
           )
           .foregroundStyle(strengthSet.isCompleted ? Color.green : Color.primary)
+          .frame(minHeight: 44)
+          .contentShape(Rectangle())
         }
         .buttonStyle(.borderless)
         .accessibilityLabel(
-          "第 \(strengthSet.orderIndex + 1) 组，\(strengthSet.isCompleted ? "已完成" : "标记完成")"
+          "第 \(strengthSet.orderIndex + 1) 组，\(strengthSet.isCompleted ? "已完成" : "完成本组")"
         )
         .accessibilityIdentifier("strengthSet.complete.\(strengthSet.id.uuidString)")
         Spacer()
-        Button("删除组", systemImage: "trash", role: .destructive, action: onDelete)
-          .labelStyle(.iconOnly).buttonStyle(.borderless)
-      }
-      Picker("组类型", selection: Binding(
-        get: { strengthSet.setRole }, set: { strengthSet.setRole = $0 }
-      )) {
-        Text("工作组").tag(SetRole.working)
-        Text("热身组").tag(SetRole.warmup)
-        if strengthSet.setRole == .unknown { Text("历史未区分").tag(SetRole.unknown) }
-      }
-      .accessibilityIdentifier("strengthSet.role.\(strengthSet.id.uuidString)")
-      if mode == .strength || mode == .repetitions {
-        Picker("保留次数 RIR", selection: $strengthSet.rir) {
-          Text("未记录").tag(Int?.none)
-          ForEach(0...5, id: \.self) { value in
-            Text(value == 5 ? "5 次或以上" : "\(value) 次").tag(Optional(value))
-          }
+        Button(role: .destructive, action: onDelete) {
+          Image(systemName: "trash").frame(minWidth: 44, minHeight: 44).contentShape(Rectangle())
         }
-        .accessibilityIdentifier("strengthSet.rir.\(strengthSet.id.uuidString)")
-        Text("这组结束时，估计还能再完成几次。可跳过。")
-          .font(.caption).foregroundStyle(.secondary)
+        .accessibilityLabel("删除组").buttonStyle(.borderless)
       }
       if mode == .strength {
+        Text("重量").font(.subheadline)
         HStack {
           Button {
             strengthSet.weightKilograms = max(strengthSet.weightKilograms - 2.5, 0)
           } label: {
-            Image(systemName: "minus.circle")
+            Image(systemName: "minus.circle").frame(minWidth: 44, minHeight: 44).contentShape(Rectangle())
           }
-          .accessibilityLabel("减重 2.5 公斤").buttonStyle(.borderless)
+          .frame(minWidth: 44, minHeight: 44).accessibilityLabel("减重 2.5 公斤").buttonStyle(
+            .borderless)
           TextField(
             "重量", value: $strengthSet.weightKilograms,
             format: .number.precision(.fractionLength(0...2))
           )
-          .keyboardType(.decimalPad).multilineTextAlignment(.trailing).accessibilityLabel("重量")
+          .keyboardType(.decimalPad).multilineTextAlignment(.trailing).accessibilityLabel(
+            "第 \(strengthSet.orderIndex + 1) 组，重量，公斤"
+          )
           .accessibilityIdentifier("strengthSet.weight.\(strengthSet.id.uuidString)")
           Text("kg").foregroundStyle(.secondary)
           Button {
             strengthSet.weightKilograms = min(strengthSet.weightKilograms + 2.5, 10_000)
           } label: {
-            Image(systemName: "plus.circle")
+            Image(systemName: "plus.circle").frame(minWidth: 44, minHeight: 44).contentShape(Rectangle())
           }
-          .accessibilityLabel("加重 2.5 公斤").buttonStyle(.borderless)
+          .frame(minWidth: 44, minHeight: 44).accessibilityLabel("加重 2.5 公斤").buttonStyle(
+            .borderless)
         }
       }
-      HStack {
+      let fieldLayout =
+        dynamicTypeSize.isAccessibilitySize
+        ? AnyLayout(VStackLayout(alignment: .leading, spacing: 8))
+        : AnyLayout(HStackLayout())
+      fieldLayout {
         Text(mode == .duration ? "时长" : "次数")
         Spacer()
         TextField(
@@ -472,11 +489,44 @@ private struct StrengthSetRow: View {
           format: .number
         )
         .keyboardType(.numberPad).multilineTextAlignment(.trailing)
-        .accessibilityLabel(mode == .duration ? "时长秒数" : "次数")
+        .accessibilityLabel(
+          "第 \(strengthSet.orderIndex + 1) 组，\(mode == .duration ? "时长，秒" : "次数")"
+        )
         .accessibilityIdentifier(
           "strengthSet.\(mode == .duration ? "duration" : "repetitions").\(strengthSet.id.uuidString)"
         )
         Text(mode == .duration ? "秒" : "次").foregroundStyle(.secondary)
+      }
+      Button { showOptions.toggle() } label: {
+        Label("更多选项", systemImage: showOptions ? "chevron.down" : "chevron.right")
+          .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+          .contentShape(Rectangle())
+      }
+      .buttonStyle(.borderless)
+      .accessibilityValue(showOptions ? "已展开" : "已收起")
+      .accessibilityIdentifier("strengthSet.more.\(strengthSet.id.uuidString)")
+      if showOptions {
+        Picker(
+          "组类型",
+          selection: Binding(
+            get: { strengthSet.setRole }, set: { strengthSet.setRole = $0 }
+          )
+        ) {
+          Text("工作组").tag(SetRole.working)
+          Text("热身组").tag(SetRole.warmup)
+          if strengthSet.setRole == .unknown { Text("历史未区分").tag(SetRole.unknown) }
+        }
+        .accessibilityIdentifier("strengthSet.role.\(strengthSet.id.uuidString)")
+        if mode == .strength || mode == .repetitions {
+          Picker("还能做几次（RIR）", selection: $strengthSet.rir) {
+            Text("未记录").tag(Int?.none)
+            ForEach(0...5, id: \.self) { value in
+              Text(value == 5 ? "5 次或以上" : "\(value) 次").tag(Optional(value))
+            }
+          }
+          .accessibilityIdentifier("strengthSet.rir.\(strengthSet.id.uuidString)")
+
+        }
       }
     }.padding(.vertical, 5)
   }

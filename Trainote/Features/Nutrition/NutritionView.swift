@@ -3,7 +3,6 @@ import SwiftUI
 import UIKit
 
 private enum NutritionSheet: Identifiable {
-  case addOptions
   case entry(FoodLogEntry?)
   case recentPicker
   case presetPicker
@@ -12,7 +11,6 @@ private enum NutritionSheet: Identifiable {
 
   var id: String {
     switch self {
-    case .addOptions: "add-options"
     case .entry(let entry): "entry-\(entry?.id.uuidString ?? "new")"
     case .recentPicker: "recent-picker"
     case .presetPicker: "preset-picker"
@@ -22,12 +20,12 @@ private enum NutritionSheet: Identifiable {
   }
 }
 
-/// 数字键盘上的“完成”按钮，Nutrition 与资料库表单共用。
+/// 数字键盘上的“收起键盘”按钮，Nutrition 与资料库表单共用。
 struct NutritionKeyboardDoneToolbar: ToolbarContent {
   var body: some ToolbarContent {
     ToolbarItemGroup(placement: .keyboard) {
       Spacer()
-      Button("完成") {
+      Button("收起键盘") {
         UIApplication.shared.sendAction(
           #selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
       }
@@ -95,7 +93,7 @@ struct NutritionView: View {
         ContentUnavailableView(
           "当天没有饮食记录",
           systemImage: "fork.knife.circle",
-          description: Text("点击右上角加号，可选择直接记录、最近记录、常用食物、固定餐或复制某一餐。")
+          description: Text("记录今天的第一餐。")
         )
         .frame(maxWidth: .infinity)
       }
@@ -104,13 +102,13 @@ struct NutritionView: View {
     .onChange(of: addRequest, initial: true) { _, newValue in
       if newValue > 0 {
         selectedDate = .now
-        presentedSheet = .addOptions
+        presentedSheet = .entry(nil)
       }
     }
     .toolbar {
       ToolbarItem(placement: .topBarTrailing) {
         Button {
-          presentedSheet = .addOptions
+          presentedSheet = .entry(nil)
         } label: {
           Label("添加饮食", systemImage: "plus")
         }
@@ -126,10 +124,8 @@ struct NutritionView: View {
     ) {
       if let sheet = presentedSheet {
         switch sheet {
-        case .addOptions:
-          AddFoodOptionsSheet { presentedSheet = $0 }
         case .entry(let entry):
-          FoodEntryEditor(date: selectedDate, entry: entry)
+          FoodEntryEditor(date: selectedDate, entry: entry, onSaved: { selectedDate = $0 })
         case .recentPicker:
           RecentFoodPickerSheet(selectedDate: selectedDate)
         case .presetPicker:
@@ -181,13 +177,10 @@ struct NutritionView: View {
           .accessibilityIdentifier("nutrition.dietComplete")
       } else {
         Button("确认所选日期饮食已记完整") {
-          if dayEntries.isEmpty { showEmptyDietConfirmation = true }
-          else { confirmSelectedDay() }
+          if dayEntries.isEmpty { showEmptyDietConfirmation = true } else { confirmSelectedDay() }
         }
         .disabled(selectedDayKey > AnalysisFingerprint.localDate(.now, timeZone: .current))
         .accessibilityIdentifier("nutrition.confirmDiet")
-        Text("编辑饮食后需重新确认；趋势统计只计截至昨天的 14 天。")
-          .font(.caption).foregroundStyle(.secondary)
       }
     }
   }
@@ -265,84 +258,16 @@ struct NutritionView: View {
         id: existing?.id ?? UUID(), localDate: selectedDayKey,
         timeZoneIdentifier: zone, confirmedAt: .now, foodLogFingerprint: fingerprint)
       try ManualRecordValidation.validate(value)
-      if let existing { existing.apply(value) }
-      else { modelContext.insert(DietLogCompleteness(value: value)) }
+      if let existing {
+        existing.apply(value)
+      } else {
+        modelContext.insert(DietLogCompleteness(value: value))
+      }
       try modelContext.save()
     } catch {
       modelContext.rollback()
       actionErrorMessage = "未能确认饮食完整，请重试。"
     }
-  }
-}
-
-private struct AddFoodOptionsSheet: View {
-  @Environment(\.dismiss) private var dismiss
-
-  let onSelect: (NutritionSheet) -> Void
-
-  var body: some View {
-    NavigationStack {
-      List {
-        Section {
-          optionButton(
-            "直接记录", systemImage: "square.and.pencil",
-            detail: "手动填写食物和营养", accessibilityIdentifier: "nutrition.add.direct"
-          ) { onSelect(.entry(nil)) }
-          optionButton(
-            "最近记录", systemImage: "clock.arrow.circlepath",
-            detail: "从吃过的食物里选，可改份量", accessibilityIdentifier: "nutrition.add.recent"
-          ) { onSelect(.recentPicker) }
-          optionButton(
-            "常用食物", systemImage: "star.fill",
-            detail: "从常用食物快速记录", accessibilityIdentifier: "nutrition.add.preset"
-          ) { onSelect(.presetPicker) }
-          optionButton(
-            "固定餐", systemImage: "list.bullet.rectangle",
-            detail: "整套记录，逐项调整份量", accessibilityIdentifier: "nutrition.add.meal"
-          ) { onSelect(.mealPicker) }
-          optionButton(
-            "复制某一餐", systemImage: "doc.on.doc",
-            detail: "把某天某餐整体复制过来", accessibilityIdentifier: "nutrition.add.copy"
-          ) { onSelect(.copyPicker) }
-        } footer: {
-          Text("所有方式都会在保存前显示营养总量预览。")
-        }
-      }
-      .navigationTitle("添加饮食")
-      .navigationBarTitleDisplayMode(.inline)
-      .toolbar {
-        ToolbarItem(placement: .cancellationAction) {
-          Button("取消") { dismiss() }
-            .accessibilityIdentifier("nutrition.add.cancel")
-        }
-      }
-    }
-  }
-
-  private func optionButton(
-    _ title: String,
-    systemImage: String,
-    detail: String,
-    accessibilityIdentifier: String,
-    action: @escaping () -> Void
-  ) -> some View {
-    Button(action: action) {
-      HStack(spacing: 12) {
-        Image(systemName: systemImage)
-          .foregroundStyle(.tint)
-          .frame(width: 24)
-        VStack(alignment: .leading, spacing: 3) {
-          Text(title)
-          Text(detail)
-            .font(.caption)
-            .foregroundStyle(.secondary)
-        }
-      }
-      .frame(maxWidth: .infinity, alignment: .leading)
-      .contentShape(Rectangle())
-    }
-    .buttonStyle(.plain)
-    .accessibilityIdentifier(accessibilityIdentifier)
   }
 }
 
@@ -393,6 +318,14 @@ private struct FoodEntryEditor: View {
   @Environment(\.modelContext) private var modelContext
 
   let entry: FoodLogEntry?
+  let onSaved: (Date) -> Void
+  @State private var initialDraft: FoodNutritionDraft
+  @State private var initialMeal: MealType
+  @State private var initialDate: Date
+  @State private var sourceSheet: NutritionSheet?
+  @State private var sourceSavedDate: Date?
+  @State private var showDiscard = false
+  @State private var editTotals = false
 
   @State private var draft: FoodNutritionDraft
   @State private var mealType: MealType
@@ -400,24 +333,47 @@ private struct FoodEntryEditor: View {
   @State private var saveAsPreset = false
   @State private var errorMessage: String?
 
-  init(date: Date, entry: FoodLogEntry?) {
+  init(date: Date, entry: FoodLogEntry?, onSaved: @escaping (Date) -> Void = { _ in }) {
     self.entry = entry
-    if let entry {
-      _draft = State(initialValue: .fromEntry(entry))
-      _mealType = State(initialValue: entry.mealType)
-      _loggedAt = State(initialValue: entry.loggedAt)
-    } else {
-      _draft = State(initialValue: FoodNutritionDraft())
-      _mealType = State(initialValue: MealType.defaultForTime())
-      _loggedAt = State(initialValue: date.withCurrentTime())
-    }
+    self.onSaved = onSaved
+    let seedDraft = entry.map(FoodNutritionDraft.fromEntry) ?? FoodNutritionDraft()
+    let seedMeal = entry?.mealType ?? MealType.defaultForTime()
+    let seedDate = entry?.loggedAt ?? date.withCurrentTime()
+    _initialDraft = State(initialValue: seedDraft)
+    _initialMeal = State(initialValue: seedMeal)
+    _initialDate = State(initialValue: seedDate)
+    _draft = State(initialValue: seedDraft)
+    _mealType = State(initialValue: seedMeal)
+    _loggedAt = State(initialValue: seedDate)
   }
 
   private var isValid: Bool { draft.isValid }
+  private var hasChanges: Bool {
+    draft != initialDraft || mealType != initialMeal || loggedAt != initialDate || saveAsPreset
+  }
 
   var body: some View {
     NavigationStack {
       Form {
+        if entry == nil {
+          Section {
+            Menu("最近 / 常用 / 固定餐 / 复制") {
+              Button("最近记录") { sourceSheet = .recentPicker }
+                .accessibilityIdentifier("nutrition.add.recent")
+              Button("常用食物") { sourceSheet = .presetPicker }
+                .accessibilityIdentifier("nutrition.add.preset")
+              Button("固定餐") { sourceSheet = .mealPicker }
+                .accessibilityIdentifier("nutrition.add.meal")
+              Button("复制某一餐") { sourceSheet = .copyPicker }
+                .accessibilityIdentifier("nutrition.add.copy")
+            }
+            .accessibilityIdentifier("nutrition.entry.sources")
+            if sourceSavedDate != nil {
+              Text("复用记录已保存，当前草稿仍保留。")
+                .accessibilityIdentifier("nutrition.entry.draftRetained")
+            }
+          }
+        }
         Section("食物") {
           TextField("名称", text: $draft.name)
             .accessibilityIdentifier("nutrition.entry.name")
@@ -463,31 +419,28 @@ private struct FoodEntryEditor: View {
           perUnitField("脂肪", nutrient: .fat, unit: "g")
         } header: {
           Text(draft.inputMode.nutrientSectionTitle)
-        } footer: {
-          Text(NutritionMath.calorieCalculationNote)
         }
 
         Section {
           LabeledContent("热量", value: "\(NutritionFormatting.number(draft.totals.calories)) kcal")
             .accessibilityIdentifier("nutrition.entry.total.calories")
-          totalField("碳水", nutrient: .carbohydrates, unit: "g")
-          totalField("蛋白质", nutrient: .protein, unit: "g")
-          totalField("脂肪", nutrient: .fat, unit: "g")
-          Text(previewText)
-            .font(.footnote)
-            .foregroundStyle(.secondary)
+          if editTotals {
+            totalField("碳水", nutrient: .carbohydrates, unit: "g")
+            totalField("蛋白质", nutrient: .protein, unit: "g")
+            totalField("脂肪", nutrient: .fat, unit: "g")
+          } else {
+            Text(previewText).monospacedDigit()
+          }
+          Button(editTotals ? "收起总量" : "修改总量") { editTotals.toggle() }
+            .accessibilityIdentifier("nutrition.entry.editTotals")
         } header: {
-          Text("本条记录营养总量（营养素可修正）")
-        } footer: {
-          Text("修改份量会按当前单位营养自动缩放；手动修改总量后，再改份量会按修正后的密度计算。")
+          Text("本条记录营养总量")
         }
 
         if entry == nil {
           Section {
             Toggle("同时保存为常用食物", isOn: $saveAsPreset)
               .accessibilityIdentifier("nutrition.entry.savePreset")
-          } footer: {
-            Text("常用食物按\(draft.inputMode == .per100g ? "每 100 克" : "每份")保存。")
           }
         }
       }
@@ -495,7 +448,7 @@ private struct FoodEntryEditor: View {
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
         ToolbarItem(placement: .cancellationAction) {
-          Button("取消") { dismiss() }
+          Button("取消") { if hasChanges { showDiscard = true } else { dismiss() } }
         }
         ToolbarItem(placement: .confirmationAction) {
           Button("保存", action: save)
@@ -503,6 +456,31 @@ private struct FoodEntryEditor: View {
             .accessibilityIdentifier("nutrition.entry.save")
         }
         NutritionKeyboardDoneToolbar()
+      }
+      .interactiveDismissDisabled(hasChanges)
+      .alert("放弃未保存的饮食草稿？", isPresented: $showDiscard) {
+        Button("放弃草稿", role: .destructive) { dismiss() }
+        Button("继续编辑", role: .cancel) {}
+      }
+      .sheet(
+        item: $sourceSheet,
+        onDismiss: {
+          if let date = sourceSavedDate, !hasChanges {
+            onSaved(date)
+            dismiss()
+          }
+        }
+      ) { source in
+        switch source {
+        case .recentPicker:
+          RecentFoodPickerSheet(selectedDate: loggedAt, onSaved: { sourceSavedDate = $0 })
+        case .presetPicker:
+          FoodPresetLogSheet(selectedDate: loggedAt, onSaved: { sourceSavedDate = $0 })
+        case .mealPicker:
+          MealTemplateLogSheet(selectedDate: loggedAt, onSaved: { sourceSavedDate = $0 })
+        case .copyPicker: CopyMealSheet(selectedDate: loggedAt, onSaved: { sourceSavedDate = $0 })
+        default: EmptyView()
+        }
       }
       .alert("保存失败", isPresented: errorBinding) {
         Button("好", role: .cancel) { errorMessage = nil }
@@ -582,6 +560,7 @@ private struct FoodEntryEditor: View {
       entry.fat = totals.fat
       do {
         try modelContext.save()
+        onSaved(loggedAt)
         dismiss()
       } catch {
         original.restore(into: entry)
@@ -605,6 +584,7 @@ private struct FoodEntryEditor: View {
       }
       do {
         try modelContext.save()
+        onSaved(loggedAt)
         dismiss()
       } catch {
         modelContext.delete(newEntry)
@@ -718,6 +698,7 @@ private struct FoodPresetLogSheet: View {
   private var presets: [FoodPreset]
 
   let selectedDate: Date
+  var onSaved: (Date) -> Void = { _ in }
 
   @State private var searchText = ""
   @State private var activePreset: FoodPreset?
@@ -752,13 +733,6 @@ private struct FoodPresetLogSheet: View {
             .accessibilityIdentifier("nutrition.preset.reselect")
           }
           FoodPortionFields(draft: $draft, mealType: $mealType, loggedAt: $loggedAt)
-          Section {
-            Text(
-              FoodPortionMath.isPer100g(preset.servingDescription)
-                ? "该常用食物按每 100 克记录，请输入实际克数。"
-                : "请输入实际份数，营养会按份自动换算。"
-            )
-          }
         } else {
           Section("常用食物") {
             if presets.isEmpty {
@@ -799,6 +773,7 @@ private struct FoodPresetLogSheet: View {
       .toolbar {
         ToolbarItem(placement: .cancellationAction) {
           Button("取消") { dismiss() }
+            .accessibilityIdentifier("nutrition.source.cancel")
         }
         if let preset = activePreset {
           ToolbarItem(placement: .confirmationAction) {
@@ -837,6 +812,7 @@ private struct FoodPresetLogSheet: View {
     modelContext.insert(entry)
     do {
       try modelContext.save()
+      onSaved(loggedAt)
       dismiss()
     } catch {
       modelContext.delete(entry)
@@ -853,6 +829,7 @@ private struct RecentFoodPickerSheet: View {
   private var entries: [FoodLogEntry]
 
   let selectedDate: Date
+  var onSaved: (Date) -> Void = { _ in }
 
   @State private var searchText = ""
   @State private var activeItem: RecentFoodItem?
@@ -880,9 +857,6 @@ private struct RecentFoodPickerSheet: View {
               .accessibilityIdentifier("nutrition.recent.reselect")
           }
           FoodPortionFields(draft: $draft, mealType: $mealType, loggedAt: $loggedAt)
-          Section {
-            Text("保存时会生成新的独立记录，不会修改原来的历史。")
-          }
         } else {
           Section("最近记录") {
             if recentItems.isEmpty {
@@ -920,6 +894,7 @@ private struct RecentFoodPickerSheet: View {
       .toolbar {
         ToolbarItem(placement: .cancellationAction) {
           Button("取消") { dismiss() }
+            .accessibilityIdentifier("nutrition.source.cancel")
         }
         if let item = activeItem {
           ToolbarItem(placement: .confirmationAction) {
@@ -958,6 +933,7 @@ private struct RecentFoodPickerSheet: View {
     modelContext.insert(entry)
     do {
       try modelContext.save()
+      onSaved(loggedAt)
       dismiss()
     } catch {
       modelContext.delete(entry)
@@ -974,6 +950,7 @@ private struct MealTemplateLogSheet: View {
   private var templates: [MealTemplate]
 
   let selectedDate: Date
+  var onSaved: (Date) -> Void = { _ in }
 
   @State private var activeTemplate: MealTemplate?
   @State private var quantities: [UUID: Double] = [:]
@@ -1069,6 +1046,7 @@ private struct MealTemplateLogSheet: View {
       .toolbar {
         ToolbarItem(placement: .cancellationAction) {
           Button("取消") { dismiss() }
+            .accessibilityIdentifier("nutrition.source.cancel")
         }
         NutritionKeyboardDoneToolbar()
       }
@@ -1136,6 +1114,7 @@ private struct MealTemplateLogSheet: View {
     for entry in entries { modelContext.insert(entry) }
     do {
       try modelContext.save()
+      onSaved(loggedAt)
       dismiss()
     } catch {
       for entry in entries { modelContext.delete(entry) }
@@ -1152,6 +1131,7 @@ private struct CopyMealSheet: View {
   private var entries: [FoodLogEntry]
 
   let selectedDate: Date
+  var onSaved: (Date) -> Void = { _ in }
 
   @State private var sourceDate = Calendar.current.date(byAdding: .day, value: -1, to: .now) ?? .now
   @State private var sourceMeal: MealType = .dinner
@@ -1209,9 +1189,6 @@ private struct CopyMealSheet: View {
             previewRow("碳水", value: sourceTotals.carbohydrates, unit: "g")
             previewRow("蛋白质", value: sourceTotals.protein, unit: "g")
             previewRow("脂肪", value: sourceTotals.fat, unit: "g")
-            Text("复制会生成全新记录并保留来源信息，原记录不会改变。")
-              .font(.footnote)
-              .foregroundStyle(.secondary)
           }
         }
 
@@ -1226,6 +1203,7 @@ private struct CopyMealSheet: View {
       .toolbar {
         ToolbarItem(placement: .cancellationAction) {
           Button("取消") { dismiss() }
+            .accessibilityIdentifier("nutrition.source.cancel")
         }
       }
       .confirmationDialog(
@@ -1272,6 +1250,7 @@ private struct CopyMealSheet: View {
     for entry in copies { modelContext.insert(entry) }
     do {
       try modelContext.save()
+      onSaved(selectedDate)
       dismiss()
     } catch {
       for entry in copies { modelContext.delete(entry) }
