@@ -1,14 +1,14 @@
 import XCTest
 
 final class RecoveryRIRUITests: XCTestCase {
-  func testSelectingRecoveryMuscleRevealsDetailFrom3DAndList() {
+  func testSelectingRecoveryMuscleRevealsDetailFromAnatomyAndList() {
     let app = XCUIApplication()
     app.launchArguments = ["-ui-testing"]
     app.launch()
     app.tabBars.buttons["恢复"].tap()
-    let chest3D = app.buttons["bodyMap.label.chest"]
-    XCTAssertTrue(chest3D.waitForExistence(timeout: 5))
-    chest3D.tap()
+    let chestAnatomy = app.buttons["bodyMap.label.chest"]
+    XCTAssertTrue(chestAnatomy.waitForExistence(timeout: 5))
+    chestAnatomy.coordinate(withNormalizedOffset: .init(dx: 0.25, dy: 0.5)).tap()
     let detailAction = app.buttons["更新这块肌群的体感"]
     waitUntilHittable(detailAction)
     let listToggle = app.buttons["bodyMap.toggleList"]

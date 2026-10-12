@@ -86,6 +86,7 @@ private struct ExerciseLibraryView: View {
           } label: {
             ExerciseRow(item: item)
           }
+          .accessibilityIdentifier("exerciseLibrary.item.\(item.id)")
         }
         .listStyle(.plain)
       }

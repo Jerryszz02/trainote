@@ -51,6 +51,136 @@ final class BodyMapTests: XCTestCase {
     XCTAssertFalse(BodyMapRenderInput(regions: [zero]).isEmpty)
   }
 
+  func testAnatomyMasksCoverElevenMusclesWithFiniteInBoundsNativePaths() throws {
+    let asset = try BodyMapAnatomyAsset.load()
+    XCTAssertEqual(asset.masks.count, 18)
+    XCTAssertEqual(Set(asset.masks.map(\.muscle)), Set(MuscleID.allCases))
+    XCTAssertEqual(asset.width / asset.height, 1365.0 / 2048.0, accuracy: 0.00001)
+    for side in ["front", "back"] {
+      let url = try XCTUnwrap(BodyMapAnatomyAsset.resource("anatomy-\(side)", extension: "png"))
+      XCTAssertNotNil(UIImage(contentsOfFile: url.path))
+      for path in asset.paths(side: side).values {
+        XCTAssertFalse(path.isEmpty)
+        XCTAssertTrue(CGRect(x: 0, y: 0, width: asset.width, height: asset.height)
+          .contains(path.boundingBoxOfPath))
+      }
+    }
+    XCTAssertNotNil(asset.paths(side: "front")[.chest])
+    XCTAssertNotNil(asset.paths(side: "back")[.hamstrings])
+    XCTAssertNil(asset.paths(side: "front")[.glutes])
+  }
+
+  func testNativeAnatomySelectionCallsParentAndKeepsUnknownAndPainSemantics() throws {
+    let view = BodyMapAnatomyContainer(frame: CGRect(x: 0, y: 0, width: 370, height: 330))
+    XCTAssertNotNil(view.asset)
+    var selected: MuscleID?
+    let input = BodyMapRenderInput(regions: [
+      .init(muscle: .shoulders, score: nil, status: "疼痛反馈", isLimited: true)
+    ], selected: .chest)
+    view.configure(input: input, onSelect: { selected = $0 })
+    view.layoutIfNeeded()
+    let chest = try XCTUnwrap(view.subviews.compactMap { $0 as? UIButton }
+      .first { $0.accessibilityIdentifier == "bodyMap.label.chest" })
+    XCTAssertTrue(chest.accessibilityLabel?.contains("未知") ?? false)
+    XCTAssertTrue(chest.accessibilityTraits.contains(.selected))
+    XCTAssertTrue(chest.point(inside: CGPoint(x: chest.bounds.width * 0.25,
+      y: chest.bounds.height * 0.5), with: nil))
+    XCTAssertFalse(chest.point(inside: CGPoint(x: -20, y: -20), with: nil))
+    chest.sendActions(for: .touchUpInside)
+    XCTAssertEqual(selected, .chest)
+    let shoulder = try XCTUnwrap(view.subviews.compactMap { $0 as? UIButton }
+      .first { $0.accessibilityIdentifier == "bodyMap.label.shoulders" })
+    XCTAssertTrue(shoulder.accessibilityLabel?.contains("疼痛反馈") ?? false)
+    BodyMapAnatomyView.dismantleUIView(view, coordinator: ())
+    selected = nil
+    chest.sendActions(for: .touchUpInside)
+    XCTAssertNil(selected)
+  }
+
+  func testAnatomySmallAndDisconnectedMasksHaveExpandedTouchAreasWithoutFillingGaps() {
+    let small = CGPath(rect: CGRect(x: 20, y: 20, width: 8, height: 10), transform: nil)
+    let target = BodyMapAnatomyHitTarget(path: small)
+    XCTAssertGreaterThanOrEqual(target.frame.width, 44)
+    XCTAssertGreaterThanOrEqual(target.frame.height, 44)
+    let nearby = CGPoint(x: 15, y: 25)
+    XCTAssertFalse(small.contains(nearby))
+    XCTAssertTrue(target.contains(nearby))
+    XCTAssertEqual(target.distance(to: nearby), 5, accuracy: 0.01)
+    XCTAssertFalse(target.contains(CGPoint(x: -20, y: -20)))
+
+    let pair = CGMutablePath()
+    pair.addRect(CGRect(x: 0, y: 0, width: 8, height: 10))
+    pair.addRect(CGRect(x: 100, y: 0, width: 8, height: 10))
+    let paired = BodyMapAnatomyHitTarget(path: pair)
+    XCTAssertTrue(paired.contains(CGPoint(x: -15, y: 5)))
+    XCTAssertTrue(paired.contains(CGPoint(x: 123, y: 5)))
+    XCTAssertFalse(paired.contains(CGPoint(x: 54, y: 5)))
+  }
+
+  func testAnatomyOverlappingTouchAreasChooseNearestOriginalMaskInsteadOfSubviewOrder() {
+    let left = BodyMapAnatomyHitTarget(path:
+      CGPath(rect: CGRect(x: 20, y: 20, width: 8, height: 10), transform: nil))
+    let right = BodyMapAnatomyHitTarget(path:
+      CGPath(rect: CGRect(x: 38, y: 20, width: 8, height: 10), transform: nil))
+    let overlap = CGPoint(x: 35, y: 25)
+    XCTAssertTrue(left.contains(overlap))
+    XCTAssertTrue(right.contains(overlap))
+    XCTAssertEqual(BodyMapAnatomyHitTarget.closest(to: overlap, among: [left, right]), 1)
+    XCTAssertEqual(BodyMapAnatomyHitTarget.closest(to: overlap, among: [right, left]), 0)
+    // An actual muscle remains preferred when another muscle's expanded target overlaps it.
+    let insideLeft = CGPoint(x: 25, y: 25)
+    XCTAssertTrue(right.contains(insideLeft))
+    XCTAssertEqual(BodyMapAnatomyHitTarget.closest(to: insideLeft, among: [right, left]), 1)
+    XCTAssertNil(BodyMapAnatomyHitTarget.closest(to: CGPoint(x: 100, y: 100), among: [left, right]))
+  }
+
+  func testAnatomyContainerSmallTargetsReachFortyFourPointsAndRouteNearbyTapsAfterResize() throws {
+    let view = BodyMapAnatomyContainer(frame: CGRect(x: 0, y: 0, width: 370, height: 330))
+    let asset = try XCTUnwrap(view.asset)
+    var selected: MuscleID?
+    view.configure(input: BodyMapRenderInput(regions: []), onSelect: { selected = $0 })
+    for width in [CGFloat(370), 320] {
+      view.frame.size.width = width
+      view.setNeedsLayout()
+      view.layoutIfNeeded()
+      let buttons = view.subviews.compactMap { $0 as? UIButton }
+      for muscle in [MuscleID.back, .calves] {
+        for button in buttons where button.accessibilityIdentifier == "bodyMap.label.\(muscle.rawValue)" {
+          XCTAssertGreaterThanOrEqual(button.bounds.width, 44)
+          XCTAssertGreaterThanOrEqual(button.bounds.height, 44)
+        }
+      }
+      // The front trapezius is ~11 points high at 370pt width. Tap just outside its original
+      // upper mask, still in its enlarged target, through the container's UIKit hitTest.
+      let scale = (width / 2 - 8) / asset.width
+      var projection = CGAffineTransform(a: scale, b: 0, c: 0, d: scale,
+        tx: (width / 2 - asset.width * scale) / 2,
+        ty: (330 - asset.height * scale) / 2)
+      let original = try XCTUnwrap(asset.paths(side: "front")[.back]?.copy(using: &projection))
+      let box = original.boundingBoxOfPath
+      XCTAssertLessThan(box.height, 15)
+      let nearby = CGPoint(x: box.midX, y: box.minY - 5)
+      XCTAssertFalse(original.contains(nearby))
+      let hit = try XCTUnwrap(view.hitTest(nearby, with: nil) as? UIButton)
+      XCTAssertEqual(hit.accessibilityIdentifier, "bodyMap.label.back")
+      hit.sendActions(for: .touchUpInside)
+      XCTAssertEqual(selected, .back)
+    }
+    XCTAssertTrue(view.hitTest(CGPoint(x: 1, y: 1), with: nil) === view)
+    XCTAssertNil(view.hitTest(CGPoint(x: -10, y: -10), with: nil))
+  }
+
+  func testAnatomyRejectsMalformedCommandsBeforeDrawing() throws {
+    let asset = try BodyMapAnatomyAsset.load()
+    let mask = asset.masks[0]
+    let malformed = BodyMapAnatomyAsset.Mask(id: mask.id, muscle: mask.muscle,
+      side: mask.side, commands: [[1, .nan, 1]])
+    XCTAssertThrowsError(try BodyMapAnatomyAsset(version: 1, width: asset.width,
+      height: asset.height, masks: [malformed] + asset.masks.dropFirst()).validate())
+    XCTAssertThrowsError(try BodyMapAnatomyAsset(version: 1, width: 0,
+      height: asset.height, masks: asset.masks).validate())
+  }
+
   func testAssetHasAllElevenGroupsAndClosedFiniteVolumes() throws {
     let asset = try BodyMapAsset.load()
     XCTAssertEqual(asset.meshes.count, 74)

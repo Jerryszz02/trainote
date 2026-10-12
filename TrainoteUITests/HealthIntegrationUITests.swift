@@ -238,7 +238,7 @@ final class HealthIntegrationUITests: XCTestCase {
 
   func testRecoveryBodyMapPainConstraintAndBundledMethods() {
     app.tabBars.buttons["恢复"].tap()
-    XCTAssertTrue(app.otherElements["bodyMap.scene"].waitForExistence(timeout: 5))
+    XCTAssertTrue(app.otherElements["bodyMap.anatomy"].waitForExistence(timeout: 5))
     capture("生产恢复页未知状态")
     app.buttons["bodyMap.toggleList"].tap()
     let chest = app.buttons["bodyMap.row.chest"]

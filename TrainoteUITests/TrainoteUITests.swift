@@ -25,6 +25,41 @@ final class TrainoteUITests: XCTestCase {
     XCTAssertTrue(app.navigationBars["进行中"].waitForExistence(timeout: 5))
   }
 
+  func testExerciseSampleCanPauseAndPlayAndOtherExercisesKeepInstructions() {
+    app.buttons["today.library"].tap()
+    replaceText(in: app.searchFields.firstMatch, with: "push-up")
+    app.searchFields.firstMatch.typeText("\n")
+    let sample = app.buttons["exerciseLibrary.item.0662"]
+    // Variations precede the ordinary push-up in the bundled catalog; List is lazy.
+    for _ in 0..<12 where !sample.exists || !sample.isHittable { app.swipeUp() }
+    XCTAssertTrue(sample.waitForExistence(timeout: 5))
+    sample.tap()
+    let toggle = app.buttons["exerciseAnimation.toggle"]
+    XCTAssertTrue(toggle.waitForExistence(timeout: 5))
+    let ready = NSPredicate(format: "enabled == true")
+    expectation(for: ready, evaluatedWith: toggle)
+    waitForExpectations(timeout: 10)
+    if toggle.value as? String == "播放中" { toggle.tap() }
+    XCTAssertEqual(toggle.value as? String, "已暂停")
+    toggle.tap()
+    XCTAssertEqual(toggle.value as? String, "播放中")
+    toggle.tap()
+    XCTAssertEqual(toggle.value as? String, "已暂停")
+    let screenshot = XCTAttachment(screenshot: app.screenshot())
+    screenshot.name = "俯卧撑离线动态演示"
+    screenshot.lifetime = .keepAlways
+    add(screenshot)
+    app.navigationBars.buttons.element(boundBy: 0).tap()
+    replaceText(in: app.searchFields.firstMatch, with: "3/4 sit-up")
+    app.searchFields.firstMatch.typeText("\n")
+    app.buttons["exerciseLibrary.item.0001"].tap()
+    XCTAssertTrue(app.staticTexts["exerciseAnimation.notCollected"].waitForExistence(timeout: 3))
+    XCTAssertFalse(app.buttons["exerciseAnimation.toggle"].exists)
+    XCTAssertTrue(app.staticTexts["分类"].exists)
+    app.swipeUp()
+    XCTAssertTrue(app.staticTexts["中文说明"].exists)
+  }
+
   func testCanCompleteStrengthWorkout() {
     startBlankWorkout()
     app.buttons["workout.addExercise"].tap()
@@ -89,20 +124,16 @@ final class TrainoteUITests: XCTestCase {
     let row = app.buttons.matching(NSPredicate(format: "label CONTAINS '测试早餐'"))
       .firstMatch
     XCTAssertTrue(row.waitForExistence(timeout: 3))
+    revealFoodRow(row)
     row.tap()
+    XCTAssertTrue(app.navigationBars["编辑饮食"].waitForExistence(timeout: 5))
     replaceText(in: app.textFields["nutrition.entry.name"], with: "测试早午餐")
     app.buttons["nutrition.entry.save"].tap()
 
     let editedRow = app.buttons.matching(NSPredicate(format: "label CONTAINS '测试早午餐'"))
       .firstMatch
     XCTAssertTrue(editedRow.waitForExistence(timeout: 3))
-    // On a small screen the row can extend underneath the floating tab bar.
-    // Scroll it fully into the list before performing a horizontal gesture.
-    for _ in 0..<3 {
-      if editedRow.frame.maxY < app.tabBars.firstMatch.frame.minY { break }
-      app.swipeUp()
-    }
-    XCTAssertLessThan(editedRow.frame.maxY, app.tabBars.firstMatch.frame.minY)
+    revealFoodRow(editedRow)
     editedRow.swipeLeft()
     app.buttons["删除"].tap()
     app.alerts.buttons["删除"].tap()
@@ -187,6 +218,17 @@ final class TrainoteUITests: XCTestCase {
     app.buttons["nutrition.add.direct"].tap()
   }
 
+  private func revealFoodRow(_ row: XCUIElement) {
+    // XCTest's implicit scroll can finish after its tap coordinates were computed.
+    // Materialize the complete row above the floating tab bar before any gesture.
+    for _ in 0..<4 {
+      if row.isHittable && row.frame.maxY < app.tabBars.firstMatch.frame.minY - 8 { break }
+      app.swipeUp()
+    }
+    XCTAssertTrue(row.isHittable)
+    XCTAssertLessThan(row.frame.maxY, app.tabBars.firstMatch.frame.minY - 8)
+  }
+
   private func reveal(_ element: XCUIElement) {
     for _ in 0..<8 {
       if element.exists && element.isHittable { return }
@@ -265,6 +307,13 @@ enum UITestTextInput {
     }
 
     field.typeText(value)
+    if field.elementType == .searchField {
+      // A searchable sheet can replace its AX search element while filtering. Query the
+      // complete value afresh instead of polling a snapshot captured midway through typing.
+      let entered = app.searchFields.matching(NSPredicate(format: "value == %@", value)).firstMatch
+      XCTAssertTrue(entered.waitForExistence(timeout: 10), "Search input must equal: \(value)")
+      return
+    }
     var actual = field.value as? String ?? ""
     func matchesExpected(_ text: String) -> Bool {
       if let expected = Double(value),

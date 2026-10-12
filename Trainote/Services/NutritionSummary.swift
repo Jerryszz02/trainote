@@ -103,6 +103,13 @@ struct DailyNutritionSummary {
 }
 
 enum NutritionMath {
+  static let calorieCalculationNote =
+    "热量按碳水 × 4 + 蛋白质 × 4 + 脂肪 × 9 自动计算（kcal）。酒精、糖醇等可能使结果与包装标签不同；已有标签热量在修改营养素后重新计算。"
+
+  static func calories(carbohydrates: Double, protein: Double, fat: Double) -> Double {
+    carbohydrates * 4 + protein * 4 + fat * 9
+  }
+
   static func totals(of entries: [FoodLogEntry]) -> NutritionValues {
     entries.reduce(into: NutritionValues()) { result, entry in
       result =
@@ -195,7 +202,14 @@ struct FoodNutritionDraft: Equatable {
   /// 按份时为份数，按每 100 克时为克数。
   var amount: Double
   /// 按份时是每份营养，按每 100 克时是每 100 克营养。
-  var perUnit: NutritionValues
+  var perUnit: NutritionValues {
+    didSet {
+      guard perUnit.carbohydrates != oldValue.carbohydrates
+        || perUnit.protein != oldValue.protein || perUnit.fat != oldValue.fat else { return }
+      perUnit.calories = NutritionMath.calories(
+        carbohydrates: perUnit.carbohydrates, protein: perUnit.protein, fat: perUnit.fat)
+    }
+  }
   var servingDescription: String
   var sourcePresetID: UUID?
   var sourceMealTemplateID: UUID?
@@ -207,12 +221,18 @@ struct FoodNutritionDraft: Equatable {
     perUnit: NutritionValues = NutritionValues(),
     servingDescription: String = "1 份",
     sourcePresetID: UUID? = nil,
-    sourceMealTemplateID: UUID? = nil
+    sourceMealTemplateID: UUID? = nil,
+    preservingRecordedCalories: Bool = false
   ) {
     self.name = name
     self.inputMode = inputMode
     self.amount = amount
-    self.perUnit = perUnit
+    var initialNutrition = perUnit
+    if !preservingRecordedCalories {
+      initialNutrition.calories = NutritionMath.calories(
+        carbohydrates: perUnit.carbohydrates, protein: perUnit.protein, fat: perUnit.fat)
+    }
+    self.perUnit = initialNutrition
     self.servingDescription = servingDescription
     self.sourcePresetID = sourcePresetID
     self.sourceMealTemplateID = sourceMealTemplateID
@@ -258,7 +278,7 @@ struct FoodNutritionDraft: Equatable {
   /// 用户手动修正总量时，回写单位密度，之后改份量仍按修正后的密度缩放。
   mutating func setTotal(_ nutrient: NutrientKind, to value: Double) {
     let quantity = canonicalQuantity
-    guard quantity.isFinite, quantity > 0 else { return }
+    guard nutrient != .calories, quantity.isFinite, quantity > 0 else { return }
     perUnit.setValue(value / quantity, for: nutrient)
   }
 
@@ -293,7 +313,8 @@ struct FoodNutritionDraft: Equatable {
       ),
       servingDescription: per100
         ? FoodPortionMath.per100gServingDescription : preset.servingDescription,
-      sourcePresetID: preset.id
+      sourcePresetID: preset.id,
+      preservingRecordedCalories: true
     )
   }
 
@@ -306,7 +327,8 @@ struct FoodNutritionDraft: Equatable {
       perUnit: item.perUnit,
       servingDescription: item.servingDescription,
       sourcePresetID: item.sourcePresetID,
-      sourceMealTemplateID: item.sourceMealTemplateID
+      sourceMealTemplateID: item.sourceMealTemplateID,
+      preservingRecordedCalories: true
     )
   }
 
@@ -327,7 +349,8 @@ struct FoodNutritionDraft: Equatable {
       perUnit: perUnit,
       servingDescription: entry.servingDescription,
       sourcePresetID: entry.sourcePresetID,
-      sourceMealTemplateID: entry.sourceMealTemplateID
+      sourceMealTemplateID: entry.sourceMealTemplateID,
+      preservingRecordedCalories: true
     )
   }
 }

@@ -203,10 +203,10 @@ private struct FoodPresetEditor: View {
   @State private var inputMode: PortionInputMode
   @State private var name: String
   @State private var servingDescription: String
-  @State private var calories: Double
   @State private var carbohydrates: Double
   @State private var protein: Double
   @State private var fat: Double
+  @State private var macrosEdited = false
   @State private var errorMessage: String?
 
   init(preset: FoodPreset?) {
@@ -218,10 +218,16 @@ private struct FoodPresetEditor: View {
         ?? .perServing)
     _name = State(initialValue: preset?.name ?? "")
     _servingDescription = State(initialValue: preset?.servingDescription ?? "1 份")
-    _calories = State(initialValue: preset?.caloriesPerServing ?? 0)
     _carbohydrates = State(initialValue: preset?.carbohydratesPerServing ?? 0)
     _protein = State(initialValue: preset?.proteinPerServing ?? 0)
     _fat = State(initialValue: preset?.fatPerServing ?? 0)
+  }
+
+  private var calories: Double {
+    if let preset, !macrosEdited {
+      return preset.caloriesPerServing
+    }
+    return NutritionMath.calories(carbohydrates: carbohydrates, protein: protein, fat: fat)
   }
 
   private var effectiveServingDescription: String {
@@ -254,11 +260,16 @@ private struct FoodPresetEditor: View {
             }
           }
         }
-        Section(inputMode.nutrientSectionTitle) {
-          field("卡路里", value: $calories, unit: "kcal")
+        Section {
+          LabeledContent("热量", value: "\(NutritionFormatting.number(calories)) kcal")
+            .accessibilityIdentifier("foodPreset.calories")
           field("碳水", value: $carbohydrates, unit: "g")
           field("蛋白质", value: $protein, unit: "g")
           field("脂肪", value: $fat, unit: "g")
+        } header: {
+          Text(inputMode.nutrientSectionTitle)
+        } footer: {
+          Text(NutritionMath.calorieCalculationNote)
         }
       }
       .navigationTitle(preset == nil ? "新建常用食物" : "编辑常用食物")
@@ -283,7 +294,17 @@ private struct FoodPresetEditor: View {
   private func field(_ title: String, value: Binding<Double>, unit: String) -> some View {
     LabeledContent(title) {
       HStack {
-        TextField("0", value: value, format: .number.precision(.fractionLength(0...2)))
+        TextField(
+          "0",
+          value: Binding(
+            get: { value.wrappedValue },
+            set: {
+              if $0 != value.wrappedValue { macrosEdited = true }
+              value.wrappedValue = $0
+            }
+          ),
+          format: .number.precision(.fractionLength(0...2))
+        )
           .accessibilityIdentifier("foodPreset.nutrient.\(title)")
           .keyboardType(.decimalPad)
           .multilineTextAlignment(.trailing)
@@ -302,6 +323,7 @@ private struct FoodPresetEditor: View {
       return
     }
     let description = effectiveServingDescription
+    let savedCalories = calories
     if let preset {
       let snapshot = (
         name: preset.name, serving: preset.servingDescription,
@@ -310,7 +332,7 @@ private struct FoodPresetEditor: View {
       )
       preset.name = name.trimmed
       preset.servingDescription = description
-      preset.caloriesPerServing = calories
+      preset.caloriesPerServing = savedCalories
       preset.carbohydratesPerServing = carbohydrates
       preset.proteinPerServing = protein
       preset.fatPerServing = fat
@@ -332,7 +354,7 @@ private struct FoodPresetEditor: View {
       let preset = FoodPreset(
         name: name.trimmed,
         servingDescription: description,
-        caloriesPerServing: calories,
+        caloriesPerServing: savedCalories,
         carbohydratesPerServing: carbohydrates,
         proteinPerServing: protein,
         fatPerServing: fat

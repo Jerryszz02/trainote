@@ -15,15 +15,15 @@ final class NutritionUpgradeTests: XCTestCase {
       servingDescription: "1 份"
     )
 
-    XCTAssertEqual(draft.totals.calories, 165, accuracy: 0.001)
+    XCTAssertEqual(draft.totals.calories, 156.4, accuracy: 0.001)
     XCTAssertEqual(draft.totals.protein, 31, accuracy: 0.001)
 
     draft.amount = 1.5
-    XCTAssertEqual(draft.totals.calories, 247.5, accuracy: 0.001)
+    XCTAssertEqual(draft.totals.calories, 234.6, accuracy: 0.001)
     XCTAssertEqual(draft.totals.protein, 46.5, accuracy: 0.001)
 
     draft.amount = 3
-    XCTAssertEqual(draft.totals.calories, 495, accuracy: 0.001)
+    XCTAssertEqual(draft.totals.calories, 469.2, accuracy: 0.001)
   }
 
   func testManualNutrientCorrectionScalesSubsequentQuantityChange() {
@@ -35,13 +35,16 @@ final class NutritionUpgradeTests: XCTestCase {
       servingDescription: "1 份"
     )
 
-    draft.setTotal(.calories, to: 250)
-    XCTAssertEqual(draft.totals.calories, 250, accuracy: 0.001)
-    XCTAssertEqual(draft.perUnit.calories, 250, accuracy: 0.001)
+    draft.setTotal(.carbohydrates, to: 25)
+    XCTAssertEqual(draft.totals.calories, 138, accuracy: 0.001)
+    XCTAssertEqual(draft.perUnit.calories, 138, accuracy: 0.001)
 
+    // 热量不能单独修正。
+    draft.setTotal(.calories, to: 250)
+    XCTAssertEqual(draft.totals.calories, 138, accuracy: 0.001)
     draft.amount = 2
-    XCTAssertEqual(draft.totals.calories, 500, accuracy: 0.001)
-    XCTAssertEqual(draft.totals.carbohydrates, 20, accuracy: 0.001)
+    XCTAssertEqual(draft.totals.calories, 276, accuracy: 0.001)
+    XCTAssertEqual(draft.totals.carbohydrates, 50, accuracy: 0.001)
   }
 
   // MARK: - 每 100 克
@@ -200,11 +203,11 @@ final class NutritionUpgradeTests: XCTestCase {
     XCTAssertFalse(draft.isValid)
     draft.amount = 1
 
-    draft.perUnit.calories = -5
+    draft.perUnit.protein = -5
     XCTAssertFalse(draft.isValid)
-    draft.perUnit.calories = 100
+    draft.perUnit.protein = 10
 
-    draft.perUnit.calories = Double.greatestFiniteMagnitude
+    draft.perUnit.protein = Double.greatestFiniteMagnitude
     draft.amount = 2
     XCTAssertFalse(draft.totals.isFinite)
     XCTAssertFalse(draft.isValid)
@@ -229,7 +232,7 @@ final class NutritionUpgradeTests: XCTestCase {
 
     let entry = draft.makeEntry(loggedAt: .now, mealType: .snack)
     XCTAssertTrue(entry.isValid)
-    XCTAssertFalse(draft.totals.isAllZero)
+    XCTAssertTrue(draft.totals.isAllZero)
   }
 
   // MARK: - 编辑已有记录
@@ -312,6 +315,66 @@ final class NutritionUpgradeTests: XCTestCase {
     XCTAssertEqual(entries[0].protein, 62, accuracy: 0.001)
   }
 
+  func testNewMacroCaloriesPersistAndReopenAtPer100gPortion() throws {
+    let container = try ModelContainer(
+      for: FoodLogEntry.self, configurations: ModelConfiguration(isStoredInMemoryOnly: true))
+    let context = ModelContext(container)
+    var draft = FoodNutritionDraft(name: "新燕麦", inputMode: .per100g, amount: 150)
+    draft.perUnit.carbohydrates = 70
+    draft.perUnit.protein = 16
+    draft.perUnit.fat = 4
+    XCTAssertEqual(draft.perUnit.calories, 380)
+    XCTAssertEqual(draft.totals.calories, 570)
+    draft.setTotal(.protein, to: 30)
+    XCTAssertEqual(draft.perUnit.protein, 20)
+    XCTAssertEqual(draft.totals.calories, 594)
+    draft.amount = 200
+    XCTAssertEqual(draft.totals.calories, 792)
+    context.insert(draft.makeEntry(loggedAt: .now, mealType: .breakfast))
+    try context.save()
+    let saved = try XCTUnwrap(ModelContext(container).fetch(FetchDescriptor<FoodLogEntry>()).first)
+    let reopened = FoodNutritionDraft.fromEntry(saved)
+    XCTAssertEqual(reopened.totals.calories, 792)
+    XCTAssertEqual(reopened.amount, 200)
+    XCTAssertEqual(reopened.perUnit.protein, 20)
+  }
+
+  func testLegacyCaloriesPreservedUntilMacrosChange() {
+    let entry = FoodLogEntry(
+      loggedAt: .now, mealType: .lunch, name: "标签食物", servingDescription: "1 份",
+      quantity: 2, calories: 300, carbohydrates: 20, protein: 10, fat: 4)
+    var draft = FoodNutritionDraft.fromEntry(entry)
+    draft.name = "标签食物新名称"
+    XCTAssertEqual(draft.makeEntry(loggedAt: .now, mealType: .lunch).calories, 300)
+    draft.perUnit.protein = 6
+    XCTAssertEqual(draft.totals.calories, 164)
+    XCTAssertEqual(entry.calories, 300)
+    let preset = FoodPreset(
+      name: "旧常用食物", servingDescription: "1 份", caloriesPerServing: 150,
+      carbohydratesPerServing: 10, proteinPerServing: 5, fatPerServing: 2)
+    var presetDraft = FoodNutritionDraft.fromPreset(preset)
+    XCTAssertEqual(presetDraft.perUnit.calories, 150)
+    presetDraft.setTotal(.fat, to: 3)
+    XCTAssertEqual(presetDraft.totals.calories, 87)
+    XCTAssertEqual(preset.caloriesPerServing, 150)
+  }
+
+  func testMacroCalculationRejectsNonfiniteAndOverflow() {
+    for invalid in [-1.0, Double.nan, Double.infinity, Double.greatestFiniteMagnitude] {
+      for nutrient in [NutrientKind.carbohydrates, .protein, .fat] {
+        var draft = FoodNutritionDraft(name: "边界")
+        draft.perUnit.setValue(invalid, for: nutrient)
+        XCTAssertFalse(draft.isValid, "无效宏量不能保存：\(nutrient), \(invalid)")
+      }
+    }
+    var draft = FoodNutritionDraft(
+      name: "份量超限", perUnit: .init(fat: 500_000 / 9))
+    XCTAssertTrue(draft.isValid)
+    draft.amount = 3
+    XCTAssertFalse(draft.isValid)
+    XCTAssertFalse(FoodNutritionDraft().isValid)
+  }
+
   // MARK: - 默认餐次
 
   func testDefaultMealTypeUsesClockHour() throws {
@@ -364,7 +427,9 @@ final class NutritionUpgradeTests: XCTestCase {
     XCTAssertFalse(MealTemplateDraft(template: existing).isValid)
   }
   func testChangingInputBasisPreservesTotalsAndQuantity() {
-    var draft = FoodNutritionDraft(name: "米饭", amount: 2, perUnit: NutritionValues(calories: 130))
+    var draft = FoodNutritionDraft(
+      name: "米饭", amount: 2,
+      perUnit: NutritionValues(calories: 130, carbohydrates: 25, protein: 3, fat: 2))
     let original = draft.totals
     draft.changeInputMode(to: .per100g)
     XCTAssertEqual(draft.amount, 200)
