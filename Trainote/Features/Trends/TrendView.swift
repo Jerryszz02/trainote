@@ -153,7 +153,7 @@ struct TrendView: View {
         .chartYScale(domain: weightDomain)
         .frame(height: 200)
         .accessibilityIdentifier("trend.weightChart")
-        Text("圆点为来源记录，曲线为平滑估计；异常代表值保留在记录中并提示复核。")
+        Text("圆点：原始记录 · 曲线：平滑趋势")
           .font(.caption).foregroundStyle(.secondary)
       }
       NavigationLink("体重记录与来源") { TrendWeightRecordsView(model: model) }
@@ -176,8 +176,6 @@ struct TrendView: View {
             model.confirmDiet(on: dietDate)
           }
         }.accessibilityIdentifier("trend.confirmDiet")
-        Text("编辑饮食记录后需要重新确认。未确认的日期不用于平均摄入。")
-          .font(.caption).foregroundStyle(.secondary)
       }
       if let totals = selected?.totals { targetRows(totals, prefix: "已记录") }
       let nutrition =

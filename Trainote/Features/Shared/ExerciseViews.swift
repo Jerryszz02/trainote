@@ -169,9 +169,8 @@ struct ExerciseDetailView: View {
       }
 
       Section {
-        Text("数据来自 hasaneyldrm/exercises-dataset。Trainote 未包含 Gym visual 图片或 GIF。")
-          .font(.footnote)
-          .foregroundStyle(.secondary)
+        NavigationLink("动作与演示来源许可") { HealthHelpView(topic: .sources) }
+          .accessibilityIdentifier("exercise.sources")
       }
     }
     .navigationTitle("动作详情")

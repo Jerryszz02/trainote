@@ -45,7 +45,7 @@ struct RecoveryAnalysisDestination: View {
     }
     .sheet(isPresented: $showMethods) {
       NavigationStack {
-        HealthHelpView()
+        HealthHelpView(topic: .recovery)
           .toolbar {
             ToolbarItem(placement: .confirmationAction) {
               Button("完成") { showMethods = false }

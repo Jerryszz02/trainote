@@ -16,7 +16,7 @@ final class HealthAdviceReportsUITests: XCTestCase {
     app.buttons["trend.addWeight"].tap()
     UITestTextInput.replace(app.textFields["trend.weight.kilograms"], with: "70", in: app)
     app.buttons["trend.weight.save"].tap()
-    app.tabBars.buttons["今日"].tap()
+    app.buttons["trends.reports"].tap()
     let reports = app.buttons["today.analysisReports"]
     reveal(reports)
     reports.tap()
@@ -82,6 +82,11 @@ final class HealthAdviceReportsUITests: XCTestCase {
     app.buttons["确认并开始"].tap()
     XCTAssertTrue(app.navigationBars["进行中"].waitForExistence(timeout: 5))
     XCTAssertEqual(completed.count, 1)
+    let more = app.buttons.matching(
+      NSPredicate(format: "identifier BEGINSWITH 'strengthSet.more.'")
+    ).firstMatch
+    reveal(more)
+    more.tap()
     let rir = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH 'strengthSet.rir.'"))
       .firstMatch
     XCTAssertTrue(rir.label.contains("未记录"))

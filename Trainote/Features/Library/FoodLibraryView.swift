@@ -268,8 +268,6 @@ private struct FoodPresetEditor: View {
           field("脂肪", value: $fat, unit: "g")
         } header: {
           Text(inputMode.nutrientSectionTitle)
-        } footer: {
-          Text(NutritionMath.calorieCalculationNote)
         }
       }
       .navigationTitle(preset == nil ? "新建常用食物" : "编辑常用食物")

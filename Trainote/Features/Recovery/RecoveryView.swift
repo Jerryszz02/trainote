@@ -28,7 +28,7 @@ struct RecoveryView: View {
             Button("重试") { reload() }
           } else if let result {
             VStack(alignment: .leading, spacing: 8) {
-              Text("恢复指数").font(.title2.bold())
+              Text("恢复估计").font(.title2.bold())
               Text("选择肌群查看最近负荷与体感").foregroundStyle(.secondary)
             }
             BodyMapView(presentation: result.bodyMapPresentation(selected: selected)) { muscle in
@@ -41,8 +41,9 @@ struct RecoveryView: View {
             if let muscle = result.muscles.first(where: { $0.muscleID == selected }) {
               RecoveryMuscleDetail(
                 muscle: muscle, result: result, onFeedback: { openCheckIn(muscle.muscleID) },
-                onShowMethods: onShowMethods)
-                .id(detailAnchor(for: muscle.muscleID))
+                onShowMethods: onShowMethods
+              )
+              .id(detailAnchor(for: muscle.muscleID))
             }
             RecoverySystemicCard(result: result)
             if healthReadFailed {
@@ -181,7 +182,10 @@ private struct RecoveryMuscleDetail: View {
       }), let load = fact.value {
         LabeledContent("最近一次加权工作组", value: load.formatted(.number.precision(.fractionLength(1))))
       }
-      ForEach(muscle.influences, id: \.code) { influence in
+      ForEach(
+        muscle.influences.filter { $0.code != "recordedLoad" && $0.code != "calibratedCandidate" },
+        id: \.code
+      ) { influence in
         Text(RecoveryCopy.influence(influence.code)).font(.subheadline).foregroundStyle(.secondary)
       }
       if let coverage = muscle.coverage.first {
@@ -190,7 +194,6 @@ private struct RecoveryMuscleDetail: View {
       }
       Button("更新这块肌群的体感", action: onFeedback)
       if let onShowMethods { Button("分数说明", action: onShowMethods) }
-      Text(result.calculationVersion).font(.caption2).foregroundStyle(.secondary)
     }
     .padding().background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))
     .accessibilityIdentifier("recovery.detail.\(muscle.muscleID.rawValue)")

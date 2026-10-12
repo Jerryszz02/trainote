@@ -7,7 +7,7 @@ final class HealthIntegrationUITests: XCTestCase {
   override func record(_ issue: XCTIssue) {
     let isHealthControlTest =
       name.contains("testDisconnectConfirmationAndOfflineHelp")
-      || name.contains("testTodayCheckInUpdatesRecoveryAndSkipPreservesSavedFeeling")
+      || name.contains("testRecoveryCheckInUpdatesAndSkipPreservesSavedFeeling")
     if isHealthControlTest && !capturedFailureDiagnostics, let app {
       capturedFailureDiagnostics = true
       capture("健康控件失败时画面")
@@ -71,11 +71,13 @@ final class HealthIntegrationUITests: XCTestCase {
     XCTAssertTrue(app.segmentedControls.buttons["固定餐"].exists)
   }
 
-  func testTodaySuggestionCanOpenTemplateSelectionAndOldSettingsRemain() {
-    app.buttons["today.recommendation"].tap()
+  func testTemplatesRemainOptionalAndOldSettingsRemain() {
+    app.tabBars.buttons["训练"].tap()
+    app.buttons["training.routines"].tap()
     XCTAssertTrue(app.buttons["routine.create"].waitForExistence(timeout: 3))
     XCTAssertTrue(app.segmentedControls.buttons["训练模板"].isSelected)
     app.navigationBars.buttons.element(boundBy: 0).tap()
+    app.tabBars.buttons["今日"].tap()
     let settings = app.buttons["today.settings"]
     XCTAssertTrue(settings.waitForExistence(timeout: 3))
     settings.tap()
@@ -97,9 +99,13 @@ final class HealthIntegrationUITests: XCTestCase {
   func testDisconnectConfirmationAndOfflineHelp() {
     app.buttons["today.settings"].tap()
     XCTAssertTrue(app.navigationBars["设置"].waitForExistence(timeout: 3))
-    let permissionHelp = app.staticTexts["settings.healthPermissionHelp"]
+    let permissionHelp = app.buttons["settings.healthPermissionHelp"]
     reveal(permissionHelp)
-    XCTAssertTrue(permissionHelp.label.contains("“健康”App → 摘要 → 头像 → App → Trainote"))
+    permissionHelp.tap()
+    XCTAssertTrue(app.navigationBars["帮助与说明"].waitForExistence(timeout: 3))
+    XCTAssertTrue(
+      app.staticTexts.containing(NSPredicate(format: "label CONTAINS '管理读取权限'")).firstMatch.exists)
+    app.navigationBars.buttons.element(boundBy: 0).tap()
     let disconnect = app.buttons["settings.disconnectHealth"]
     reveal(disconnect)
     disconnect.tap()
@@ -111,15 +117,7 @@ final class HealthIntegrationUITests: XCTestCase {
     confirmation.press(forDuration: 0.15)
     XCTAssertTrue(confirmation.waitForNonExistence(timeout: 3))
 
-    // The result is a dynamic Form row directly below help. Locate this stable neighbor first;
-    // searching for an unmaterialized row by repeatedly swiping can scroll past it entirely.
     let help = app.buttons["settings.healthHelp"]
-    reveal(help)
-    if help.frame.midY > app.frame.height * 0.55 {
-      let start = app.coordinate(withNormalizedOffset: CGVector(dx: 0.2, dy: 0.65))
-      let end = app.coordinate(withNormalizedOffset: CGVector(dx: 0.2, dy: 0.35))
-      start.press(forDuration: 0.05, thenDragTo: end)
-    }
     let status = app.staticTexts["settings.healthStatus"]
     let result = XCTNSPredicateExpectation(
       predicate: NSPredicate { _, _ in
@@ -132,10 +130,10 @@ final class HealthIntegrationUITests: XCTestCase {
     reveal(status)
     XCTAssertTrue(status.isHittable)
     XCTAssertEqual(status.label, "已断开并删除健康导入数据及相关报告。手动记录已保留。")
-    reveal(help)
+    for _ in 0..<8 where !help.isHittable { app.swipeDown() }
     help.tap()
-    XCTAssertTrue(app.navigationBars["方法与数据使用"].waitForExistence(timeout: 3))
-    XCTAssertTrue(app.staticTexts["分析方法与适用范围"].exists)
+    XCTAssertTrue(app.navigationBars["帮助与说明"].waitForExistence(timeout: 3))
+    XCTAssertTrue(app.buttons["help.topic.methods"].exists)
   }
 
   func testManualTargetChangesAreVisibleAfterSettingsCloses() {
@@ -181,14 +179,16 @@ final class HealthIntegrationUITests: XCTestCase {
     XCTAssertTrue(app.navigationBars["恢复分析"].waitForExistence(timeout: 3))
   }
 
-  func testTodayCheckInUpdatesRecoveryAndSkipPreservesSavedFeeling() {
+  func testRecoveryCheckInUpdatesAndSkipPreservesSavedFeeling() {
     func waitUntilHittable(_ button: XCUIElement) {
       let ready = XCTNSPredicateExpectation(
         predicate: NSPredicate { _, _ in button.exists && button.isHittable }, object: nil)
       XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 3), .completed)
     }
 
-    let openToday = app.buttons["today.checkIn.open"]
+    app.tabBars.buttons["恢复"].tap()
+    let openToday = app.buttons["recovery.checkIn.open"]
+    reveal(openToday)
     openToday.tap()
     XCTAssertTrue(app.navigationBars["十秒体感"].waitForExistence(timeout: 3))
     let feeling = app.buttons["recovery.checkIn.feeling"]
@@ -202,8 +202,7 @@ final class HealthIntegrationUITests: XCTestCase {
     XCTAssertTrue(app.navigationBars["十秒体感"].waitForExistence(timeout: 3))
     app.buttons["recovery.checkIn.save"].tap()
     XCTAssertTrue(app.navigationBars["十秒体感"].waitForNonExistence(timeout: 3))
-    XCTAssertTrue(app.buttons["today.recommendation"].label.contains("疲惫"))
-    app.buttons["today.recommendation"].tap()
+
     XCTAssertTrue(app.navigationBars["恢复分析"].waitForExistence(timeout: 3))
     let openRecovery = app.buttons["recovery.checkIn.open"]
     reveal(openRecovery)
@@ -219,8 +218,7 @@ final class HealthIntegrationUITests: XCTestCase {
     XCTAssertTrue(app.navigationBars["十秒体感"].waitForExistence(timeout: 3))
     app.buttons["recovery.checkIn.skip"].tap()
     XCTAssertTrue(app.navigationBars["十秒体感"].waitForNonExistence(timeout: 3))
-    app.tabBars.buttons["今日"].tap()
-    XCTAssertTrue(app.buttons["today.recommendation"].label.contains("疲惫"))
+    reveal(openToday)
     openToday.tap()
     XCTAssertTrue(app.navigationBars["十秒体感"].waitForExistence(timeout: 3))
     waitUntilHittable(feeling)
@@ -233,7 +231,10 @@ final class HealthIntegrationUITests: XCTestCase {
     XCTAssertTrue(app.navigationBars["十秒体感"].waitForExistence(timeout: 3))
     app.buttons["recovery.checkIn.save"].tap()
     XCTAssertTrue(app.navigationBars["十秒体感"].waitForNonExistence(timeout: 3))
-    XCTAssertFalse(app.buttons["today.recommendation"].label.contains("疲惫"))
+    reveal(openToday)
+    openToday.tap()
+    XCTAssertTrue(feeling.label.contains("未回答"))
+    app.buttons["recovery.checkIn.skip"].tap()
   }
 
   func testRecoveryBodyMapPainConstraintAndBundledMethods() {
@@ -260,9 +261,11 @@ final class HealthIntegrationUITests: XCTestCase {
     let methods = app.buttons["计算方法与数据使用"]
     reveal(methods)
     methods.tap()
-    XCTAssertTrue(app.navigationBars["方法与数据使用"].waitForExistence(timeout: 3))
-    reveal(app.staticTexts["恢复指数如何计算"])
-    XCTAssertTrue(app.staticTexts["恢复指数如何计算"].exists)
+    XCTAssertTrue(app.navigationBars["帮助与说明"].waitForExistence(timeout: 3))
+    let recoveryRule = app.staticTexts.containing(
+      NSPredicate(format: "label CONTAINS '仅使用已完成、可映射的工作组'")
+    ).firstMatch
+    XCTAssertTrue(recoveryRule.waitForExistence(timeout: 3))
   }
 
   func testTrendSuggestionsPreserveManualTargetAndSaveManualWeight() {
@@ -309,6 +312,27 @@ final class HealthIntegrationUITests: XCTestCase {
     app.buttons["完成"].tap()
     reveal(mode)
     XCTAssertTrue(mode.label.contains("手动"))
+  }
+
+  func testHelpDirectoryAndOfflineLicensesKeepContext() {
+    app.buttons["today.settings"].tap()
+    app.buttons["settings.healthHelp"].tap()
+    let sources = app.buttons["help.topic.sources"]
+    reveal(sources)
+    sources.tap()
+    let notice = app.buttons["help.license.THIRD_PARTY_NOTICES"]
+    XCTAssertTrue(notice.waitForExistence(timeout: 3))
+    notice.tap()
+    XCTAssertTrue(app.staticTexts.containing(NSPredicate(format: "label CONTAINS 'Hasan Emir'")).firstMatch.exists)
+    XCTAssertFalse(app.staticTexts["许可文件暂时无法读取。"].exists)
+    capture("离线来源许可")
+    app.buttons["help.contents"].tap()
+    app.buttons["help.topic.nutrition"].tap()
+    XCTAssertTrue(app.staticTexts.containing(NSPredicate(format: "label CONTAINS '修改总量后再改份量'")).firstMatch.exists)
+    app.navigationBars.buttons.element(boundBy: 0).tap()
+    XCTAssertTrue(app.buttons["settings.healthHelp"].exists)
+    app.buttons["完成"].tap()
+    XCTAssertTrue(app.buttons["today.startWorkout"].exists)
   }
 
   private func reveal(_ element: XCUIElement) {

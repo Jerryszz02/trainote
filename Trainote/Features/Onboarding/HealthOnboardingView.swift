@@ -59,32 +59,8 @@ struct HealthOnboardingView: View {
 }
 
 struct AIConsentView: View {
-  @Environment(HealthFeatureAccess.self) private var access
-
   var body: some View {
-    List {
-      Section("可选的第三方处理") {
-        Text(
-          "AI 报告用于解释本地计算结果和已允许的建议。启用后，必要的训练、饮食、体重和健康趋势汇总会通过代理交由 DeepSeek 处理。Apple 健康连接不代表同意向第三方发送。")
-        Text("报告输入不包含姓名、联系方式、自由文本备注、精确位置或完整原始心率序列。AI 不能修改目标或训练历史。")
-      }
-      Section("当前状态") {
-        if access.reports.isConfigured {
-          Text("启用前请阅读此版本的处理说明。关闭后停止后续发送与重试，已发送的数据不因取消请求而自动从第三方删除。")
-          Button("同意上述处理并启用 AI 报告") { Task { await access.enableAI() } }
-            .disabled(access.isBusy || access.aiEnabled)
-            .accessibilityIdentifier("health.aiConsent")
-        } else {
-          Text(access.reports.configurationMessage)
-            .accessibilityIdentifier("health.aiUnavailable")
-          Text("当前不会向 DeepSeek 发送记录，也不会预先保存 AI 同意。")
-        }
-      }
-      Section { NavigationLink("完整方法与隐私说明") { HealthHelpView() } }
-    }
-    .navigationTitle("AI 报告")
-    .navigationBarTitleDisplayMode(.inline)
-    .healthAccessError(access)
+    HealthHelpView(topic: .ai, requestsAIConsent: true)
   }
 }
 

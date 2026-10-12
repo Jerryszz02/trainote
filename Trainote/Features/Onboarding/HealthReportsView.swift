@@ -38,7 +38,7 @@ struct HealthReportsView: View {
       }
       if !integration.isConfigured {
         Section {
-          Text("基础报告在本机生成。AI 报告待开放，当前不会发送记录。")
+          Text("本地报告")
             .font(.footnote).foregroundStyle(.secondary)
             .accessibilityIdentifier("reports.localOnly")
         }
@@ -46,7 +46,7 @@ struct HealthReportsView: View {
       Section {
         NavigationLink("历史 AI 报告") { HealthReportHistoryView(integration: integration) }
           .accessibilityIdentifier("reports.history")
-        NavigationLink("方法、隐私与数据使用") { HealthHelpView() }
+        NavigationLink("方法、隐私与数据使用") { HealthHelpView(topic: .ai) }
       }
     }
     .navigationTitle("分析报告")
@@ -109,8 +109,6 @@ private struct HealthReportEvidenceView: View {
       Section("当时的分析") {
         LabeledContent(
           "记录截止", value: content.input.asOf.formatted(date: .abbreviated, time: .shortened))
-        Text("数值来自本地规则和记录。恢复分数与参数仍是工程估计；缺失记录保留为未知。历史建议不能直接开始训练。")
-          .font(.footnote).foregroundStyle(.secondary)
       }
       Section("事实与依据") {
         ForEach(ReportFactSelection.facts(content.input), id: \.id) { fact in
@@ -140,7 +138,7 @@ private struct HealthReportEvidenceView: View {
           .accessibilityIdentifier("reports.fact.\(fact.metric)")
         }
       }
-      Section { NavigationLink("完整方法与数据使用") { HealthHelpView() } }
+      Section { NavigationLink("完整方法与数据使用") { HealthHelpView(topic: .ai) } }
     }
     .navigationTitle("报告依据")
     .navigationBarTitleDisplayMode(.inline)

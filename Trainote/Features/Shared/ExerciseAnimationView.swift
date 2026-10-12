@@ -13,13 +13,10 @@ struct ExerciseAnimationView: View {
   var body: some View {
     switch media.availability(for: exerciseID) {
     case .notCollected:
-      Text("此动作暂未收录动态演示，可查看下方动作说明。")
-        .font(.footnote)
-        .foregroundStyle(.secondary)
-        .accessibilityIdentifier("exerciseAnimation.notCollected")
+      EmptyView()
     case .unavailable:
       unavailableMessage
-    case .available(let entry, let videoURL, let posterURL):
+    case .available(_, let videoURL, let posterURL):
       if playback.hasFailed {
         unavailableMessage
       } else {
@@ -36,11 +33,13 @@ struct ExerciseAnimationView: View {
             Button {
               playback.toggle()
             } label: {
-              Label(playback.isPlaying ? "暂停演示" : "播放演示",
-                    systemImage: playback.isPlaying ? "pause.fill" : "play.fill")
-                .font(.caption.weight(.semibold))
-                .padding(10)
-                .background(.regularMaterial, in: Capsule())
+              Label(
+                playback.isPlaying ? "暂停演示" : "播放演示",
+                systemImage: playback.isPlaying ? "pause.fill" : "play.fill"
+              )
+              .font(.caption.weight(.semibold))
+              .padding(10)
+              .background(.regularMaterial, in: Capsule())
             }
             .padding(10)
             .disabled(!playback.isReady)
@@ -51,9 +50,6 @@ struct ExerciseAnimationView: View {
           .clipShape(RoundedRectangle(cornerRadius: 12))
           Text("动作演示 · 胸部、肱三头肌")
             .font(.caption.weight(.medium))
-          Text(entry.attribution)
-            .font(.caption2)
-            .foregroundStyle(.secondary)
         }
         .onAppear {
           playback.prepare(url: videoURL, autoplay: !reduceMotion && scenePhase == .active)

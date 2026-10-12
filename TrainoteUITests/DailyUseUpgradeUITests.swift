@@ -226,7 +226,7 @@ final class DailyUseUpgradeUITests: XCTestCase {
     XCTAssertEqual(app.textFields["workout.title"].value as? String, title)
     let rest = app.staticTexts["workout.restRemaining"]
     // The settings section is below the exercises; List materializes the timer at the top.
-    for _ in 0..<6 where !rest.isHittable { app.swipeDown() }
+    for _ in 0..<3 { app.swipeDown() }
     XCTAssertTrue(rest.exists)
     reveal(prefix("strengthSet.complete."))
     XCTAssertTrue(prefix("strengthSet.complete.").label.contains("已完成"))

@@ -52,7 +52,7 @@ struct TrendAnalysisDestination: View {
         Group {
           switch destination {
           case .manualGoal: NutritionGoalEditor()
-          case .help: HealthHelpView()
+          case .help: HealthHelpView(topic: .trends)
           }
         }
         .toolbar {
