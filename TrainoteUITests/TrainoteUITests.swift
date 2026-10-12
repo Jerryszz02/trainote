@@ -6,7 +6,7 @@ final class TrainoteUITests: XCTestCase {
   override func setUpWithError() throws {
     continueAfterFailure = false
     app = XCUIApplication()
-    app.launchArguments = ["-ui-testing"]
+    app.launchArguments = ["-AppleLanguages", "(zh-Hans)", "-AppleLocale", "zh_CN", "-appearance.language", "zh-Hans", "-ui-testing"]
     app.launch()
   }
 
@@ -57,7 +57,7 @@ final class TrainoteUITests: XCTestCase {
     XCTAssertFalse(app.buttons["exerciseAnimation.toggle"].exists)
     XCTAssertTrue(app.staticTexts["分类"].exists)
     app.swipeUp()
-    XCTAssertTrue(app.staticTexts["中文说明"].exists)
+    XCTAssertTrue(app.staticTexts["动作说明"].exists)
   }
 
   func testCanCompleteStrengthWorkout() {
@@ -168,7 +168,7 @@ final class TrainoteUITests: XCTestCase {
   func testPersistentDataSurvivesRelaunch() {
     app.terminate()
     app = XCUIApplication()
-    app.launchArguments = ["-ui-testing-persistent"]
+    app.launchArguments = ["-AppleLanguages", "(zh-Hans)", "-AppleLocale", "zh_CN", "-appearance.language", "zh-Hans", "-ui-testing-persistent"]
     app.launch()
     let uniqueName = "重启记录-\(UUID().uuidString.prefix(8))"
 

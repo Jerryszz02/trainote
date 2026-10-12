@@ -7,6 +7,13 @@ enum LibrarySection: String, CaseIterable, Identifiable {
   case foods = "饮食"
 
   var id: Self { self }
+  var title: String {
+    switch self {
+    case .exercises: L10n.text("core.exercises.259")
+    case .routines: L10n.text("core.routines")
+    case .foods: L10n.text("core.nutrition")
+    }
+  }
 }
 
 struct LibraryView: View {
@@ -39,13 +46,13 @@ struct LibraryView: View {
         FoodLibraryView()
       }
     }
-    .navigationTitle("资料库")
+    .navigationTitle(L10n.text("core.library"))
   }
 
   private var sectionPicker: some View {
-    Picker("资料类型", selection: $selectedSection) {
+    Picker(L10n.text("core.library.category"), selection: $selectedSection) {
       ForEach(LibrarySection.allCases) { section in
-        Text(section.rawValue).tag(section)
+        Text(section.title).tag(section)
       }
     }
   }
@@ -71,11 +78,11 @@ private struct ExerciseLibraryView: View {
     Group {
       if let errorMessage = catalog.errorMessage {
         ContentUnavailableView {
-          Label("动作目录加载失败", systemImage: "exclamationmark.triangle")
+          Label(L10n.text("core.exercise.catalog.failed.to.load"), systemImage: "exclamationmark.triangle")
         } description: {
           Text(errorMessage)
         } actions: {
-          Button("重试") { catalog.load() }
+          Button(L10n.text("core.retry")) { catalog.load() }
         }
       } else if results.isEmpty {
         ContentUnavailableView.search(text: query)
@@ -91,37 +98,37 @@ private struct ExerciseLibraryView: View {
         .listStyle(.plain)
       }
     }
-    .searchable(text: $query, prompt: "搜索 1,324 个动作")
+    .searchable(text: $query, prompt: L10n.text("core.search.1.324.exercises"))
     .toolbar {
       ToolbarItem(placement: .topBarTrailing) {
         Menu {
-          Menu("身体部位") {
-            Button("全部") { bodyPart = nil }
+          Menu(L10n.text("core.body.part")) {
+            Button(L10n.text("core.all")) { bodyPart = nil }
             ForEach(catalog.bodyParts, id: \.self) { value in
               Button(ExerciseLabel.bodyPart(value)) { bodyPart = value }
             }
           }
-          Menu("器械") {
-            Button("全部") { equipment = nil }
+          Menu(L10n.text("core.equipment")) {
+            Button(L10n.text("core.all")) { equipment = nil }
             ForEach(catalog.equipmentTypes, id: \.self) { value in
               Button(ExerciseLabel.equipment(value)) { equipment = value }
             }
           }
-          Menu("肌群") {
-            Button("全部") { muscleGroup = nil }
+          Menu(L10n.text("core.muscle.group")) {
+            Button(L10n.text("core.all")) { muscleGroup = nil }
             ForEach(catalog.muscleGroups, id: \.self) { value in
-              Button(value) { muscleGroup = value }
+              Button(ExerciseLabel.muscleGroup(value)) { muscleGroup = value }
             }
           }
           if bodyPart != nil || equipment != nil || muscleGroup != nil {
-            Button("清除筛选", role: .destructive) {
+            Button(L10n.text("core.clear.filters"), role: .destructive) {
               bodyPart = nil
               equipment = nil
               muscleGroup = nil
             }
           }
         } label: {
-          Label("筛选", systemImage: "line.3.horizontal.decrease.circle")
+          Label(L10n.text("core.filter"), systemImage: "line.3.horizontal.decrease.circle")
         }
       }
     }

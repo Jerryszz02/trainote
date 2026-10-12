@@ -2,7 +2,8 @@ name: Trainote
 
 options:
   bundleIdPrefix: com.jerryszz
-  developmentLanguage: zh-Hans
+  developmentLanguage: en
+  knownRegions: [en, zh-Hans]
   deploymentTarget:
     iOS: "17.0"
   createIntermediateGroups: true
@@ -29,7 +30,7 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.jerryszz.trainote
         PRODUCT_NAME: Trainote
         CODE_SIGN_ENTITLEMENTS: Trainote/Trainote.entitlements
-        INFOPLIST_KEY_NSHealthShareUsageDescription: 读取你选择共享的体重、睡眠、静息心率、心率变异性、步数、活动能量和训练，用于本机趋势与恢复分析。
+        INFOPLIST_KEY_NSHealthShareUsageDescription: Read the weight, sleep, resting heart rate, heart rate variability, steps, active energy and workouts you choose to share for on-device trend and recovery analysis.
         TARGETED_DEVICE_FAMILY: "1"
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_ITSAppUsesNonExemptEncryption: NO

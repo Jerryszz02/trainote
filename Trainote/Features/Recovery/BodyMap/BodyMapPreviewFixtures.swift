@@ -27,19 +27,19 @@
       calculationVersion: "body-map-synthetic-zero")
   }
 
-  #Preview("肌肉图 · 合成数据") {
+  #Preview(L10n.text("health.bodymappreviewfixtures.muscle.map.sample.data.7fc611")) {
     ScrollView {
       BodyMapView(presentation: BodyMapPreviewFixtures.mixed, onSelect: { _ in }).padding()
     }
   }
 
-  #Preview("肌肉图 · 待建立记录") {
+  #Preview(L10n.text("health.bodymappreviewfixtures.muscle.map.waiting.for.records.71559d")) {
     ScrollView {
       BodyMapView(presentation: BodyMapPreviewFixtures.unknown, onSelect: { _ in }).padding()
     }
   }
 
-  #Preview("肌群列表 · 辅助功能") {
+  #Preview(L10n.text("health.bodymappreviewfixtures.muscle.list.accessibility.4fe303")) {
     ScrollView {
       BodyMapView(
         presentation: BodyMapPreviewFixtures.mixed, onSelect: { _ in }, constrainedPolicy: .list

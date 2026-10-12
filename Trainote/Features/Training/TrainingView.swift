@@ -17,7 +17,7 @@ struct TrainingView: View {
   @State private var pendingDeletion: Workout?
   @State private var selectedWorkout: Workout?
   @State private var queuedWorkout: Workout?
-  @State private var saveError: String?
+  @State private var saveError: L10n.Message?
 
   @Binding var startRequested: Bool
 
@@ -31,14 +31,14 @@ struct TrainingView: View {
 
   var body: some View {
     List {
-      Section("资料库") {
-        NavigationLink("动作目录", destination: LibraryView(initialSection: .exercises))
+      Section(L10n.text("core.library")) {
+        NavigationLink(L10n.text("core.exercise.catalog"), destination: LibraryView(initialSection: .exercises))
           .accessibilityIdentifier("training.exercises")
-        NavigationLink("训练模板", destination: LibraryView(initialSection: .routines))
+        NavigationLink(L10n.text("core.routines"), destination: LibraryView(initialSection: .routines))
           .accessibilityIdentifier("training.routines")
       }
       if let activeWorkout {
-        Section("进行中") {
+        Section(L10n.text("core.in.progress")) {
           NavigationLink {
             ActiveWorkoutView(workout: activeWorkout)
           } label: {
@@ -48,12 +48,12 @@ struct TrainingView: View {
         }
       }
 
-      Section("历史") {
+      Section(L10n.text("core.history")) {
         if completedWorkouts.isEmpty {
           ContentUnavailableView(
-            "还没有完成的训练",
+            L10n.text("core.no.completed.workouts.yet"),
             systemImage: "figure.strengthtraining.traditional",
-            description: Text("点击右上角加号开始第一场训练。")
+            description: Text(L10n.text("core.tap.the.plus.button.at.the.top.right.to.start.your.first.workout"))
           )
           .frame(maxWidth: .infinity)
         } else {
@@ -64,7 +64,7 @@ struct TrainingView: View {
               WorkoutRow(workout: workout)
             }
             .swipeActions {
-              Button("删除", role: .destructive) {
+              Button(L10n.text("core.delete"), role: .destructive) {
                 pendingDeletion = workout
               }
             }
@@ -72,7 +72,7 @@ struct TrainingView: View {
         }
       }
     }
-    .navigationTitle("训练")
+    .navigationTitle(L10n.text("core.training"))
     .onChange(of: startRequested, initial: true) { _, requested in
       guard requested else { return }
       // Consume the intent before navigating. The list's initial callback can run again
@@ -82,7 +82,7 @@ struct TrainingView: View {
     }
     .toolbar {
       ToolbarItem(placement: .topBarTrailing) {
-        Button("开始训练", systemImage: "plus") {
+        Button(L10n.text("core.start.workout"), systemImage: "plus") {
           presentedSheet = .start
         }
         .disabled(activeWorkout != nil)
@@ -104,25 +104,25 @@ struct TrainingView: View {
         StartWorkoutSheet { queuedWorkout = $0 }
       }
     }
-    .alert("删除这条训练记录？", isPresented: deletionAlertBinding, presenting: pendingDeletion) { workout in
-      Button("删除", role: .destructive) {
+    .alert(L10n.text("core.delete.this.workout"), isPresented: deletionAlertBinding, presenting: pendingDeletion) { workout in
+      Button(L10n.text("core.delete"), role: .destructive) {
         modelContext.delete(workout)
         do { try modelContext.save() } catch {
           modelContext.rollback()
-          saveError = error.localizedDescription
+          saveError = L10n.Message(resolving: { error.localizedDescription })
         }
         pendingDeletion = nil
       }
-      Button("取消", role: .cancel) { pendingDeletion = nil }
+      Button(L10n.text("core.cancel"), role: .cancel) { pendingDeletion = nil }
     } message: { _ in
-      Text("训练动作和组记录会一起删除，此操作无法撤销。")
+      Text(L10n.text("core.exercises.and.sets.will.also.be.deleted.this.cannot.be.undone"))
     }
     .alert(
-      "保存失败", isPresented: Binding(get: { saveError != nil }, set: { if !$0 { saveError = nil } })
+      L10n.text("core.save.failed"), isPresented: Binding(get: { saveError != nil }, set: { if !$0 { saveError = nil } })
     ) {
-      Button("知道了", role: .cancel) {}
+      Button(L10n.text("core.ok"), role: .cancel) {}
     } message: {
-      Text(saveError ?? "请重试。")
+      Text(saveError?.text ?? L10n.text("core.please.try.again"))
     }
   }
 
@@ -136,7 +136,7 @@ struct TrainingView: View {
 
 private struct StartWorkoutSheet: View {
   let onStarted: (Workout) -> Void
-  @State private var saveError: String?
+  @State private var saveError: L10n.Message?
   @Query private var existingWorkouts: [Workout]
   @Environment(\.dismiss) private var dismiss
   @Environment(\.modelContext) private var modelContext
@@ -151,14 +151,14 @@ private struct StartWorkoutSheet: View {
           Button {
             start(from: nil)
           } label: {
-            Label("空白训练", systemImage: "square.and.pencil")
+            Label(L10n.text("core.blank.workout"), systemImage: "square.and.pencil")
           }
           .accessibilityIdentifier("training.startBlank")
         }
 
-        Section("我的训练模板") {
+        Section(L10n.text("core.my.routines")) {
           if routines.isEmpty {
-            Text("还没有训练模板，可在资料库中创建。")
+            Text(L10n.text("core.no.routines.yet.create.one.in.the.library"))
               .foregroundStyle(.secondary)
           } else {
             ForEach(routines) { routine in
@@ -167,7 +167,7 @@ private struct StartWorkoutSheet: View {
               } label: {
                 VStack(alignment: .leading, spacing: 3) {
                   Text(routine.name)
-                  Text("\(routine.exercises.count) 个动作")
+                  Text(L10n.text("core.exercises", routine.exercises.count))
                     .font(.caption)
                     .foregroundStyle(.secondary)
                 }
@@ -177,20 +177,20 @@ private struct StartWorkoutSheet: View {
           }
         }
       }
-      .navigationTitle("开始训练")
+      .navigationTitle(L10n.text("core.start.workout"))
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
         ToolbarItem(placement: .cancellationAction) {
-          Button("取消") { dismiss() }
+          Button(L10n.text("core.cancel")) { dismiss() }
         }
       }
       .alert(
-        "无法开始训练",
+        L10n.text("core.cannot.start.workout"),
         isPresented: Binding(get: { saveError != nil }, set: { if !$0 { saveError = nil } })
       ) {
-        Button("知道了", role: .cancel) {}
+        Button(L10n.text("core.ok"), role: .cancel) {}
       } message: {
-        Text(saveError ?? "请重试。")
+        Text(saveError?.text ?? L10n.text("core.please.try.again"))
       }
     }
   }
@@ -202,7 +202,7 @@ private struct StartWorkoutSheet: View {
       return
     }
     if let routine, !routine.exercises.allSatisfy(\.hasValidDefaults) {
-      saveError = "模板包含无效参数，请先在资料库中编辑修正。"
+      saveError = L10n.Message(resolving: { L10n.text("core.this.routine.has.invalid.values.edit.it.in.the.library.first") })
       return
     }
     let workout = RoutineFactory.workout(from: routine)
@@ -213,7 +213,7 @@ private struct StartWorkoutSheet: View {
       dismiss()
     } catch {
       modelContext.rollback()
-      saveError = error.localizedDescription
+      saveError = L10n.Message(resolving: { error.localizedDescription })
     }
   }
 }
@@ -231,10 +231,10 @@ struct WorkoutRow: View {
           .font(.caption.weight(.medium))
           .foregroundStyle(workout.status == .completed ? .green : .orange)
       }
-      Text(workout.startedAt.formatted(date: .abbreviated, time: .shortened))
+      Text(workout.startedAt.formatted(Date.FormatStyle(date: .abbreviated, time: .shortened).locale(L10n.locale)))
         .font(.caption)
         .foregroundStyle(.secondary)
-      Text("\(workout.exercises.count) 个动作")
+      Text(L10n.text("core.exercises", workout.exercises.count))
         .font(.caption2)
         .foregroundStyle(.tertiary)
     }
@@ -248,69 +248,69 @@ struct WorkoutDetailView: View {
   let workout: Workout
   @State private var editing = false
   @State private var repeatedWorkout: Workout?
-  @State private var message: String?
+  @State private var message: L10n.Message?
   @State private var templateSaved = false
 
   var body: some View {
     List {
       Section {
-        Button("再次训练", systemImage: "repeat", action: repeatWorkout)
+        Button(L10n.text("core.train.again"), systemImage: "repeat", action: repeatWorkout)
           .disabled(history.contains { $0.status == .inProgress })
           .accessibilityIdentifier("training.repeat")
         Button(
-          templateSaved ? "已保存为训练模板" : "保存为训练模板", systemImage: "list.bullet.rectangle",
+          templateSaved ? L10n.text("core.saved.as.a.routine") : L10n.text("core.save.as.a.routine"), systemImage: "list.bullet.rectangle",
           action: saveAsTemplate
         )
         .disabled(templateSaved).accessibilityIdentifier("training.saveTemplate")
       }
       let records = WorkoutInsights.personalRecords(for: workout, history: history)
       if !records.isEmpty {
-        Section("突破 PR") {
+        Section(L10n.text("core.personal.records")) {
           ForEach(records) { record in
             VStack(alignment: .leading, spacing: 5) {
               Label("\(record.exerciseName) · \(record.title)", systemImage: "trophy.fill")
               Text(
-                "\(record.previousValue.formatted()) → \(record.value.formatted()) \(record.unit)"
+                "\(record.previousValue.formatted(.number.locale(L10n.locale))) → \(record.value.formatted(.number.locale(L10n.locale))) \(record.unit)"
               )
               .font(.subheadline).monospacedDigit()
             }
           }
         }
       }
-      Section("训练信息") {
+      Section(L10n.text("core.workout.details")) {
         LabeledContent(
-          "开始", value: workout.startedAt.formatted(date: .abbreviated, time: .shortened))
+          L10n.text("core.start"), value: workout.startedAt.formatted(Date.FormatStyle(date: .abbreviated, time: .shortened).locale(L10n.locale)))
         if let endedAt = workout.endedAt {
-          LabeledContent("结束", value: endedAt.formatted(date: .abbreviated, time: .shortened))
+          LabeledContent(L10n.text("core.end"), value: endedAt.formatted(Date.FormatStyle(date: .abbreviated, time: .shortened).locale(L10n.locale)))
         }
-        LabeledContent("状态", value: workout.status.title)
-        LabeledContent("完成组数", value: "\(WorkoutInsights.completedSets(in: workout)) 组")
-        LabeledContent("负重容量", value: "\(WorkoutInsights.volume(in: workout).formatted()) kg·次")
+        LabeledContent(L10n.text("core.status"), value: workout.status.title)
+        LabeledContent(L10n.text("core.completed.sets"), value: L10n.text("core.sets", WorkoutInsights.completedSets(in: workout)))
+        LabeledContent(L10n.text("core.training.volume"), value: L10n.text("core.kg.reps" , String(describing: WorkoutInsights.volume(in: workout).formatted(.number.locale(L10n.locale)))))
         if !workout.notes.isEmpty { Text(workout.notes) }
       }
       ForEach(workout.sortedExercises) { exercise in
-        Section(exercise.nameZhSnapshot) {
+        Section(exercise.displayName) {
           Text(exercise.trackingMode.title).font(.caption).foregroundStyle(.secondary)
           if exercise.trackingMode.usesSets {
             ForEach(exercise.sortedStrengthSets) { set in
               HStack {
-                Text("第 \(set.orderIndex + 1) 组")
+                Text(L10n.text("core.set", set.orderIndex + 1))
                 Spacer()
                 Text(WorkoutValueFormatting.set(set, mode: exercise.trackingMode)).monospacedDigit()
                 Image(systemName: set.isCompleted ? "checkmark.circle.fill" : "circle")
                   .foregroundStyle(set.isCompleted ? Color.green : Color.secondary)
-                  .accessibilityLabel(set.isCompleted ? "已完成" : "未完成")
+                  .accessibilityLabel(set.isCompleted ? L10n.text("core.completed") : L10n.text("core.incomplete"))
               }
             }
           } else {
             ForEach(exercise.cardioEntries) { cardio in
               LabeledContent(
-                "时长", value: "\(cardio.durationSeconds / 60) 分 \(cardio.durationSeconds % 60) 秒")
+                L10n.text("core.duration"), value: L10n.text("core.min.sec" , String(describing: cardio.durationSeconds / 60), String(describing: cardio.durationSeconds % 60)))
               if cardio.distanceKilometers > 0 {
-                LabeledContent("距离", value: "\(cardio.distanceKilometers.formatted()) km")
+                LabeledContent(L10n.text("core.distance"), value: "\(cardio.distanceKilometers.formatted(.number.locale(L10n.locale))) km")
               }
               if cardio.calories > 0 {
-                LabeledContent("消耗", value: "\(cardio.calories.formatted()) kcal")
+                LabeledContent(L10n.text("core.calories.burned"), value: "\(cardio.calories.formatted(.number.locale(L10n.locale))) kcal")
               }
             }
           }
@@ -321,16 +321,16 @@ struct WorkoutDetailView: View {
     .navigationTitle(workout.title).navigationBarTitleDisplayMode(.inline)
     .toolbar {
       ToolbarItem(placement: .topBarTrailing) {
-        Button("编辑") { editing = true }.accessibilityIdentifier("training.edit")
+        Button(L10n.text("core.edit")) { editing = true }.accessibilityIdentifier("training.edit")
       }
     }
     .sheet(isPresented: $editing) { WorkoutHistoryEditor(original: workout) }
     .navigationDestination(item: $repeatedWorkout) { ActiveWorkoutView(workout: $0) }
-    .alert("操作失败", isPresented: Binding(get: { message != nil }, set: { if !$0 { message = nil } }))
+    .alert(L10n.text("core.action.failed"), isPresented: Binding(get: { message != nil }, set: { if !$0 { message = nil } }))
     {
-      Button("知道了", role: .cancel) {}
+      Button(L10n.text("core.ok"), role: .cancel) {}
     } message: {
-      Text(message ?? "请重试。")
+      Text(message?.text ?? L10n.text("core.please.try.again"))
     }
   }
 
@@ -343,7 +343,7 @@ struct WorkoutDetailView: View {
       repeatedWorkout = copy
     } catch {
       modelContext.rollback()
-      message = error.localizedDescription
+      message = L10n.Message(resolving: { error.localizedDescription })
     }
   }
   private func saveAsTemplate() {
@@ -354,7 +354,7 @@ struct WorkoutDetailView: View {
       templateSaved = true
     } catch {
       modelContext.rollback()
-      message = error.localizedDescription
+      message = L10n.Message(resolving: { error.localizedDescription })
     }
   }
 }

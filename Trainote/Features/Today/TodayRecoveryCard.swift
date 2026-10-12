@@ -9,7 +9,7 @@ struct TodayRecoveryCard: View {
   let onOpenRecovery: () -> Void
   let onOpenCheckIn: (CheckInValue, @escaping () -> Void) -> Void
   @State private var showPrompt = false
-  @State private var error: String?
+  @State private var error: L10n.Message?
 
   var body: some View {
     VStack(alignment: .leading, spacing: 12) {
@@ -20,7 +20,7 @@ struct TodayRecoveryCard: View {
         HStack(alignment: .top, spacing: 12) {
           Image(systemName: "lightbulb").font(.title2)
           VStack(alignment: .leading, spacing: 4) {
-            Text("今日建议").font(.headline)
+            Text(L10n.text("core.today.s.guidance")).font(.headline)
             Text(recommendationText)
               .font(.subheadline).foregroundStyle(.secondary)
           }
@@ -31,12 +31,12 @@ struct TodayRecoveryCard: View {
       .buttonStyle(.plain)
       .accessibilityIdentifier("today.recommendation")
       if integration.healthReadFailed {
-        Text("健康数据暂时无法读取，当前显示本地记录。")
+        Text(L10n.text("core.health.data.is.temporarily.unavailable.local.records.are.shown"))
           .font(.caption).foregroundStyle(.secondary)
       }
       Divider()
       if showPrompt {
-        Text("今天感觉如何？可以用十秒补充体感，也可以跳过。")
+        Text(L10n.text("core.how.do.you.feel.today.add.a.ten.second.check.in.or.skip.it"))
           .font(.subheadline).foregroundStyle(.secondary)
           .accessibilityIdentifier("today.checkIn.prompt")
       }
@@ -60,16 +60,16 @@ struct TodayRecoveryCard: View {
     ) {
       _ in reload()
     }
-    .alert("体感暂时无法打开", isPresented: Binding(get: { error != nil }, set: { if !$0 { error = nil } }))
+    .alert(L10n.text("core.check.in.unavailable"), isPresented: Binding(get: { error != nil }, set: { if !$0 { error = nil } }))
     {
-      Button("知道了", role: .cancel) { error = nil }
+      Button(L10n.text("core.ok"), role: .cancel) { error = nil }
     } message: {
-      Text(error ?? "请稍后重试。")
+      Text(error?.text ?? L10n.text("core.please.try.again.later"))
     }
   }
 
   private var checkInButton: some View {
-    Button("记录或修改十秒体感", systemImage: "heart.text.clipboard") {
+    Button(L10n.text("core.add.or.edit.a.ten.second.check.in"), systemImage: "heart.text.clipboard") {
       do {
         let draft = try integration.checkInDraft()
         onOpenCheckIn(draft) {
@@ -77,7 +77,7 @@ struct TodayRecoveryCard: View {
           advice?.refresh()
           showPrompt = false
         }
-      } catch { self.error = "未能读取已有体感，请稍后重试。" }
+      } catch { self.error = L10n.Message(resolving: { L10n.text("core.could.not.read.your.existing.check.in.please.try.again.later") }) }
     }
     .font(.subheadline)
     .accessibilityIdentifier("today.checkIn.open")
@@ -86,7 +86,7 @@ struct TodayRecoveryCard: View {
   @ViewBuilder
   private var skipButton: some View {
     if showPrompt {
-      Button("跳过") { showPrompt = false }
+      Button(L10n.text("core.skip")) { showPrompt = false }
         .font(.subheadline)
         .accessibilityIdentifier("today.checkIn.skipPrompt")
     }
@@ -104,12 +104,12 @@ struct TodayRecoveryCard: View {
       let action = advice?.evaluation?.candidates.first?.action
     else { return integration.todayMessage(hasRoutines: hasRoutines) }
     switch action {
-    case .keepPlan: return "可按所选模板训练，开始前再核对今日体感。"
-    case .reduceSets, .increaseRIR: return "今天建议适当减量，可查看工作组和余力范围。"
-    case .swapTrainingDay: return "可考虑所选备选模板，先查看适用条件。"
-    case .rest, .lightActivity: return "今天优先休息或按体感选择轻活动。"
-    case .reviewNutrition: return "饮食记录与目标存在差异，可到趋势页复核。"
-    case .choosePlan: return "记录覆盖还不足，先核对模板、恢复记录和体感。"
+    case .keepPlan: return L10n.text("core.use.your.selected.routine.and.check.how.you.feel.before.starting")
+    case .reduceSets, .increaseRIR: return L10n.text("core.consider.reducing.today.s.workload.review.working.sets.and.reps.in.reserve")
+    case .swapTrainingDay: return L10n.text("core.consider.the.selected.alternative.routine.after.reviewing.its.conditions")
+    case .rest, .lightActivity: return L10n.text("core.prioritize.rest.or.light.activity.based.on.how.you.feel.today")
+    case .reviewNutrition: return L10n.text("core.your.food.records.differ.from.your.goals.review.them.in.trends")
+    case .choosePlan: return L10n.text("core.there.is.not.enough.recorded.data.yet.review.your.routine.recovery.records.and.check.")
     }
   }
 }

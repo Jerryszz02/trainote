@@ -9,8 +9,8 @@ struct PersonalRecord: Identifiable {
   let value: Double
   let previousValue: Double
   var id: String { workoutID.uuidString + exerciseID + metric.rawValue }
-  var title: String { metric == .weight ? "重量 PR" : "单次容量 PR" }
-  var unit: String { metric == .weight ? "kg" : "kg·次" }
+  var title: String { metric == .weight ? L10n.text("domain.weight.pr") : L10n.text("domain.session.volume.pr") }
+  var unit: String { metric == .weight ? "kg" : L10n.text("domain.kg.reps") }
 }
 
 @MainActor

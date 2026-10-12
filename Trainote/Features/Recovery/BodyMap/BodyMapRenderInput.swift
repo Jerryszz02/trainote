@@ -5,17 +5,17 @@ import UIKit
 extension MuscleID {
   var bodyMapTitle: String {
     switch self {
-    case .chest: "胸"
-    case .back: "背"
-    case .shoulders: "肩"
-    case .biceps: "肱二头"
-    case .triceps: "肱三头"
-    case .forearms: "前臂"
-    case .core: "核心"
-    case .glutes: "臀"
-    case .quads: "股四头"
-    case .hamstrings: "腘绳肌"
-    case .calves: "小腿"
+    case .chest: L10n.text("health.bodymaprenderinput.chest.a6577e")
+    case .back: L10n.text("health.bodymaprenderinput.back.e072ff")
+    case .shoulders: L10n.text("health.bodymaprenderinput.shoulders.dd0ea6")
+    case .biceps: L10n.text("health.bodymaprenderinput.biceps.9eee82")
+    case .triceps: L10n.text("health.bodymaprenderinput.triceps.87f8af")
+    case .forearms: L10n.text("health.bodymaprenderinput.forearms.05789a")
+    case .core: L10n.text("health.bodymaprenderinput.core.10d95f")
+    case .glutes: L10n.text("health.bodymaprenderinput.glutes.447078")
+    case .quads: L10n.text("health.bodymaprenderinput.quads.8f5d54")
+    case .hamstrings: L10n.text("health.bodymaprenderinput.hamstrings.9218b4")
+    case .calves: L10n.text("health.bodymaprenderinput.calves.733e65")
     }
   }
 }
@@ -32,14 +32,14 @@ struct BodyMapRegion: Equatable, Identifiable {
     self.isLimited = isLimited
     // Invalid presentation values must never become reassuring colours or trap on Int conversion.
     self.score = score.flatMap { $0.isFinite && (0...100).contains($0) ? $0 : nil }
-    self.status = self.score == nil ? (isLimited ? "\(status) · 待建立记录" : "待建立记录") : status
+    self.status = self.score == nil ? (isLimited ? L10n.text("health.bodymaprenderinput.waiting.for.records.e0d73f", String(status)) : L10n.text("health.bodymaprenderinput.waiting.for.records.dda84c")) : status
   }
 
   var displayedScore: Int? { score.map { Int(($0 / 5).rounded()) * 5 } }
-  var scoreText: String { displayedScore.map { "\($0) 分" } ?? "未知" }
-  var accessibilityText: String { "\(muscle.bodyMapTitle)，\(scoreText)，\(status)" }
+  var scoreText: String { displayedScore.map { L10n.text("health.bodymaprenderinput.points.af77b9", $0) } ?? L10n.text("health.bodymaprenderinput.unknown.d9c32a") }
+  var accessibilityText: String { [muscle.bodyMapTitle, scoreText, status].joined(separator: L10n.language == .english ? ", " : "，") }
   var compactStatus: String {
-    isLimited ? status.replacingOccurrences(of: "待建立记录", with: "未知") : status
+    isLimited ? status.replacingOccurrences(of: L10n.text("health.bodymaprenderinput.waiting.for.records.dda84c"), with: L10n.text("health.bodymaprenderinput.unknown.d9c32a")) : status
   }
 
   var color: UIColor {
@@ -60,19 +60,19 @@ extension BodyMapRenderInput {
       let limited = value.hasPain || value.hasMovementLimitation || value.state == .limited
       let status: String
       if value.hasPain && value.hasMovementLimitation {
-        status = "疼痛/受限"
+        status = L10n.text("health.bodymaprenderinput.pain.limited.27f305")
       } else if value.hasPain {
-        status = "疼痛反馈"
+        status = L10n.text("health.bodymaprenderinput.pain.reported.508f5b")
       } else if value.hasMovementLimitation {
-        status = "活动受限"
+        status = L10n.text("health.bodymaprenderinput.limited.movement.4b936a")
       } else {
         status =
           switch value.state {
-          case .unknown: "待建立记录"
-          case .low: "优先恢复"
-          case .moderate: "适度安排"
-          case .ready: "状态较好"
-          case .limited: "受限"
+          case .unknown: L10n.text("health.bodymaprenderinput.waiting.for.records.dda84c")
+          case .low: L10n.text("health.bodymaprenderinput.prioritize.recovery.41ef55")
+          case .moderate: L10n.text("health.bodymaprenderinput.train.moderately.726903")
+          case .ready: L10n.text("health.bodymaprenderinput.good.readiness.d4d8e0")
+          case .limited: L10n.text("health.bodymaprenderinput.limited.936333")
           }
       }
       return BodyMapRegion(
@@ -91,7 +91,7 @@ struct BodyMapRenderInput: Equatable {
     // A partial DTO still exposes all eleven choices; omitted regions stay unknown.
     self.regions = MuscleID.allCases.map { muscle in
       regions.first(where: { $0.muscle == muscle })
-        ?? BodyMapRegion(muscle: muscle, score: nil, status: "待建立记录")
+        ?? BodyMapRegion(muscle: muscle, score: nil, status: L10n.text("health.bodymaprenderinput.waiting.for.records.dda84c"))
     }
     self.selected = selected
   }

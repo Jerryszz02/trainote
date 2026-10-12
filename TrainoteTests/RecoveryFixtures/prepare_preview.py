@@ -16,7 +16,7 @@ persistence = 'import Foundation\nimport SwiftData\n' + app[app.index('enum Pers
 (output / 'PersistenceController.swift').write_text(persistence)
 project = {
     'name': 'TrainoteRecoveryPreview',
-    'options': {'deploymentTarget': {'iOS': '17.0'}, 'developmentLanguage': 'zh-Hans'},
+    'options': {'deploymentTarget': {'iOS': '17.0'}, 'developmentLanguage': 'en', 'knownRegions': ['en', 'zh-Hans']},
     'settings': {'base': {'SWIFT_VERSION': '5.9', 'TARGETED_DEVICE_FAMILY': '1'}},
     'targets': {
         'TrainoteRecoveryPreview': {

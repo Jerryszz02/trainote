@@ -183,13 +183,43 @@ enum BackupArchiveError: LocalizedError, Equatable {
   case unsupportedVersion(Int)
   case activeWorkoutConflict
   case goalStateConflict
+  private static func reason(_ text: String) -> String {
+    switch text {
+    case "存在重复 ID。": L10n.text("domain.backup.reason.duplicateIDs")
+    case "档案或每日记录冲突。": L10n.text("domain.backup.reason.profileConflict")
+    case "目标建议重复。": L10n.text("domain.backup.reason.duplicateProposal")
+    case "健康手动记录字段无效或 ID 重复。": L10n.text("domain.backup.reason.invalidHealthRecord")
+    case "本机已有活动档案，无法导入另一个活动档案。": L10n.text("domain.backup.reason.activeProfileConflict")
+    case "同一天的体感记录冲突。": L10n.text("domain.backup.reason.checkInConflict")
+    case "同一天的饮食完整标记冲突。": L10n.text("domain.backup.reason.dietCompletenessConflict")
+    case "目标建议与本机记录冲突。": L10n.text("domain.backup.reason.proposalConflict")
+    case "JSON 格式或版本字段不正确。": L10n.text("domain.backup.reason.invalidVersionJSON")
+    case "JSON 格式或字段不正确。": L10n.text("domain.backup.reason.invalidJSON")
+    case "记录 ID 与本机的其他对象冲突。": L10n.text("domain.backup.reason.recordIDConflict")
+    case "创建时间不合理。": L10n.text("domain.backup.reason.creationDate")
+    case "备份中不能有多个进行中的训练。": L10n.text("domain.backup.reason.multipleActiveWorkouts")
+    case "训练字段不完整。": L10n.text("domain.backup.reason.workoutFields")
+    case "已完成训练缺少有效结果或结束时间。": L10n.text("domain.backup.reason.completedWorkoutResult")
+    case "训练计划字段不完整。": L10n.text("domain.backup.reason.routineFields")
+    case "训练计划动作无效。": L10n.text("domain.backup.reason.routineExercise")
+    case "食物字段无效。": L10n.text("domain.backup.reason.foodFields")
+    case "固定餐字段无效。": L10n.text("domain.backup.reason.mealFields")
+    case "固定餐项目无效。": L10n.text("domain.backup.reason.mealItem")
+    case "饮食记录无效。": L10n.text("domain.backup.reason.foodLog")
+    case "营养目标无效。": L10n.text("domain.backup.reason.nutritionGoal")
+    case "训练动作字段无效。": L10n.text("domain.backup.reason.exerciseFields")
+    case "训练组数值无效。": L10n.text("domain.backup.reason.setValues")
+    case "有氧数值无效。": L10n.text("domain.backup.reason.cardioValues")
+    default: text
+    }
+  }
   var errorDescription: String {
     switch self {
-    case .tooLarge: "备份文件过大。"
-    case .invalid(let s): "备份无效：\(s)"
-    case .unsupportedVersion(let v): "不支持的备份版本：\(v)。"
-    case .activeWorkoutConflict: "当前已有进行中的训练，无法恢复另一个进行中的训练。"
-    case .goalStateConflict: "备份中的营养目标或目标历史与本机记录冲突，未导入任何数据。"
+    case .tooLarge: L10n.text("domain.backup.tooLarge")
+    case .invalid(let s): L10n.text("domain.backup.invalid", Self.reason(s))
+    case .unsupportedVersion(let v): L10n.text("domain.backup.version", v)
+    case .activeWorkoutConflict: L10n.text("domain.backup.activeWorkoutConflict")
+    case .goalStateConflict: L10n.text("domain.backup.goalConflict")
     }
   }
 }

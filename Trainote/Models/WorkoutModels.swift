@@ -51,13 +51,13 @@ final class Workout {
   var hasValidResult: Bool { validationMessage == nil }
 
   var validationMessage: String? {
-    guard !title.trimmed.isEmpty else { return "请输入训练名称。" }
+    guard !title.trimmed.isEmpty else { return L10n.text("workout.nameRequired") }
     var hasResult = false
     for exercise in exercises {
       if exercise.trackingMode.usesSets {
         for set in exercise.strengthSets where set.isCompleted {
           guard set.isValid(for: exercise.trackingMode) else {
-            return "请检查「\(exercise.nameZhSnapshot)」第 \(set.orderIndex + 1) 组的数值。"
+            return L10n.text("workout.checkSet", exercise.displayName, set.orderIndex + 1)
           }
           hasResult = true
         }
@@ -66,12 +66,12 @@ final class Workout {
           if cardio.durationSeconds == 0 && cardio.distanceKilometers == 0 && cardio.calories == 0 {
             continue
           }
-          guard cardio.isValid else { return "请检查「\(exercise.nameZhSnapshot)」的时长、距离和热量。" }
+          guard cardio.isValid else { return L10n.text("workout.checkCardio", exercise.displayName) }
           hasResult = true
         }
       }
     }
-    return hasResult ? nil : "请至少完成一组，或填写一条有效有氧记录。"
+    return hasResult ? nil : L10n.text("workout.resultRequired")
   }
 
 }
@@ -114,6 +114,8 @@ final class WorkoutExercise {
     self.strengthSets = strengthSets
     self.cardioEntries = cardioEntries
   }
+
+  var displayName: String { L10n.name(zh: nameZhSnapshot, en: nameEnSnapshot) }
 
   var trackingMode: TrackingMode {
     get { TrackingMode(rawValue: trackingModeRaw) ?? .strength }
@@ -281,6 +283,8 @@ final class RoutineExercise {
     self.defaultDurationSeconds = defaultDurationSeconds
     self.defaultDistanceKilometers = defaultDistanceKilometers
   }
+
+  var displayName: String { L10n.name(zh: nameZhSnapshot, en: nameEnSnapshot) }
 
   var trackingMode: TrackingMode {
     get { TrackingMode(rawValue: trackingModeRaw) ?? .strength }

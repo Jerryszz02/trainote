@@ -33,7 +33,11 @@ final class HealthReportIntegration: AIReportLifecycle {
   let advice: TrainingAdviceController
   let service: AIReportService?
   let consentVersion = LocalConsentStore.aiConsentVersion
-  private(set) var errorMessage: String?
+  private(set) var errorMessageKey: String?
+  private(set) var errorMessage: String? {
+    get { errorMessageKey.map { L10n.text($0) } }
+    set { errorMessageKey = newValue }
+  }
   private(set) var isRefreshing = false
   private var fallback: AIReportContent?
   private var displayedSelection: String?
@@ -75,7 +79,7 @@ final class HealthReportIntegration: AIReportLifecycle {
   var isConfigured: Bool { service?.isRemoteAvailable == true }
   var serverRevocationPending: Bool { service?.revocationPending == true }
   var configurationMessage: String {
-    "AI 报告尚未开放，目前可查看本机生成的基础报告；开放后可单独选择启用。"
+    L10n.text("health.healthreportintegration.ai.reports.are.not.yet.available.e59eb3")
   }
   var content: AIReportContent? {
     guard let displayedSelection, displayedSelection == (try? selectionIdentity()) else {
@@ -100,7 +104,7 @@ final class HealthReportIntegration: AIReportLifecycle {
     defer { if generation == request { isRefreshing = false } }
     do {
       do { try await resumePendingRevocation() } catch {
-        errorMessage = "AI 撤回尚未完成；当前显示本地基础报告，请在设置中重试撤回。"
+        errorMessage = "health.healthreportintegration.ai.withdrawal.is.incomplete.local.basic.f1d885"
       }
       try Task.checkCancellation()
       let selection = try selectionIdentity()
@@ -130,8 +134,8 @@ final class HealthReportIntegration: AIReportLifecycle {
       fallback = nil
       errorMessage =
         serverRevocationPending
-        ? "AI 撤回尚未完成，请在设置中重试。训练、饮食和本地分析仍可使用。"
-        : "记录或模板已变化，或暂时无法读取。请刷新报告后重试。"
+        ? "health.healthreportintegration.ai.withdrawal.is.incomplete.retry.in.52139d"
+        : "health.healthreportintegration.records.or.templates.changed.or.could.dca91e"
     }
   }
 

@@ -7,7 +7,7 @@ final class TrendAdoptionUITests: XCTestCase {
   override func setUpWithError() throws {
     continueAfterFailure = false
     app = XCUIApplication()
-    app.launchArguments = [
+    app.launchArguments = ["-AppleLanguages", "(zh-Hans)", "-AppleLocale", "zh_CN", "-appearance.language", "zh-Hans",
       "-ui-testing", "-ui-testing-legacy-goal",
       "-AppleLanguages", "(zh-Hans)", "-AppleLocale", appLocale.identifier,
     ]

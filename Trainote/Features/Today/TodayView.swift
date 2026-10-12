@@ -7,7 +7,7 @@ struct TodayView: View {
   @Environment(\.dynamicTypeSize) private var dynamicTypeSize
   @AppStorage("onboarding.dismissed") private var onboardingDismissed = false
   @State private var currentDate = Date.now
-  @State private var saveError: String?
+  @State private var saveError: L10n.Message?
   @Query(sort: \Routine.updatedAt, order: .reverse) private var routines: [Routine]
 
   @Query(sort: \FoodLogEntry.loggedAt, order: .reverse)
@@ -71,7 +71,7 @@ struct TodayView: View {
           NavigationLink {
             HealthReportsView(integration: reportIntegration)
           } label: {
-            Label("基础报告与历史", systemImage: "text.document")
+            Label(L10n.text("core.basic.reports.and.history"), systemImage: "text.document")
               .frame(maxWidth: .infinity, alignment: .leading)
               .padding().background(.background, in: RoundedRectangle(cornerRadius: 16))
           }
@@ -81,19 +81,19 @@ struct TodayView: View {
       .padding()
     }
     .background(Color(.systemGroupedBackground))
-    .navigationTitle("今日")
+    .navigationTitle(L10n.text("core.today"))
     .navigationBarTitleDisplayMode(dynamicTypeSize.isAccessibilitySize ? .inline : .large)
     .toolbar {
       ToolbarItem(placement: .topBarTrailing) {
         NavigationLink {
           LibraryView()
         } label: {
-          Label("资料库", systemImage: "books.vertical")
+          Label(L10n.text("core.library"), systemImage: "books.vertical")
         }
         .accessibilityIdentifier("today.library")
       }
       ToolbarItem(placement: .topBarTrailing) {
-        Button("设置", systemImage: "gearshape") {
+        Button(L10n.text("core.settings"), systemImage: "gearshape") {
           onOpenSettings()
         }
         .accessibilityIdentifier("today.settings")
@@ -106,11 +106,11 @@ struct TodayView: View {
       NotificationCenter.default.publisher(for: UIApplication.significantTimeChangeNotification)
     ) { _ in currentDate = .now }
     .alert(
-      "未能保存", isPresented: Binding(get: { saveError != nil }, set: { if !$0 { saveError = nil } })
+      L10n.text("core.could.not.save"), isPresented: Binding(get: { saveError != nil }, set: { if !$0 { saveError = nil } })
     ) {
-      Button("知道了", role: .cancel) { saveError = nil }
+      Button(L10n.text("core.ok"), role: .cancel) { saveError = nil }
     } message: {
-      Text(saveError ?? "请重试。")
+      Text(saveError?.text ?? L10n.text("core.please.try.again"))
     }
   }
 
@@ -119,8 +119,8 @@ struct TodayView: View {
       HStack(alignment: .top, spacing: 12) {
         Image(systemName: "lightbulb").font(.title2)
         VStack(alignment: .leading, spacing: 4) {
-          Text("今日建议").font(.headline)
-          Text(routines.isEmpty ? "先选择一套训练模板，按自己的安排开始。" : "结合训练记录与体感，查看今天的恢复状态。")
+          Text(L10n.text("core.today.s.guidance")).font(.headline)
+          Text(routines.isEmpty ? L10n.text("core.choose.a.routine.and.start.when.it.suits.you") : L10n.text("core.review.today.s.recovery.alongside.your.training.records.and.how.you.feel"))
             .font(.subheadline).foregroundStyle(.secondary)
         }
         Spacer(minLength: 0)
@@ -135,17 +135,17 @@ struct TodayView: View {
   private var gettingStarted: some View {
     VStack(alignment: .leading, spacing: 12) {
       HStack {
-        Text("从一套训练和一餐开始").font(.headline)
+        Text(L10n.text("core.start.with.a.workout.and.a.meal")).font(.headline)
         Spacer()
-        Button("跳过") { onboardingDismissed = true }.font(.subheadline)
+        Button(L10n.text("core.skip")) { onboardingDismissed = true }.font(.subheadline)
           .accessibilityIdentifier("onboarding.skip")
       }
-      Text("先保存常做的动作和常吃的食物，下次直接复用。目标可以随时设置。")
+      Text(L10n.text("core.save.exercises.and.foods.you.use.often.for.next.time.set.goals.whenever.you.like"))
         .font(.subheadline).foregroundStyle(.secondary)
-      Button("建立训练模板", systemImage: "list.bullet.rectangle", action: onOpenTemplates)
+      Button(L10n.text("core.create.a.routine"), systemImage: "list.bullet.rectangle", action: onOpenTemplates)
         .accessibilityIdentifier("today.createRoutine")
-      Button("记录第一餐", systemImage: "fork.knife", action: onLogFood)
-      Button("设置每日营养目标", systemImage: "target", action: onOpenSettings)
+      Button(L10n.text("core.log.your.first.meal"), systemImage: "fork.knife", action: onLogFood)
+      Button(L10n.text("core.set.daily.nutrition.goals"), systemImage: "target", action: onOpenSettings)
     }
     .padding()
     .background(Color.accentColor.opacity(0.08), in: RoundedRectangle(cornerRadius: 16))
@@ -156,15 +156,15 @@ struct TodayView: View {
     if !routines.isEmpty && !workouts.contains(where: { $0.status == .inProgress }) {
       VStack(alignment: .leading, spacing: 12) {
         HStack {
-          Text("常用训练模板").font(.headline)
+          Text(L10n.text("core.favorite.routines")).font(.headline)
           Spacer()
-          Button("管理模板", action: onOpenTemplates).font(.subheadline)
+          Button(L10n.text("core.manage.routines"), action: onOpenTemplates).font(.subheadline)
             .accessibilityIdentifier("today.manageTemplates")
         }
         ForEach(routines.prefix(3)) { routine in
           Button {
             guard routine.exercises.allSatisfy(\.hasValidDefaults) else {
-              saveError = "模板包含无效参数，请先在资料库中编辑修正。"
+              saveError = L10n.Message(resolving: { L10n.text("core.this.routine.has.invalid.values.edit.it.in.the.library.first") })
               return
             }
             let workout = RoutineFactory.workout(from: routine)
@@ -174,14 +174,14 @@ struct TodayView: View {
               onStartWorkout()
             } catch {
               modelContext.rollback()
-              saveError = "训练未能开始，请重试。\(error.localizedDescription)"
+              saveError = L10n.Message(resolving: { L10n.text("core.could.not.start.the.workout.please.try.again" , String(describing: error.localizedDescription)) })
             }
           } label: {
             HStack {
               Image(systemName: "play.circle.fill")
               Text(routine.name).font(.subheadline.weight(.semibold))
               Spacer()
-              Text("\(routine.exercises.count) 个动作").font(.caption).foregroundStyle(.secondary)
+              Text(L10n.text("core.exercises", routine.exercises.count)).font(.caption).foregroundStyle(.secondary)
             }
             .padding().background(.background, in: RoundedRectangle(cornerRadius: 14))
           }
@@ -199,8 +199,8 @@ struct TodayView: View {
       HStack(spacing: 12) {
         Image(systemName: "chart.xyaxis.line").font(.title2)
         VStack(alignment: .leading, spacing: 4) {
-          Text("每周回顾与 PR").font(.headline)
-          Text("看见训练积累和饮食记录的变化").font(.caption).foregroundStyle(.secondary)
+          Text(L10n.text("core.weekly.review.and.personal.records")).font(.headline)
+          Text(L10n.text("core.see.changes.in.your.training.and.food.records")).font(.caption).foregroundStyle(.secondary)
         }
         Spacer()
         Image(systemName: "chevron.right").font(.caption)
@@ -213,9 +213,9 @@ struct TodayView: View {
 
   private var header: some View {
     VStack(alignment: .leading, spacing: 4) {
-      Text(currentDate.formatted(.dateTime.weekday(.wide).month().day()))
+      Text(currentDate.formatted(.dateTime.weekday(.wide).month().day().locale(L10n.locale)))
         .font(.title2.bold())
-      Text("把今天的每一组和每一餐记下来。")
+      Text(L10n.text("core.log.every.set.and.every.meal.today"))
         .font(.subheadline)
         .foregroundStyle(.secondary)
     }
@@ -224,11 +224,11 @@ struct TodayView: View {
   private var nutrientGrid: some View {
     VStack(alignment: .leading, spacing: 12) {
       HStack {
-        Text("营养进度")
+        Text(L10n.text("core.nutrition.progress"))
           .font(.headline)
         Spacer()
         if goals.first == nil {
-          Button("设置目标", action: onOpenSettings)
+          Button(L10n.text("core.set.goals"), action: onOpenSettings)
             .font(.subheadline)
         }
       }
@@ -251,16 +251,16 @@ struct TodayView: View {
       ? AnyLayout(VStackLayout(spacing: 12)) : AnyLayout(HStackLayout(spacing: 12))
     return layout {
       QuickActionButton(
-        title: workouts.contains(where: { $0.status == .inProgress }) ? "继续训练" : "开始训练",
-        subtitle: workouts.contains(where: { $0.status == .inProgress }) ? "接着完成这一场" : "空白或训练模板",
+        title: workouts.contains(where: { $0.status == .inProgress }) ? L10n.text("core.continue.workout") : L10n.text("core.start.workout"),
+        subtitle: workouts.contains(where: { $0.status == .inProgress }) ? L10n.text("core.pick.up.where.you.left.off") : L10n.text("core.blank.workout.or.routine"),
         systemImage: "figure.strengthtraining.traditional",
         action: onStartWorkout
       )
       .accessibilityIdentifier("today.startWorkout")
 
       QuickActionButton(
-        title: "记录饮食",
-        subtitle: "一餐或食物",
+        title: L10n.text("core.log.food"),
+        subtitle: L10n.text("core.a.meal.or.food"),
         systemImage: "plus.circle.fill",
         action: onLogFood
       )
@@ -270,14 +270,14 @@ struct TodayView: View {
 
   private var trainingSummary: some View {
     VStack(alignment: .leading, spacing: 12) {
-      Text("今日训练")
+      Text(L10n.text("core.today.s.training"))
         .font(.headline)
 
       if todayWorkouts.isEmpty {
         ContentUnavailableView(
-          "还没有训练记录",
+          L10n.text("core.no.workouts.yet"),
           systemImage: "figure.walk",
-          description: Text("开始一场训练后，摘要会出现在这里。")
+          description: Text(L10n.text("core.start.a.workout.to.see.its.summary.here"))
         )
         .frame(maxWidth: .infinity)
         .padding(.vertical, 8)
@@ -300,7 +300,7 @@ struct TodayView: View {
               VStack(alignment: .leading) {
                 Text(workout.title)
                   .font(.subheadline.weight(.semibold))
-                Text("\(workout.exercises.count) 个动作 · \(workout.status.title)")
+                Text(L10n.text("core.exercises.81", workout.exercises.count, String(describing: workout.status.title)))
                   .font(.caption)
                   .foregroundStyle(.secondary)
               }
@@ -337,7 +337,7 @@ private struct NutrientProgressCard: View {
           .foregroundStyle(.secondary)
       }
 
-      Text(consumed.rounded(), format: .number.precision(.fractionLength(0)))
+      Text(consumed.rounded(), format: .number.precision(.fractionLength(0)).locale(L10n.locale))
         .font(.title2.bold())
         .monospacedDigit()
 
@@ -349,13 +349,13 @@ private struct NutrientProgressCard: View {
       if let target, let remaining = summary.displayedRemaining(for: nutrient) {
         Text(
           remaining >= 0
-            ? "剩余 \(remaining, format: .number.precision(.fractionLength(0))) / \(target.rounded(), format: .number.precision(.fractionLength(0)))"
-            : "超出 \((-remaining), format: .number.precision(.fractionLength(0))) / \(target.rounded(), format: .number.precision(.fractionLength(0)))"
+            ? L10n.text("core.remaining" , String(describing: remaining.formatted(.number.precision(.fractionLength(0)).locale(L10n.locale))), String(describing: target.rounded().formatted(.number.precision(.fractionLength(0)).locale(L10n.locale))))
+            : L10n.text("core.over" , String(describing: (-remaining).formatted(.number.precision(.fractionLength(0)).locale(L10n.locale))), String(describing: target.rounded().formatted(.number.precision(.fractionLength(0)).locale(L10n.locale))))
         )
         .font(.caption)
         .foregroundStyle(remaining >= 0 ? Color.secondary : Color.orange)
       } else {
-        Text("尚未设置目标")
+        Text(L10n.text("core.no.goal.set.yet"))
           .font(.caption)
           .foregroundStyle(.secondary)
       }
@@ -374,10 +374,10 @@ private struct NutrientProgressCard: View {
   private var accessibilityText: String {
     if let target, let remaining = summary.displayedRemaining(for: nutrient) {
       return
-        "\(nutrient.title)，已摄入 \(consumed.rounded().formatted(.number.precision(.fractionLength(0)))) \(nutrient.unit)，目标 \(target.rounded().formatted(.number.precision(.fractionLength(0))))，\(remaining >= 0 ? "剩余" : "超出") \(abs(remaining).formatted(.number.precision(.fractionLength(0))))"
+        L10n.text("core.consumed.goal" , String(describing: nutrient.title), String(describing: consumed.rounded().formatted(.number.precision(.fractionLength(0)).locale(L10n.locale))), String(describing: nutrient.unit), String(describing: target.rounded().formatted(.number.precision(.fractionLength(0)).locale(L10n.locale))), String(describing: remaining >= 0 ? L10n.text("core.remaining.word") : L10n.text("core.over.word")), String(describing: abs(remaining).formatted(.number.precision(.fractionLength(0)).locale(L10n.locale))))
     }
     return
-      "\(nutrient.title)，已摄入 \(consumed.rounded().formatted(.number.precision(.fractionLength(0)))) \(nutrient.unit)，尚未设置目标"
+      L10n.text("core.consumed.no.goal.set.yet" , String(describing: nutrient.title), String(describing: consumed.rounded().formatted(.number.precision(.fractionLength(0)).locale(L10n.locale))), String(describing: nutrient.unit))
   }
 }
 

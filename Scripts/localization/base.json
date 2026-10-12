@@ -1,0 +1,897 @@
+{
+  "tab.today": {
+    "en": "Today",
+    "zh-Hans": "今日",
+    "comment": "tab today"
+  },
+  "tab.training": {
+    "en": "Training",
+    "zh-Hans": "训练",
+    "comment": "tab training"
+  },
+  "tab.nutrition": {
+    "en": "Nutrition",
+    "zh-Hans": "饮食",
+    "comment": "tab nutrition"
+  },
+  "tab.trends": {
+    "en": "Trends",
+    "zh-Hans": "趋势",
+    "comment": "tab trends"
+  },
+  "tab.recovery": {
+    "en": "Recovery",
+    "zh-Hans": "恢复",
+    "comment": "tab recovery"
+  },
+  "storage.openFailed": {
+    "en": "Unable to open local data",
+    "zh-Hans": "无法打开本地数据",
+    "comment": "storage openFailed"
+  },
+  "storage.restart": {
+    "en": "Trainote will not replace your records with a temporary database. Please restart the app.",
+    "zh-Hans": "Trainote 不会用临时数据库替代你的记录。请重新启动 App。",
+    "comment": "storage restart"
+  },
+  "language.system": {
+    "en": "System Default",
+    "zh-Hans": "跟随系统",
+    "comment": "language system"
+  },
+  "language.title": {
+    "en": "Language",
+    "zh-Hans": "语言",
+    "comment": "language title"
+  },
+  "settings.nutrition": {
+    "en": "Nutrition",
+    "zh-Hans": "饮食管理",
+    "comment": "settings nutrition"
+  },
+  "settings.dailyGoals": {
+    "en": "Daily nutrition goals",
+    "zh-Hans": "每日营养目标",
+    "comment": "settings dailyGoals"
+  },
+  "settings.units": {
+    "en": "Units",
+    "zh-Hans": "单位",
+    "comment": "settings units"
+  },
+  "settings.weight": {
+    "en": "Weight",
+    "zh-Hans": "重量",
+    "comment": "settings weight"
+  },
+  "settings.kilograms": {
+    "en": "Kilograms (kg)",
+    "zh-Hans": "公斤 (kg)",
+    "comment": "settings kilograms"
+  },
+  "settings.distance": {
+    "en": "Distance",
+    "zh-Hans": "距离",
+    "comment": "settings distance"
+  },
+  "settings.kilometers": {
+    "en": "Kilometers (km)",
+    "zh-Hans": "公里 (km)",
+    "comment": "settings kilometers"
+  },
+  "settings.health": {
+    "en": "Health & analysis",
+    "zh-Hans": "健康与分析",
+    "comment": "settings health"
+  },
+  "settings.appleHealth": {
+    "en": "Apple Health",
+    "zh-Hans": "Apple 健康",
+    "comment": "settings appleHealth"
+  },
+  "settings.healthPermissions": {
+    "en": "Manage read access: Health app → Summary → profile photo → Apps → Trainote.",
+    "zh-Hans": "管理读取权限：“健康”App → 摘要 → 头像 → App → Trainote。",
+    "comment": "settings healthPermissions"
+  },
+  "settings.refreshHealth": {
+    "en": "Refresh health data",
+    "zh-Hans": "刷新健康读取",
+    "comment": "settings refreshHealth"
+  },
+  "settings.connectHealth": {
+    "en": "Connect Apple Health",
+    "zh-Hans": "连接 Apple 健康",
+    "comment": "settings connectHealth"
+  },
+  "settings.retryDisconnect": {
+    "en": "Retry disconnecting and deleting imported health data",
+    "zh-Hans": "重试断开并删除健康导入数据",
+    "comment": "settings retryDisconnect"
+  },
+  "settings.disconnect": {
+    "en": "Disconnect and delete imported health data",
+    "zh-Hans": "断开并删除健康导入数据",
+    "comment": "settings disconnect"
+  },
+  "settings.aiReports": {
+    "en": "AI reports",
+    "zh-Hans": "AI 报告",
+    "comment": "settings aiReports"
+  },
+  "settings.revokeAI": {
+    "en": "Turn off AI / retry withdrawal",
+    "zh-Hans": "关闭 AI / 重试撤回",
+    "comment": "settings revokeAI"
+  },
+  "settings.deleteAI": {
+    "en": "Delete AI reports on this device",
+    "zh-Hans": "删除本机 AI 报告",
+    "comment": "settings deleteAI"
+  },
+  "settings.methods": {
+    "en": "Methods, privacy & data use",
+    "zh-Hans": "方法、隐私与数据使用",
+    "comment": "settings methods"
+  },
+  "settings.backup": {
+    "en": "Local backup",
+    "zh-Hans": "本地备份",
+    "comment": "settings backup"
+  },
+  "settings.export": {
+    "en": "Export all data",
+    "zh-Hans": "导出全部数据",
+    "comment": "settings export"
+  },
+  "settings.restoreBackup": {
+    "en": "Restore local backup",
+    "zh-Hans": "恢复本地备份",
+    "comment": "settings restoreBackup"
+  },
+  "settings.backupHelp": {
+    "en": "Exports v2 and restores v1 / v2; older app versions may not read v2. Includes manual health records, goal history, training and nutrition. Excludes imported health caches, permissions, device credentials and derived reports. Backups are saved only to the location you choose. Keep them safe.",
+    "zh-Hans": "导出 v2，支持恢复 v1 / v2；旧版 App 不保证能读 v2。包含手动健康资料、目标历史、训练和饮食；不包含健康导入缓存、授权、设备凭据或派生报告。备份只保存在你选择的位置，请妥善保管。",
+    "comment": "settings backupHelp"
+  },
+  "settings.about": {
+    "en": "About",
+    "zh-Hans": "关于",
+    "comment": "settings about"
+  },
+  "settings.sources": {
+    "en": "Trainote & data sources",
+    "zh-Hans": "Trainote 与数据来源",
+    "comment": "settings sources"
+  },
+  "settings.title": {
+    "en": "Settings",
+    "zh-Hans": "设置",
+    "comment": "settings title"
+  },
+  "settings.done": {
+    "en": "Done",
+    "zh-Hans": "完成",
+    "comment": "settings done"
+  },
+  "settings.backupAlert": {
+    "en": "Backup",
+    "zh-Hans": "备份",
+    "comment": "settings backupAlert"
+  },
+  "settings.ok": {
+    "en": "OK",
+    "zh-Hans": "好",
+    "comment": "settings ok"
+  },
+  "settings.restoreTitle": {
+    "en": "Restore backup",
+    "zh-Hans": "恢复备份",
+    "comment": "settings restoreTitle"
+  },
+  "settings.restore": {
+    "en": "Restore",
+    "zh-Hans": "恢复",
+    "comment": "settings restore"
+  },
+  "settings.cancel": {
+    "en": "Cancel",
+    "zh-Hans": "取消",
+    "comment": "settings cancel"
+  },
+  "settings.disconnectQuestion": {
+    "en": "Disconnect and delete imported health data?",
+    "zh-Hans": "断开并删除健康导入数据？",
+    "comment": "settings disconnectQuestion"
+  },
+  "settings.disconnectConfirm": {
+    "en": "Disconnect & delete",
+    "zh-Hans": "断开并删除",
+    "comment": "settings disconnectConfirm"
+  },
+  "settings.disconnectHelp": {
+    "en": "Stops syncing and clears imported caches, sync anchors and related reports. Keeps manual records and leaves the original data in Apple Health unchanged.",
+    "zh-Hans": "停止同步并清除导入缓存、锚点和相关报告；保留手动记录，不改动 Apple 健康中的原始数据。",
+    "comment": "settings disconnectHelp"
+  },
+  "settings.deleteQuestion": {
+    "en": "Delete AI reports on this device?",
+    "zh-Hans": "删除本机 AI 报告？",
+    "comment": "settings deleteQuestion"
+  },
+  "settings.deleteReports": {
+    "en": "Delete reports",
+    "zh-Hans": "删除报告",
+    "comment": "settings deleteReports"
+  },
+  "settings.deleteHelp": {
+    "en": "Deletes the local report cache. Keeps training, nutrition and health records.",
+    "zh-Hans": "删除本机报告缓存，不删除训练、饮食或健康记录。",
+    "comment": "settings deleteHelp"
+  },
+  "settings.dailyTargets": {
+    "en": "Daily targets",
+    "zh-Hans": "每日目标",
+    "comment": "settings dailyTargets"
+  },
+  "settings.calories": {
+    "en": "Calories",
+    "zh-Hans": "卡路里",
+    "comment": "settings calories"
+  },
+  "settings.carbs": {
+    "en": "Carbohydrates",
+    "zh-Hans": "碳水",
+    "comment": "settings carbs"
+  },
+  "settings.protein": {
+    "en": "Protein",
+    "zh-Hans": "蛋白质",
+    "comment": "settings protein"
+  },
+  "settings.fat": {
+    "en": "Fat",
+    "zh-Hans": "脂肪",
+    "comment": "settings fat"
+  },
+  "settings.goalHelp": {
+    "en": "Save manual targets here and keep your goal history. Automatic adoption on the Trends page runs only after you enable it; upgrading will not silently change existing targets.",
+    "zh-Hans": "在这里保存手动目标，保留此前目标历史。趋势页的自动采用仅在你主动开启后运行；不会因为升级而无声改变旧目标。",
+    "comment": "settings goalHelp"
+  },
+  "settings.goals": {
+    "en": "Nutrition goals",
+    "zh-Hans": "营养目标",
+    "comment": "settings goals"
+  },
+  "settings.saved": {
+    "en": "Saved",
+    "zh-Hans": "已保存",
+    "comment": "settings saved"
+  },
+  "settings.save": {
+    "en": "Save",
+    "zh-Hans": "保存",
+    "comment": "settings save"
+  },
+  "settings.saveFailed": {
+    "en": "Could not save",
+    "zh-Hans": "保存失败",
+    "comment": "settings saveFailed"
+  },
+  "settings.staleGoal": {
+    "en": "Targets were updated elsewhere",
+    "zh-Hans": "目标已在别处更新",
+    "comment": "settings staleGoal"
+  },
+  "settings.reloadGoal": {
+    "en": "Load latest targets",
+    "zh-Hans": "载入最新目标",
+    "comment": "settings reloadGoal"
+  },
+  "settings.keepDraft": {
+    "en": "Keep draft",
+    "zh-Hans": "保留草稿",
+    "comment": "settings keepDraft"
+  },
+  "settings.staleHelp": {
+    "en": "Your changes have not been saved. Load the latest targets, review your changes and save again to avoid overwriting newer targets.",
+    "zh-Hans": "本次修改尚未保存。载入最新目标后请重新检查并点击保存，避免覆盖新的目标。",
+    "comment": "settings staleHelp"
+  },
+  "settings.reloadToEdit": {
+    "en": "Load latest targets to edit",
+    "zh-Hans": "载入最新目标再编辑",
+    "comment": "settings reloadToEdit"
+  },
+  "settings.loadGoalError": {
+    "en": "Could not read current targets. Please try again.",
+    "zh-Hans": "未能读取当前目标，请重试。",
+    "comment": "settings loadGoalError"
+  },
+  "settings.saveGoalError": {
+    "en": "Your targets and history are unchanged. Please try again. If the target date looks wrong, check the device clock or reload the targets.",
+    "zh-Hans": "目标和历史均未改变，请重试。若目标日期异常，请检查设备时间或重新载入目标。",
+    "comment": "settings saveGoalError"
+  },
+  "settings.version": {
+    "en": "Version",
+    "zh-Hans": "版本",
+    "comment": "settings version"
+  },
+  "settings.aboutPrivacy": {
+    "en": "Training and nutrition records stay on this device. Apple Health and AI reports are separate choices. Records are not sent when no live AI service is configured. Analysis provides estimates, not medical diagnoses.",
+    "zh-Hans": "训练和饮食记录保存在本机。Apple 健康与 AI 报告分别选择；未配置真实 AI 服务时不会发送记录。分析是估计，不提供医疗诊断。",
+    "comment": "settings aboutPrivacy"
+  },
+  "settings.privacySupport": {
+    "en": "Privacy & support",
+    "zh-Hans": "隐私与支持",
+    "comment": "settings privacySupport"
+  },
+  "settings.privacy": {
+    "en": "Privacy policy",
+    "zh-Hans": "隐私政策",
+    "comment": "settings privacy"
+  },
+  "settings.support": {
+    "en": "Help & feedback",
+    "zh-Hans": "帮助与反馈",
+    "comment": "settings support"
+  },
+  "settings.exerciseData": {
+    "en": "Exercise data",
+    "zh-Hans": "动作数据",
+    "comment": "settings exerciseData"
+  },
+  "settings.exerciseCount": {
+    "en": "Exercise count",
+    "zh-Hans": "动作数量",
+    "comment": "settings exerciseCount"
+  },
+  "settings.datasetCommit": {
+    "en": "Pinned commit",
+    "zh-Hans": "固定提交",
+    "comment": "settings datasetCommit"
+  },
+  "settings.datasetRepository": {
+    "en": "Open dataset repository",
+    "zh-Hans": "打开数据集仓库",
+    "comment": "settings datasetRepository"
+  },
+  "settings.datasetLicense": {
+    "en": "Only exercise metadata and instructions covered by the MIT license are used. Gym visual images and GIFs are not included in the app.",
+    "zh-Hans": "仅使用 MIT 许可覆盖的动作元数据和说明文字。Gym visual 图片与 GIF 未包含在 App 中。",
+    "comment": "settings datasetLicense"
+  },
+  "settings.healthAnalysis": {
+    "en": "Health analysis",
+    "zh-Hans": "健康分析",
+    "comment": "settings healthAnalysis"
+  },
+  "settings.healthHelp": {
+    "en": "Methods, permissions, withdrawal & data use",
+    "zh-Hans": "方法、权限、撤回和数据使用",
+    "comment": "settings healthHelp"
+  },
+  "settings.restoreInstructions": {
+    "en": "Choose “Export all data” in Settings and save the JSON file somewhere safe. On your new device, choose “Restore local backup”, preview the record count and confirm. Records with existing IDs are skipped; current data is not deleted.",
+    "zh-Hans": "在设置中选择“导出全部数据”，将 JSON 文件保存到安全位置。更换设备后选择“恢复本地备份”，先预览记录数量，再确认恢复。已有相同 ID 的记录会跳过，当前数据不会被删除。",
+    "comment": "settings restoreInstructions"
+  },
+  "settings.feedback": {
+    "en": "Feedback",
+    "zh-Hans": "反馈",
+    "comment": "settings feedback"
+  },
+  "settings.githubIssue": {
+    "en": "Report an issue on GitHub",
+    "zh-Hans": "在 GitHub 提交问题",
+    "comment": "settings githubIssue"
+  },
+  "settings.exportError": {
+    "en": "Could not export: %@",
+    "zh-Hans": "导出失败：%@",
+    "comment": "settings exportError"
+  },
+  "settings.openError": {
+    "en": "Could not open the backup: %@",
+    "zh-Hans": "无法打开备份：%@",
+    "comment": "settings openError"
+  },
+  "settings.readError": {
+    "en": "Could not read the backup: %@",
+    "zh-Hans": "无法读取备份：%@",
+    "comment": "settings readError"
+  },
+  "settings.restoreError": {
+    "en": "Could not restore: %@",
+    "zh-Hans": "恢复失败：%@",
+    "comment": "settings restoreError"
+  },
+  "settings.restorePreview": {
+    "en": "Check and add %lld records? Existing IDs will be skipped and current data will be kept.",
+    "zh-Hans": "将检查并添加 %lld 条记录；已有相同 ID 的记录会跳过，不会删除当前数据。确定恢复吗？",
+    "comment": "settings restorePreview"
+  },
+  "settings.restoreResult": {
+    "en": "Restore complete: %lld added, %lld skipped.",
+    "zh-Hans": "恢复完成：新增 %lld 条，跳过 %lld 条。",
+    "comment": "settings restoreResult"
+  },
+  "catalog.missing": {
+    "en": "The offline exercise catalog could not be found.",
+    "zh-Hans": "找不到离线动作目录。",
+    "comment": "catalog missing"
+  },
+  "catalog.duplicate": {
+    "en": "The exercise catalog contains duplicate IDs.",
+    "zh-Hans": "动作目录包含重复 ID。",
+    "comment": "catalog duplicate"
+  },
+  "catalog.incomplete": {
+    "en": "The exercise tracking catalog is incomplete. Please update the app.",
+    "zh-Hans": "动作记录方式目录不完整，请更新 App。",
+    "comment": "catalog incomplete"
+  },
+  "catalog.count": {
+    "en": "The exercise catalog should contain 1,324 records; found %lld.",
+    "zh-Hans": "动作目录应包含 1,324 条记录，实际为 %lld 条。",
+    "comment": "catalog count"
+  },
+  "exercise.label.abductors": {
+    "en": "Abductors",
+    "zh-Hans": "外展肌",
+    "comment": "exercise label abductors"
+  },
+  "exercise.label.abs": {
+    "en": "Abs",
+    "zh-Hans": "腹肌",
+    "comment": "exercise label abs"
+  },
+  "exercise.label.adductors": {
+    "en": "Adductors",
+    "zh-Hans": "内收肌",
+    "comment": "exercise label adductors"
+  },
+  "exercise.label.ankles": {
+    "en": "Ankles",
+    "zh-Hans": "脚踝",
+    "comment": "exercise label ankles"
+  },
+  "exercise.label.assisted": {
+    "en": "Assisted",
+    "zh-Hans": "辅助器械",
+    "comment": "exercise label assisted"
+  },
+  "exercise.label.back": {
+    "en": "Back",
+    "zh-Hans": "背部",
+    "comment": "exercise label back"
+  },
+  "exercise.label.band": {
+    "en": "Band",
+    "zh-Hans": "弹力带",
+    "comment": "exercise label band"
+  },
+  "exercise.label.barbell": {
+    "en": "Barbell",
+    "zh-Hans": "杠铃",
+    "comment": "exercise label barbell"
+  },
+  "exercise.label.biceps": {
+    "en": "Biceps",
+    "zh-Hans": "肱二头肌",
+    "comment": "exercise label biceps"
+  },
+  "exercise.label.body_weight": {
+    "en": "Body weight",
+    "zh-Hans": "自重",
+    "comment": "exercise label body_weight"
+  },
+  "exercise.label.bosu_ball": {
+    "en": "Bosu ball",
+    "zh-Hans": "半圆平衡球",
+    "comment": "exercise label bosu_ball"
+  },
+  "exercise.label.cable": {
+    "en": "Cable",
+    "zh-Hans": "绳索",
+    "comment": "exercise label cable"
+  },
+  "exercise.label.calves": {
+    "en": "Calves",
+    "zh-Hans": "小腿肌群",
+    "comment": "exercise label calves"
+  },
+  "exercise.label.cardio": {
+    "en": "Cardio",
+    "zh-Hans": "有氧",
+    "comment": "exercise label cardio"
+  },
+  "exercise.label.cardiovascular_system": {
+    "en": "Cardiovascular system",
+    "zh-Hans": "心肺系统",
+    "comment": "exercise label cardiovascular_system"
+  },
+  "exercise.label.chest": {
+    "en": "Chest",
+    "zh-Hans": "胸部",
+    "comment": "exercise label chest"
+  },
+  "exercise.label.core": {
+    "en": "Core",
+    "zh-Hans": "核心肌群",
+    "comment": "exercise label core"
+  },
+  "exercise.label.delts": {
+    "en": "Delts",
+    "zh-Hans": "三角肌",
+    "comment": "exercise label delts"
+  },
+  "exercise.label.dumbbell": {
+    "en": "Dumbbell",
+    "zh-Hans": "哑铃",
+    "comment": "exercise label dumbbell"
+  },
+  "exercise.label.elliptical_machine": {
+    "en": "Elliptical machine",
+    "zh-Hans": "椭圆机",
+    "comment": "exercise label elliptical_machine"
+  },
+  "exercise.label.ez_barbell": {
+    "en": "Ez barbell",
+    "zh-Hans": "曲杆杠铃",
+    "comment": "exercise label ez_barbell"
+  },
+  "exercise.label.feet": {
+    "en": "Feet",
+    "zh-Hans": "足部",
+    "comment": "exercise label feet"
+  },
+  "exercise.label.forearms": {
+    "en": "Forearms",
+    "zh-Hans": "前臂肌群",
+    "comment": "exercise label forearms"
+  },
+  "exercise.label.glutes": {
+    "en": "Glutes",
+    "zh-Hans": "臀肌",
+    "comment": "exercise label glutes"
+  },
+  "exercise.label.hammer": {
+    "en": "Hammer",
+    "zh-Hans": "训练锤",
+    "comment": "exercise label hammer"
+  },
+  "exercise.label.hamstrings": {
+    "en": "Hamstrings",
+    "zh-Hans": "腘绳肌",
+    "comment": "exercise label hamstrings"
+  },
+  "exercise.label.hands": {
+    "en": "Hands",
+    "zh-Hans": "手部",
+    "comment": "exercise label hands"
+  },
+  "exercise.label.hip_flexors": {
+    "en": "Hip flexors",
+    "zh-Hans": "髋屈肌",
+    "comment": "exercise label hip_flexors"
+  },
+  "exercise.label.kettlebell": {
+    "en": "Kettlebell",
+    "zh-Hans": "壶铃",
+    "comment": "exercise label kettlebell"
+  },
+  "exercise.label.lats": {
+    "en": "Lats",
+    "zh-Hans": "背阔肌",
+    "comment": "exercise label lats"
+  },
+  "exercise.label.levator_scapulae": {
+    "en": "Levator scapulae",
+    "zh-Hans": "肩胛提肌",
+    "comment": "exercise label levator_scapulae"
+  },
+  "exercise.label.leverage_machine": {
+    "en": "Leverage machine",
+    "zh-Hans": "固定器械",
+    "comment": "exercise label leverage_machine"
+  },
+  "exercise.label.lower_abs": {
+    "en": "Lower abs",
+    "zh-Hans": "下腹部",
+    "comment": "exercise label lower_abs"
+  },
+  "exercise.label.lower_arms": {
+    "en": "Lower arms",
+    "zh-Hans": "前臂",
+    "comment": "exercise label lower_arms"
+  },
+  "exercise.label.lower_back": {
+    "en": "Lower back",
+    "zh-Hans": "下背部",
+    "comment": "exercise label lower_back"
+  },
+  "exercise.label.lower_legs": {
+    "en": "Lower legs",
+    "zh-Hans": "小腿",
+    "comment": "exercise label lower_legs"
+  },
+  "exercise.label.medicine_ball": {
+    "en": "Medicine ball",
+    "zh-Hans": "药球",
+    "comment": "exercise label medicine_ball"
+  },
+  "exercise.label.neck": {
+    "en": "Neck",
+    "zh-Hans": "颈部",
+    "comment": "exercise label neck"
+  },
+  "exercise.label.obliques": {
+    "en": "Obliques",
+    "zh-Hans": "腹斜肌",
+    "comment": "exercise label obliques"
+  },
+  "exercise.label.olympic_barbell": {
+    "en": "Olympic barbell",
+    "zh-Hans": "奥林匹克杠铃",
+    "comment": "exercise label olympic_barbell"
+  },
+  "exercise.label.pectorals": {
+    "en": "Pectorals",
+    "zh-Hans": "胸肌",
+    "comment": "exercise label pectorals"
+  },
+  "exercise.label.quadriceps": {
+    "en": "Quadriceps",
+    "zh-Hans": "股四头肌",
+    "comment": "exercise label quadriceps"
+  },
+  "exercise.label.quads": {
+    "en": "Quads",
+    "zh-Hans": "股四头肌",
+    "comment": "exercise label quads"
+  },
+  "exercise.label.resistance_band": {
+    "en": "Resistance band",
+    "zh-Hans": "阻力带",
+    "comment": "exercise label resistance_band"
+  },
+  "exercise.label.rhomboids": {
+    "en": "Rhomboids",
+    "zh-Hans": "菱形肌",
+    "comment": "exercise label rhomboids"
+  },
+  "exercise.label.roller": {
+    "en": "Roller",
+    "zh-Hans": "滚轮",
+    "comment": "exercise label roller"
+  },
+  "exercise.label.rope": {
+    "en": "Rope",
+    "zh-Hans": "绳索",
+    "comment": "exercise label rope"
+  },
+  "exercise.label.rotator_cuff": {
+    "en": "Rotator cuff",
+    "zh-Hans": "肩袖肌群",
+    "comment": "exercise label rotator_cuff"
+  },
+  "exercise.label.serratus_anterior": {
+    "en": "Serratus anterior",
+    "zh-Hans": "前锯肌",
+    "comment": "exercise label serratus_anterior"
+  },
+  "exercise.label.shins": {
+    "en": "Shins",
+    "zh-Hans": "胫前肌群",
+    "comment": "exercise label shins"
+  },
+  "exercise.label.shoulders": {
+    "en": "Shoulders",
+    "zh-Hans": "肩部",
+    "comment": "exercise label shoulders"
+  },
+  "exercise.label.skierg_machine": {
+    "en": "Skierg machine",
+    "zh-Hans": "滑雪机",
+    "comment": "exercise label skierg_machine"
+  },
+  "exercise.label.sled_machine": {
+    "en": "Sled machine",
+    "zh-Hans": "雪橇机",
+    "comment": "exercise label sled_machine"
+  },
+  "exercise.label.smith_machine": {
+    "en": "Smith machine",
+    "zh-Hans": "史密斯机",
+    "comment": "exercise label smith_machine"
+  },
+  "exercise.label.soleus": {
+    "en": "Soleus",
+    "zh-Hans": "比目鱼肌",
+    "comment": "exercise label soleus"
+  },
+  "exercise.label.spine": {
+    "en": "Spine",
+    "zh-Hans": "脊柱肌群",
+    "comment": "exercise label spine"
+  },
+  "exercise.label.stability_ball": {
+    "en": "Stability ball",
+    "zh-Hans": "健身球",
+    "comment": "exercise label stability_ball"
+  },
+  "exercise.label.stationary_bike": {
+    "en": "Stationary bike",
+    "zh-Hans": "固定自行车",
+    "comment": "exercise label stationary_bike"
+  },
+  "exercise.label.stepmill_machine": {
+    "en": "Stepmill machine",
+    "zh-Hans": "阶梯机",
+    "comment": "exercise label stepmill_machine"
+  },
+  "exercise.label.sternocleidomastoid": {
+    "en": "Sternocleidomastoid",
+    "zh-Hans": "胸锁乳突肌",
+    "comment": "exercise label sternocleidomastoid"
+  },
+  "exercise.label.tire": {
+    "en": "Tire",
+    "zh-Hans": "轮胎",
+    "comment": "exercise label tire"
+  },
+  "exercise.label.trap_bar": {
+    "en": "Trap bar",
+    "zh-Hans": "六角杠铃",
+    "comment": "exercise label trap_bar"
+  },
+  "exercise.label.trapezius": {
+    "en": "Trapezius",
+    "zh-Hans": "斜方肌",
+    "comment": "exercise label trapezius"
+  },
+  "exercise.label.traps": {
+    "en": "Traps",
+    "zh-Hans": "斜方肌",
+    "comment": "exercise label traps"
+  },
+  "exercise.label.triceps": {
+    "en": "Triceps",
+    "zh-Hans": "肱三头肌",
+    "comment": "exercise label triceps"
+  },
+  "exercise.label.upper_arms": {
+    "en": "Upper arms",
+    "zh-Hans": "上臂",
+    "comment": "exercise label upper_arms"
+  },
+  "exercise.label.upper_back": {
+    "en": "Upper back",
+    "zh-Hans": "上背部",
+    "comment": "exercise label upper_back"
+  },
+  "exercise.label.upper_chest": {
+    "en": "Upper chest",
+    "zh-Hans": "上胸部",
+    "comment": "exercise label upper_chest"
+  },
+  "exercise.label.upper_legs": {
+    "en": "Upper legs",
+    "zh-Hans": "大腿",
+    "comment": "exercise label upper_legs"
+  },
+  "exercise.label.waist": {
+    "en": "Waist",
+    "zh-Hans": "腰腹",
+    "comment": "exercise label waist"
+  },
+  "exercise.label.weighted": {
+    "en": "Weighted",
+    "zh-Hans": "负重",
+    "comment": "exercise label weighted"
+  },
+  "exercise.label.wheel_roller": {
+    "en": "Wheel roller",
+    "zh-Hans": "健腹轮",
+    "comment": "exercise label wheel_roller"
+  },
+  "exercise.label.wrist_extensors": {
+    "en": "Wrist extensors",
+    "zh-Hans": "腕伸肌",
+    "comment": "exercise label wrist_extensors"
+  },
+  "exercise.label.wrist_flexors": {
+    "en": "Wrist flexors",
+    "zh-Hans": "腕屈肌",
+    "comment": "exercise label wrist_flexors"
+  },
+  "exercise.label.wrists": {
+    "en": "Wrists",
+    "zh-Hans": "手腕",
+    "comment": "exercise label wrists"
+  },
+  "workout.free": {
+    "en": "Free workout",
+    "zh-Hans": "自由训练",
+    "comment": "workout free"
+  },
+  "routine.cardioTarget": {
+    "en": "Template target: %lld min, %@ km",
+    "zh-Hans": "模板目标：%lld 分钟，%@ km",
+    "comment": "routine cardioTarget"
+  },
+  "workout.nameRequired": {
+    "en": "Enter a workout name.",
+    "zh-Hans": "请输入训练名称。",
+    "comment": "workout nameRequired"
+  },
+  "workout.checkSet": {
+    "en": "Check the values for %@, set %lld.",
+    "zh-Hans": "请检查「%@」第 %lld 组的数值。",
+    "comment": "workout checkSet"
+  },
+  "workout.checkCardio": {
+    "en": "Check the duration, distance and calories for %@.",
+    "zh-Hans": "请检查「%@」的时长、距离和热量。",
+    "comment": "workout checkCardio"
+  },
+  "workout.resultRequired": {
+    "en": "Complete at least one set or enter a valid cardio record.",
+    "zh-Hans": "请至少完成一组，或填写一条有效有氧记录。",
+    "comment": "workout resultRequired"
+  },
+  "exercise.label.abdominals": {
+    "en": "Abdominals",
+    "zh-Hans": "腹肌",
+    "comment": "Exercise anatomy or equipment label. Raw catalog ID stays unchanged."
+  },
+  "exercise.label.ankle_stabilizers": {
+    "en": "Ankle stabilizers",
+    "zh-Hans": "踝部稳定肌",
+    "comment": "Exercise anatomy or equipment label. Raw catalog ID stays unchanged."
+  },
+  "exercise.label.brachialis": {
+    "en": "Brachialis",
+    "zh-Hans": "肱肌",
+    "comment": "Exercise anatomy or equipment label. Raw catalog ID stays unchanged."
+  },
+  "exercise.label.deltoids": {
+    "en": "Deltoids",
+    "zh-Hans": "三角肌",
+    "comment": "Exercise anatomy or equipment label. Raw catalog ID stays unchanged."
+  },
+  "exercise.label.grip_muscles": {
+    "en": "Grip muscles",
+    "zh-Hans": "握力肌群",
+    "comment": "Exercise anatomy or equipment label. Raw catalog ID stays unchanged."
+  },
+  "exercise.label.groin": {
+    "en": "Groin",
+    "zh-Hans": "腹股沟",
+    "comment": "Exercise anatomy or equipment label. Raw catalog ID stays unchanged."
+  },
+  "exercise.label.inner_thighs": {
+    "en": "Inner thighs",
+    "zh-Hans": "大腿内侧",
+    "comment": "Exercise anatomy or equipment label. Raw catalog ID stays unchanged."
+  },
+  "exercise.label.latissimus_dorsi": {
+    "en": "Latissimus dorsi",
+    "zh-Hans": "背阔肌",
+    "comment": "Exercise anatomy or equipment label. Raw catalog ID stays unchanged."
+  },
+  "exercise.label.rear_deltoids": {
+    "en": "Rear deltoids",
+    "zh-Hans": "三角肌后束",
+    "comment": "Exercise anatomy or equipment label. Raw catalog ID stays unchanged."
+  },
+  "exercise.label.upper_body_ergometer": {
+    "en": "Upper body ergometer",
+    "zh-Hans": "上肢功率车",
+    "comment": "Exercise anatomy or equipment label. Raw catalog ID stays unchanged."
+  }
+}

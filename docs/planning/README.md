@@ -2,21 +2,21 @@
 
 ## 项目是什么
 
-Trainote 是一款以本地记录为基础的 iPhone 健身与饮食 App，记录力量/有氧训练、训练模板及每日卡路里、碳水、蛋白质和脂肪。当前界面以简体中文为主；完整中英双语为本次计划目标。动作文字目录来自 `hasaneyldrm/exercises-dataset` 的固定版本，人体图和演示媒体另有各自的来源/许可记录，见 [视觉资源说明](../nutrition-exercise-visuals.md)。
+Trainote 是一款以本地记录为基础的 iPhone 健身与饮食 App，记录力量/有氧训练、训练模板及每日卡路里、碳水、蛋白质和脂肪。默认分支界面以简体中文为主；本分支已实现中英双语，验证与未验项见本地化计划第 11 节。动作文字目录来自 `hasaneyldrm/exercises-dataset` 的固定版本，人体图和演示媒体另有各自的来源/许可记录，见 [视觉资源说明](../nutrition-exercise-visuals.md)。
 
-**2026-10-12（Europe/London）本次核查：** fetch 后 canonical `main` 与 `origin/main` 均为 `c970330a33208b9f7862ae6e960d5f5b98a17a1f`，代码诊断以此为基线。用户确认 Xcode 直装；连线后读取到 iPhone 17 Pro Max、iOS 26.6.2、Trainote 1.1（Build 2），但安装包的源码提交和 Debug/Release 仍待确认。Instruments 将设备列为离线，短时附加采样超时，没有有效性能 trace。详见 [真机性能计划](device-performance-plan.md)。
+**计划阶段历史核查（2026-10-12，Europe/London）：** fetch 后 canonical `main` 与 `origin/main` 均为 `c970330a33208b9f7862ae6e960d5f5b98a17a1f`，代码诊断以此为基线。用户确认 Xcode 直装；连线后读取到 iPhone 17 Pro Max、iOS 26.6.2、Trainote 1.1（Build 2），但安装包的源码提交和 Debug/Release 仍待确认。Instruments 将设备列为离线，短时附加采样超时，没有有效性能 trace。详见 [真机性能计划](device-performance-plan.md)。
 
-本轮只新增三份待审阅计划和同步本索引，**未改应用代码、未重新构建/安装、未合并或发布**。当前 main 已包含开发签名准入与营养/视觉资源改动；完整 AI 接通仍见 [接通计划](ai-report-enablement-plan.md)，本轮未验证真实服务。旧文档内的构建/测试数量是对应日期和提交的历史证据，不代表本次性能或产品验收。
+计划阶段仅新增三份计划。2026-10-12 用户已批准三计划并授权独立实现；本工作树执行双语计划，**尚未合并或发布应用改动**。当前 main 已包含开发签名准入与营养/视觉资源改动；完整 AI 接通仍见 [接通计划](ai-report-enablement-plan.md)，本轮未验证真实服务。旧文档内的构建/测试数量是对应日期和提交的历史证据，不代表本次性能或产品验收。
 
 **历史记录：2026-10-03 13:56:54（Asia/Shanghai）** A–F 功能代码合入 main `06b2560` 并完成当时的仓库工程验收。F 提供五 Tab、趋势/恢复分析、训练建议、历史营养目标及本地报告入口；当时默认无远程 AI transport。规划 PR #3、A 的 #4、B 的 #6、C 的 #8、D 的 #5/#10、E 的 #7、F 的 #9 均已合并；详见 [交付快照](health-analysis-delivery.md)。历史实施对话使用 max；该记录不代表真实服务、真机兼容或发布验收。
 
 ## 文档信息
 
-- 更新时间：2026-10-12（Europe/London）
-- 请求：真机流畅性、中英双语、首次使用与说明文字收纳，分别形成详细计划。
-- 工作模式：只读诊断与计划编写，等待用户审阅后再进入独立的性能、多语言、交互改动；本轮不实施产品变更。
+- 更新时间：2026-10-13（Europe/London）
+- 请求：三份计划已获批准并分支实施；本工作树负责中英双语实现与验证。
+- 工作模式：已获授权并行实现；本分支仅负责多语言实现与验证，其他两条线保持独立。
 - canonical 项目根目录：`/Users/jerryszz/Desktop/Projects/trainote`
-- 本次关键证据：Git refs/工作树、App 启动与导航、动作库/搜索、编辑保存、分析仓库/刷新、图片视频/3D 生命周期、设置/说明/报告文案、现有测试源文件、动作双语字段完整性，以及 devicectl 的设备/安装包/进程读取。参考 Apple 官方性能与本地化资料；未运行应用测试或构建，未修改真机数据。
+- 计划阶段证据：Git refs/工作树、App 启动与导航、动作库/搜索、编辑保存、分析仓库/刷新、图片视频/3D 生命周期、设置/说明/报告文案、现有测试源文件、动作双语字段完整性，以及 devicectl 的设备/安装包/进程读取。计划阶段未运行应用测试或构建；本分支的 Simulator 构建与测试结果见 [双语实施记录](localization-plan.md#11-本分支实施与验证2026-10-13)。未修改真机数据。
 - 历史工作树位置（不代表当前仍保留）：F 为 `/Users/jerryszz/.codex/worktrees/392a/trainote`；2026-10-03 文档收尾为 `/Users/jerryszz/.codex/worktrees/health-docs-closeout/trainote`。
 - 固定交付证据：F 最终 head `f24b903236bb067ac02d3192c64db50df69815c4` 的 [完整 CI 37098998968](https://github.com/Jerryszz02/trainote/actions/runs/37098998968) 于 13:46:36（Asia/Shanghai）通过 299/299（268 单元、31 UI，0 失败/跳过/预期失败）。PR #9 于 13:56:54 squash 为正式 main `06b25608da2dfed720698f91106f90c429070aea`；两者 tree 均为 `6c1a7ef258d9512b80f2613585cd9bee25e32e7c`。初始 `967fa5351838240b2bb6ca0c5cb8e777530e54c4`、依赖同步、历史失败及修复固定点见交付快照和交接。
 - F 历史实施检查证据：Git 状态与工作树、根 README、`project.yml`、已提交 Xcode 工程、AppShell/TrainoteApp、训练与营养模型、动作目录服务、备份服务、资料库/首页/设置页面、现有测试及 CI 配置；2026-10-03 状态收尾另核对 PR 合并 API、Git tree 和原始 CI 产物。原始论文与研究仓库见证据矩阵。
@@ -52,7 +52,7 @@ F 实施记录（2026-10-03）：B/C/E 已实际连接，训练建议会复核�
 | 文档 | 用途 |
 | --- | --- |
 | [device-performance-plan.md](device-performance-plan.md) | 新增、计划中：实际设备/安装包核查、性能诊断假设、真机测量与改进顺序 |
-| [localization-plan.md](localization-plan.md) | 新增、计划中：完整中英双语、语言设置、报告/动作呈现与兼容验收 |
+| [localization-plan.md](localization-plan.md) | 已实现、本地自动验证通过：完整中英双语、语言设置、报告/动作呈现与兼容验收 |
 | [first-use-interaction-plan.md](first-use-interaction-plan.md) | 新增、计划中：三条主流程、导航取舍、界面层级与通用说明集中收纳 |
 | [ai-report-enablement-plan.md](ai-report-enablement-plan.md) | 真实接通计划及已授权开发签名准入的实施/验证记录，其余部署与接入仍待执行 |
 | [health-analysis-plan.md](health-analysis-plan.md) | 新增：已批准的产品流程、算法候选、数据/API 契约、隐私、迁移和验收 |
@@ -92,10 +92,10 @@ F 实施记录（2026-10-03）：B/C/E 已实际连接，训练建议会复核�
 
 ## 当前约束与待确认
 
-- 本次授权仅为诊断和三份详细计划，后续应用改动待审阅；不自动合并或发布。以往某个 PR 的合并授权不能用于本次改动。
+- 本次已授权三份计划的独立实现与验证；应用 PR 不自动合并或发布。以往某个 PR 的合并授权不能用于本次改动。
 - 当前待确认：实际安装包源码/构建配置、Instruments 采样连通性、同设备同数据的性能证据；三流程实际走查与新用户验证；英文/大字号完整验收；四 Tab 是否值得采用，以及是否另行需要 kg/lb 单位切换。
 - AI 服务的主机、预算和真机认证属于接通计划的独立待验事项，本轮不扩大到服务部署或健康数据外发。人体图/3D/媒体许可和真机表现分别核查，仓库存在资源不等于本次验证了渲染和内存。
 - 当前代码配置 Swift 5.9 language mode、最低 iOS 17；F 在 Xcode 26.6 / Swift 6.3.3 / iOS 26.5 及匹配 CI 的 iOS 26.4.1 独立 Simulator 验证，详细结果见交接。
 - A–F 的 `06b2560` 合并与 `f24b903` CI、2026-10-10 的开发签名准入合成测试/无签名构建均为历史记录。当前代码诊断基线为 `c970330…`；安装包即使版本号相同，也不能推定对应这一提交。后续改动须验证各自当前 head。
 - 临时 Bundle ID 为 `com.jerryszz.trainote`，正式分发前需要与 Apple Developer 账号中的标识一致。
-- 当前工程面向 iPhone、最低 iOS 17；现有界面中文优先、单位为公斤和公里。完整中英双语和上述体验改进仍为计划中。
+- 当前工程面向 iPhone、最低 iOS 17；现有界面中文优先、单位为公斤和公里。完整中英双语已在独立分支实现并通过本地自动验证；其他体验改进以各自独立计划/PR 为准。

@@ -3,7 +3,7 @@ import Foundation
 enum RoutineFactory {
   static func workout(from routine: Routine?, startedAt: Date = .now) -> Workout {
     guard let routine else {
-      return Workout(title: "自由训练", startedAt: startedAt)
+      return Workout(title: L10n.text("workout.free"), startedAt: startedAt)
     }
 
     let workout = Workout(
@@ -38,7 +38,7 @@ enum RoutineFactory {
       case .cardio:
         // Planned cardio is a target, not a result of the new session.
         exercise.notes =
-          "模板目标：\(item.defaultDurationSeconds / 60) 分钟，\(item.defaultDistanceKilometers.formatted()) km"
+          L10n.text("routine.cardioTarget", item.defaultDurationSeconds / 60, item.defaultDistanceKilometers.formatted(.number.locale(L10n.locale)))
         let cardio = CardioEntry()
         cardio.exercise = exercise
         exercise.cardioEntries.append(cardio)
@@ -58,7 +58,7 @@ enum RoutineFactory {
     let exercise = WorkoutExercise(
       sourceExerciseID: item.id,
       nameEnSnapshot: item.nameEn,
-      nameZhSnapshot: item.displayName,
+      nameZhSnapshot: item.nameZh,
       orderIndex: orderIndex,
       trackingMode: mode
     )
@@ -81,7 +81,7 @@ enum RoutineFactory {
     RoutineExercise(
       sourceExerciseID: item.id,
       nameEnSnapshot: item.nameEn,
-      nameZhSnapshot: item.displayName,
+      nameZhSnapshot: item.nameZh,
       orderIndex: orderIndex,
       trackingMode: item.defaultTrackingMode
     )

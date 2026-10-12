@@ -6,8 +6,8 @@ enum WorkoutStatus: String, Codable, CaseIterable {
 
   var title: String {
     switch self {
-    case .inProgress: "进行中"
-    case .completed: "已完成"
+    case .inProgress: L10n.text("domain.in.progress")
+    case .completed: L10n.text("domain.completed")
     }
   }
 }
@@ -22,10 +22,10 @@ enum TrackingMode: String, Codable, CaseIterable, Identifiable {
 
   var title: String {
     switch self {
-    case .strength: "重量 × 次数"
-    case .cardio: "有氧（时长 / 距离）"
-    case .repetitions: "次数"
-    case .duration: "时长"
+    case .strength: L10n.text("domain.weight.reps")
+    case .cardio: L10n.text("domain.cardio.duration.distance")
+    case .repetitions: L10n.text("domain.reps")
+    case .duration: L10n.text("domain.duration")
     }
   }
 
@@ -51,10 +51,10 @@ enum MealType: String, Codable, CaseIterable, Identifiable {
 
   var title: String {
     switch self {
-    case .breakfast: "早餐"
-    case .lunch: "午餐"
-    case .dinner: "晚餐"
-    case .snack: "加餐"
+    case .breakfast: L10n.text("domain.breakfast")
+    case .lunch: L10n.text("domain.lunch")
+    case .dinner: L10n.text("domain.dinner")
+    case .snack: L10n.text("domain.snack")
     }
   }
 
@@ -78,10 +78,10 @@ enum NutrientKind: String, CaseIterable, Identifiable {
 
   var title: String {
     switch self {
-    case .calories: "卡路里"
-    case .carbohydrates: "碳水"
-    case .protein: "蛋白质"
-    case .fat: "脂肪"
+    case .calories: L10n.text("domain.calories")
+    case .carbohydrates: L10n.text("domain.carbs")
+    case .protein: L10n.text("domain.protein")
+    case .fat: L10n.text("domain.fat")
     }
   }
 

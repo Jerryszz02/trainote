@@ -21,7 +21,8 @@ final class TrainingAdviceController {
 
   private(set) var routines: [Routine] = []
   private(set) var evaluation: TrainingRecommendationEvaluation?
-  private(set) var errorMessage: String?
+  private var errorMessageKey: String?
+  var errorMessage: String? { errorMessageKey.map { L10n.text($0) } }
   private(set) var activeWorkout: Workout?
   private var displayedPlans: [UUID: RecommendationPlan] = [:]
   @ObservationIgnored var onSelectionChange: (() -> Void)?
@@ -62,12 +63,12 @@ final class TrainingAdviceController {
       let ids = Set(routines.map(\.id))
       if selectedRoutineID.map({ !ids.contains($0) }) == true { selectedRoutineID = nil }
       alternativeRoutineIDs.formIntersection(ids)
-      errorMessage = nil
+      errorMessageKey = nil
     } catch {
       routines = []
       evaluation = nil
       activeWorkout = nil
-      errorMessage = "暂时无法读取训练模板，请重试。"
+      errorMessageKey = "domain.advice.loadError"
     }
   }
 
@@ -77,11 +78,11 @@ final class TrainingAdviceController {
       activeWorkout = try currentInProgressWorkout()
       evaluation = try evaluate(routines: routines, at: now())
       displayedPlans = selectedPlans(in: routines)
-      errorMessage = nil
+      errorMessageKey = nil
     } catch {
       evaluation = nil
       displayedPlans = [:]
-      errorMessage = "暂时无法计算建议，请检查本地记录后重试。"
+      errorMessageKey = "domain.advice.calculationError"
     }
   }
 
