@@ -455,15 +455,21 @@ private struct FoodEntryEditor: View {
           .accessibilityIdentifier("nutrition.entry.loggedAt")
         }
 
-        Section(draft.inputMode.nutrientSectionTitle) {
-          perUnitField("卡路里", nutrient: .calories, unit: "kcal")
+        Section {
+          LabeledContent("热量", value: "\(NutritionFormatting.number(draft.perUnit.calories)) kcal")
+            .accessibilityIdentifier("nutrition.entry.perUnit.calories")
           perUnitField("碳水", nutrient: .carbohydrates, unit: "g")
           perUnitField("蛋白质", nutrient: .protein, unit: "g")
           perUnitField("脂肪", nutrient: .fat, unit: "g")
+        } header: {
+          Text(draft.inputMode.nutrientSectionTitle)
+        } footer: {
+          Text(NutritionMath.calorieCalculationNote)
         }
 
         Section {
-          totalField("卡路里", nutrient: .calories, unit: "kcal")
+          LabeledContent("热量", value: "\(NutritionFormatting.number(draft.totals.calories)) kcal")
+            .accessibilityIdentifier("nutrition.entry.total.calories")
           totalField("碳水", nutrient: .carbohydrates, unit: "g")
           totalField("蛋白质", nutrient: .protein, unit: "g")
           totalField("脂肪", nutrient: .fat, unit: "g")
@@ -471,7 +477,7 @@ private struct FoodEntryEditor: View {
             .font(.footnote)
             .foregroundStyle(.secondary)
         } header: {
-          Text("本条记录营养总量（可手动修正）")
+          Text("本条记录营养总量（营养素可修正）")
         } footer: {
           Text("修改份量会按当前单位营养自动缩放；手动修改总量后，再改份量会按修正后的密度计算。")
         }

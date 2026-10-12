@@ -27,13 +27,13 @@
       calculationVersion: "body-map-synthetic-zero")
   }
 
-  #Preview("3D · 合成数据") {
+  #Preview("肌肉图 · 合成数据") {
     ScrollView {
       BodyMapView(presentation: BodyMapPreviewFixtures.mixed, onSelect: { _ in }).padding()
     }
   }
 
-  #Preview("3D · 待建立记录") {
+  #Preview("肌肉图 · 待建立记录") {
     ScrollView {
       BodyMapView(presentation: BodyMapPreviewFixtures.unknown, onSelect: { _ in }).padding()
     }

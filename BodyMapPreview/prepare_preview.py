@@ -29,7 +29,7 @@ spec = {
                         source("Trainote/Features/Recovery/BodyMap"),
                         source("Trainote/Services/Analysis/Contracts/BodyMapPresentation.swift"),
                         source("Trainote/Services/Analysis/Contracts/BodyMapFixtures.swift"),
-                        {"path": source("Trainote/Resources/BodyMap/body-map-v1.json"), "buildPhase": "resources"}],
+                        {"path": source("Trainote/Resources/BodyMap"), "buildPhase": "resources"}],
             "settings": {"base": {"PRODUCT_BUNDLE_IDENTIFIER": "com.jerryszz.trainote.bodymap-preview",
                                   "INFOPLIST_KEY_UILaunchScreen_Generation": "YES",
                                   "INFOPLIST_KEY_CFBundleDisplayName": "BodyMap Preview"}},

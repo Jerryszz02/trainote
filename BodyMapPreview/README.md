@@ -1,9 +1,27 @@
-# 3D 人体组件的独立验收
+# 人体肌群组件的独立验收
 
 此目录只包含合成数据预览、组件 UI 测试和本地性能采样。不会注册到生产 App，
 不读取 SwiftData / HealthKit，不访问网络，不修改恢复计算、RecoveryView 或导航。
-实际截图及验证结果见 [Evidence/verification.md](Evidence/verification.md)。
+旧版 3D 截图及验证结果见 [Evidence/verification.md](Evidence/verification.md)，不代表新版默认肌肉图的验收结果。
 拆卸崩溃的复现和修复回归见 [Evidence/teardown-verification.md](Evidence/teardown-verification.md)。
+
+## 新版默认肌肉图
+
+默认显示精细灰色解剖人体的正面与背面，原生 Core Graphics 路径按提供的肌群状态着色、命中并回调。
+未知保留中性灰色，不视为零分；疼痛/活动受限显示琥珀色虚线，选中区域显示清晰边框和下方状态文字。
+“3D 旋转”分段保留原有 SceneKit 视图，列表与辅助功能降级共用同一 DTO。
+
+图片与 18 个肌群 mask 来自 MIT 项目 [js-rich-body-highlighter](https://github.com/crmapache/js-rich-body-highlighter)，
+固定 revision `107dafe86f91298d66a41ff1c7b7251b073983d8`，映射到本项目 11 肌群。
+详见 [新版来源与处理记录](../Trainote/Resources/BodyMap/ANATOMY-PROVENANCE.md)
+和 [上游 MIT 全文](../Trainote/Resources/BodyMap/ANATOMY-LICENSE.txt)。PNG 与转换后的 JSON 离线入包，没有运行时网页或网络依赖。
+
+新版截图由 `testDefaultAnatomyMixedAndUnknownFixtureScreenshots` 和
+`testDefaultAnatomyDarkFixtureScreenshotAndSelection` 产生，attachment 名为
+`anatomy-synthetic-mixed-front-back`、`anatomy-synthetic-unknown-selected`、
+`anatomy-synthetic-dark-front-back`；全部来自合成 fixture，并验证选择及未知文字。
+2026-10-12 上述两项用例已在 iPhone 17 / iOS 26.5 模拟器通过；结果包为
+`/tmp/trainote-anatomy-visuals.xcresult`，截图与本轮结果见[视觉更新验收](../docs/nutrition-exercise-visuals.md)。
 
 ## 正式接入点
 
@@ -21,7 +39,7 @@ BodyMapView(presentation: presentation) { muscleID in
 遗漏肌群或无效数值保持未知；`.unknown` 不采用附带数值。疼痛和活动受限保留为独立警示，
 不因同时存在高分而显示普通绿色。多个选中标记时以首项为准。
 
-## 交互及降级
+## 原有 3D 交互及共用降级
 
 - 74 个原创闭合体积网格，26,596 顶点 / 52,896 三角形；11 个规范肌群均可选择，同组左右共享值。
 - 水平拖动绕身体纵轴旋转 360°，前/背按钮立即定位，不自动转动。垂直手势交还页面滚动。
@@ -48,7 +66,7 @@ xcodebuild -project build/body-map/preview/BodyMapPreview.xcodeproj \
 ```
 
 `prepare_preview.py` 只在忽略的 `build/body-map/preview/` 生成 spec 和工程，
-使用本组件、A 的两个契约文件和固定 JSON。不会修改共享 `project.yml` / `.pbxproj`。
+使用本组件、A 的两个契约文件及 BodyMap 目录内的离线 JSON/PNG 资源。不会修改共享 `project.yml` / `.pbxproj`。
 `TrainoteTests/BodyMapTests.swift` 可同时加入主 App 单测目标；独立预览目标通过编译条件切换测试模块。
 `BodyMapPreview/Tests` 仅属于独立预览 UI 测试，不能误加入生产 App 或原有 UI 测试目标。
 
@@ -58,11 +76,12 @@ xcodebuild -project build/body-map/preview/BodyMapPreview.xcodeproj \
 `-fixture-navigation` 增加独立的导航入口，用于反复进入恢复预览、返回和重建 3D 视图的验收。
 这些参数仅在预览入口读取，未加入生产 App 的 launch 参数。
 
-## 资产许可与重现
+## 原有 3D 资产许可与重现
 
 见 [PROVENANCE.md](../Trainote/Resources/BodyMap/PROVENANCE.md)、[MIT 许可](../Trainote/Resources/BodyMap/LICENSE.txt)
 及 [mesh-muscle-map.json](../Trainote/Resources/BodyMap/mesh-muscle-map.json)。
-`python3 BodyMapPreview/generate_asset.py` 从原创几何控制点重现资产；没有下载、采购或复用第三方人体素材。
+`python3 BodyMapPreview/generate_asset.py` 从原创几何控制点重现原有 3D 资产；这套 3D 网格没有下载、采购或复用第三方人体素材。
+新版默认 2D 肌肉图使用上述第三方 MIT 资产，`python3 BodyMapPreview/import_anatomy.py` 可重现导入。
 它是用于粗粒度训练肌群的风格化三维插图，不是解剖扫描或模型分数的科学验证。
 
 原生实现使用 Apple [SceneKit](https://developer.apple.com/documentation/scenekit)，

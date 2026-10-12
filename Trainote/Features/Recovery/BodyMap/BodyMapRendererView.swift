@@ -11,6 +11,7 @@ struct BodyMapRendererView: View {
   @Environment(\.scenePhase) private var scenePhase
   @Environment(\.colorScheme) private var colorScheme
   @State private var showsList = false
+  @State private var shows3D = false
   @State private var rendererAvailable = true
   @State private var viewpoint: BodyMapViewpoint = .front
   @State private var viewpointRevision = 0
@@ -35,7 +36,7 @@ struct BodyMapRendererView: View {
             showsList.toggle()
           } label: {
             Label(
-              showsList ? "3D 人体" : "肌群列表", systemImage: showsList ? "figure.stand" : "list.bullet"
+              showsList ? "人体图" : "肌群列表", systemImage: showsList ? "figure.stand" : "list.bullet"
             )
             .frame(minHeight: 44)
           }
@@ -57,38 +58,56 @@ struct BodyMapRendererView: View {
         }
         muscleList
       } else {
-        HStack(spacing: 12) {
-          Button {
-            setViewpoint(.front)
-          } label: {
-            Text("前面").frame(minHeight: 32)
-          }
-          .accessibilityIdentifier("bodyMap.front")
-          Button {
-            setViewpoint(.back)
-          } label: {
-            Text("背面").frame(minHeight: 32)
-          }
-          .accessibilityIdentifier("bodyMap.back")
-          Spacer()
-          Label("左右拖动旋转", systemImage: "rotate.3d")
-            .font(.caption).foregroundStyle(Color(uiColor: .label).opacity(0.75))
+        Picker("人体显示方式", selection: $shows3D) {
+          Text("肌肉图").tag(false)
+          Text("3D 旋转").tag(true)
         }
-        .buttonStyle(.bordered)
-        BodyMapSceneView(
-          input: input, viewpoint: viewpoint, viewpointRevision: viewpointRevision,
-          policy: policy, active: scenePhase == .active,
-          onSelect: onSelect, onUnavailable: { rendererAvailable = false }
-        )
-        .frame(height: 430)
-        .background(
-          Color(uiColor: .tertiarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 18)
-        )
-        .clipShape(RoundedRectangle(cornerRadius: 18))
+        .pickerStyle(.segmented)
+        .accessibilityIdentifier("bodyMap.displayMode")
+        if shows3D {
+          HStack(spacing: 12) {
+            Button {
+              setViewpoint(.front)
+            } label: {
+              Text("前面").frame(minHeight: 32)
+            }
+            .accessibilityIdentifier("bodyMap.front")
+            Button {
+              setViewpoint(.back)
+            } label: {
+              Text("背面").frame(minHeight: 32)
+            }
+            .accessibilityIdentifier("bodyMap.back")
+            Spacer()
+            Label("左右拖动旋转", systemImage: "rotate.3d")
+              .font(.caption).foregroundStyle(Color(uiColor: .label).opacity(0.75))
+          }
+          .buttonStyle(.bordered)
+          BodyMapSceneView(
+            input: input, viewpoint: viewpoint, viewpointRevision: viewpointRevision,
+            policy: policy, active: scenePhase == .active,
+            onSelect: onSelect, onUnavailable: { rendererAvailable = false }
+          )
+          .frame(height: 430)
+          .background(
+            Color(uiColor: .tertiarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 18)
+          )
+          .clipShape(RoundedRectangle(cornerRadius: 18))
+        } else {
+          BodyMapAnatomyView(input: input, onSelect: onSelect,
+            onUnavailable: { rendererAvailable = false })
+            .frame(height: 330)
+            .clipShape(RoundedRectangle(cornerRadius: 18))
+          HStack {
+            Text("正面").frame(maxWidth: .infinity)
+            Text("背面").frame(maxWidth: .infinity)
+          }
+          .font(.caption).foregroundStyle(.secondary)
+        }
         if let selected = input.selected {
           let region = input[selected]
           HStack {
-            Image(systemName: "checkmark.circle.fill").foregroundStyle(Color(region.color))
+            Image(systemName: region.isLimited ? "exclamationmark.triangle.fill" : "checkmark.circle.fill").foregroundStyle(Color(region.color))
             Text("\(selected.bodyMapTitle) · \(region.scoreText) · \(region.status)")
               .font(.subheadline)
           }
@@ -179,6 +198,9 @@ struct BodyMapRendererView: View {
         Label("未知", systemImage: "questionmark.circle").foregroundStyle(
           Color(uiColor: .label).opacity(0.75))
       }
+      Label(shows3D ? "疼痛或活动受限 · 琥珀色提示" : "疼痛或活动受限 · 琥珀色虚线提示",
+        systemImage: "exclamationmark.triangle")
+        .foregroundStyle(Color(uiColor: .label).opacity(0.8))
       Text("分数按 5 分显示 · 点按肌群查看详情")
         .foregroundStyle(Color(uiColor: .label).opacity(0.75))
     }

@@ -2,10 +2,57 @@ import XCTest
 
 final class BodyMapUITests: XCTestCase {
   @MainActor
+  func testDefaultAnatomyMixedAndUnknownFixtureScreenshots() {
+    let app = XCUIApplication()
+    app.launchArguments = ["-AppleLanguages", "(zh-Hans)", "-AppleLocale", "zh_CN"]
+    app.launch()
+    XCTAssertTrue(app.otherElements["bodyMap.anatomy"].waitForExistence(timeout: 10))
+    XCTAssertFalse(app.otherElements["bodyMap.scene"].exists)
+    let chest = app.buttons["bodyMap.label.chest"]
+    chest.coordinate(withNormalizedOffset: .init(dx: 0.25, dy: 0.5)).tap()
+    let selection = app.staticTexts["bodyMap.selection"]
+    XCTAssertTrue(selection.label.contains("胸"))
+    XCTAssertTrue(selection.label.contains("85 分"))
+    let glutes = app.buttons["bodyMap.label.glutes"]
+    glutes.coordinate(withNormalizedOffset: .init(dx: 0.25, dy: 0.5)).tap()
+    XCTAssertTrue(selection.label.contains("臀"))
+    XCTAssertTrue(selection.label.contains("25 分"))
+    attach("anatomy-synthetic-mixed-front-back", app: app)
+
+    let unknown = app.segmentedControls.buttons["全部未知"]
+    for _ in 0..<4 where !unknown.isHittable { app.swipeUp() }
+    XCTAssertTrue(unknown.isHittable)
+    unknown.tap()
+    for _ in 0..<4 where !chest.isHittable { app.swipeDown() }
+    chest.coordinate(withNormalizedOffset: .init(dx: 0.25, dy: 0.5)).tap()
+    XCTAssertTrue(app.staticTexts["待建立记录"].firstMatch.exists)
+    XCTAssertTrue(selection.label.contains("胸"))
+    XCTAssertTrue(selection.label.contains("未知"))
+    XCTAssertTrue(selection.label.contains("待建立记录"))
+    XCTAssertFalse(selection.label.contains("0 分"))
+    attach("anatomy-synthetic-unknown-selected", app: app)
+  }
+
+  @MainActor
+  func testDefaultAnatomyDarkFixtureScreenshotAndSelection() {
+    let app = XCUIApplication()
+    app.launchArguments = ["-fixture-dark", "-AppleLanguages", "(zh-Hans)", "-AppleLocale", "zh_CN"]
+    app.launch()
+    XCTAssertTrue(app.otherElements["bodyMap.anatomy"].waitForExistence(timeout: 10))
+    XCTAssertFalse(app.otherElements["bodyMap.scene"].exists)
+    let chest = app.buttons["bodyMap.label.chest"]
+    chest.coordinate(withNormalizedOffset: .init(dx: 0.25, dy: 0.5)).tap()
+    XCTAssertTrue(app.staticTexts["bodyMap.selection"].label.contains("85 分"))
+    XCTAssertTrue(chest.isSelected)
+    attach("anatomy-synthetic-dark-front-back", app: app)
+  }
+
+  @MainActor
   func testRepeatedSceneListSwitchingPreservesSelectionAndInteraction() {
     let app = XCUIApplication()
     app.launchArguments = ["-AppleLanguages", "(zh-Hans)", "-AppleLocale", "zh_CN"]
     app.launch()
+    app.segmentedControls.buttons["3D 旋转"].tap()
     let scene = app.otherElements["bodyMap.scene"]
     XCTAssertTrue(scene.waitForExistence(timeout: 10))
 
@@ -43,6 +90,7 @@ final class BodyMapUITests: XCTestCase {
     for cycle in 0..<6 {
       XCTAssertTrue(openRecovery.waitForExistence(timeout: 10))
       openRecovery.tap()
+      app.segmentedControls.buttons["3D 旋转"].tap()
       XCTAssertTrue(scene.waitForExistence(timeout: 5))
       scene.coordinate(withNormalizedOffset: CGVector(dx: 0.565, dy: 0.292)).tap()
       XCTAssertTrue(app.staticTexts["bodyMap.selection"].label.contains("胸"))
@@ -71,6 +119,7 @@ final class BodyMapUITests: XCTestCase {
     let app = XCUIApplication()
     app.launchArguments = ["-AppleLanguages", "(zh-Hans)", "-AppleLocale", "zh_CN"]
     app.launch()
+    app.segmentedControls.buttons["3D 旋转"].tap()
     let scene = app.otherElements["bodyMap.scene"]
     XCTAssertTrue(scene.waitForExistence(timeout: 10))
     attach("front", app: app)
@@ -117,6 +166,7 @@ final class BodyMapUITests: XCTestCase {
   func testAccessibilityAuditForScene() throws {
     let app = XCUIApplication()
     app.launch()
+    app.segmentedControls.buttons["3D 旋转"].tap()
     XCTAssertTrue(app.otherElements["bodyMap.scene"].waitForExistence(timeout: 10))
     try app.performAccessibilityAudit(for: [
       .contrast, .hitRegion, .sufficientElementDescription, .trait,
@@ -128,6 +178,7 @@ final class BodyMapUITests: XCTestCase {
     let app = XCUIApplication()
     app.launchArguments = ["-fixture-dark"]
     app.launch()
+    app.segmentedControls.buttons["3D 旋转"].tap()
     XCTAssertTrue(app.otherElements["bodyMap.scene"].waitForExistence(timeout: 10))
     attach("dark", app: app)
     try app.performAccessibilityAudit(for: [

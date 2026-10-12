@@ -25,6 +25,41 @@ final class TrainoteUITests: XCTestCase {
     XCTAssertTrue(app.navigationBars["进行中"].waitForExistence(timeout: 5))
   }
 
+  func testExerciseSampleCanPauseAndPlayAndOtherExercisesKeepInstructions() {
+    app.buttons["today.library"].tap()
+    replaceText(in: app.searchFields.firstMatch, with: "push-up")
+    app.searchFields.firstMatch.typeText("\n")
+    let sample = app.buttons["exerciseLibrary.item.0662"]
+    // Variations precede the ordinary push-up in the bundled catalog; List is lazy.
+    for _ in 0..<12 where !sample.exists || !sample.isHittable { app.swipeUp() }
+    XCTAssertTrue(sample.waitForExistence(timeout: 5))
+    sample.tap()
+    let toggle = app.buttons["exerciseAnimation.toggle"]
+    XCTAssertTrue(toggle.waitForExistence(timeout: 5))
+    let ready = NSPredicate(format: "enabled == true")
+    expectation(for: ready, evaluatedWith: toggle)
+    waitForExpectations(timeout: 10)
+    if toggle.value as? String == "播放中" { toggle.tap() }
+    XCTAssertEqual(toggle.value as? String, "已暂停")
+    toggle.tap()
+    XCTAssertEqual(toggle.value as? String, "播放中")
+    toggle.tap()
+    XCTAssertEqual(toggle.value as? String, "已暂停")
+    let screenshot = XCTAttachment(screenshot: app.screenshot())
+    screenshot.name = "俯卧撑离线动态演示"
+    screenshot.lifetime = .keepAlways
+    add(screenshot)
+    app.navigationBars.buttons.element(boundBy: 0).tap()
+    replaceText(in: app.searchFields.firstMatch, with: "3/4 sit-up")
+    app.searchFields.firstMatch.typeText("\n")
+    app.buttons["exerciseLibrary.item.0001"].tap()
+    XCTAssertTrue(app.staticTexts["exerciseAnimation.notCollected"].waitForExistence(timeout: 3))
+    XCTAssertFalse(app.buttons["exerciseAnimation.toggle"].exists)
+    XCTAssertTrue(app.staticTexts["分类"].exists)
+    app.swipeUp()
+    XCTAssertTrue(app.staticTexts["中文说明"].exists)
+  }
+
   func testCanCompleteStrengthWorkout() {
     startBlankWorkout()
     app.buttons["workout.addExercise"].tap()

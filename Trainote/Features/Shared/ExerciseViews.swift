@@ -135,6 +135,10 @@ struct ExerciseDetailView: View {
   var body: some View {
     List {
       Section {
+        ExerciseAnimationView(exerciseID: item.id)
+      }
+
+      Section {
         VStack(alignment: .leading, spacing: 6) {
           Text(item.displayName).font(.title2.bold())
           Text(item.nameEn).foregroundStyle(.secondary)

@@ -51,6 +51,63 @@ final class BodyMapTests: XCTestCase {
     XCTAssertFalse(BodyMapRenderInput(regions: [zero]).isEmpty)
   }
 
+  func testAnatomyMasksCoverElevenMusclesWithFiniteInBoundsNativePaths() throws {
+    let asset = try BodyMapAnatomyAsset.load()
+    XCTAssertEqual(asset.masks.count, 18)
+    XCTAssertEqual(Set(asset.masks.map(\.muscle)), Set(MuscleID.allCases))
+    XCTAssertEqual(asset.width / asset.height, 1365.0 / 2048.0, accuracy: 0.00001)
+    for side in ["front", "back"] {
+      let url = try XCTUnwrap(BodyMapAnatomyAsset.resource("anatomy-\(side)", extension: "png"))
+      XCTAssertNotNil(UIImage(contentsOfFile: url.path))
+      for path in asset.paths(side: side).values {
+        XCTAssertFalse(path.isEmpty)
+        XCTAssertTrue(CGRect(x: 0, y: 0, width: asset.width, height: asset.height)
+          .contains(path.boundingBoxOfPath))
+      }
+    }
+    XCTAssertNotNil(asset.paths(side: "front")[.chest])
+    XCTAssertNotNil(asset.paths(side: "back")[.hamstrings])
+    XCTAssertNil(asset.paths(side: "front")[.glutes])
+  }
+
+  func testNativeAnatomySelectionCallsParentAndKeepsUnknownAndPainSemantics() throws {
+    let view = BodyMapAnatomyContainer(frame: CGRect(x: 0, y: 0, width: 370, height: 330))
+    XCTAssertNotNil(view.asset)
+    var selected: MuscleID?
+    let input = BodyMapRenderInput(regions: [
+      .init(muscle: .shoulders, score: nil, status: "疼痛反馈", isLimited: true)
+    ], selected: .chest)
+    view.configure(input: input, onSelect: { selected = $0 })
+    view.layoutIfNeeded()
+    let chest = try XCTUnwrap(view.subviews.compactMap { $0 as? UIButton }
+      .first { $0.accessibilityIdentifier == "bodyMap.label.chest" })
+    XCTAssertTrue(chest.accessibilityLabel?.contains("未知") ?? false)
+    XCTAssertTrue(chest.accessibilityTraits.contains(.selected))
+    XCTAssertTrue(chest.point(inside: CGPoint(x: chest.bounds.width * 0.25,
+      y: chest.bounds.height * 0.5), with: nil))
+    XCTAssertFalse(chest.point(inside: CGPoint(x: -20, y: -20), with: nil))
+    chest.sendActions(for: .touchUpInside)
+    XCTAssertEqual(selected, .chest)
+    let shoulder = try XCTUnwrap(view.subviews.compactMap { $0 as? UIButton }
+      .first { $0.accessibilityIdentifier == "bodyMap.label.shoulders" })
+    XCTAssertTrue(shoulder.accessibilityLabel?.contains("疼痛反馈") ?? false)
+    BodyMapAnatomyView.dismantleUIView(view, coordinator: ())
+    selected = nil
+    chest.sendActions(for: .touchUpInside)
+    XCTAssertNil(selected)
+  }
+
+  func testAnatomyRejectsMalformedCommandsBeforeDrawing() throws {
+    let asset = try BodyMapAnatomyAsset.load()
+    let mask = asset.masks[0]
+    let malformed = BodyMapAnatomyAsset.Mask(id: mask.id, muscle: mask.muscle,
+      side: mask.side, commands: [[1, .nan, 1]])
+    XCTAssertThrowsError(try BodyMapAnatomyAsset(version: 1, width: asset.width,
+      height: asset.height, masks: [malformed] + asset.masks.dropFirst()).validate())
+    XCTAssertThrowsError(try BodyMapAnatomyAsset(version: 1, width: 0,
+      height: asset.height, masks: asset.masks).validate())
+  }
+
   func testAssetHasAllElevenGroupsAndClosedFiniteVolumes() throws {
     let asset = try BodyMapAsset.load()
     XCTAssertEqual(asset.meshes.count, 74)
