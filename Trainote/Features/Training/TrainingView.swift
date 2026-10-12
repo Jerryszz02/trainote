@@ -53,9 +53,13 @@ struct TrainingView: View {
           ContentUnavailableView(
             "还没有完成的训练",
             systemImage: "figure.strengthtraining.traditional",
-            description: Text("点击右上角加号开始第一场训练。")
+            description: Text("开始记录你的第一场训练。")
           )
           .frame(maxWidth: .infinity)
+          if activeWorkout == nil {
+            Button("开始训练") { presentedSheet = .start }
+              .accessibilityIdentifier("training.emptyStart")
+          }
         } else {
           ForEach(completedWorkouts) { workout in
             NavigationLink {
@@ -151,16 +155,13 @@ private struct StartWorkoutSheet: View {
           Button {
             start(from: nil)
           } label: {
-            Label("空白训练", systemImage: "square.and.pencil")
+            Label("直接开始", systemImage: "square.and.pencil")
           }
           .accessibilityIdentifier("training.startBlank")
         }
 
-        Section("我的训练模板") {
-          if routines.isEmpty {
-            Text("还没有训练模板，可在资料库中创建。")
-              .foregroundStyle(.secondary)
-          } else {
+        if !routines.isEmpty {
+          Section("我的训练模板") {
             ForEach(routines) { routine in
               Button {
                 start(from: routine)

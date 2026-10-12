@@ -47,6 +47,7 @@ struct AppShell: View {
             selectedTab = .nutrition
             logFoodRequest += 1
           },
+          onOpenNutrition: { selectedTab = .nutrition },
           onOpenTemplates: {
             todayPath.append(.routines)
           },
@@ -84,6 +85,19 @@ struct AppShell: View {
 
       NavigationStack {
         analysisDestinations.trends()
+          .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+              Menu("回顾与报告", systemImage: "doc.text") {
+                NavigationLink("每周回顾与 PR") { WeeklyReportView() }
+                  .accessibilityIdentifier("today.weeklyReport")
+                if let reportIntegration {
+                  NavigationLink("报告与历史") { HealthReportsView(integration: reportIntegration) }
+                    .accessibilityIdentifier("today.analysisReports")
+                }
+              }
+              .accessibilityIdentifier("trends.reports")
+            }
+          }
       }
       .tabItem { Label("趋势", systemImage: "chart.xyaxis.line") }
       .tag(AppTab.trends)
@@ -112,7 +126,7 @@ struct AppShell: View {
           return
         }
       #endif
-      if !healthOnboardingCompleted { presentedSheet = .healthOnboarding }
+      // Health and AI setup is optional and accessed from Settings.
     }
     // Keep modal content outside the tab navigation stacks' presentation environment.
     .sheet(item: $presentedSheet, onDismiss: finishSheet) { sheet in

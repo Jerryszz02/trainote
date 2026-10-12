@@ -5,7 +5,6 @@ struct TodayView: View {
   @Environment(\.modelContext) private var modelContext
   @Environment(\.scenePhase) private var scenePhase
   @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-  @AppStorage("onboarding.dismissed") private var onboardingDismissed = false
   @State private var currentDate = Date.now
   @State private var saveError: String?
   @Query(sort: \Routine.updatedAt, order: .reverse) private var routines: [Routine]
@@ -23,6 +22,7 @@ struct TodayView: View {
 
   let onStartWorkout: () -> Void
   let onLogFood: () -> Void
+  var onOpenNutrition: () -> Void = {}
   var onOpenTemplates: () -> Void = {}
   var onOpenRecovery: () -> Void = {}
   var onOpenSettings: () -> Void = {}
@@ -44,8 +44,9 @@ struct TodayView: View {
       entries: todayEntries,
       historicalTargets: NutritionGoalHistory.targets(
         on: currentDate, history: goalRevisions.map(\.value),
-        legacyCurrent: NutritionGoalHistory.targets(from: goals.first))
-        .map(TrendNutrition.displayed))
+        legacyCurrent: NutritionGoalHistory.targets(from: goals.first)
+      )
+      .map(TrendNutrition.displayed))
   }
 
   var body: some View {
@@ -53,30 +54,18 @@ struct TodayView: View {
       LazyVStack(alignment: .leading, spacing: 20) {
         header
         quickActions
-        if let recoveryIntegration {
-          TodayRecoveryCard(
-            integration: recoveryIntegration, advice: trainingAdvice,
-            hasRoutines: !routines.isEmpty,
-            onOpenTemplates: onOpenTemplates, onOpenRecovery: onOpenRecovery,
-            onOpenCheckIn: onOpenCheckIn)
-        } else {
-          recommendationCard
+        Text("今天已记录").font(.headline)
+        trainingSummary
+        Button(action: onOpenNutrition) {
+          HStack {
+            Label("饮食 · \(todayEntries.count) 条记录", systemImage: "fork.knife")
+            Spacer()
+            Image(systemName: "chevron.right").accessibilityHidden(true)
+          }
         }
-        if !onboardingDismissed && workouts.isEmpty && foodEntries.isEmpty { gettingStarted }
+        .accessibilityIdentifier("today.nutritionSummary")
         nutrientGrid
         routineShortcuts
-        trainingSummary
-        weeklyLink
-        if let reportIntegration {
-          NavigationLink {
-            HealthReportsView(integration: reportIntegration)
-          } label: {
-            Label("基础报告与历史", systemImage: "text.document")
-              .frame(maxWidth: .infinity, alignment: .leading)
-              .padding().background(.background, in: RoundedRectangle(cornerRadius: 16))
-          }
-          .accessibilityIdentifier("today.analysisReports")
-        }
       }
       .padding()
     }
@@ -112,43 +101,6 @@ struct TodayView: View {
     } message: {
       Text(saveError ?? "请重试。")
     }
-  }
-
-  private var recommendationCard: some View {
-    Button(action: routines.isEmpty ? onOpenTemplates : onOpenRecovery) {
-      HStack(alignment: .top, spacing: 12) {
-        Image(systemName: "lightbulb").font(.title2)
-        VStack(alignment: .leading, spacing: 4) {
-          Text("今日建议").font(.headline)
-          Text(routines.isEmpty ? "先选择一套训练模板，按自己的安排开始。" : "结合训练记录与体感，查看今天的恢复状态。")
-            .font(.subheadline).foregroundStyle(.secondary)
-        }
-        Spacer(minLength: 0)
-        Image(systemName: "chevron.right").font(.caption)
-      }
-      .padding().background(.background, in: RoundedRectangle(cornerRadius: 16))
-    }
-    .buttonStyle(.plain)
-    .accessibilityIdentifier("today.recommendation")
-  }
-
-  private var gettingStarted: some View {
-    VStack(alignment: .leading, spacing: 12) {
-      HStack {
-        Text("从一套训练和一餐开始").font(.headline)
-        Spacer()
-        Button("跳过") { onboardingDismissed = true }.font(.subheadline)
-          .accessibilityIdentifier("onboarding.skip")
-      }
-      Text("先保存常做的动作和常吃的食物，下次直接复用。目标可以随时设置。")
-        .font(.subheadline).foregroundStyle(.secondary)
-      Button("建立训练模板", systemImage: "list.bullet.rectangle", action: onOpenTemplates)
-        .accessibilityIdentifier("today.createRoutine")
-      Button("记录第一餐", systemImage: "fork.knife", action: onLogFood)
-      Button("设置每日营养目标", systemImage: "target", action: onOpenSettings)
-    }
-    .padding()
-    .background(Color.accentColor.opacity(0.08), in: RoundedRectangle(cornerRadius: 16))
   }
 
   @ViewBuilder
@@ -192,33 +144,9 @@ struct TodayView: View {
     }
   }
 
-  private var weeklyLink: some View {
-    NavigationLink {
-      WeeklyReportView()
-    } label: {
-      HStack(spacing: 12) {
-        Image(systemName: "chart.xyaxis.line").font(.title2)
-        VStack(alignment: .leading, spacing: 4) {
-          Text("每周回顾与 PR").font(.headline)
-          Text("看见训练积累和饮食记录的变化").font(.caption).foregroundStyle(.secondary)
-        }
-        Spacer()
-        Image(systemName: "chevron.right").font(.caption)
-      }
-      .padding().background(.background, in: RoundedRectangle(cornerRadius: 16))
-    }
-    .buttonStyle(.plain)
-    .accessibilityIdentifier("today.weeklyReport")
-  }
-
   private var header: some View {
-    VStack(alignment: .leading, spacing: 4) {
-      Text(currentDate.formatted(.dateTime.weekday(.wide).month().day()))
-        .font(.title2.bold())
-      Text("把今天的每一组和每一餐记下来。")
-        .font(.subheadline)
-        .foregroundStyle(.secondary)
-    }
+    Text(currentDate.formatted(.dateTime.weekday(.wide).month().day()))
+      .font(.title2.bold())
   }
 
   private var nutrientGrid: some View {
@@ -246,24 +174,27 @@ struct TodayView: View {
   }
 
   private var quickActions: some View {
-    let layout =
-      dynamicTypeSize.isAccessibilitySize
-      ? AnyLayout(VStackLayout(spacing: 12)) : AnyLayout(HStackLayout(spacing: 12))
-    return layout {
-      QuickActionButton(
-        title: workouts.contains(where: { $0.status == .inProgress }) ? "继续训练" : "开始训练",
-        subtitle: workouts.contains(where: { $0.status == .inProgress }) ? "接着完成这一场" : "空白或训练模板",
-        systemImage: "figure.strengthtraining.traditional",
-        action: onStartWorkout
-      )
+    VStack(alignment: .leading, spacing: 12) {
+      Button(action: onStartWorkout) {
+        Label(
+          workouts.contains(where: { $0.status == .inProgress }) ? "继续训练" : "开始训练",
+          systemImage: "figure.strengthtraining.traditional"
+        )
+        .font(.headline)
+        .frame(maxWidth: .infinity, minHeight: 44)
+      }
+      .buttonStyle(.borderedProminent)
       .accessibilityIdentifier("today.startWorkout")
-
-      QuickActionButton(
-        title: "记录饮食",
-        subtitle: "一餐或食物",
-        systemImage: "plus.circle.fill",
-        action: onLogFood
-      )
+      if let active = workouts.first(where: { $0.status == .inProgress }) {
+        Text("\(active.title) · 已完成 \(WorkoutInsights.completedSets(in: active)) 组")
+          .font(.subheadline).foregroundStyle(.secondary)
+          .accessibilityIdentifier("today.activeProgress")
+      }
+      Button(action: onLogFood) {
+        Label("记录饮食", systemImage: "plus.circle")
+          .frame(maxWidth: .infinity, minHeight: 44)
+      }
+      .buttonStyle(.bordered)
       .accessibilityIdentifier("today.logFood")
     }
   }
@@ -274,14 +205,8 @@ struct TodayView: View {
         .font(.headline)
 
       if todayWorkouts.isEmpty {
-        ContentUnavailableView(
-          "还没有训练记录",
-          systemImage: "figure.walk",
-          description: Text("开始一场训练后，摘要会出现在这里。")
-        )
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 8)
-        .background(.background, in: RoundedRectangle(cornerRadius: 16))
+        Label("尚未记录训练", systemImage: "figure.walk")
+          .foregroundStyle(.secondary)
       } else {
         ForEach(todayWorkouts.prefix(3)) { workout in
           NavigationLink {
@@ -378,29 +303,5 @@ private struct NutrientProgressCard: View {
     }
     return
       "\(nutrient.title)，已摄入 \(consumed.rounded().formatted(.number.precision(.fractionLength(0)))) \(nutrient.unit)，尚未设置目标"
-  }
-}
-
-private struct QuickActionButton: View {
-  let title: String
-  let subtitle: String
-  let systemImage: String
-  let action: () -> Void
-
-  var body: some View {
-    Button(action: action) {
-      VStack(alignment: .leading, spacing: 10) {
-        Image(systemName: systemImage)
-          .font(.title2)
-        VStack(alignment: .leading, spacing: 2) {
-          Text(title).font(.headline)
-          Text(subtitle).font(.caption).foregroundStyle(.secondary)
-        }
-      }
-      .frame(maxWidth: .infinity, alignment: .leading)
-      .padding()
-      .background(.background, in: RoundedRectangle(cornerRadius: 16))
-    }
-    .buttonStyle(.plain)
   }
 }
