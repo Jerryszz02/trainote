@@ -12,16 +12,13 @@ struct ExercisePickerView: View {
   let title: String
   let onSelect: (ExerciseCatalogItem) -> Void
 
-  private var results: [ExerciseCatalogItem] {
-    catalog.filtered(
+  var body: some View {
+    let results = catalog.filtered(
       query: query,
       bodyPart: bodyPart,
       equipment: equipment,
       muscleGroup: muscleGroup
     )
-  }
-
-  var body: some View {
     NavigationStack {
       Group {
         if let errorMessage = catalog.errorMessage {
@@ -30,8 +27,10 @@ struct ExercisePickerView: View {
           } description: {
             Text(errorMessage)
           } actions: {
-            Button("重试") { catalog.load() }
+            Button("重试") { Task { await catalog.load() } }
           }
+        } else if catalog.isLoading {
+          ProgressView()
         } else if results.isEmpty {
           ContentUnavailableView.search(text: query)
         } else {
@@ -50,6 +49,7 @@ struct ExercisePickerView: View {
       }
       .navigationTitle(title)
       .navigationBarTitleDisplayMode(.inline)
+      .task { await catalog.load() }
       .searchable(text: $query, prompt: "搜索中英文名称、肌群或器械")
       .toolbar {
         ToolbarItem(placement: .cancellationAction) {

@@ -19,7 +19,9 @@ final class ExerciseMediaTests: XCTestCase {
     XCTAssertTrue(playable)
     XCTAssertFalse(tracks.isEmpty)
 
-    let exercises = ExerciseCatalog().items
+    let exerciseCatalog = ExerciseCatalog()
+    await exerciseCatalog.load()
+    let exercises = exerciseCatalog.items
     XCTAssertFalse(exercises.isEmpty)
     for exercise in exercises where exercise.id != "0662" {
       guard case .notCollected = catalog.availability(for: exercise.id) else {

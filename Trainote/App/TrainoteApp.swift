@@ -98,6 +98,7 @@ struct TrainoteApp: App {
           .environment(healthFoundation)
           .environment(healthAccess)
           .modelContainer(container)
+          .task { await catalog.load() }
           .task {
             await healthAccess.resumePendingRevocation()
             await healthFoundation.resume()
