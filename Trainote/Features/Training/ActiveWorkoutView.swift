@@ -434,7 +434,7 @@ private struct StrengthSetRow: View {
       headerLayout {
         Button(action: onComplete) {
           Label(
-            L10n.text("recording.set.status", strengthSet.orderIndex + 1, strengthSet.isCompleted ? L10n.text("core.completed") : L10n.text("core.mark.complete")),
+            L10n.text("recording.set.status", strengthSet.orderIndex + 1, strengthSet.isCompleted ? L10n.text("core.completed") : L10n.text("recording.complete.this.set")),
             systemImage: strengthSet.isCompleted ? "checkmark.circle.fill" : "circle"
           )
           .foregroundStyle(strengthSet.isCompleted ? Color.green : Color.primary)
@@ -443,7 +443,7 @@ private struct StrengthSetRow: View {
         }
         .buttonStyle(.borderless)
         .accessibilityLabel(
-          L10n.text("core.set.171", strengthSet.orderIndex + 1, strengthSet.isCompleted ? L10n.text("core.completed") : L10n.text("core.mark.complete"))
+          L10n.text("core.set.171", strengthSet.orderIndex + 1, strengthSet.isCompleted ? L10n.text("core.completed") : L10n.text("recording.complete.this.set"))
         )
         .accessibilityIdentifier("strengthSet.complete.\(strengthSet.id.uuidString)")
         Spacer()

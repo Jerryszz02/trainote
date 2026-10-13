@@ -93,5 +93,9 @@
     "en": "Set %lld, %@",
     "zh-Hans": "第 %lld 组，%@",
     "comment": "Accessible repetitions or duration input label"
+  },
+  "recording.complete.this.set": {
+    "en": "Complete this set",
+    "zh-Hans": "完成本组"
   }
 }

@@ -21793,6 +21793,24 @@
         }
       }
     },
+    "recording.complete.this.set": {
+      "comment": "recording.complete.this.set",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Complete this set"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "完成本组"
+          }
+        }
+      }
+    },
     "recording.discard.draft": {
       "comment": "Interaction and recording screen text",
       "extractionState": "manual",
