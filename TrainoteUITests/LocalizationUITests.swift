@@ -103,17 +103,18 @@ final class LocalizationUITests: XCTestCase {
     let weight = app.textFields.matching(
       NSPredicate(format: "identifier BEGINSWITH 'strengthSet.weight.'")
     ).firstMatch
+    revealAbove(weight)
     replace(weight, with: "12.5")
     dismissKeyboard()
     let completion = app.buttons.matching(
       NSPredicate(format: "identifier BEGINSWITH 'strengthSet.complete.'")
     ).firstMatch
-    reveal(completion)
+    revealAbove(completion)
     let completionID = completion.identifier
     completion.tap()
     let rest = app.staticTexts["workout.restRemaining"]
+    revealAbove(rest)
     XCTAssertTrue(rest.waitForExistence(timeout: 5))
-    for _ in 0..<8 where !title.isHittable { app.swipeDown() }
     reveal(title)
     title.tap()
     XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 5))
@@ -121,12 +122,15 @@ final class LocalizationUITests: XCTestCase {
     XCTAssertTrue(app.navigationBars["进行中"].waitForExistence(timeout: 5))
     XCTAssertEqual(title.value as? String, "Workout draft 原文")
     XCTAssertTrue(app.keyboards.firstMatch.exists, "Switch must preserve the current text responder")
-    XCTAssertTrue(rest.exists)
     switchLanguage("en")
     XCTAssertTrue(app.navigationBars["In progress"].waitForExistence(timeout: 5))
     XCTAssertEqual(title.value as? String, "Workout draft 原文")
     XCTAssertTrue(app.keyboards.firstMatch.exists)
     dismissKeyboard()
+    // Settings and title are below the exercise. Return to the timer only after
+    // checking focus in both languages, so scrolling cannot dismiss that focus.
+    revealAbove(rest)
+    XCTAssertTrue(rest.exists)
     reveal(weight)
     XCTAssertEqual(weight.value as? String, "12.5")
     let sameCompletion = app.buttons[completionID]
@@ -285,6 +289,16 @@ final class LocalizationUITests: XCTestCase {
     for _ in 0..<10 where !element.exists || !element.isHittable {
       if element.exists && element.frame.midY < app.frame.midY { app.swipeDown() }
       else { app.swipeUp() }
+    }
+    XCTAssertTrue(element.waitForExistence(timeout: 5))
+    XCTAssertTrue(element.isHittable)
+  }
+
+  private func revealAbove(_ element: XCUIElement) {
+    // List removes offscreen rows from accessibility. Their missing frames cannot
+    // tell reveal() that the exercise and rest timer are above the settings section.
+    for _ in 0..<10 where !element.exists || !element.isHittable {
+      app.swipeDown()
     }
     XCTAssertTrue(element.waitForExistence(timeout: 5))
     XCTAssertTrue(element.isHittable)
