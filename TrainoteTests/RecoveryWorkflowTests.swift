@@ -5,8 +5,9 @@ import XCTest
 
 @MainActor
 final class RecoveryWorkflowTests: XCTestCase {
-  func testNewWorkoutDefaultsWorkingHistoryPreservesRoleAndRIRAndRepeatClearsThem() throws {
+  func testNewWorkoutDefaultsWorkingHistoryPreservesRoleAndRIRAndRepeatClearsThem() async throws {
     let catalog = ExerciseCatalog()
+    await catalog.load()
     let item = try XCTUnwrap(catalog.items.first { $0.id == "0025" })
     let exercise = RoutineFactory.workoutExercise(from: item, orderIndex: 0)
     XCTAssertEqual(exercise.strengthSets[0].setRole, .working)

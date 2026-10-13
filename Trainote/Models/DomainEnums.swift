@@ -12,7 +12,7 @@ enum WorkoutStatus: String, Codable, CaseIterable {
   }
 }
 
-enum TrackingMode: String, Codable, CaseIterable, Identifiable {
+enum TrackingMode: String, Codable, CaseIterable, Identifiable, Sendable {
   case strength
   case cardio
   case repetitions

@@ -58,16 +58,13 @@ private struct ExerciseLibraryView: View {
   @State private var equipment: String?
   @State private var muscleGroup: String?
 
-  private var results: [ExerciseCatalogItem] {
-    catalog.filtered(
+  var body: some View {
+    let results = catalog.filtered(
       query: query,
       bodyPart: bodyPart,
       equipment: equipment,
       muscleGroup: muscleGroup
     )
-  }
-
-  var body: some View {
     Group {
       if let errorMessage = catalog.errorMessage {
         ContentUnavailableView {
@@ -75,8 +72,10 @@ private struct ExerciseLibraryView: View {
         } description: {
           Text(errorMessage)
         } actions: {
-          Button("重试") { catalog.load() }
+          Button("重试") { Task { await catalog.load() } }
         }
+      } else if catalog.isLoading {
+        ProgressView()
       } else if results.isEmpty {
         ContentUnavailableView.search(text: query)
       } else {
@@ -91,6 +90,7 @@ private struct ExerciseLibraryView: View {
         .listStyle(.plain)
       }
     }
+    .task { await catalog.load() }
     .searchable(text: $query, prompt: "搜索 1,324 个动作")
     .toolbar {
       ToolbarItem(placement: .topBarTrailing) {
