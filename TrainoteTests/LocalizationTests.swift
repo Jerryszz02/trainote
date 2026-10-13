@@ -126,7 +126,7 @@ final class LocalizationTests: XCTestCase {
     let catalog = ExerciseCatalog(items: [exercise])
     for language in [AppLanguage.english, .simplifiedChinese] {
       LanguageSettings.shared.preference = language
-      for query in ["DUMBBELL PRESS", "哑铃推举", "哑铃", "胸部", "triceps"] {
+      for query in ["DUMBBELL PRESS", "哑铃推举", "哑铃", "胸部", "triceps", "肱三头肌"] {
         XCTAssertEqual(catalog.filtered(query: query).map(\.id), [exercise.id], "\(language): \(query)")
       }
       XCTAssertEqual(catalog.filtered(query: "", equipment: "dumbbell").map(\.id), [exercise.id])

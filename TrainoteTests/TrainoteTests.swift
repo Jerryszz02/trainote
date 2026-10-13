@@ -236,6 +236,104 @@ final class ExerciseCatalogTests: XCTestCase {
     }
   }
 
+  func testIndexPreservesLegacySearchOrderAndCombinedFilters() async throws {
+    let catalog = ExerciseCatalog()
+    XCTAssertTrue(catalog.isLoading)
+    XCTAssertTrue(catalog.items.isEmpty)
+    await catalog.load()
+    XCTAssertNil(catalog.errorMessage)
+    XCTAssertFalse(catalog.isLoading)
+    XCTAssertEqual(catalog.items.count, 1324)
+    for query in ["", "  ", "bench", "  BÉNCH  ", "卧推", "dumbbell", "triceps", "不存在"] {
+      for bodyPart in [nil, "chest", "back"] as [String?] {
+        for equipment in [nil, "barbell", "dumbbell"] as [String?] {
+          let normalized = query.trimmed.folding(
+            options: [.caseInsensitive, .diacriticInsensitive], locale: .current)
+          let expected = catalog.items.filter {
+            (bodyPart == nil || $0.bodyPart == bodyPart)
+              && (equipment == nil || $0.equipment == equipment)
+              && (normalized.isEmpty || $0.searchText.localizedStandardContains(normalized))
+          }
+          XCTAssertEqual(catalog.filtered(query: query, bodyPart: bodyPart, equipment: equipment)
+            .map(\.id), expected.map(\.id), "query=\(query)")
+        }
+      }
+    }
+    XCTAssertEqual(catalog.bodyParts, Array(Set(catalog.items.map(\.bodyPart))).sorted())
+    XCTAssertEqual(catalog.equipmentTypes, Array(Set(catalog.items.map(\.equipment))).sorted())
+    XCTAssertEqual(catalog.muscleGroups, Array(Set(catalog.items.flatMap {
+      [$0.target, $0.muscleGroup] + $0.secondaryMuscles
+    })).sorted())
+  }
+
+  func testChineseAliasesMatchClassificationEvenWhenNameDoesNotContainAlias() {
+    let item = makeItem(id: "one", nameEn: "push up", bodyPart: "chest")
+    let catalog = ExerciseCatalog(items: [item])
+    XCTAssertEqual(catalog.filtered(query: "自重").map(\.id), ["one"])
+    XCTAssertEqual(catalog.filtered(query: "胸部").map(\.id), ["one"])
+    XCTAssertTrue(catalog.filtered(query: "哑铃").isEmpty)
+    XCTAssertTrue(catalog.filtered(query: "自重", bodyPart: "back").isEmpty)
+  }
+
+  func testConsecutiveQueriesAndClearNeverReuseOldResults() {
+    let catalog = ExerciseCatalog(items: [
+      makeItem(id: "bench", nameEn: "bench press", bodyPart: "chest"),
+      makeItem(id: "run", nameEn: "run", bodyPart: "cardio"),
+    ])
+    for _ in 0..<30 {
+      XCTAssertEqual(catalog.filtered(query: "bench").map(\.id), ["bench"])
+      XCTAssertEqual(catalog.filtered(query: "run").map(\.id), ["run"])
+      XCTAssertTrue(catalog.filtered(query: "run", bodyPart: "chest").isEmpty)
+      XCTAssertEqual(catalog.filtered(query: "").map(\.id), ["bench", "run"])
+    }
+  }
+
+  func testLoadingIsOffMainAndSharedAcrossCancelledAndActiveConsumers() async {
+    let started = expectation(description: "Background preparation started")
+    let probe = CatalogLoadProbe()
+    let prepared = ExerciseCatalogIndex(items: [makeItem(id: "one", nameEn: "run", bodyPart: "cardio")])
+    let catalog = ExerciseCatalog(loader: {
+      XCTAssertFalse(Thread.isMainThread, "Resource preparation must not occupy the main thread")
+      probe.recordLoad()
+      started.fulfill()
+      _ = probe.gate.wait(timeout: .now() + 5)
+      return prepared
+    })
+    let first = Task { await catalog.load() }
+    let second = Task { await catalog.load() }
+    await fulfillment(of: [started], timeout: 3)
+    XCTAssertTrue(catalog.isLoading)
+    XCTAssertTrue(catalog.items.isEmpty)
+    first.cancel()
+    probe.gate.signal()
+    await first.value
+    await second.value
+    XCTAssertEqual(probe.count, 1)
+    XCTAssertFalse(catalog.isLoading)
+    XCTAssertEqual(catalog.items.map(\.id), ["one"])
+    await catalog.load()
+    XCTAssertEqual(probe.count, 1, "A loaded immutable resource should be reused")
+  }
+
+  func testLoadFailureCanRetryWithoutPublishingPartialContent() async {
+    let probe = CatalogLoadProbe()
+    let prepared = ExerciseCatalogIndex(items: [makeItem(id: "one", nameEn: "run", bodyPart: "cardio")])
+    let catalog = ExerciseCatalog(loader: {
+      if probe.recordLoad() == 1 { throw CatalogError.resourceMissing }
+      return prepared
+    })
+    await catalog.load()
+    XCTAssertNotNil(catalog.errorMessage)
+    XCTAssertFalse(catalog.isLoading)
+    XCTAssertTrue(catalog.items.isEmpty)
+    XCTAssertTrue(catalog.bodyParts.isEmpty)
+    await catalog.load()
+    XCTAssertNil(catalog.errorMessage)
+    XCTAssertFalse(catalog.isLoading)
+    XCTAssertEqual(catalog.items.map(\.id), ["one"])
+    XCTAssertEqual(probe.count, 2)
+  }
+
   private func makeItem(
     id: String,
     nameEn: String,
@@ -360,5 +458,23 @@ final class PersistenceTests: XCTestCase {
 
     XCTAssertTrue(try context.fetch(FetchDescriptor<RoutineExercise>()).isEmpty)
     XCTAssertTrue(try context.fetch(FetchDescriptor<MealTemplateItem>()).isEmpty)
+  }
+}
+
+// Only the test loader uses this lock-protected counter across executors.
+private final class CatalogLoadProbe: @unchecked Sendable {
+  let gate = DispatchSemaphore(value: 0)
+  private let lock = NSLock()
+  private var loads = 0
+  var count: Int {
+    lock.lock()
+    defer { lock.unlock() }
+    return loads
+  }
+  @discardableResult func recordLoad() -> Int {
+    lock.lock()
+    defer { lock.unlock() }
+    loads += 1
+    return loads
   }
 }

@@ -12,6 +12,25 @@ import re
 ROOT = Path(__file__).resolve().parents[2]
 HERE = Path(__file__).resolve().parent
 
+PLACEHOLDER = re.compile(
+    r'%%|%(?:(?P<position>\d+)\$)?[-+ #0]*\d*(?:\.\d+)?'
+    r'(?P<type>lld|ld|d|@|f|g)'
+)
+
+def placeholder_types(value):
+    """Compare argument positions and types, ignoring display width/precision."""
+    arguments = []
+    next_position = 1
+    for match in PLACEHOLDER.finditer(value):
+        if match.group() == '%%':
+            continue
+        position = match.group('position')
+        if position is None:
+            position = next_position
+            next_position += 1
+        arguments.append((int(position), match.group('type')))
+    return sorted(arguments)
+
 def unit(value):
     return {"stringUnit": {"state": "translated", "value": value}}
 
@@ -21,15 +40,11 @@ def catalog():
         for key, entry in json.loads(source.read_text()).items():
             assert key not in strings, f"Duplicate key: {key} in {source}"
             assert entry['en'].strip() and entry['zh-Hans'].strip(), key
-            def placeholders(s):
-                return sorted(re.findall(r'%(?:\d+\$)?(?:lld|ld|d|@|f|g)', s))
             # Positions can differ when the grammar requires a different word order.
-            def types(s):
-                return sorted(re.sub(r'%\d+\$', '%', p) for p in placeholders(s))
-            assert types(entry['en']) == types(entry['zh-Hans']), f"Placeholder mismatch: {key}"
+            assert placeholder_types(entry['en']) == placeholder_types(entry['zh-Hans']), f"Placeholder mismatch: {key}"
             localizations = {lang: unit(entry[lang]) for lang in ('en', 'zh-Hans')}
             if 'enOne' in entry:
-                assert types(entry['enOne']) == types(entry['en']), f"Plural mismatch: {key}"
+                assert placeholder_types(entry['enOne']) == placeholder_types(entry['en']), f"Plural mismatch: {key}"
                 localizations['en'] = {'variations': {'plural': {'one': unit(entry['enOne']), 'other': unit(entry['en'])}}}
             strings[key] = {'comment': entry.get('comment', key), 'extractionState': 'manual', 'localizations': localizations}
     # Direct calls are audited. Dynamic enum keys are additionally covered by app tests.

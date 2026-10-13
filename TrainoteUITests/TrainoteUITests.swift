@@ -60,6 +60,38 @@ final class TrainoteUITests: XCTestCase {
     XCTAssertTrue(app.staticTexts["动作说明"].exists)
   }
 
+  func testCatalogSearchUpdatesAndClearsInLibraryAndPicker() {
+    app.buttons["today.library"].tap()
+    let firstLibraryItem = app.buttons["exerciseLibrary.item.0001"]
+    XCTAssertTrue(firstLibraryItem.waitForExistence(timeout: 5))
+    let search = app.searchFields.firstMatch
+    replaceText(in: search, with: "BÉNCH")
+    XCTAssertTrue(app.buttons["exerciseLibrary.item.0025"].waitForExistence(timeout: 5))
+    replaceText(in: search, with: "跑步")
+    XCTAssertTrue(app.buttons["exerciseLibrary.item.0685"].waitForExistence(timeout: 5))
+    XCTAssertFalse(app.buttons["exerciseLibrary.item.0025"].exists)
+    // Use the actual clear control; typeText("") does not delete selected text.
+    search.buttons.firstMatch.tap()
+    XCTAssertTrue(firstLibraryItem.waitForExistence(timeout: 5))
+    // The active system search UI covers the tab bar. Dismiss it before switching;
+    // iOS versions expose this control as Close or Cancel in the system language.
+    let closeSearch = app.buttons.matching(NSPredicate(
+      format: "label IN {'关闭', '取消', 'Close', 'Cancel'}")).firstMatch
+    XCTAssertTrue(closeSearch.waitForExistence(timeout: 3))
+    closeSearch.tap()
+    XCTAssertTrue(app.keyboards.firstMatch.waitForNonExistence(timeout: 5))
+    startBlankWorkout()
+    app.buttons["workout.addExercise"].tap()
+    XCTAssertTrue(app.buttons["exercisePicker.item.0001"].waitForExistence(timeout: 5))
+    replaceText(in: app.searchFields.firstMatch, with: "bench")
+    let bench = app.buttons["exercisePicker.item.0025"]
+    XCTAssertTrue(bench.waitForExistence(timeout: 5))
+    bench.tap()
+    XCTAssertTrue(app.navigationBars["进行中"].waitForExistence(timeout: 5))
+    XCTAssertTrue(app.textFields.matching(NSPredicate(
+      format: "identifier BEGINSWITH 'strengthSet.weight.'")).firstMatch.exists)
+  }
+
   func testCanCompleteStrengthWorkout() {
     startBlankWorkout()
     app.buttons["workout.addExercise"].tap()

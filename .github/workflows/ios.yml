@@ -17,7 +17,9 @@ jobs:
       - name: Check exercise recording modes
         run: python3 Scripts/audit_tracking_modes.py
       - name: Check localization catalog
-        run: python3 Scripts/localization/build_catalog.py --check
+        run: |
+          python3 -m unittest discover -s Scripts/localization -p 'test_*.py'
+          python3 Scripts/localization/build_catalog.py --check
       - name: Select an available iPhone simulator
         run: |
           xcodebuild -version
