@@ -8,7 +8,7 @@ struct SettingsView: View {
   @State private var exportDocument: BackupDocument?
   @State private var showExporter = false
   @State private var showImporter = false
-  @State private var importMessage: String?
+  @State private var importMessage: L10n.Message?
   @State private var showImportMessage = false
   @State private var showRestoreConfirmation = false
   @State private var showHealthDeletion = false
@@ -18,50 +18,58 @@ struct SettingsView: View {
     NavigationStack {
       Form {
         Section {
-          NavigationLink("帮助与说明") { HealthHelpView() }
+          NavigationLink(L10n.text("interaction.help.title")) { HealthHelpView() }
             .accessibilityIdentifier("settings.healthHelp")
         }
-        Section("饮食管理") {
-          NavigationLink("每日营养目标") {
+        Section(L10n.text("language.title")) {
+          Picker(L10n.text("language.title"), selection: Binding(
+            get: { LanguageSettings.shared.preference },
+            set: { LanguageSettings.shared.preference = $0 }
+          )) {
+            ForEach(AppLanguage.allCases) { language in
+              Text(language.title).tag(language)
+            }
+          }
+          .accessibilityIdentifier("settings.language")
+        }
+
+        Section(L10n.text("settings.nutrition")) {
+          NavigationLink(L10n.text("settings.dailyGoals")) {
             NutritionGoalEditor()
           }
         }
 
-        Section("单位") {
-          LabeledContent("重量", value: "公斤 (kg)")
-          LabeledContent("距离", value: "公里 (km)")
+        Section(L10n.text("settings.units")) {
+          LabeledContent(L10n.text("settings.weight"), value: L10n.text("settings.kilograms"))
+          LabeledContent(L10n.text("settings.distance"), value: L10n.text("settings.kilometers"))
         }
 
-        Section("健康与分析") {
-          LabeledContent("Apple 健康", value: healthAccess.healthConnectionLabel)
+        Section(L10n.text("settings.health")) {
+          LabeledContent(L10n.text("settings.appleHealth"), value: healthAccess.healthConnectionLabel)
           if let detail = healthAccess.healthConnectionDetail {
             Text(detail).font(.footnote).foregroundStyle(.secondary)
           }
-          NavigationLink("健康权限与数据说明") { HealthHelpView(topic: .health) }
+          NavigationLink(L10n.text("interaction.help.healthPermissions")) { HealthHelpView(topic: .health) }
             .accessibilityIdentifier("settings.healthPermissionHelp")
-          Button(healthAccess.healthConnected ? "刷新健康读取" : "连接 Apple 健康") {
+          Button(healthAccess.healthConnected ? L10n.text("settings.refreshHealth") : L10n.text("settings.connectHealth")) {
             Task { await healthAccess.connectHealth() }
           }
           .accessibilityIdentifier("settings.connectHealth")
           .disabled(healthAccess.isBusy || healthAccess.health == nil)
-          Button(
-            healthAccess.healthDeletionNeedsRetry ? "重试断开并删除健康导入数据" : "断开并删除健康导入数据",
-            role: .destructive
-          ) {
+          Button(healthAccess.healthDeletionNeedsRetry ? L10n.text("settings.retryDisconnect") : L10n.text("settings.disconnect"), role: .destructive) {
             showHealthDeletion = true
           }
           .accessibilityIdentifier("settings.disconnectHealth")
           .disabled(healthAccess.isBusy)
-          NavigationLink("AI 报告") { AIConsentView() }
+          NavigationLink(L10n.text("settings.aiReports")) { AIConsentView() }
             .accessibilityIdentifier("settings.aiReports")
           if healthAccess.consent?.record(for: .aiReports)?.isGranted == true
-            || healthAccess.aiRevocationNeedsRetry || healthAccess.reports.serverRevocationPending
-          {
-            Button("关闭 AI / 重试撤回") { Task { await healthAccess.revokeAI() } }
+            || healthAccess.aiRevocationNeedsRetry || healthAccess.reports.serverRevocationPending {
+            Button(L10n.text("settings.revokeAI")) { Task { await healthAccess.revokeAI() } }
               .accessibilityIdentifier("settings.revokeAI")
               .disabled(healthAccess.isBusy)
           }
-          Button("删除本机 AI 报告", role: .destructive) { showReportDeletion = true }
+          Button(L10n.text("settings.deleteAI"), role: .destructive) { showReportDeletion = true }
             .accessibilityIdentifier("settings.deleteAIReports")
             .disabled(healthAccess.isBusy)
           if let message = healthAccess.statusMessage {
@@ -70,24 +78,24 @@ struct SettingsView: View {
           }
         }
 
-        Section("本地备份") {
-          Button("导出全部数据") { exportBackup() }
+        Section(L10n.text("settings.backup")) {
+          Button(L10n.text("settings.export")) { exportBackup() }
             .accessibilityIdentifier("backup.export")
-          Button("恢复本地备份") { showImporter = true }
+          Button(L10n.text("settings.restoreBackup")) { showImporter = true }
             .accessibilityIdentifier("backup.import")
         }
 
-        Section("关于") {
-          NavigationLink("Trainote 与数据来源") {
+        Section(L10n.text("settings.about")) {
+          NavigationLink(L10n.text("settings.sources")) {
             AboutView()
           }
         }
       }
-      .navigationTitle("设置")
+      .navigationTitle(L10n.text("settings.title"))
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
         ToolbarItem(placement: .cancellationAction) {
-          Button("完成") { dismiss() }
+          Button(L10n.text("settings.done")) { dismiss() }
         }
       }
       .fileExporter(
@@ -95,7 +103,7 @@ struct SettingsView: View {
         defaultFilename: "trainote-backup.json",
         onCompletion: { result in
           if case .failure(let error) = result {
-            importMessage = "导出失败：\(error.localizedDescription)"
+            importMessage = L10n.Message("settings.exportError", error.localizedDescription)
             showImportMessage = true
           }
         }
@@ -106,43 +114,37 @@ struct SettingsView: View {
         switch result {
         case .success(let urls): if let url = urls.first { restore(from: url) }
         case .failure(let error):
-          importMessage = "无法打开备份：\(error.localizedDescription)"
+          importMessage = L10n.Message("settings.openError", error.localizedDescription)
           showImportMessage = true
         }
       }
-      .alert("备份", isPresented: $showImportMessage) {
-        Button("好", role: .cancel) {}
+      .alert(L10n.text("settings.backupAlert"), isPresented: $showImportMessage) {
+        Button(L10n.text("settings.ok"), role: .cancel) {}
       } message: {
-        Text(importMessage ?? "")
+        Text(importMessage?.text ?? "")
       }
-      .confirmationDialog("恢复备份", isPresented: $showRestoreConfirmation, titleVisibility: .visible)
+      .confirmationDialog(L10n.text("settings.restoreTitle"), isPresented: $showRestoreConfirmation, titleVisibility: .visible)
       {
-        Button("恢复") { commitRestore() }
-        Button("取消", role: .cancel) { pendingRestore = nil }
+        Button(L10n.text("settings.restore")) { commitRestore() }
+        Button(L10n.text("settings.cancel"), role: .cancel) { pendingRestore = nil }
       } message: {
-        Text(importMessage ?? "")
+        Text(importMessage?.text ?? "")
       }
-      .confirmationDialog(
-        "断开并删除健康导入数据？", isPresented: $showHealthDeletion, titleVisibility: .visible
-      ) {
-        Button("断开并删除", role: .destructive) {
+      .confirmationDialog(L10n.text("settings.disconnectQuestion"), isPresented: $showHealthDeletion, titleVisibility: .visible) {
+        Button(L10n.text("settings.disconnectConfirm"), role: .destructive) {
           #if DEBUG
             HealthUITestTrace.record("disconnect.confirmationAction")
           #endif
           Task { await healthAccess.disconnectHealth() }
         }
-        Button("取消", role: .cancel) {}
+        Button(L10n.text("settings.cancel"), role: .cancel) {}
       } message: {
-        Text("停止同步并清除导入缓存、锚点和相关报告；保留手动记录，不改动 Apple 健康中的原始数据。")
+        Text(L10n.text("settings.disconnectHelp"))
       }
-      .confirmationDialog(
-        "删除本机 AI 报告？", isPresented: $showReportDeletion, titleVisibility: .visible
-      ) {
-        Button("删除报告", role: .destructive) { healthAccess.deleteReports() }
-        Button("取消", role: .cancel) {}
-      } message: {
-        Text("删除本机报告缓存，不删除训练、饮食或健康记录。")
-      }
+      .confirmationDialog(L10n.text("settings.deleteQuestion"), isPresented: $showReportDeletion, titleVisibility: .visible) {
+        Button(L10n.text("settings.deleteReports"), role: .destructive) { healthAccess.deleteReports() }
+        Button(L10n.text("settings.cancel"), role: .cancel) {}
+      } message: { Text(L10n.text("settings.deleteHelp")) }
       .healthAccessError(healthAccess)
     }
   }
@@ -152,7 +154,7 @@ struct SettingsView: View {
       exportDocument = BackupDocument(data: try BackupArchiveService.export(context: modelContext))
       showExporter = true
     } catch {
-      importMessage = "导出失败：\(error.localizedDescription)"
+      importMessage = L10n.Message("settings.exportError", error.localizedDescription)
       showImportMessage = true
     }
   }
@@ -166,12 +168,12 @@ struct SettingsView: View {
       let values = try Data(contentsOf: url, options: [.mappedIfSafe])
       guard values.count <= BackupArchive.maxBytes else { throw BackupArchiveError.tooLarge }
       let archive = try BackupArchiveService.decode(values)
-      importMessage = "将检查并添加 \(archive.counts.total) 条记录；已有相同 ID 的记录会跳过，不会删除当前数据。确定恢复吗？"
+      importMessage = L10n.Message("settings.restorePreview", archive.counts.total)
       // Decode once above for a useful preview, then restore after explicit confirmation.
       pendingRestore = values
       showRestoreConfirmation = true
     } catch {
-      importMessage = "无法读取备份：\(error.localizedDescription)"
+      importMessage = L10n.Message("settings.readError", error.localizedDescription)
       showImportMessage = true
     }
   }
@@ -181,8 +183,8 @@ struct SettingsView: View {
     do {
       try modelContext.save()
       let result = try BackupArchiveService.importData(data, into: modelContext.container)
-      importMessage = "恢复完成：新增 \(result.inserted) 条，跳过 \(result.skipped) 条。"
-    } catch { importMessage = "恢复失败：\(error.localizedDescription)" }
+      importMessage = L10n.Message("settings.restoreResult", result.inserted, result.skipped)
+    } catch { importMessage = L10n.Message("settings.restoreError", error.localizedDescription) }
     pendingRestore = nil
     showImportMessage = true
   }
@@ -195,7 +197,7 @@ struct NutritionGoalEditor: View {
   @State private var editing = ManualNutritionGoalEditing()
   @State private var loadedExistingGoal = false
   @State private var saved = false
-  @State private var saveError: String?
+  @State private var saveError: L10n.Message?
   @State private var staleTarget = false
 
   private var isValid: Bool {
@@ -207,19 +209,19 @@ struct NutritionGoalEditor: View {
 
   var body: some View {
     Form {
-      Section("每日目标") {
-        nutrientField("卡路里", value: $editing.targets.calories, unit: "kcal")
-        nutrientField("碳水", value: $editing.targets.carbohydrates, unit: "g")
-        nutrientField("蛋白质", value: $editing.targets.protein, unit: "g")
-        nutrientField("脂肪", value: $editing.targets.fat, unit: "g")
+      Section(L10n.text("settings.dailyTargets")) {
+        nutrientField(L10n.text("settings.calories"), value: $editing.targets.calories, unit: "kcal", identifier: "goal.卡路里")
+        nutrientField(L10n.text("settings.carbs"), value: $editing.targets.carbohydrates, unit: "g", identifier: "goal.碳水")
+        nutrientField(L10n.text("settings.protein"), value: $editing.targets.protein, unit: "g", identifier: "goal.蛋白质")
+        nutrientField(L10n.text("settings.fat"), value: $editing.targets.fat, unit: "g", identifier: "goal.脂肪")
       }
 
     }
-    .navigationTitle("营养目标")
+    .navigationTitle(L10n.text("settings.goals"))
     .navigationBarTitleDisplayMode(.inline)
     .toolbar {
       ToolbarItem(placement: .confirmationAction) {
-        Button(saved ? "已保存" : "保存", action: save)
+        Button(saved ? L10n.text("settings.saved") : L10n.text("settings.save"), action: save)
           .disabled(!isValid || saved || editing.expectedState == nil)
           .accessibilityIdentifier("goal.save")
       }
@@ -227,36 +229,36 @@ struct NutritionGoalEditor: View {
     .toolbar { NutritionKeyboardDoneToolbar() }
     .onChange(of: editing.targets) { saved = false }
     .alert(
-      "保存失败", isPresented: Binding(get: { saveError != nil }, set: { if !$0 { saveError = nil } })
+      L10n.text("settings.saveFailed"), isPresented: Binding(get: { saveError != nil }, set: { if !$0 { saveError = nil } })
     ) {
-      Button("好", role: .cancel) {}
+      Button(L10n.text("settings.ok"), role: .cancel) {}
     } message: {
-      Text(saveError ?? "")
+      Text(saveError?.text ?? "")
     }
-    .alert("目标已在别处更新", isPresented: $staleTarget) {
-      Button("载入最新目标") { loadLatestGoal() }
-      Button("保留草稿", role: .cancel) {}
+    .alert(L10n.text("settings.staleGoal"), isPresented: $staleTarget) {
+      Button(L10n.text("settings.reloadGoal")) { loadLatestGoal() }
+      Button(L10n.text("settings.keepDraft"), role: .cancel) {}
     } message: {
-      Text("本次修改尚未保存。载入最新目标后请重新检查并点击保存，避免覆盖新的目标。")
+      Text(L10n.text("settings.staleHelp"))
     }
     .safeAreaInset(edge: .bottom) {
       if loadedExistingGoal && editing.expectedState == nil {
-        Button("载入最新目标再编辑", action: loadLatestGoal)
+        Button(L10n.text("settings.reloadToEdit"), action: loadLatestGoal)
           .buttonStyle(.borderedProminent).padding()
       }
     }
     .task { loadExistingGoalIfNeeded() }
   }
 
-  private func nutrientField(_ title: String, value: Binding<Double>, unit: String) -> some View {
+  private func nutrientField(_ title: String, value: Binding<Double>, unit: String, identifier: String) -> some View {
     LabeledContent(title) {
       HStack(spacing: 6) {
-        TextField("0", value: value, format: .number.precision(.fractionLength(0...1)))
+        StableNumberField("0", value: value, format: .number.precision(.fractionLength(0...1)).locale(L10n.locale))
           .keyboardType(.decimalPad)
           .submitLabel(.done)
           .multilineTextAlignment(.trailing)
           .frame(minWidth: 80)
-          .accessibilityIdentifier("goal.\(title)")
+          .accessibilityIdentifier(identifier)
         Text(unit).foregroundStyle(.secondary)
       }
     }
@@ -274,7 +276,7 @@ struct NutritionGoalEditor: View {
       saved = false
       saveError = nil
     } catch {
-      saveError = "未能读取当前目标，请重试。"
+      saveError = L10n.Message("settings.loadGoalError")
     }
   }
 
@@ -288,7 +290,7 @@ struct NutritionGoalEditor: View {
       staleTarget = true
     } catch {
       saved = false
-      saveError = "目标和历史均未改变，请重试。若目标日期异常，请检查设备时间或重新载入目标。"
+      saveError = L10n.Message("settings.saveGoalError")
     }
   }
 }

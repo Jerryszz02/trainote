@@ -9,7 +9,11 @@ final class TrendViewModel {
   private(set) var result: TrendResult?
   private(set) var goalState: GoalRevisionState?
   private(set) var records: ManualHealthRecords = .init()
-  var errorMessage: String?
+  private(set) var errorMessageKey: String?
+  var errorMessage: String? {
+    get { errorMessageKey.map { L10n.text($0) } }
+    set { errorMessageKey = newValue }
+  }
   private(set) var isLoading = false
   let repository: any AnalysisRepository
   let health: (any HealthDataProviding)?
@@ -67,7 +71,7 @@ final class TrendViewModel {
     defer { isLoading = false }
     do { try read() } catch {
       goalState = nil
-      errorMessage = "读取失败，请刷新后重试。"
+      errorMessage = "health.trendviewmodel.read.failed.refresh.and.try.again.0e7af4"
       return
     }
     do {
@@ -80,7 +84,7 @@ final class TrendViewModel {
         refreshAfterCommit()
       }
     } catch {
-      errorMessage = "本次目标未能保存，请刷新后重试。"
+      errorMessage = "health.trendviewmodel.targets.could.not.be.saved.refresh.ba03a4"
     }
   }
   private func read() throws {
@@ -110,8 +114,8 @@ final class TrendViewModel {
     } catch {
       errorMessage =
         error is GoalRevisionConflict
-        ? "目标状态已变化或需要复核，请刷新后重新确认。"
-        : "未能完成操作，请检查输入并重试。"
+        ? "health.trendviewmodel.target.status.changed.or.needs.review.ae9b13"
+        : "health.trendviewmodel.the.action.could.not.be.completed.a4b679"
       return false
     }
     refreshAfterCommit()
@@ -120,7 +124,7 @@ final class TrendViewModel {
   private func refreshAfterCommit() {
     do { try read() } catch {
       goalState = nil
-      errorMessage = "已保存，但显示尚未刷新。请刷新页面核对，无需再次保存。"
+      errorMessage = "health.trendviewmodel.saved.but.the.display.has.not.9bbe8f"
     }
   }
   @discardableResult

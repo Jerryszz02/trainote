@@ -1,6 +1,6 @@
 # P1：简体中文与 English 计划
 
-状态：**计划中，待用户审阅；未添加 String Catalog 或修改应用代码。**
+状态：**已实现，本地自动验证通过；尚未合并/发布。2026-10-12 用户已批准本计划并授权实现与验证。**
 
 日期：2026-10-12（Europe/London）。诊断基线：`c970330a33208b9f7862ae6e960d5f5b98a17a1f`。关联：[性能计划](device-performance-plan.md)、[交互计划](first-use-interaction-plan.md)。
 
@@ -12,7 +12,7 @@
 
 本改动只处理语言、呈现与格式化契约，不改变训练/营养/恢复算法、内部 ID、数据库字段含义、备份 schema 或用户原文。后续其他语言通过相同资源和解析策略扩展。
 
-## 2. 当前诊断
+## 2. 实施前诊断（历史基线）
 
 | 事实 | 代码证据 | 计划含义 |
 | --- | --- | --- |
@@ -24,7 +24,7 @@
 | 标签、状态和错误分布在 View、DomainEnums、服务、分析和可访问性代码 | [DomainEnums.swift](../../Trainote/Models/DomainEnums.swift)、Features/Services | 不能依赖 View 字面量自动提取覆盖动态 String |
 | 报告校验严格比较固定中文文案 | [ReportPolicy.swift](../../Trainote/Services/AIReports/ReportPolicy.swift) 的 `ReportText`、`validate` | 必须将显示翻译与 wire 校验分离，否则英文设置可能使合法报告被拒绝 |
 
-此处为源码诊断；尚未实际验证英文系统首启、语言热切换、英文大字号、VoiceOver 或手机上的当前中文排版。
+此表保留计划阶段的源码诊断。当前实现和验证见第 11 节；真机与 VoiceOver 人工验收仍未执行。
 
 ## 3. 语言解析与设置方案
 
@@ -139,11 +139,48 @@
 - 最大风险是动态字符串漏译、语言切换引发 View 身份重置，以及报告校验误用本地化文案；三者分别设独立回归门。
 - 移除/收纳冗余说明由交互计划负责，语言计划先保证存在的必要内容能正确显示；两条线共享语义 key，不同时重写同一页面的信息结构。
 - 回滚移除语言覆盖、恢复默认显示即可；不需要数据库迁移或重置用户数据。持久化语言值可以保留为无害偏好，不删用户配置目录。
-- 本次未运行双语 UI、生成资源、构建或测试；上述均为计划。现有中英文动作仅检查字段完整性，未声称逐条人工校译。
-- 待审阅的范围点：English 作为不支持语言的回退；是否另行需要 kg/lb 切换。两者不影响“默认系统、英文系统首启英文”的必达要求。
+- 当前已生成资源并构建、运行单元与 UI 验证，结果见第 11 节。动作既有中英文本保留，未声称 1,324 项均已逐条人工校译。
+- English 回退已随本计划获批并实现；kg/lb 不在本次授权范围，保持 kg/km。
 
 ## 10. 方法参考
 
 - [Apple：Localizing and varying text with a string catalog](https://developer.apple.com/documentation/xcode/localizing-and-varying-text-with-a-string-catalog)：本地化资源、插值与复数变体。
 - [Apple：Preparing your app’s text for translation](https://developer.apple.com/documentation/xcode/preparing-your-apps-text-for-translation)：可提取的本地化 API 与动态文本覆盖。
 - [Apple：Preparing views for localization](https://developer.apple.com/documentation/swiftui/preparing-views-for-localization)：视图文案及译者上下文。具体的偏好状态、热切换、数据保护和报告适配是本项目方案，仍需验证。
+
+## 11. 本分支实施与验证（2026-10-13）
+
+实施基线为计划 PR #15 合并后的 `8b38059`，工作树 `9e75/trainote`、分支 `agent/bilingual-localization`。没有整合其他两条应用分支。
+
+### 实现与覆盖
+
+- `LanguageSettings` 仅持久化 `appearance.language`（system / zh-Hans / en）；默认系统，繁体不误标简体，未匹配回退 English。回前台刷新系统偏好，App、sheet、普通 Swift 与 UIKit 共用 `L10n`。没有 `.id(language)`、数据库/导航重建或系统语言写入。
+- `Localizable.xcstrings` 的 1,259 个双语 key 覆盖 App/设置/动作、主流程、健康/恢复/报告/帮助及域枚举/服务，包含 19 项英文复数变体。`InfoPlist.xcstrings` 提供 HealthKit 双语用途说明；工程与 XcodeGen 均声明 en/zh-Hans，以 English 为开发语言。
+- 编辑源位于 `Scripts/localization/{base,core,health,domain}.json`；`python3 Scripts/localization/build_catalog.py` 生成运行时 Catalog，`--check` 审计资源一致性、缺 key、参数类型和复数。编辑源不打包，没有运行时翻译、遥测或网络调用。
+- 动作按当前语言显示名称/步骤，其他语言收在详情展开项。全部部位/器械/肌群标签映射，双语搜索 alias 固定复用。原始 ID/rawValue、中文/英文快照和用户原文保留；工厂分别使用两个源字段。只有新默认标题/份量/建议说明按创建语言生成。
+- `ReportPolicy.swift` 原样保留。`ReportPresentation` 仅翻译已知 schema/prompt 模板；未知历史版本与自由文本保留。不改变存储报告、事实、fingerprint，不因语言切换请求远程报告。
+- 弹窗/错误以 `L10n.Message` 或稳定 key 留存，显示时重新解析。日期/数值保留区域，内部 POSIX 日期键和算法不变。`StableNumberField` 固定编辑格式并保留原生未完成文本；健康身高/体重字符串按捕获区域严格解析，不把非法输入变为 0。
+- 英文/辅助字号使用可换行按钮、可变方向组头和辅助字号 menu，保留五 Tab 和所有已有说明。中文参与的历史 accessibilityIdentifier 独立保留。两个预览生成脚本补齐共享源码的本地化依赖。
+
+覆盖审计保留的中文包括 wire 常量/模板匹配、备份内部原因、既有 rawValue/identifier、合成 fixture、注释和用户/目录原文。品牌、kg/km、RIR、技术版本标识不翻译。静态无缺 key 不等于逐页人工质量验收。
+
+### 验证与未验项
+
+专用 Simulator：`27481628-80DD-44A3-A37F-1EC7BE93AFDE`（iPhone 17 Pro / iOS 26.5）；独立 DerivedData：`/tmp/trainote-localization-derived`。未操作用户真机、未调用 Instruments、未终止全局设备服务。
+
+- Simulator 签名构建通过。
+- 全量单元回归最终通过 **303 项、0 失败**，证据 `/tmp/trainote-localization-final.xcresult`；包含迁移/备份、报告合成契约、语言解析/持久化、资源/复数、双语搜索/快照、错误重解析、区域小数和双语趋势截图。报告展示另外以 23 组数量/单位数据覆盖单复数、空格与小数，wire 与存储字节保持不变。
+- 同一最终结果包含 **8 项 UI 回归、0 失败**：中文力量/有氧训练、模板创建启动、动作演示、报告事实与历史、资料库入口；英文小数逗号草稿热切换，以及暗色最大辅助字号训练控件。
+- `/tmp/trainote-localization-ui-v2.xcresult` 的 **5 项 UI 测试通过**：英文系统首启、手动中文及重启/切回系统、进行中训练状态与焦点/键盘/完成组/休息计时、未完成小数点饮食草稿保存、英文最大辅助字号。大字号用例与最终回归重叠，不重复计数。
+- 最后营养数值区域格式与 RIR 短标签修订后，`/tmp/trainote-localization-final-targeted.xcresult` **23 项定向单元测试及 1 项暗色最大辅助字号 UI 测试通过**；截图人工确认 RIR 默认值 `Unset` 完整显示。
+- `/tmp/trainote-localization-routine.xcresult` 的模板草稿 UI 测试通过：名称、焦点与动作选择在切换后保留，保存后可重开，修改后关闭不会写入原记录。合计验证 **13 项不同 UI 用例**；未运行完整既有 UI 套件。
+- 初轮发现并修复替换语言时丢失区域的问题；初轮 UI 的测试控件与键盘工具栏重叠、大字列表延迟加载控件未滚动均已修复后重跑。
+- Catalog、planning 链接和 diff 检查通过；两个预览脚本生成通过，未宣称独立预览完整 UI 套件通过。
+
+未验证：真实 iPhone、iOS 17、VoiceOver 真人读出、中文输入法组合态、全部页面乘以明暗/最大辅助字号的完整矩阵、真实 HealthKit 弹窗语言与远程服务。系统弹窗由 iOS 按系统 App 语言选择；进程内手动偏好不保证即时改变系统弹窗。既有 1,324 项动作未逐条人工校译。
+
+### 共享文件、集成与回滚
+
+与其他分支共享的文件主要为 App 壳层、ExerciseCatalog、各 Feature View、RoutineFactory、WorkoutModels、工程与规划索引。变更限于文字 API、呈现/输入格式和语言设置；计算、保存策略、主要导航不变。建议按性能 → 双语 → 交互审查整合，保留性能分支的数据/生命周期改动，交互新增或移动文案复用语义 key；重新生成工程和资源后跑双语状态连续性回归。
+
+回滚应用提交即可，不需要数据迁移；旧快照和用户记录仍可被原版读取。语言偏好可保留为无害配置，不清空用户目录。PR 保持打开，合并、安装和发布由用户后续决定。

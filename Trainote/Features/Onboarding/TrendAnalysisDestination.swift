@@ -19,23 +19,23 @@ struct TrendAnalysisDestination: View {
       } else {
         List {
           Section {
-            Text("用体重趋势复核营养目标").font(.title2.bold())
-            Text("先积累体重与完整饮食记录，再查看每周建议。已有手动目标会保留，建议只有经过你采用才会生效。")
-            Text("身体资料和体重可以稍后填写；Apple 健康与 AI 均可不启用。")
+            Text(L10n.text("health.trendanalysisdestination.review.nutrition.targets.with.weight.trends.bdf157")).font(.title2.bold())
+            Text(L10n.text("health.trendanalysisdestination.build.up.weight.and.complete.food.94f135"))
+            Text(L10n.text("health.trendanalysisdestination.you.can.add.body.details.and.03fd52"))
               .foregroundStyle(.secondary)
           }
           Section {
-            Button("启用每周建议") { integration.enableWeeklySuggestions() }
+            Button(L10n.text("health.trendanalysisdestination.enable.weekly.suggestions.512d36")) { integration.enableWeeklySuggestions() }
               .accessibilityIdentifier("trend.enableSuggestions")
-            Button("保留原模式并查看趋势") { integration.enterWithoutChangingMode() }
+            Button(L10n.text("health.trendanalysisdestination.keep.current.mode.and.view.trends.9e6c54")) { integration.enterWithoutChangingMode() }
               .accessibilityIdentifier("trend.continueCurrentMode")
-            Button("计算方法与数据使用") { sheet = .help }
+            Button(L10n.text("health.trendanalysisdestination.methods.and.data.use.df2501")) { sheet = .help }
           }
           if let error = integration.model.errorMessage {
             Section { Text(error).foregroundStyle(.red) }
           }
         }
-        .navigationTitle("趋势分析")
+        .navigationTitle(L10n.text("health.trendanalysisdestination.trend.analysis.cc7a87"))
         .onAppear { integration.model.reload(allowAutomaticAdoption: false) }
       }
     }
@@ -56,7 +56,7 @@ struct TrendAnalysisDestination: View {
           }
         }
         .toolbar {
-          ToolbarItem(placement: .cancellationAction) { Button("完成") { sheet = nil } }
+          ToolbarItem(placement: .cancellationAction) { Button(L10n.text("health.trendanalysisdestination.done.33246f")) { sheet = nil } }
         }
       }
     }

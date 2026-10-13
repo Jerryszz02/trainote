@@ -8,28 +8,28 @@ struct HealthOnboardingView: View {
     NavigationStack {
       List {
         Section {
-          Text("记录照常，分析由你选择")
+          Text(L10n.text("health.healthonboardingview.keep.recording.choose.your.analysis.cc9165"))
             .font(.title2.bold())
-          Text("训练、饮食和备份可以仅在本机使用。下面两项分别选择，跳过后仍可在设置中开启。")
+          Text(L10n.text("health.healthonboardingview.workouts.food.and.backups.can.stay.3ab8ec"))
         }
-        Section("Apple 健康") {
-          Text("读取你选择共享的体重、睡眠、静息心率、HRV、步数、活动能量和训练，用于本机分析。不向 Apple 健康写入。")
-          LabeledContent("读取状态", value: access.healthConnectionLabel)
+        Section(L10n.text("health.healthonboardingview.apple.health.6de270")) {
+          Text(L10n.text("health.healthonboardingview.read.the.weight.sleep.resting.heart.6bba43"))
+          LabeledContent(L10n.text("health.healthonboardingview.read.status.48e33e"), value: access.healthConnectionLabel)
           if access.healthConnected {
-            Text("管理权限：在“健康”App 的摘要中点头像 → App → Trainote。")
+            Text(L10n.text("health.healthonboardingview.manage.access.in.health.tap.summary.fc8c28"))
               .font(.footnote).foregroundStyle(.secondary)
           }
-          Button(access.healthConnected ? "刷新健康读取" : "连接 Apple 健康") {
+          Button(access.healthConnected ? L10n.text("health.healthonboardingview.refresh.health.data.a1d25f") : L10n.text("health.healthonboardingview.connect.apple.health.eb4d4c")) {
             Task { await access.connectHealth() }
           }
           .accessibilityIdentifier("health.connect")
           .disabled(access.isBusy || access.health == nil)
         }
-        Section("AI 报告") {
+        Section(L10n.text("health.healthonboardingview.ai.reports.9885c1")) {
           NavigationLink {
             AIConsentView()
           } label: {
-            Label("了解并选择 AI 报告", systemImage: "text.bubble")
+            Label(L10n.text("health.healthonboardingview.learn.about.and.choose.ai.reports.1336fa"), systemImage: "text.bubble")
           }
           .accessibilityIdentifier("health.aiInfo")
           if !access.reports.isConfigured {
@@ -37,9 +37,9 @@ struct HealthOnboardingView: View {
           }
         }
         Section {
-          NavigationLink("查看方法、隐私与数据使用") { HealthHelpView() }
+          NavigationLink(L10n.text("health.healthonboardingview.methods.privacy.and.data.use.8e0893")) { HealthHelpView() }
             .accessibilityIdentifier("health.help")
-          Button(access.healthConnected || access.aiEnabled ? "继续使用 Trainote" : "暂时仅本地使用") {
+          Button(access.healthConnected || access.aiEnabled ? L10n.text("health.healthonboardingview.continue.with.trainote.d4888a") : L10n.text("health.healthonboardingview.use.locally.for.now.cc562e")) {
             onContinue()
           }
           .font(.headline)
@@ -50,7 +50,7 @@ struct HealthOnboardingView: View {
           Section { Text(message).font(.footnote) }
         }
       }
-      .navigationTitle("欢迎使用 Trainote")
+      .navigationTitle(L10n.text("health.healthonboardingview.welcome.to.trainote.4df5d8"))
       .navigationBarTitleDisplayMode(.inline)
       .healthAccessError(access)
     }
@@ -67,14 +67,14 @@ struct AIConsentView: View {
 extension View {
   func healthAccessError(_ access: HealthFeatureAccess) -> some View {
     alert(
-      "操作未完成",
+      L10n.text("health.healthonboardingview.action.incomplete.223fb3"),
       isPresented: Binding(
         get: { access.errorMessage != nil }, set: { if !$0 { access.clearError() } }
       )
     ) {
-      Button("知道了", role: .cancel) { access.clearError() }
+      Button(L10n.text("health.healthonboardingview.ok.cb63c6"), role: .cancel) { access.clearError() }
     } message: {
-      Text(access.errorMessage ?? "请重试。")
+      Text(access.errorMessage ?? L10n.text("health.healthonboardingview.please.try.again.a7e79b"))
     }
   }
 }

@@ -207,7 +207,7 @@ final class BodyMapAnatomyContainer: UIView {
       for muscle in MuscleID.allCases where paths[side]?[muscle] != nil {
         let button = AnatomyMuscleButton(type: .custom)
         button.accessibilityIdentifier = "bodyMap.label.\(muscle.rawValue)"
-        button.accessibilityHint = "查看肌群详情"
+        button.accessibilityHint = L10n.text("health.bodymapanatomyview.view.muscle.details.7376b2")
         button.addAction(UIAction { [weak self] _ in self?.onSelect?(muscle) }, for: .touchUpInside)
         addSubview(button)
         buttons["\(side).\(muscle.rawValue)"] = button

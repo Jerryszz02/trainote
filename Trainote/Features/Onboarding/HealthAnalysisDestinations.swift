@@ -7,8 +7,8 @@ struct HealthAnalysisDestinations {
   var recovery: (@escaping (Workout) -> Void, @escaping () -> Void) -> AnyView
 
   static let pending = Self(
-    trends: { AnyView(PendingAnalysisView(title: "趋势分析", systemImage: "chart.xyaxis.line")) },
-    recovery: { _, _ in AnyView(PendingAnalysisView(title: "恢复分析", systemImage: "figure.stand")) }
+    trends: { AnyView(PendingAnalysisView(title: L10n.text("health.healthanalysisdestinations.trend.analysis.cc7a87"), systemImage: "chart.xyaxis.line")) },
+    recovery: { _, _ in AnyView(PendingAnalysisView(title: L10n.text("health.healthanalysisdestinations.recovery.analysis.c172e5"), systemImage: "figure.stand")) }
   )
 
   static func verifiedModules(
@@ -33,8 +33,8 @@ private struct PendingAnalysisView: View {
     List {
       ContentUnavailableView(
         title, systemImage: systemImage,
-        description: Text("此功能尚未开放。训练和饮食记录可以照常使用。"))
-      NavigationLink("方法与数据使用") { HealthHelpView() }
+        description: Text(L10n.text("health.healthanalysisdestinations.this.feature.is.not.yet.available.4cf963")))
+      NavigationLink(L10n.text("health.healthanalysisdestinations.methods.and.data.use.93b2bb")) { HealthHelpView() }
     }
     .navigationTitle(title)
   }

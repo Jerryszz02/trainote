@@ -1,0 +1,74 @@
+{
+  "interaction.help.quickStart": {
+    "en": "Quick start and terminology",
+    "zh-Hans": "快速开始与术语"
+  },
+  "interaction.help.nutrition": {
+    "en": "Nutrition calculations and complete records",
+    "zh-Hans": "饮食计算与完整记录"
+  },
+  "interaction.help.sources": {
+    "en": "Sources and licenses",
+    "zh-Hans": "来源与许可"
+  },
+  "interaction.help.licenseUnavailable": {
+    "en": "The license document could not be read.",
+    "zh-Hans": "许可文件暂时无法读取。"
+  },
+  "interaction.help.contents": {
+    "en": "Contents",
+    "zh-Hans": "目录"
+  },
+  "interaction.help.startHelp": {
+    "en": "On Today, tap “Start workout”, then “Start directly”. No routine, body profile, or health permission is required. If a workout is already in progress, tap “Continue workout” to return to it.",
+    "zh-Hans": "今日点“开始训练”后选“直接开始”，不需要模板、身体资料或健康权限。已有进行中训练时，点“继续训练”回到原记录。"
+  },
+  "interaction.help.recordHelp": {
+    "en": "After adding an exercise, enter weight, reps, or duration and tap “Complete set” to record the set. “Finish workout” ends the session. Going back or switching tabs preserves the workout in progress.",
+    "zh-Hans": "添加动作后填写重量、次数或时长，点“完成本组”记录这一组；“结束训练”结束整场。返回和切换 Tab 会保留进行中训练。"
+  },
+  "interaction.help.rirHelp": {
+    "en": "RIR is the estimated number of reps you could still perform at the end of a set. It is optional; leaving it blank does not mean zero. Working sets contribute to load analysis; warm-up sets do not.",
+    "zh-Hans": "RIR 是这一组结束时估计还能完成的次数，可以不填；未填不等于 0。工作组用于分析负荷，热身组不计入。"
+  },
+  "interaction.help.portionHelp": {
+    "en": "For servings, enter nutrition per serving and the number of servings. For per-100-g records, enter nutrition per 100 g and the actual grams. Changing the portion scales the current unit nutrition. After correcting totals, later portion changes use the corrected density. Favorites save the current unit nutrition.",
+    "zh-Hans": "按份记录时填写每份营养与份数；按每 100 克记录时填写每 100 克营养与实际克数。修改份量按当前单位营养缩放；修改总量后再改份量，按修正后的密度计算。常用食物保存当前单位营养。"
+  },
+  "interaction.help.reuseHelp": {
+    "en": "You can also use recent entries, favorite foods, fixed meals, or copy a meal. Reuse creates independent records and leaves the original history unchanged. Canceling source selection returns to your original draft.",
+    "zh-Hans": "直接记录以外，还可使用最近、常用食物、固定餐或复制一餐。复用会生成独立记录，原历史不变；取消来源选择会回到原草稿。"
+  },
+  "interaction.help.completeHelp": {
+    "en": "Missing nutrition is different from actual zero intake. Editing a record invalidates the confirmation that the selected day’s food log is complete. Trends include only complete days through yesterday.",
+    "zh-Hans": "没有填写营养与真实零摄入不同。确认所选日期饮食完整后，编辑记录会使确认失效；趋势统计只计截至昨天的完整日。"
+  },
+  "interaction.help.aiHelp": {
+    "en": "AI consent is independent of the health connection. When enabled, necessary workout, food, weight, and health trend summaries are sent through a proxy to DeepSeek. AI cannot change targets or workout history.",
+    "zh-Hans": "AI 同意与健康连接独立。启用后，必要的训练、饮食、体重和健康趋势汇总会通过代理交由 DeepSeek 处理。AI 不能修改目标或训练历史。"
+  },
+  "interaction.help.aiDisableHelp": {
+    "en": "Turning AI off stops future sends and retries. Canceling a request does not automatically delete data already sent to the provider.",
+    "zh-Hans": "关闭后停止后续发送与重试；已发送的数据不会因取消请求而自动从第三方删除。"
+  },
+  "interaction.help.version": {
+    "en": "Trainote version",
+    "zh-Hans": "Trainote 版本"
+  },
+  "interaction.help.title": {
+    "en": "Help and information",
+    "zh-Hans": "帮助与说明"
+  },
+  "interaction.help.localReport": {
+    "en": "Local report",
+    "zh-Hans": "本地报告"
+  },
+  "interaction.help.healthPermissions": {
+    "en": "Health permissions and data",
+    "zh-Hans": "健康权限与数据说明"
+  },
+  "interaction.help.recoveryEstimate": {
+    "en": "Recovery estimate",
+    "zh-Hans": "恢复估计"
+  }
+}

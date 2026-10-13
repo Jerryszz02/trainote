@@ -72,30 +72,30 @@ struct AppShell: View {
         )
         .navigationDestination(for: LibrarySection.self) { LibraryView(initialSection: $0) }
       }
-      .tabItem { Label("今日", systemImage: "chart.bar.fill") }
+      .tabItem { Label(L10n.text("tab.today"), systemImage: "chart.bar.fill") }
       .tag(AppTab.today)
 
       NavigationStack {
         TrainingView(startRequested: $startWorkoutRequested)
       }
-      .tabItem { Label("训练", systemImage: "figure.strengthtraining.traditional") }
+      .tabItem { Label(L10n.text("tab.training"), systemImage: "figure.strengthtraining.traditional") }
       .tag(AppTab.training)
 
       NavigationStack {
         NutritionView(addRequest: logFoodRequest, showTodayRequest: showTodayNutritionRequest)
       }
-      .tabItem { Label("饮食", systemImage: "fork.knife") }
+      .tabItem { Label(L10n.text("tab.nutrition"), systemImage: "fork.knife") }
       .tag(AppTab.nutrition)
 
       NavigationStack {
         analysisDestinations.trends()
           .toolbar {
             ToolbarItem(placement: .topBarLeading) {
-              Menu("回顾与报告", systemImage: "doc.text") {
-                NavigationLink("每周回顾与 PR") { WeeklyReportView() }
+              Menu(L10n.text("interaction.shell.reportsMenu"), systemImage: "doc.text") {
+                NavigationLink(L10n.text("core.weekly.review.and.personal.records")) { WeeklyReportView() }
                   .accessibilityIdentifier("today.weeklyReport")
                 if let reportIntegration {
-                  NavigationLink("报告与历史") { HealthReportsView(integration: reportIntegration) }
+                  NavigationLink(L10n.text("interaction.shell.reportHistory")) { HealthReportsView(integration: reportIntegration) }
                     .accessibilityIdentifier("today.analysisReports")
                 }
               }
@@ -103,7 +103,7 @@ struct AppShell: View {
             }
           }
       }
-      .tabItem { Label("趋势", systemImage: "chart.xyaxis.line") }
+      .tabItem { Label(L10n.text("tab.trends"), systemImage: "chart.xyaxis.line") }
       .tag(AppTab.trends)
 
       NavigationStack {
@@ -113,7 +113,7 @@ struct AppShell: View {
             startWorkoutRequested = true
           }, { selectedTab = .trends })
       }
-      .tabItem { Label("恢复", systemImage: "figure.stand") }
+      .tabItem { Label(L10n.text("tab.recovery"), systemImage: "figure.stand") }
       .tag(AppTab.recovery)
     }
     .tint(.accentColor)

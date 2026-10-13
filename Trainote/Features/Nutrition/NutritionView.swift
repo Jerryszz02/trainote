@@ -25,7 +25,7 @@ struct NutritionKeyboardDoneToolbar: ToolbarContent {
   var body: some ToolbarContent {
     ToolbarItemGroup(placement: .keyboard) {
       Spacer()
-      Button("收起键盘") {
+      Button(L10n.text("core.dismiss.keyboard")) {
         UIApplication.shared.sendAction(
           #selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
       }
@@ -43,7 +43,7 @@ struct NutritionView: View {
   @State private var selectedDate = Date.now
   @State private var presentedSheet: NutritionSheet?
   @State private var pendingDeletion: FoodLogEntry?
-  @State private var actionErrorMessage: String?
+  @State private var actionErrorMessage: L10n.Message?
   @State private var showEmptyDietConfirmation = false
 
   let addRequest: Int
@@ -72,12 +72,12 @@ struct NutritionView: View {
   var body: some View {
     List {
       Section {
-        NavigationLink("常用食物与固定餐", destination: LibraryView(initialSection: .foods))
+        NavigationLink(L10n.text("core.favorite.foods.and.saved.meals"), destination: LibraryView(initialSection: .foods))
           .accessibilityIdentifier("nutrition.library")
       }
       Section {
         DatePicker(
-          "记录日期",
+          L10n.text("core.record.date"),
           selection: $selectedDate,
           displayedComponents: .date
         )
@@ -94,14 +94,15 @@ struct NutritionView: View {
 
       if dayEntries.isEmpty {
         ContentUnavailableView(
-          "当天没有饮食记录",
+          L10n.text("core.no.food.records.on.this.day"),
           systemImage: "fork.knife.circle",
-          description: Text("记录今天的第一餐。")
+          description: Text(L10n.text("recording.first.meal"))
         )
         .frame(maxWidth: .infinity)
       }
     }
-    .navigationTitle("饮食")
+    .localizationTestControls()
+    .navigationTitle(L10n.text("tab.nutrition"))
     .onChange(of: showTodayRequest, initial: true) { _, newValue in
       if newValue > 0 {
         selectedDate = .now
@@ -118,10 +119,10 @@ struct NutritionView: View {
         Button {
           presentedSheet = .entry(nil)
         } label: {
-          Label("添加饮食", systemImage: "plus")
+          Label(L10n.text("core.add.food"), systemImage: "plus")
         }
         .accessibilityIdentifier("nutrition.add")
-        .accessibilityLabel("添加饮食")
+        .accessibilityLabel(L10n.text("core.add.food"))
       }
     }
     .sheet(
@@ -145,46 +146,46 @@ struct NutritionView: View {
         }
       }
     }
-    .alert("删除这条饮食记录？", isPresented: deletionAlertBinding, presenting: pendingDeletion) { entry in
-      Button("删除", role: .destructive) {
+    .alert(L10n.text("core.delete.this.food.record"), isPresented: deletionAlertBinding, presenting: pendingDeletion) { entry in
+      Button(L10n.text("core.delete"), role: .destructive) {
         delete(entry)
       }
-      Button("取消", role: .cancel) { pendingDeletion = nil }
+      Button(L10n.text("core.cancel"), role: .cancel) { pendingDeletion = nil }
     } message: { _ in
-      Text("当天营养汇总会立即更新。")
+      Text(L10n.text("core.nutrition.totals.for.this.day.will.update.immediately"))
     }
-    .alert("操作失败", isPresented: actionErrorBinding) {
-      Button("好", role: .cancel) { actionErrorMessage = nil }
+    .alert(L10n.text("core.action.failed"), isPresented: actionErrorBinding) {
+      Button(L10n.text("core.ok.201"), role: .cancel) { actionErrorMessage = nil }
     } message: {
-      Text(actionErrorMessage ?? "")
+      Text(actionErrorMessage?.text ?? "")
     }
     .confirmationDialog(
-      "这一天没有饮食记录", isPresented: $showEmptyDietConfirmation, titleVisibility: .visible
+      L10n.text("core.no.food.records.on.this.day.279"), isPresented: $showEmptyDietConfirmation, titleVisibility: .visible
     ) {
-      Button("确认当天没有摄入，标记完整") { confirmSelectedDay() }
-      Button("继续补记", role: .cancel) {}
+      Button(L10n.text("core.confirm.no.intake.and.mark.complete")) { confirmSelectedDay() }
+      Button(L10n.text("core.keep.logging"), role: .cancel) {}
     } message: {
-      Text("缺少记录不会自动按 0 kcal 处理；仅在确认没有摄入时使用此操作。")
+      Text(L10n.text("core.missing.records.are.not.automatically.treated.as.0.kcal.use.this.only.when.you.confir"))
     }
   }
 
   private var daySummarySection: some View {
-    Section("当日营养") {
-      summaryRow("卡路里", value: dayTotals.calories, unit: "kcal")
-      summaryRow("碳水", value: dayTotals.carbohydrates, unit: "g")
-      summaryRow("蛋白质", value: dayTotals.protein, unit: "g")
-      summaryRow("脂肪", value: dayTotals.fat, unit: "g")
+    Section(L10n.text("core.daily.nutrition")) {
+      summaryRow(L10n.text("core.calories.284"), value: dayTotals.calories, unit: "kcal")
+      summaryRow(L10n.text("core.carbs"), value: dayTotals.carbohydrates, unit: "g")
+      summaryRow(L10n.text("core.protein"), value: dayTotals.protein, unit: "g")
+      summaryRow(L10n.text("core.fat"), value: dayTotals.fat, unit: "g")
       if !dayEntries.isEmpty && dayTotals.isAllZero {
-        Text("当天记录都未填写营养")
+        Text(L10n.text("core.no.nutrition.values.in.this.day.s.records"))
           .font(.caption)
           .foregroundStyle(.secondary)
       }
       if confirmedToday {
-        Label("所选日期饮食已确认完整", systemImage: "checkmark.circle.fill")
+        Label(L10n.text("core.food.records.for.this.date.confirmed.complete"), systemImage: "checkmark.circle.fill")
           .foregroundStyle(.green)
           .accessibilityIdentifier("nutrition.dietComplete")
       } else {
-        Button("确认所选日期饮食已记完整") {
+        Button(L10n.text("core.confirm.food.records.for.this.date.are.complete")) {
           if dayEntries.isEmpty { showEmptyDietConfirmation = true } else { confirmSelectedDay() }
         }
         .disabled(selectedDayKey > AnalysisFingerprint.localDate(.now, timeZone: .current))
@@ -217,7 +218,7 @@ struct NutritionView: View {
           }
           .buttonStyle(.plain)
           .swipeActions {
-            Button("删除", role: .destructive) { pendingDeletion = entry }
+            Button(L10n.text("core.delete"), role: .destructive) { pendingDeletion = entry }
           }
         }
       } header: {
@@ -225,7 +226,7 @@ struct NutritionView: View {
           Label(mealType.title, systemImage: mealType.systemImage)
           Spacer()
           if totals.isAllZero {
-            Text("未填写营养")
+            Text(L10n.text("core.nutrition.values.not.entered"))
           } else {
             Text("\(NutritionFormatting.number(totals.calories, fraction: 0)) kcal")
               .monospacedDigit()
@@ -251,7 +252,7 @@ struct NutritionView: View {
     } catch {
       modelContext.rollback()
       pendingDeletion = nil
-      actionErrorMessage = "删除失败：\(error.localizedDescription)。请重试。"
+      actionErrorMessage = L10n.Message(resolving: { L10n.text("core.delete.failed.please.try.again" , String(describing: error.localizedDescription)) })
     }
   }
 
@@ -274,7 +275,7 @@ struct NutritionView: View {
       try modelContext.save()
     } catch {
       modelContext.rollback()
-      actionErrorMessage = "未能确认饮食完整，请重试。"
+      actionErrorMessage = L10n.Message(resolving: { L10n.text("core.could.not.confirm.complete.food.records.please.try.again") })
     }
   }
 }
@@ -305,12 +306,12 @@ private struct FoodLogRow: View {
       .font(.caption)
       .foregroundStyle(.secondary)
       if nutrition.isAllZero {
-        Text("未填写营养")
+        Text(L10n.text("core.nutrition.values.not.entered"))
           .font(.caption2)
           .foregroundStyle(.orange)
       } else {
         Text(
-          "碳水 \(NutritionFormatting.number(entry.carbohydrates))g · 蛋白质 \(NutritionFormatting.number(entry.protein))g · 脂肪 \(NutritionFormatting.number(entry.fat))g"
+          L10n.text("core.carbs.g.protein.g.fat.g" , String(describing: NutritionFormatting.number(entry.carbohydrates)), String(describing: NutritionFormatting.number(entry.protein)), String(describing: NutritionFormatting.number(entry.fat)))
         )
         .font(.caption2)
         .foregroundStyle(.tertiary)
@@ -339,7 +340,7 @@ private struct FoodEntryEditor: View {
   @State private var mealType: MealType
   @State private var loggedAt: Date
   @State private var saveAsPreset = false
-  @State private var errorMessage: String?
+  @State private var errorMessage: L10n.Message?
 
   init(date: Date, entry: FoodLogEntry?, onSaved: @escaping (Date) -> Void = { _ in }) {
     self.entry = entry
@@ -365,54 +366,54 @@ private struct FoodEntryEditor: View {
       Form {
         if entry == nil {
           Section {
-            Menu("最近 / 常用 / 固定餐 / 复制") {
-              Button("最近记录") { sourceSheet = .recentPicker }
+            Menu(L10n.text("recording.food.sources")) {
+              Button(L10n.text("core.recent.records")) { sourceSheet = .recentPicker }
                 .accessibilityIdentifier("nutrition.add.recent")
-              Button("常用食物") { sourceSheet = .presetPicker }
+              Button(L10n.text("core.favorite.foods")) { sourceSheet = .presetPicker }
                 .accessibilityIdentifier("nutrition.add.preset")
-              Button("固定餐") { sourceSheet = .mealPicker }
+              Button(L10n.text("core.saved.meals")) { sourceSheet = .mealPicker }
                 .accessibilityIdentifier("nutrition.add.meal")
-              Button("复制某一餐") { sourceSheet = .copyPicker }
+              Button(L10n.text("core.copy.a.meal")) { sourceSheet = .copyPicker }
                 .accessibilityIdentifier("nutrition.add.copy")
             }
             .accessibilityIdentifier("nutrition.entry.sources")
             if sourceSavedDate != nil {
-              Text("复用记录已保存，当前草稿仍保留。")
+              Text(L10n.text("recording.food.draft.retained"))
                 .accessibilityIdentifier("nutrition.entry.draftRetained")
             }
           }
         }
-        Section("食物") {
-          TextField("名称", text: $draft.name)
+        Section(L10n.text("core.food")) {
+          TextField(L10n.text("core.name"), text: $draft.name)
             .accessibilityIdentifier("nutrition.entry.name")
           Picker(
-            "营养基准",
+            L10n.text("core.nutrition.basis"),
             selection: Binding(get: { draft.inputMode }, set: { draft.changeInputMode(to: $0) })
           ) {
             ForEach(PortionInputMode.allCases) { Text($0.title).tag($0) }
           }
-          .pickerStyle(.segmented)
+          .modifier(CoreAdaptivePickerStyle())
           .accessibilityIdentifier("nutrition.entry.basis")
           if draft.inputMode == .perServing {
-            TextField("份量说明", text: $draft.servingDescription)
+            TextField(L10n.text("core.portion.description"), text: $draft.servingDescription)
               .accessibilityIdentifier("nutrition.entry.serving")
           } else {
-            LabeledContent("份量说明") {
+            LabeledContent(L10n.text("core.portion.description")) {
               Text(FoodPortionMath.per100gServingDescription)
                 .foregroundStyle(.secondary)
             }
           }
           LabeledContent(draft.inputMode.amountTitle) {
-            TextField("1", value: $draft.amount, format: .number.precision(.fractionLength(0...2)))
+            StableNumberField("1", value: $draft.amount, format: .number.precision(.fractionLength(0...2)).locale(L10n.locale))
               .keyboardType(.decimalPad)
               .multilineTextAlignment(.trailing)
               .accessibilityIdentifier("nutrition.entry.amount")
           }
-          Picker("餐次", selection: $mealType) {
+          Picker(L10n.text("core.meal"), selection: $mealType) {
             ForEach(MealType.allCases) { Text($0.title).tag($0) }
           }
           DatePicker(
-            "记录时间",
+            L10n.text("core.record.time"),
             selection: $loggedAt,
             displayedComponents: [.date, .hourAndMinute]
           )
@@ -420,55 +421,56 @@ private struct FoodEntryEditor: View {
         }
 
         Section {
-          LabeledContent("热量", value: "\(NutritionFormatting.number(draft.perUnit.calories)) kcal")
+          LabeledContent(L10n.text("core.calories"), value: "\(NutritionFormatting.number(draft.perUnit.calories)) kcal")
             .accessibilityIdentifier("nutrition.entry.perUnit.calories")
-          perUnitField("碳水", nutrient: .carbohydrates, unit: "g")
-          perUnitField("蛋白质", nutrient: .protein, unit: "g")
-          perUnitField("脂肪", nutrient: .fat, unit: "g")
+          perUnitField(L10n.text("core.carbs"), nutrient: .carbohydrates, unit: "g")
+          perUnitField(L10n.text("core.protein"), nutrient: .protein, unit: "g")
+          perUnitField(L10n.text("core.fat"), nutrient: .fat, unit: "g")
         } header: {
           Text(draft.inputMode.nutrientSectionTitle)
         }
 
         Section {
-          LabeledContent("热量", value: "\(NutritionFormatting.number(draft.totals.calories)) kcal")
+          LabeledContent(L10n.text("core.calories"), value: "\(NutritionFormatting.number(draft.totals.calories)) kcal")
             .accessibilityIdentifier("nutrition.entry.total.calories")
           if editTotals {
-            totalField("碳水", nutrient: .carbohydrates, unit: "g")
-            totalField("蛋白质", nutrient: .protein, unit: "g")
-            totalField("脂肪", nutrient: .fat, unit: "g")
+            totalField(L10n.text("settings.carbs"), nutrient: .carbohydrates, unit: "g")
+            totalField(L10n.text("settings.protein"), nutrient: .protein, unit: "g")
+            totalField(L10n.text("settings.fat"), nutrient: .fat, unit: "g")
           } else {
             Text(previewText).monospacedDigit()
           }
-          Button(editTotals ? "收起总量" : "修改总量") { editTotals.toggle() }
+          Button(editTotals ? L10n.text("recording.hide.totals") : L10n.text("recording.edit.totals")) { editTotals.toggle() }
             .accessibilityIdentifier("nutrition.entry.editTotals")
         } header: {
-          Text("本条记录营养总量")
+          Text(L10n.text("recording.entry.totals"))
         }
 
         if entry == nil {
           Section {
-            Toggle("同时保存为常用食物", isOn: $saveAsPreset)
+            Toggle(L10n.text("core.also.save.as.a.favorite.food"), isOn: $saveAsPreset)
               .accessibilityIdentifier("nutrition.entry.savePreset")
           }
         }
       }
-      .navigationTitle(entry == nil ? "记录饮食" : "编辑饮食")
+      .localizationTestControls()
+    .navigationTitle(entry == nil ? L10n.text("core.log.food") : L10n.text("core.edit.food.record"))
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
         ToolbarItem(placement: .cancellationAction) {
-          Button("取消") { if hasChanges { showDiscard = true } else { dismiss() } }
+          Button(L10n.text("settings.cancel")) { if hasChanges { showDiscard = true } else { dismiss() } }
         }
         ToolbarItem(placement: .confirmationAction) {
-          Button("保存", action: save)
+          Button(L10n.text("core.save"), action: save)
             .disabled(!isValid)
             .accessibilityIdentifier("nutrition.entry.save")
         }
         NutritionKeyboardDoneToolbar()
       }
       .interactiveDismissDisabled(hasChanges)
-      .alert("放弃未保存的饮食草稿？", isPresented: $showDiscard) {
-        Button("放弃草稿", role: .destructive) { dismiss() }
-        Button("继续编辑", role: .cancel) {}
+      .alert(L10n.text("recording.discard.food.draft.question"), isPresented: $showDiscard) {
+        Button(L10n.text("recording.discard.draft"), role: .destructive) { dismiss() }
+        Button(L10n.text("core.keep.editing"), role: .cancel) {}
       }
       .sheet(
         item: $sourceSheet,
@@ -490,31 +492,31 @@ private struct FoodEntryEditor: View {
         default: EmptyView()
         }
       }
-      .alert("保存失败", isPresented: errorBinding) {
-        Button("好", role: .cancel) { errorMessage = nil }
+      .alert(L10n.text("settings.saveFailed"), isPresented: errorBinding) {
+        Button(L10n.text("settings.ok"), role: .cancel) { errorMessage = nil }
       } message: {
-        Text(errorMessage ?? "")
+        Text(errorMessage?.text ?? "")
       }
     }
   }
 
   private var previewText: String {
     let totals = draft.totals
-    guard totals.isFinite else { return "总量预览：数值超出范围，请检查输入。" }
+    guard totals.isFinite else { return L10n.text("core.totals.preview.values.are.out.of.range.check.your.input") }
     return
-      "总量预览：\(NutritionFormatting.number(totals.calories)) kcal · 碳水 \(NutritionFormatting.number(totals.carbohydrates))g · 蛋白质 \(NutritionFormatting.number(totals.protein))g · 脂肪 \(NutritionFormatting.number(totals.fat))g"
+      L10n.text("core.totals.preview.kcal.carbs.g.protein.g.fat.g" , String(describing: NutritionFormatting.number(totals.calories)), String(describing: NutritionFormatting.number(totals.carbohydrates)), String(describing: NutritionFormatting.number(totals.protein)), String(describing: NutritionFormatting.number(totals.fat)))
   }
 
   private func perUnitField(_ title: String, nutrient: NutrientKind, unit: String) -> some View {
     LabeledContent(title) {
       HStack {
-        TextField(
+        StableNumberField(
           "0",
           value: Binding(
             get: { draft.perUnit.value(for: nutrient) },
             set: { draft.perUnit.setValue($0, for: nutrient) }
           ),
-          format: .number.precision(.fractionLength(0...2))
+          format: .number.precision(.fractionLength(0...2)).locale(L10n.locale)
         )
         .keyboardType(.decimalPad)
         .multilineTextAlignment(.trailing)
@@ -527,13 +529,13 @@ private struct FoodEntryEditor: View {
   private func totalField(_ title: String, nutrient: NutrientKind, unit: String) -> some View {
     LabeledContent(title) {
       HStack {
-        TextField(
+        StableNumberField(
           "0",
           value: Binding(
             get: { draft.totals.value(for: nutrient) },
             set: { draft.setTotal(nutrient, to: $0) }
           ),
-          format: .number.precision(.fractionLength(0...2))
+          format: .number.precision(.fractionLength(0...2)).locale(L10n.locale)
         )
         .keyboardType(.decimalPad)
         .multilineTextAlignment(.trailing)
@@ -549,7 +551,7 @@ private struct FoodEntryEditor: View {
 
   private func save() {
     guard draft.isValid else {
-      errorMessage = "请检查名称、份量和营养数值：数值必须为有限非负数，份量必须大于 0。"
+      errorMessage = L10n.Message(resolving: { L10n.text("core.check.the.name.portion.and.nutrition.values.values.must.be.finite.and.nonnegative.and") })
       return
     }
     let totals = draft.totals
@@ -572,7 +574,7 @@ private struct FoodEntryEditor: View {
         dismiss()
       } catch {
         original.restore(into: entry)
-        errorMessage = "保存失败：\(error.localizedDescription)。修改仍保留在表单中，请重试。"
+        errorMessage = L10n.Message(resolving: { L10n.text("core.save.failed.your.changes.are.still.in.the.form.please.try.again" , String(describing: error.localizedDescription)) })
       }
     } else {
       let newEntry = draft.makeEntry(loggedAt: loggedAt, mealType: mealType)
@@ -597,7 +599,7 @@ private struct FoodEntryEditor: View {
       } catch {
         modelContext.delete(newEntry)
         if let insertedPreset { modelContext.delete(insertedPreset) }
-        errorMessage = "保存失败：\(error.localizedDescription)。输入仍保留在表单中，请重试。"
+        errorMessage = L10n.Message(resolving: { L10n.text("core.save.failed.your.input.is.still.in.the.form.please.try.again" , String(describing: error.localizedDescription)) })
       }
     }
   }
@@ -646,31 +648,31 @@ private struct FoodPortionFields: View {
   @Binding var loggedAt: Date
 
   var body: some View {
-    Section("记录参数") {
-      LabeledContent("营养基准") {
-        Text(draft.inputMode == .per100g ? "每 100 克" : draft.canonicalServingDescription)
+    Section(L10n.text("core.record.details")) {
+      LabeledContent(L10n.text("core.nutrition.basis")) {
+        Text(draft.inputMode == .per100g ? L10n.text("core.per.100.grams") : draft.canonicalServingDescription)
           .foregroundStyle(.secondary)
       }
       LabeledContent(draft.inputMode.amountTitle) {
-        TextField("0", value: $draft.amount, format: .number.precision(.fractionLength(0...2)))
+        StableNumberField("0", value: $draft.amount, format: .number.precision(.fractionLength(0...2)).locale(L10n.locale))
           .keyboardType(.decimalPad)
           .multilineTextAlignment(.trailing)
           .accessibilityIdentifier("nutrition.portion.amount")
       }
-      Picker("餐次", selection: $mealType) {
+      Picker(L10n.text("core.meal"), selection: $mealType) {
         ForEach(MealType.allCases) { Text($0.title).tag($0) }
       }
       DatePicker(
-        "记录时间",
+        L10n.text("core.record.time"),
         selection: $loggedAt,
         displayedComponents: [.date, .hourAndMinute]
       )
     }
-    Section("营养总量预览") {
-      previewRow("卡路里", value: draft.totals.calories, unit: "kcal")
-      previewRow("碳水", value: draft.totals.carbohydrates, unit: "g")
-      previewRow("蛋白质", value: draft.totals.protein, unit: "g")
-      previewRow("脂肪", value: draft.totals.fat, unit: "g")
+    Section(L10n.text("core.nutrition.totals.preview")) {
+      previewRow(L10n.text("core.calories.284"), value: draft.totals.calories, unit: "kcal")
+      previewRow(L10n.text("core.carbs"), value: draft.totals.carbohydrates, unit: "g")
+      previewRow(L10n.text("core.protein"), value: draft.totals.protein, unit: "g")
+      previewRow(L10n.text("core.fat"), value: draft.totals.fat, unit: "g")
     }
   }
 
@@ -713,7 +715,7 @@ private struct FoodPresetLogSheet: View {
   @State private var draft = FoodNutritionDraft()
   @State private var mealType = MealType.defaultForTime()
   @State private var loggedAt = Date.now
-  @State private var errorMessage: String?
+  @State private var errorMessage: L10n.Message?
 
   private var filteredPresets: [FoodPreset] {
     let normalized = searchText.trimmed.lowercased()
@@ -728,26 +730,26 @@ private struct FoodPresetLogSheet: View {
     NavigationStack {
       List {
         if let preset = activePreset {
-          Section("已选食物") {
+          Section(L10n.text("core.selected.food")) {
             VStack(alignment: .leading, spacing: 3) {
               Text(preset.name)
               Text(preset.servingDescription)
                 .font(.caption)
                 .foregroundStyle(.secondary)
             }
-            Button("重新选择") {
+            Button(L10n.text("core.choose.again")) {
               activePreset = nil
             }
             .accessibilityIdentifier("nutrition.preset.reselect")
           }
           FoodPortionFields(draft: $draft, mealType: $mealType, loggedAt: $loggedAt)
         } else {
-          Section("常用食物") {
+          Section(L10n.text("core.favorite.foods")) {
             if presets.isEmpty {
-              Text("还没有常用食物，可在资料库中创建。")
+              Text(L10n.text("core.no.favorite.foods.yet.create.one.in.the.library"))
                 .foregroundStyle(.secondary)
             } else if filteredPresets.isEmpty {
-              Text("没有匹配的常用食物。")
+              Text(L10n.text("core.no.matching.favorite.foods.320"))
                 .foregroundStyle(.secondary)
             } else {
               ForEach(filteredPresets) { preset in
@@ -773,29 +775,30 @@ private struct FoodPresetLogSheet: View {
         }
       }
       .modifier(
-        FoodSelectionSearch(query: $searchText, isSelecting: activePreset == nil, prompt: "搜索常用食物")
+        FoodSelectionSearch(query: $searchText, isSelecting: activePreset == nil, prompt: L10n.text("core.search.favorite.foods"))
       )
       .accessibilityIdentifier("nutrition.preset.search")
-      .navigationTitle(activePreset == nil ? "常用食物" : "记录常用食物")
+      .localizationTestControls()
+    .navigationTitle(activePreset == nil ? L10n.text("core.favorite.foods") : L10n.text("core.log.favorite.food"))
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
         ToolbarItem(placement: .cancellationAction) {
-          Button("取消") { dismiss() }
+          Button(L10n.text("settings.cancel")) { dismiss() }
             .accessibilityIdentifier("nutrition.source.cancel")
         }
         if let preset = activePreset {
           ToolbarItem(placement: .confirmationAction) {
-            Button("记录") { log(preset) }
+            Button(L10n.text("core.log")) { log(preset) }
               .disabled(!draft.isValid)
               .accessibilityIdentifier("nutrition.preset.log")
           }
         }
         NutritionKeyboardDoneToolbar()
       }
-      .alert("保存失败", isPresented: errorBinding) {
-        Button("好", role: .cancel) { errorMessage = nil }
+      .alert(L10n.text("core.save.failed"), isPresented: errorBinding) {
+        Button(L10n.text("core.ok.201"), role: .cancel) { errorMessage = nil }
       } message: {
-        Text(errorMessage ?? "")
+        Text(errorMessage?.text ?? "")
       }
     }
   }
@@ -813,7 +816,7 @@ private struct FoodPresetLogSheet: View {
 
   private func log(_ preset: FoodPreset) {
     guard draft.isValid else {
-      errorMessage = "请检查份量：必须为大于 0 的有限数值。"
+      errorMessage = L10n.Message(resolving: { L10n.text("core.check.the.portion.it.must.be.finite.and.greater.than.0") })
       return
     }
     let entry = draft.makeEntry(loggedAt: loggedAt, mealType: mealType)
@@ -824,7 +827,7 @@ private struct FoodPresetLogSheet: View {
       dismiss()
     } catch {
       modelContext.delete(entry)
-      errorMessage = "保存失败：\(error.localizedDescription)。请重试。"
+      errorMessage = L10n.Message(resolving: { L10n.text("core.save.failed.please.try.again" , String(describing: error.localizedDescription)) })
     }
   }
 }
@@ -844,7 +847,7 @@ private struct RecentFoodPickerSheet: View {
   @State private var draft = FoodNutritionDraft()
   @State private var mealType = MealType.defaultForTime()
   @State private var loggedAt = Date.now
-  @State private var errorMessage: String?
+  @State private var errorMessage: L10n.Message?
 
   private var recentItems: [RecentFoodItem] {
     RecentFoodItem.deduplicated(from: entries).filter { $0.matches(searchText) }
@@ -854,21 +857,21 @@ private struct RecentFoodPickerSheet: View {
     NavigationStack {
       List {
         if let item = activeItem {
-          Section("已选食物") {
+          Section(L10n.text("core.selected.food")) {
             VStack(alignment: .leading, spacing: 3) {
               Text(item.name)
               Text(item.servingDescription)
                 .font(.caption)
                 .foregroundStyle(.secondary)
             }
-            Button("重新选择") { activeItem = nil }
+            Button(L10n.text("core.choose.again")) { activeItem = nil }
               .accessibilityIdentifier("nutrition.recent.reselect")
           }
           FoodPortionFields(draft: $draft, mealType: $mealType, loggedAt: $loggedAt)
         } else {
-          Section("最近记录") {
+          Section(L10n.text("core.recent.records")) {
             if recentItems.isEmpty {
-              Text("还没有可复用的历史记录。")
+              Text(L10n.text("core.no.reusable.historical.records.yet"))
                 .foregroundStyle(.secondary)
             } else {
               ForEach(recentItems) { item in
@@ -878,7 +881,7 @@ private struct RecentFoodPickerSheet: View {
                   VStack(alignment: .leading, spacing: 3) {
                     Text(item.name)
                     Text(
-                      "\(item.servingDescription) · 约 \(NutritionFormatting.number(item.perUnit.calories, fraction: 0)) kcal/\(FoodPortionMath.isPer100g(item.servingDescription) ? "100 克" : "份")"
+                      L10n.text("core.approx.kcal" , item.servingDescription, String(describing: NutritionFormatting.number(item.perUnit.calories, fraction: 0)), String(describing: FoodPortionMath.isPer100g(item.servingDescription) ? L10n.text("core.100") : L10n.text("core.servings")))
                     )
                     .font(.caption)
                     .foregroundStyle(.secondary)
@@ -894,29 +897,30 @@ private struct RecentFoodPickerSheet: View {
         }
       }
       .modifier(
-        FoodSelectionSearch(query: $searchText, isSelecting: activeItem == nil, prompt: "搜索最近记录")
+        FoodSelectionSearch(query: $searchText, isSelecting: activeItem == nil, prompt: L10n.text("core.search.recent.records"))
       )
       .accessibilityIdentifier("nutrition.recent.search")
-      .navigationTitle(activeItem == nil ? "最近记录" : "记录最近食物")
+      .localizationTestControls()
+    .navigationTitle(activeItem == nil ? L10n.text("core.recent.records") : L10n.text("core.log.recent.food"))
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
         ToolbarItem(placement: .cancellationAction) {
-          Button("取消") { dismiss() }
+          Button(L10n.text("settings.cancel")) { dismiss() }
             .accessibilityIdentifier("nutrition.source.cancel")
         }
         if let item = activeItem {
           ToolbarItem(placement: .confirmationAction) {
-            Button("记录") { log(item) }
+            Button(L10n.text("core.log")) { log(item) }
               .disabled(!draft.isValid)
               .accessibilityIdentifier("nutrition.recent.log")
           }
         }
         NutritionKeyboardDoneToolbar()
       }
-      .alert("保存失败", isPresented: errorBinding) {
-        Button("好", role: .cancel) { errorMessage = nil }
+      .alert(L10n.text("core.save.failed"), isPresented: errorBinding) {
+        Button(L10n.text("core.ok.201"), role: .cancel) { errorMessage = nil }
       } message: {
-        Text(errorMessage ?? "")
+        Text(errorMessage?.text ?? "")
       }
     }
   }
@@ -934,7 +938,7 @@ private struct RecentFoodPickerSheet: View {
 
   private func log(_ item: RecentFoodItem) {
     guard draft.isValid else {
-      errorMessage = "请检查份量：必须为大于 0 的有限数值。"
+      errorMessage = L10n.Message(resolving: { L10n.text("core.check.the.portion.it.must.be.finite.and.greater.than.0") })
       return
     }
     let entry = draft.makeEntry(loggedAt: loggedAt, mealType: mealType)
@@ -945,12 +949,13 @@ private struct RecentFoodPickerSheet: View {
       dismiss()
     } catch {
       modelContext.delete(entry)
-      errorMessage = "保存失败：\(error.localizedDescription)。请重试。"
+      errorMessage = L10n.Message(resolving: { L10n.text("core.save.failed.please.try.again" , String(describing: error.localizedDescription)) })
     }
   }
 }
 
 private struct MealTemplateLogSheet: View {
+  @ScaledMetric(relativeTo: .body) private var quantityWidth = 72.0
   @Environment(\.dismiss) private var dismiss
   @Environment(\.modelContext) private var modelContext
 
@@ -964,24 +969,24 @@ private struct MealTemplateLogSheet: View {
   @State private var quantities: [UUID: Double] = [:]
   @State private var mealType = MealType.defaultForTime()
   @State private var loggedAt = Date.now
-  @State private var errorMessage: String?
+  @State private var errorMessage: L10n.Message?
 
   var body: some View {
     NavigationStack {
       List {
         if let template = activeTemplate {
-          Section("记录参数") {
-            Picker("餐次", selection: $mealType) {
+          Section(L10n.text("core.record.details")) {
+            Picker(L10n.text("core.meal"), selection: $mealType) {
               ForEach(MealType.allCases) { Text($0.title).tag($0) }
             }.accessibilityIdentifier("nutrition.meal.type")
             DatePicker(
-              "记录时间",
+              L10n.text("core.record.time"),
               selection: $loggedAt,
               displayedComponents: [.date, .hourAndMinute]
             )
           }
 
-          Section("食物份量（可单独调整）") {
+          Section(L10n.text("core.food.portions.adjust.separately")) {
             ForEach(template.sortedItems) { item in
               HStack {
                 VStack(alignment: .leading, spacing: 3) {
@@ -991,41 +996,41 @@ private struct MealTemplateLogSheet: View {
                     .foregroundStyle(.secondary)
                 }
                 Spacer()
-                TextField(
-                  "数量",
+                StableNumberField(
+                  L10n.text("core.quantity"),
                   value: quantityBinding(
                     for: item.id, fallback: item.quantity,
                     unitFactor: FoodPortionMath.isPer100g(item.servingDescriptionSnapshot) ? 100 : 1
                   ),
-                  format: .number.precision(.fractionLength(0...2))
+                  format: .number.precision(.fractionLength(0...2)).locale(L10n.locale)
                 )
                 .keyboardType(.decimalPad)
                 .multilineTextAlignment(.trailing)
-                .frame(maxWidth: 72)
+                .frame(maxWidth: quantityWidth)
                 .accessibilityIdentifier("nutrition.meal.quantity.\(item.id.uuidString)")
-                Text(FoodPortionMath.isPer100g(item.servingDescriptionSnapshot) ? "g" : "份")
+                Text(FoodPortionMath.isPer100g(item.servingDescriptionSnapshot) ? "g" : L10n.text("core.servings"))
                   .font(.caption).foregroundStyle(.secondary)
               }
             }
           }
 
-          Section("本条记录营养总量预览") {
-            previewRow("卡路里", value: totals(for: template).calories, unit: "kcal")
-            previewRow("碳水", value: totals(for: template).carbohydrates, unit: "g")
-            previewRow("蛋白质", value: totals(for: template).protein, unit: "g")
-            previewRow("脂肪", value: totals(for: template).fat, unit: "g")
+          Section(L10n.text("core.nutrition.totals.preview.for.this.entry")) {
+            previewRow(L10n.text("core.calories.284"), value: totals(for: template).calories, unit: "kcal")
+            previewRow(L10n.text("core.carbs"), value: totals(for: template).carbohydrates, unit: "g")
+            previewRow(L10n.text("core.protein"), value: totals(for: template).protein, unit: "g")
+            previewRow(L10n.text("core.fat"), value: totals(for: template).fat, unit: "g")
           }
 
           Section {
-            Button("记录这一餐") { apply(template) }
+            Button(L10n.text("core.log.this.meal")) { apply(template) }
               .accessibilityIdentifier("nutrition.meal.apply")
-            Button("重新选择固定餐") { activeTemplate = nil }
+            Button(L10n.text("core.choose.a.different.saved.meal")) { activeTemplate = nil }
               .accessibilityIdentifier("nutrition.meal.reselect")
           }
         } else {
-          Section("固定餐") {
+          Section(L10n.text("core.saved.meals")) {
             if templates.isEmpty {
-              Text("还没有固定餐，可在资料库中创建。")
+              Text(L10n.text("core.no.saved.meals.yet.create.one.in.the.library"))
                 .foregroundStyle(.secondary)
             } else {
               ForEach(templates) { template in
@@ -1034,7 +1039,7 @@ private struct MealTemplateLogSheet: View {
                 } label: {
                   VStack(alignment: .leading, spacing: 3) {
                     Text(template.name)
-                    Text("\(template.items.count) 项食物")
+                    Text(L10n.text("core.foods", template.items.count))
                       .font(.caption)
                       .foregroundStyle(.secondary)
                   }
@@ -1049,19 +1054,20 @@ private struct MealTemplateLogSheet: View {
           }
         }
       }
-      .navigationTitle(activeTemplate == nil ? "记录固定餐" : "调整固定餐份量")
+      .localizationTestControls()
+    .navigationTitle(activeTemplate == nil ? L10n.text("core.log.saved.meal") : L10n.text("core.adjust.saved.meal.portions"))
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
         ToolbarItem(placement: .cancellationAction) {
-          Button("取消") { dismiss() }
+          Button(L10n.text("settings.cancel")) { dismiss() }
             .accessibilityIdentifier("nutrition.source.cancel")
         }
         NutritionKeyboardDoneToolbar()
       }
-      .alert("保存失败", isPresented: errorBinding) {
-        Button("好", role: .cancel) { errorMessage = nil }
+      .alert(L10n.text("core.save.failed"), isPresented: errorBinding) {
+        Button(L10n.text("core.ok.201"), role: .cancel) { errorMessage = nil }
       } message: {
-        Text(errorMessage ?? "")
+        Text(errorMessage?.text ?? "")
       }
     }
   }
@@ -1116,7 +1122,7 @@ private struct MealTemplateLogSheet: View {
       loggedAt: loggedAt
     )
     guard !entries.isEmpty, entries.allSatisfy(\.isValid) else {
-      errorMessage = "有食物的数量无效，请检查后重试（数量必须为大于 0 的有限数值）。"
+      errorMessage = L10n.Message(resolving: { L10n.text("core.a.food.has.an.invalid.quantity.check.and.try.again.quantities.must.be.finite.and.grea") })
       return
     }
     for entry in entries { modelContext.insert(entry) }
@@ -1126,7 +1132,7 @@ private struct MealTemplateLogSheet: View {
       dismiss()
     } catch {
       for entry in entries { modelContext.delete(entry) }
-      errorMessage = "保存失败：\(error.localizedDescription)。请重试。"
+      errorMessage = L10n.Message(resolving: { L10n.text("core.save.failed.please.try.again" , String(describing: error.localizedDescription)) })
     }
   }
 }
@@ -1145,7 +1151,7 @@ private struct CopyMealSheet: View {
   @State private var sourceMeal: MealType = .dinner
   @State private var targetMeal = MealType.defaultForTime()
   @State private var showConfirmation = false
-  @State private var errorMessage: String?
+  @State private var errorMessage: L10n.Message?
 
   private var sourceEntries: [FoodLogEntry] {
     entries.filter {
@@ -1160,76 +1166,77 @@ private struct CopyMealSheet: View {
   var body: some View {
     NavigationStack {
       List {
-        Section("来源（复制哪一餐）") {
-          DatePicker("日期", selection: $sourceDate, displayedComponents: .date)
+        Section(L10n.text("core.source.meal.to.copy")) {
+          DatePicker(L10n.text("core.date"), selection: $sourceDate, displayedComponents: .date)
             .accessibilityIdentifier("nutrition.copy.sourceDate")
           HStack {
-            Button("昨天") {
+            Button(L10n.text("core.yesterday")) {
               sourceDate = Calendar.current.date(byAdding: .day, value: -1, to: .now) ?? .now
             }
             Spacer()
-            Button("今天") { sourceDate = .now }.accessibilityIdentifier("nutrition.copy.today")
+            Button(L10n.text("core.today.340")) { sourceDate = .now }.accessibilityIdentifier("nutrition.copy.today")
           }.buttonStyle(.borderless)
-          Picker("餐次", selection: $sourceMeal) {
+          Picker(L10n.text("core.meal"), selection: $sourceMeal) {
             ForEach(MealType.allCases) { Text($0.title).tag($0) }
           }.accessibilityIdentifier("nutrition.copy.sourceMeal")
         }
 
-        Section("目标") {
-          LabeledContent("日期") {
-            Text(selectedDate.formatted(date: .abbreviated, time: .omitted))
+        Section(L10n.text("core.destination")) {
+          LabeledContent(L10n.text("core.date")) {
+            Text(selectedDate.formatted(Date.FormatStyle(date: .abbreviated, time: .omitted).locale(L10n.locale)))
               .foregroundStyle(.secondary)
           }
-          Picker("餐次", selection: $targetMeal) {
+          Picker(L10n.text("core.meal"), selection: $targetMeal) {
             ForEach(MealType.allCases) { Text($0.title).tag($0) }
           }.accessibilityIdentifier("nutrition.copy.targetMeal")
         }
 
-        Section("预览") {
+        Section(L10n.text("core.preview")) {
           if sourceEntries.isEmpty {
-            Text("该日期和餐次没有可复制的记录。")
+            Text(L10n.text("core.no.records.to.copy.for.this.date.and.meal"))
               .foregroundStyle(.secondary)
           } else {
-            LabeledContent("记录数量") {
-              Text("\(sourceEntries.count) 条").monospacedDigit()
+            LabeledContent(L10n.text("core.number.of.records")) {
+              Text(L10n.text("core.entries", sourceEntries.count)).monospacedDigit()
             }
-            previewRow("卡路里", value: sourceTotals.calories, unit: "kcal")
-            previewRow("碳水", value: sourceTotals.carbohydrates, unit: "g")
-            previewRow("蛋白质", value: sourceTotals.protein, unit: "g")
-            previewRow("脂肪", value: sourceTotals.fat, unit: "g")
+            previewRow(L10n.text("settings.calories"), value: sourceTotals.calories, unit: "kcal")
+            previewRow(L10n.text("settings.carbs"), value: sourceTotals.carbohydrates, unit: "g")
+            previewRow(L10n.text("settings.protein"), value: sourceTotals.protein, unit: "g")
+            previewRow(L10n.text("settings.fat"), value: sourceTotals.fat, unit: "g")
           }
         }
 
         Section {
-          Button("复制到目标餐次") { showConfirmation = true }
+          Button(L10n.text("core.copy.to.destination.meal")) { showConfirmation = true }
             .disabled(sourceEntries.isEmpty)
             .accessibilityIdentifier("nutrition.copy.confirm")
         }
       }
-      .navigationTitle("复制某一餐")
+      .localizationTestControls()
+    .navigationTitle(L10n.text("core.copy.a.meal"))
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
         ToolbarItem(placement: .cancellationAction) {
-          Button("取消") { dismiss() }
+          Button(L10n.text("settings.cancel")) { dismiss() }
             .accessibilityIdentifier("nutrition.source.cancel")
         }
       }
       .confirmationDialog(
-        "确认复制 \(sourceEntries.count) 条记录？",
+        L10n.text("core.copy.records", sourceEntries.count),
         isPresented: $showConfirmation,
         titleVisibility: .visible
       ) {
-        Button("复制") { performCopy() }
-        Button("取消", role: .cancel) {}
+        Button(L10n.text("core.copy")) { performCopy() }
+        Button(L10n.text("core.cancel"), role: .cancel) {}
       } message: {
         Text(
-          "将复制到 \(selectedDate.formatted(date: .abbreviated, time: .omitted)) \(targetMeal.title)。"
+          L10n.text("core.copy.to" , String(describing: selectedDate.formatted(Date.FormatStyle(date: .abbreviated, time: .omitted).locale(L10n.locale))), String(describing: targetMeal.title))
         )
       }
-      .alert("保存失败", isPresented: errorBinding) {
-        Button("好", role: .cancel) { errorMessage = nil }
+      .alert(L10n.text("core.save.failed"), isPresented: errorBinding) {
+        Button(L10n.text("core.ok.201"), role: .cancel) { errorMessage = nil }
       } message: {
-        Text(errorMessage ?? "")
+        Text(errorMessage?.text ?? "")
       }
     }
   }
@@ -1252,7 +1259,7 @@ private struct CopyMealSheet: View {
       mealType: targetMeal
     )
     guard !copies.isEmpty, copies.allSatisfy(\.isValid) else {
-      errorMessage = "有记录的数据无效，无法复制。"
+      errorMessage = L10n.Message(resolving: { L10n.text("core.a.record.has.invalid.data.and.cannot.be.copied") })
       return
     }
     for entry in copies { modelContext.insert(entry) }
@@ -1262,7 +1269,7 @@ private struct CopyMealSheet: View {
       dismiss()
     } catch {
       for entry in copies { modelContext.delete(entry) }
-      errorMessage = "保存失败：\(error.localizedDescription)。请重试。"
+      errorMessage = L10n.Message(resolving: { L10n.text("core.save.failed.please.try.again" , String(describing: error.localizedDescription)) })
     }
   }
 }

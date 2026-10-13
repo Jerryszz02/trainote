@@ -33,22 +33,20 @@ struct ExerciseAnimationView: View {
             Button {
               playback.toggle()
             } label: {
-              Label(
-                playback.isPlaying ? "暂停演示" : "播放演示",
-                systemImage: playback.isPlaying ? "pause.fill" : "play.fill"
-              )
-              .font(.caption.weight(.semibold))
-              .padding(10)
-              .background(.regularMaterial, in: Capsule())
+              Label(playback.isPlaying ? L10n.text("core.pause.animation") : L10n.text("core.play.animation"),
+                    systemImage: playback.isPlaying ? "pause.fill" : "play.fill")
+                .font(.caption.weight(.semibold))
+                .padding(10)
+                .background(.regularMaterial, in: Capsule())
             }
             .padding(10)
             .disabled(!playback.isReady)
             .accessibilityIdentifier("exerciseAnimation.toggle")
-            .accessibilityValue(playback.isReady ? (playback.isPlaying ? "播放中" : "已暂停") : "准备中")
+            .accessibilityValue(playback.isReady ? (playback.isPlaying ? L10n.text("core.playing") : L10n.text("core.paused")) : L10n.text("core.preparing"))
           }
           .frame(height: 210)
           .clipShape(RoundedRectangle(cornerRadius: 12))
-          Text("动作演示 · 胸部、肱三头肌")
+          Text(L10n.text("core.exercise.animation.chest.and.triceps"))
             .font(.caption.weight(.medium))
         }
         .onAppear {
@@ -66,7 +64,7 @@ struct ExerciseAnimationView: View {
   }
 
   private var unavailableMessage: some View {
-    Text("动作演示暂时无法播放，请查看下方动作说明。")
+    Text(L10n.text("core.the.exercise.animation.is.unavailable.see.the.instructions.below"))
       .font(.footnote)
       .foregroundStyle(.secondary)
       .accessibilityIdentifier("exerciseAnimation.unavailable")

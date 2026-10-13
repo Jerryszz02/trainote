@@ -18,15 +18,15 @@ struct RecoveryAnalysisDestination: View {
           resetCalibration: { integration.calibration.reset(at: .now) })
       } else {
         ContentUnavailableView(
-          "恢复分析暂不可用", systemImage: "figure.stand",
-          description: Text(integration.failureMessage ?? "请稍后重试。原有记录仍可使用。")
+          L10n.text("health.recoveryanalysisdestination.recovery.analysis.unavailable.ee1a30"), systemImage: "figure.stand",
+          description: Text(integration.failureMessage ?? L10n.text("health.recoveryanalysisdestination.try.again.later.existing.records.are.dcd98b"))
         )
-        .navigationTitle("恢复分析")
+        .navigationTitle(L10n.text("health.recoveryanalysisdestination.recovery.analysis.c172e5"))
       }
     }
     .toolbar {
       ToolbarItem(placement: .topBarTrailing) {
-        Button("训练建议") { showAdvice = true }
+        Button(L10n.text("health.recoveryanalysisdestination.training.advice.d3707a")) { showAdvice = true }
           .accessibilityIdentifier("recovery.trainingAdvice")
       }
     }
@@ -48,7 +48,7 @@ struct RecoveryAnalysisDestination: View {
         HealthHelpView(topic: .recovery)
           .toolbar {
             ToolbarItem(placement: .confirmationAction) {
-              Button("完成") { showMethods = false }
+              Button(L10n.text("health.recoveryanalysisdestination.done.33246f")) { showMethods = false }
             }
           }
       }

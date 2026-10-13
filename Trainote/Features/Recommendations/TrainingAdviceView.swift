@@ -17,33 +17,33 @@ struct TrainingAdviceView: View {
   var body: some View {
     List {
       if let activeWorkout = controller.activeWorkout {
-        Section("进行中的训练") {
-          Text("你已有一条进行中的训练。完成或结束它后，才能按建议创建新训练。")
+        Section(L10n.text("health.trainingadviceview.workout.in.progress.9b5f5a")) {
+          Text(L10n.text("health.trainingadviceview.you.already.have.a.workout.in.63ffd7"))
             .foregroundStyle(.secondary)
-          Button("继续进行中的训练") { onStartWorkout(activeWorkout) }
+          Button(L10n.text("health.trainingadviceview.continue.current.workout.df1345")) { onStartWorkout(activeWorkout) }
             .accessibilityIdentifier("advice.continueWorkout")
         }
       }
-      Section("本次训练") {
+      Section(L10n.text("health.trainingadviceview.this.workout.3658d6")) {
         Picker(
-          "选择模板",
+          L10n.text("health.trainingadviceview.choose.a.template.860cb3"),
           selection: Binding(
             get: { controller.selectedRoutineID },
             set: { controller.selectedRoutineID = $0 }
           )
         ) {
-          Text("尚未选择").tag(Optional<UUID>.none)
+          Text(L10n.text("health.trainingadviceview.not.selected.22c7d7")).tag(Optional<UUID>.none)
           ForEach(controller.routines) { routine in
             Text(routine.name).tag(Optional(routine.id))
           }
         }
         .accessibilityIdentifier("advice.selectedRoutine")
-        Text("这里只选择本次想用的模板，不会自动建立长期训练计划。")
+        Text(L10n.text("health.trainingadviceview.this.selects.a.template.for.this.dc4235"))
           .font(.caption).foregroundStyle(.secondary)
         if let selected = controller.selectedRoutineID {
           ForEach(controller.routines.filter { $0.id != selected }) { routine in
             Toggle(
-              "备选：\(routine.name)",
+              L10n.text("health.trainingadviceview.alternative.624cdd", String(routine.name)),
               isOn: Binding(
                 get: { controller.alternativeRoutineIDs.contains(routine.id) },
                 set: { value in
@@ -58,9 +58,9 @@ struct TrainingAdviceView: View {
           }
         }
       }
-      Section("可训练日（可选）") {
+      Section(L10n.text("health.trainingadviceview.training.days.optional.0e438b")) {
         if controller.availableWeekdays == nil {
-          Button("填写可训练日") { controller.availableWeekdays = [] }
+          Button(L10n.text("health.trainingadviceview.add.training.days.a27ac3")) { controller.availableWeekdays = [] }
             .accessibilityIdentifier("advice.schedule.start")
         } else {
           ForEach(1...7, id: \.self) { day in
@@ -76,21 +76,21 @@ struct TrainingAdviceView: View {
             )
             .accessibilityIdentifier("advice.weekday.\(day)")
           }
-          Button("清除日期选择") { controller.availableWeekdays = nil }
+          Button(L10n.text("health.trainingadviceview.clear.day.selection.3525f4")) { controller.availableWeekdays = nil }
             .accessibilityIdentifier("advice.schedule.clear")
         }
       }
       Section {
-        Button("查看今日建议") { controller.refresh() }
+        Button(L10n.text("health.trainingadviceview.view.today.s.advice.ae535c")) { controller.refresh() }
           .accessibilityIdentifier("advice.refresh")
       }
       if let message = controller.errorMessage {
         Section { Text(message).foregroundStyle(.secondary) }
       } else if let evaluation = controller.evaluation {
-        Section("今日建议") {
+        Section(L10n.text("health.trainingadviceview.today.s.advice.d93d0e")) {
           if !evaluation.blockedMuscles.isEmpty {
             Label(
-              "另有疼痛或活动受限记录：\(evaluation.blockedMuscles.map(\.displayName).joined(separator: "、"))。涉及这些肌群的训练仍受限制。",
+              L10n.text("health.trainingadviceview.additional.pain.or.movement.limits.training.9feb7a", String(evaluation.blockedMuscles.map(\.displayName).joined(separator: L10n.language == .english ? ", " : "、"))),
               systemImage: "exclamationmark.triangle"
             )
             .font(.subheadline)
@@ -104,10 +104,13 @@ struct TrainingAdviceView: View {
         if controller.activeWorkout == nil, let parameterActionID,
           let candidate = evaluation.candidates.first(where: { $0.id == parameterActionID })
         {
-          Section("选择本次参数") {
+          Section(L10n.text("health.trainingadviceview.choose.parameters.for.this.workout.58299a")) {
             ForEach(candidate.allowedParameters, id: \.name) { allowed in
               Stepper(
-                "\(allowed.name == "minimumRIR" ? "至少保留余力" : "保留工作组")：\(Int(parameterValues[allowed.name] ?? allowed.minimum))\(allowed.unit == .percent ? "%" : " 次")",
+                L10n.text("health.trainingadviceview.parameter.value",
+                  allowed.name == "minimumRIR" ? L10n.text("health.trainingadviceview.minimum.reps.in.reserve.355e09") : L10n.text("health.trainingadviceview.working.sets.to.retain.3952d1"),
+                  Int(parameterValues[allowed.name] ?? allowed.minimum).formatted(.number.locale(L10n.locale)),
+                  allowed.unit == .percent ? "%" : L10n.text("health.trainingadviceview.reps.793578")),
                 value: Binding(
                   get: { parameterValues[allowed.name] ?? allowed.minimum },
                   set: { parameterValues[allowed.name] = $0 }),
@@ -116,48 +119,48 @@ struct TrainingAdviceView: View {
               )
               .accessibilityIdentifier("advice.parameter.\(allowed.name)")
             }
-            Button("按这些参数继续") { pendingActionID = parameterActionID }
+            Button(L10n.text("health.trainingadviceview.continue.with.these.parameters.1bd635")) { pendingActionID = parameterActionID }
               .accessibilityIdentifier("advice.parameters.confirm")
           }
         }
         Section {
-          Text("建议基于当前记录和所选模板。开始前会重新读取记录；如果体感、限制或模板改变，需要重新查看建议。")
+          Text(L10n.text("health.trainingadviceview.advice.uses.current.records.and.your.c85a7b"))
             .font(.caption).foregroundStyle(.secondary)
         }
       } else {
         Section {
-          Text("选好本次模板后查看建议；恢复或饮食证据不足时会提示复核。")
+          Text(L10n.text("health.trainingadviceview.choose.a.template.to.view.advice.a404c9"))
             .foregroundStyle(.secondary)
         }
       }
     }
-    .navigationTitle("训练建议")
+    .navigationTitle(L10n.text("health.trainingadviceview.training.advice.d3707a"))
     .accessibilityIdentifier("advice.screen")
     .onAppear { controller.loadRoutines() }
     .onChange(of: scenePhase) { _, phase in
       if phase == .active { controller.loadRoutines() }
     }
     .confirmationDialog(
-      "按这条建议开始训练？",
+      L10n.text("health.trainingadviceview.start.a.workout.using.this.advice.c15226"),
       isPresented: Binding(
         get: { pendingActionID != nil },
         set: { if !$0 { pendingActionID = nil } }),
       titleVisibility: .visible
     ) {
-      Button("确认并开始") { adoptPending() }
-      Button("取消", role: .cancel) { pendingActionID = nil }
+      Button(L10n.text("health.trainingadviceview.confirm.and.start.c1b24a")) { adoptPending() }
+      Button(L10n.text("health.trainingadviceview.cancel.4d0b46"), role: .cancel) { pendingActionID = nil }
     } message: {
-      Text("会新建一条进行中的训练记录；原模板和历史记录保持不变。")
+      Text(L10n.text("health.trainingadviceview.a.new.workout.in.progress.will.2cf232"))
     }
     .alert(
-      "无法开始训练",
+      L10n.text("health.trainingadviceview.could.not.start.workout.794e41"),
       isPresented: Binding(
         get: { actionError != nil }, set: { if !$0 { actionError = nil } }
       )
     ) {
-      Button("知道了", role: .cancel) {}
+      Button(L10n.text("health.trainingadviceview.ok.cb63c6"), role: .cancel) {}
     } message: {
-      Text(actionError ?? "请刷新后重试。")
+      Text(actionError.map { L10n.text($0) } ?? L10n.text("health.trainingadviceview.refresh.and.try.again.507e0f"))
     }
     .sheet(item: $checkInDraft, onDismiss: { controller.refresh() }) { draft in
       RecoveryCheckInView(
@@ -176,23 +179,23 @@ struct TrainingAdviceView: View {
           .font(.subheadline)
           .accessibilityIdentifier("advice.reason.\(candidate.action.rawValue)")
         if candidate.action != .lightActivity && reasonHasCheckIn(reason) {
-          Button("查看或修改今日体感") { openCheckIn() }
+          Button(L10n.text("health.trainingadviceview.view.or.edit.today.s.check.fcfaea")) { openCheckIn() }
             .accessibilityIdentifier("advice.editCheckIn")
         }
       }
       if let plan = controller.evaluation?.plansByAction[candidate.actionID],
         let routine = controller.routines.first(where: { $0.id == plan.id })
       {
-        Text("模板：\(routine.name)").font(.caption).foregroundStyle(.secondary)
+        Text(L10n.text("health.trainingadviceview.template.e97a69", String(routine.name))).font(.caption).foregroundStyle(.secondary)
       }
       if candidate.action == .reviewNutrition, let onOpenNutrition {
-        Button("查看饮食趋势", action: onOpenNutrition)
+        Button(L10n.text("health.trainingadviceview.view.nutrition.trends.107102"), action: onOpenNutrition)
           .accessibilityIdentifier("advice.openNutrition")
       } else if candidate.action == .choosePlan, let onOpenRecovery {
-        Button("查看恢复记录", action: onOpenRecovery)
+        Button(L10n.text("health.trainingadviceview.view.recovery.records.27666f"), action: onOpenRecovery)
           .accessibilityIdentifier("advice.openRecovery")
       } else if isStartable(candidate) && controller.activeWorkout == nil {
-        Button("选择参数并开始") {
+        Button(L10n.text("health.trainingadviceview.choose.parameters.and.start.db4831")) {
           parameterValues = Dictionary(
             uniqueKeysWithValues: candidate.allowedParameters.map { ($0.name, $0.minimum) })
           if candidate.allowedParameters.isEmpty {
@@ -217,13 +220,13 @@ struct TrainingAdviceView: View {
       let workout = try controller.adopt(actionID: actionID, parameters: parameterValues)
       onStartWorkout(workout)
     } catch TrainingAdviceAdoptionError.inProgressWorkout {
-      actionError = "已有进行中的训练。请点击“继续进行中的训练”返回这条记录。"
+      actionError = "health.trainingadviceview.a.workout.is.already.in.progress.99115d"
     } catch TrainingAdviceAdoptionError.templateChanged {
-      actionError = "所选模板或备选模板已变化。请重新查看今日建议。"
+      actionError = "health.trainingadviceview.the.selected.or.alternative.template.changed.0d8d84"
     } catch TrainingAdviceAdoptionError.recordsChanged {
-      actionError = "体感、日程或训练记录已变化。请重新查看今日建议。"
+      actionError = "health.trainingadviceview.check.in.schedule.or.workout.records.ebcef2"
     } catch {
-      actionError = "暂时无法保存训练，请检查本地记录后重试。"
+      actionError = "health.trainingadviceview.the.workout.could.not.be.saved.41cb59"
     }
   }
 
@@ -238,7 +241,7 @@ struct TrainingAdviceView: View {
         id: UUID(), localDate: today, timeZoneIdentifier: timeZone.identifier,
         updatedAt: now)
     } catch {
-      actionError = "暂时无法读取今日体感，请稍后重试。"
+      actionError = "health.trainingadviceview.today.s.check.in.could.not.99489c"
     }
   }
 
@@ -253,54 +256,54 @@ struct TrainingAdviceView: View {
 
   private func reasonText(_ reason: TrainingAdviceReason, action: RecommendationAction) -> String {
     switch reason {
-    case .unavailableToday: "你填写的可训练日不包括今天。"
-    case .noWeeklyTrainingDays: "个人资料中的每周训练天数为 0。"
-    case .tiredCheckIn: "你今天记录了整体疲惫，因此先安排休息。"
-    case .systemicLimited: "全身恢复状态显示训练受限。"
-    case .systemicLow: "全身恢复状态显示优先恢复。"
+    case .unavailableToday: L10n.text("health.trainingadviceview.today.is.not.among.your.available.a80a0d")
+    case .noWeeklyTrainingDays: L10n.text("health.trainingadviceview.your.profile.has.0.training.days.e0b830")
+    case .tiredCheckIn: L10n.text("health.trainingadviceview.you.recorded.feeling.tired.today.so.c683e9")
+    case .systemicLimited: L10n.text("health.trainingadviceview.systemic.recovery.status.indicates.limited.training.d9e389")
+    case .systemicLow: L10n.text("health.trainingadviceview.systemic.recovery.status.prioritizes.recovery.bd9b09")
     case .restrictedMuscles(let muscles):
       action == .swapTrainingDay
-        ? "原选模板涉及\(muscles.map(\.displayName).joined(separator: "、"))，这些肌群已标记疼痛或活动受限，因此改用备选模板。"
-        : "\(muscles.map(\.displayName).joined(separator: "、"))已记录疼痛或活动受限，所选模板涉及这些肌群。"
+        ? L10n.text("health.trainingadviceview.the.original.template.involves.flagged.for.88df60", String(muscles.map(\.displayName).joined(separator: L10n.language == .english ? ", " : "、")))
+        : L10n.text("health.trainingadviceview.pain.or.limited.movement.is.recorded.e214b5", String(muscles.map(\.displayName).joined(separator: L10n.language == .english ? ", " : "、")))
     case .unverifiedMappingWithRestriction:
-      "有肌群记录了疼痛或活动受限，而所选模板的动作映射尚未完整核对。"
-    case .significantSoreness: "相关肌群今天记录了明显酸痛。"
-    case .recentWorkingSets(let count): "相关肌群近 24 小时完成了 \(count) 组工作组。"
-    case .reducedReadiness: "所选肌群的恢复状态尚未达到直接沿用模板的条件。"
-    case .insufficientCoverage: "所选模板的动作映射或相关肌群恢复记录尚不足以确认。"
-    case .noSelectedPlan: "尚未选择本次训练模板。"
-    case .ready: "所选肌群当前记录未触发减量或避开训练的规则。"
-    case .nutritionDifference: "饮食记录与目标存在需复核的差异。"
+      L10n.text("health.trainingadviceview.pain.or.limited.movement.is.recorded.bcb842")
+    case .significantSoreness: L10n.text("health.trainingadviceview.related.muscles.have.significant.soreness.recorded.5bbebc")
+    case .recentWorkingSets(let count): L10n.text("health.trainingadviceview.related.muscles.completed.working.sets.in.68fb1d", count)
+    case .reducedReadiness: L10n.text("health.trainingadviceview.the.selected.muscles.are.not.ready.10aa2e")
+    case .insufficientCoverage: L10n.text("health.trainingadviceview.the.selected.template.s.exercise.mappings.5ffe50")
+    case .noSelectedPlan: L10n.text("health.trainingadviceview.no.template.is.selected.for.this.d189ff")
+    case .ready: L10n.text("health.trainingadviceview.current.records.for.the.selected.muscles.67f9f4")
+    case .nutritionDifference: L10n.text("health.trainingadviceview.food.records.differ.from.targets.and.5ec170")
     }
   }
 
   private func weekdayName(_ day: Int) -> String {
-    ["周日", "周一", "周二", "周三", "周四", "周五", "周六"][day - 1]
+    [L10n.text("health.trainingadviceview.sunday.c34057"), L10n.text("health.trainingadviceview.monday.792c34"), L10n.text("health.trainingadviceview.tuesday.8f0344"), L10n.text("health.trainingadviceview.wednesday.254556"), L10n.text("health.trainingadviceview.thursday.18f1fd"), L10n.text("health.trainingadviceview.friday.4344fc"), L10n.text("health.trainingadviceview.saturday.f0c619")][day - 1]
   }
 
   private func title(for action: RecommendationAction) -> String {
     switch action {
-    case .keepPlan: "按所选模板训练"
-    case .reduceSets: "减少工作组"
-    case .increaseRIR: "保留更多余力"
-    case .swapTrainingDay: "改用备选模板"
-    case .rest: "安排休息"
-    case .lightActivity: "可选轻活动"
-    case .choosePlan: "先复核模板与恢复记录"
-    case .reviewNutrition: "复核饮食目标与记录"
+    case .keepPlan: L10n.text("health.trainingadviceview.use.selected.template.3d49bc")
+    case .reduceSets: L10n.text("health.trainingadviceview.reduce.working.sets.e29d3d")
+    case .increaseRIR: L10n.text("health.trainingadviceview.keep.more.reps.in.reserve.f3f61c")
+    case .swapTrainingDay: L10n.text("health.trainingadviceview.use.alternative.template.448c80")
+    case .rest: L10n.text("health.trainingadviceview.rest.d172c6")
+    case .lightActivity: L10n.text("health.trainingadviceview.optional.light.activity.dd4c0f")
+    case .choosePlan: L10n.text("health.trainingadviceview.review.template.and.recovery.first.d75aba")
+    case .reviewNutrition: L10n.text("health.trainingadviceview.review.nutrition.targets.and.records.35a35e")
     }
   }
 
   private func explanation(for action: RecommendationAction) -> String {
     switch action {
-    case .keepPlan: "当前记录允许使用所选模板；仍请按实际感受调整。"
-    case .reduceSets: "工作组保留在建议范围内，不增加负重。"
-    case .increaseRIR: "目标 RIR 是训练提示，完成后再填写实际 RIR。"
-    case .swapTrainingDay: "仅使用你显式选定、已审核映射且不涉及受限肌群的备选模板。"
-    case .rest: "当前记录提示今天先休息，不会创建训练。"
-    case .lightActivity: "可按体感选择轻活动；这里不规定强度或创建训练。"
-    case .choosePlan: "缺少可确认的训练或恢复证据；先检查模板、记录和体感。"
-    case .reviewNutrition: "饮食差异单独复核，不用于降低肌群恢复分数。"
+    case .keepPlan: L10n.text("health.trainingadviceview.current.records.allow.the.selected.template.568686")
+    case .reduceSets: L10n.text("health.trainingadviceview.keep.working.sets.within.the.suggested.c6be9c")
+    case .increaseRIR: L10n.text("health.trainingadviceview.target.rir.is.a.training.cue.61eea5")
+    case .swapTrainingDay: L10n.text("health.trainingadviceview.use.only.the.alternative.template.you.5d7fda")
+    case .rest: L10n.text("health.trainingadviceview.current.records.suggest.rest.today.no.a45439")
+    case .lightActivity: L10n.text("health.trainingadviceview.choose.light.activity.based.on.how.f674a3")
+    case .choosePlan: L10n.text("health.trainingadviceview.training.or.recovery.evidence.is.insufficient.0285fe")
+    case .reviewNutrition: L10n.text("health.trainingadviceview.nutrition.differences.are.reviewed.separately.and.b52c3a")
     }
   }
 }

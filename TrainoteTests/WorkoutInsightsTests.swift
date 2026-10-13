@@ -77,8 +77,9 @@ final class WorkoutInsightsTests: XCTestCase {
     XCTAssertEqual(summary.averageProtein, 30)
   }
 
-  func testEntireCatalogHasExplicitDefaultsAndMeaningfulExamples() throws {
+  func testEntireCatalogHasExplicitDefaultsAndMeaningfulExamples() async throws {
     let catalog = ExerciseCatalog()
+    await catalog.load()
     XCTAssertNil(catalog.errorMessage)
     XCTAssertEqual(catalog.items.count, 1324)
     XCTAssertTrue(catalog.items.allSatisfy { $0.recommendedTrackingMode != nil })

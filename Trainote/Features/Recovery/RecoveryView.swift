@@ -23,13 +23,13 @@ struct RecoveryView: View {
         VStack(alignment: .leading, spacing: 20) {
           if let error {
             ContentUnavailableView(
-              "暂时无法更新分析", systemImage: "arrow.clockwise",
-              description: Text(error))
-            Button("重试") { reload() }
+              L10n.text("health.recoveryview.analysis.could.not.be.updated.204ff8"), systemImage: "arrow.clockwise",
+              description: Text(L10n.text(error)))
+            Button(L10n.text("health.recoveryview.retry.e2d53a")) { reload() }
           } else if let result {
             VStack(alignment: .leading, spacing: 8) {
-              Text("恢复估计").font(.title2.bold())
-              Text("选择肌群查看最近负荷与体感").foregroundStyle(.secondary)
+              Text(L10n.text("interaction.help.recoveryEstimate")).font(.title2.bold())
+              Text(L10n.text("health.recoveryview.select.a.muscle.to.review.recent.415cc4")).foregroundStyle(.secondary)
             }
             BodyMapView(presentation: result.bodyMapPresentation(selected: selected)) { muscle in
               if selected == muscle {
@@ -47,38 +47,38 @@ struct RecoveryView: View {
             }
             RecoverySystemicCard(result: result)
             if healthReadFailed {
-              Text("健康数据暂时无法读取，当前显示本地记录。").font(.caption).foregroundStyle(.secondary)
+              Text(L10n.text("health.recoveryview.health.data.could.not.be.read.d10ecc")).font(.caption).foregroundStyle(.secondary)
             }
             if showPrompt {
               HStack {
                 VStack(alignment: .leading) {
-                  Text("今天感觉如何？").font(.headline)
-                  Text("十秒补充体感，也可以跳过。").font(.caption).foregroundStyle(.secondary)
+                  Text(L10n.text("health.recoveryview.how.do.you.feel.today.7be6f0")).font(.headline)
+                  Text(L10n.text("health.recoveryview.add.a.quick.check.in.or.db5806")).font(.caption).foregroundStyle(.secondary)
                 }
                 Spacer()
-                Button("填写") { openCheckIn() }
-                Button("跳过") { showPrompt = false }
+                Button(L10n.text("health.recoveryview.fill.in.a2272f")) { openCheckIn() }
+                Button(L10n.text("health.recoveryview.skip.31a985")) { showPrompt = false }
               }
             }
-            Button("记录或修改今日体感") { openCheckIn() }
+            Button(L10n.text("health.recoveryview.record.or.edit.today.s.check.268c2c")) { openCheckIn() }
               .accessibilityIdentifier("recovery.checkIn.open")
             if let resetCalibration {
-              Button("重置个体校准") { confirmingReset = true }
+              Button(L10n.text("health.recoveryview.reset.personal.calibration.a77810")) { confirmingReset = true }
                 .confirmationDialog(
-                  "从现在重新积累校准记录？", isPresented: $confirmingReset, titleVisibility: .visible
+                  L10n.text("health.recoveryview.start.collecting.new.calibration.records.now.4ae9c0"), isPresented: $confirmingReset, titleVisibility: .visible
                 ) {
-                  Button("重置校准") {
+                  Button(L10n.text("health.recoveryview.reset.calibration.1892ea")) {
                     resetCalibration()
                     reload()
                   }
-                  Button("取消", role: .cancel) {}
+                  Button(L10n.text("health.recoveryview.cancel.4d0b46"), role: .cancel) {}
                 } message: {
-                  Text("训练和体感历史会保留，恢复指数先使用基础参数。")
+                  Text(L10n.text("health.recoveryview.workout.and.check.in.history.is.6ae7e7"))
                 }
             }
-            if let onShowMethods { Button("计算方法与数据使用", action: onShowMethods) }
+            if let onShowMethods { Button(L10n.text("health.recoveryview.methods.and.data.use.df2501"), action: onShowMethods) }
           } else {
-            ProgressView("正在读取本地记录")
+            ProgressView(L10n.text("health.recoveryview.reading.local.records.95272c"))
           }
         }.padding()
       }
@@ -87,7 +87,7 @@ struct RecoveryView: View {
         withAnimation { scroll.scrollTo(detailAnchor(for: muscle), anchor: .top) }
       }
     }
-    .navigationTitle("恢复分析")
+    .navigationTitle(L10n.text("health.recoveryview.recovery.analysis.c172e5"))
     .accessibilityIdentifier("recovery.screen")
     .onAppear { reload() }
     .onChange(of: scenePhase) { _, phase in if phase == .active { reload() } }
@@ -139,7 +139,7 @@ struct RecoveryView: View {
       error = nil
     } catch {
       result = nil
-      self.error = "读取或计算失败。原有训练记录仍保留，可稍后重试。"
+      self.error = "health.recoveryview.reading.or.calculation.failed.existing.workout.fd7207"
     }
   }
   private func openCheckIn(_ muscle: MuscleID? = nil) {
@@ -170,17 +170,17 @@ private struct RecoveryMuscleDetail: View {
           .font(.title3.monospacedDigit()).foregroundStyle(RecoveryCopy.color(muscle.state))
       }
       Text(RecoveryCopy.state(muscle.state)).font(.headline)
-      if muscle.hasPain { Label("已标记疼痛：相关训练暂不列入建议", systemImage: "exclamationmark.triangle") }
+      if muscle.hasPain { Label(L10n.text("health.recoveryview.pain.flagged.related.training.is.excluded.80c1e1"), systemImage: "exclamationmark.triangle") }
       if muscle.hasMovementLimitation {
-        Label("已标记活动受限：相关训练暂不列入建议", systemImage: "exclamationmark.triangle")
+        Label(L10n.text("health.recoveryview.limited.movement.flagged.related.training.is.d326c4"), systemImage: "exclamationmark.triangle")
       }
       if let date = muscle.lastTrainedAt {
-        LabeledContent("上次训练", value: date.formatted(date: .abbreviated, time: .shortened))
+        LabeledContent(L10n.text("health.recoveryview.last.workout.d330e0"), value: date.formatted(Date.FormatStyle(date: .abbreviated, time: .shortened).locale(L10n.locale)))
       }
       if let fact = result.facts.first(where: {
         $0.id == "recovery.\(muscle.muscleID.rawValue).lastLoad"
       }), let load = fact.value {
-        LabeledContent("最近一次加权工作组", value: load.formatted(.number.precision(.fractionLength(1))))
+        LabeledContent(L10n.text("health.recoveryview.latest.weighted.working.sets.8b9560"), value: load.formatted(.number.precision(.fractionLength(1)).locale(L10n.locale)))
       }
       ForEach(
         muscle.influences.filter { $0.code != "recordedLoad" && $0.code != "calibratedCandidate" },
@@ -189,11 +189,11 @@ private struct RecoveryMuscleDetail: View {
         Text(RecoveryCopy.influence(influence.code)).font(.subheadline).foregroundStyle(.secondary)
       }
       if let coverage = muscle.coverage.first {
-        Text("近 \(coverage.expectedDays) 天：\(coverage.observedDays) 天有该肌群可用记录")
+        Text(L10n.text("health.recoveryview.last.days.days.with.usable.records.3cddc0", String(coverage.expectedDays), String(coverage.observedDays)))
           .font(.caption).foregroundStyle(.secondary)
       }
-      Button("更新这块肌群的体感", action: onFeedback)
-      if let onShowMethods { Button("分数说明", action: onShowMethods) }
+      Button(L10n.text("health.recoveryview.update.this.muscle.s.check.in.016fd6"), action: onFeedback)
+      if let onShowMethods { Button(L10n.text("health.recoveryview.about.the.score.2e7f5a"), action: onShowMethods) }
     }
     .padding().background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))
     .accessibilityIdentifier("recovery.detail.\(muscle.muscleID.rawValue)")
@@ -204,13 +204,13 @@ private struct RecoverySystemicCard: View {
   let result: RecoveryResult
   var body: some View {
     VStack(alignment: .leading, spacing: 10) {
-      Text("全身状态").font(.headline)
+      Text(L10n.text("health.recoveryview.systemic.status.116dd1")).font(.headline)
       Text(RecoveryCopy.systemic(result.systemicState))
       if let feeling = result.facts.first(where: { $0.id == "recovery.feeling" })?.value {
-        LabeledContent("今日体感", value: feeling == 2 ? "好" : (feeling == 1 ? "一般" : "疲惫"))
+        LabeledContent(L10n.text("health.recoveryview.today.s.check.in.abc88b"), value: feeling == 2 ? L10n.text("health.recoveryview.ok.27e4fe") : (feeling == 1 ? L10n.text("health.recoveryview.okay.f0aacc") : L10n.text("health.recoveryview.tired.8174d1")))
       }
       if let sleep = result.facts.first(where: { $0.id == "recovery.sleepFeeling" })?.value {
-        LabeledContent("主观睡眠", value: sleep == 2 ? "好" : (sleep == 1 ? "一般" : "较差"))
+        LabeledContent(L10n.text("health.recoveryview.perceived.sleep.f21dc3"), value: sleep == 2 ? L10n.text("health.recoveryview.ok.27e4fe") : (sleep == 1 ? L10n.text("health.recoveryview.okay.f0aacc") : L10n.text("health.recoveryview.poor.8046a5")))
       }
       ForEach(["sleep.duration", "restingHeartRate", "heartRateVariabilitySDNN"], id: \.self) {
         metric in
@@ -223,23 +223,23 @@ private struct RecoverySystemicCard: View {
             $0.id == "recovery.systemic.\(metric).baseline"
           }) {
             if let value = baseline.value {
-              Text("个人基线：\(RecoveryCopy.value(value, unit: baseline.unit))").font(.caption)
+              Text(L10n.text("health.recoveryview.personal.baseline.1ce343", String(RecoveryCopy.value(value, unit: baseline.unit)))).font(.caption)
                 .foregroundStyle(.secondary)
             } else {
-              Text("正在建立个人基线").font(.caption).foregroundStyle(.secondary)
+              Text(L10n.text("health.recoveryview.building.a.personal.baseline.f1f535")).font(.caption).foregroundStyle(.secondary)
             }
           }
           if let deviation = result.facts.first(where: {
             $0.id == "recovery.systemic.\(metric).deviationPercent"
           })?.value {
-            Text("相对基线：\(deviation.formatted(.number.precision(.fractionLength(0))))%").font(
+            Text(L10n.text("health.recoveryview.from.baseline.6c59f5", String(deviation.formatted(.number.precision(.fractionLength(0)).locale(L10n.locale))))).font(
               .caption
             ).foregroundStyle(.secondary)
           }
         }
       }
       if result.facts.contains(where: { $0.id == "recovery.systemic.externalWorkout" }) {
-        Text("Apple 健康的外部训练仅作活动参考，肌群负荷需逐动作记录。")
+        Text(L10n.text("health.recoveryview.external.workouts.from.apple.health.are.67eaae"))
           .font(.caption).foregroundStyle(.secondary)
       }
     }.padding().frame(maxWidth: .infinity, alignment: .leading)
@@ -258,46 +258,46 @@ enum RecoveryCopy {
   }
   static func state(_ state: RecoveryState) -> String {
     switch state {
-    case .ready: "状态较好"
-    case .moderate: "适度安排"
-    case .low: "优先恢复"
-    case .limited: "训练受限"
-    case .unknown: "待建立记录"
+    case .ready: L10n.text("health.recoveryview.good.readiness.d4d8e0")
+    case .moderate: L10n.text("health.recoveryview.train.moderately.726903")
+    case .low: L10n.text("health.recoveryview.prioritize.recovery.41ef55")
+    case .limited: L10n.text("health.recoveryview.training.limited.e1184e")
+    case .unknown: L10n.text("health.recoveryview.waiting.for.records.dda84c")
     }
   }
   static func systemic(_ state: RecoveryState) -> String {
     switch state {
-    case .ready: "当前体感或个人基线未提示持续变化"
-    case .moderate: "留意体感与近期变化"
-    case .low, .limited: "连续变化伴随疲惫，今天适当减量"
-    case .unknown: "尚无足够的全身状态记录"
+    case .ready: L10n.text("health.recoveryview.current.check.ins.or.personal.baselines.409d9e")
+    case .moderate: L10n.text("health.recoveryview.watch.how.you.feel.and.recent.ee3afa")
+    case .low, .limited: L10n.text("health.recoveryview.sustained.changes.with.fatigue.reduce.training.adfa04")
+    case .unknown: L10n.text("health.recoveryview.not.enough.systemic.status.records.yet.6961a5")
     }
   }
   static func influence(_ code: String) -> String {
     switch code {
-    case "recordedLoad": "根据已记录工作组、RIR 和经过时间估计。"
-    case "unknownRIRPrior": "部分组未填 RIR，采用默认努力程度。"
-    case "historicalRolePrior": "历史组类型未区分，暂按工作组计入。"
-    case "unallocatedExercise": "存在待核查动作、未支持的记录方式或未逐动作记录的外部力量训练，暂不计算完整准备度。"
-    case "significantSoreness": "明显酸痛：优先减少相关训练量。"
-    case "mildSoreness": "已记录轻微酸痛，结合本次表现安排训练。"
-    case "excludeTraining": "疼痛或活动受限独立于分数，需先更新体感。"
-    case "calibratedCandidate": "个体参数通过时间留出比较后保守调整。"
-    default: "近期可用记录不足；完成并记录训练后会更新。"
+    case "recordedLoad": L10n.text("health.recoveryview.estimated.from.recorded.working.sets.rir.9fb233")
+    case "unknownRIRPrior": L10n.text("health.recoveryview.some.sets.have.no.rir.default.04f5f5")
+    case "historicalRolePrior": L10n.text("health.recoveryview.historical.set.types.are.unknown.counted.2c7f90")
+    case "unallocatedExercise": L10n.text("health.recoveryview.unreviewed.exercises.unsupported.recording.modes.or.e7db9c")
+    case "significantSoreness": L10n.text("health.recoveryview.significant.soreness.reduce.related.training.volume.0a6eb7")
+    case "mildSoreness": L10n.text("health.recoveryview.mild.soreness.recorded.adjust.training.based.2492f9")
+    case "excludeTraining": L10n.text("health.recoveryview.pain.and.limited.movement.are.independent.ce3fea")
+    case "calibratedCandidate": L10n.text("health.recoveryview.personal.parameters.adjusted.conservatively.after.time.856857")
+    default: L10n.text("health.recoveryview.not.enough.usable.recent.records.this.d711ed")
     }
   }
   static func metric(_ metric: String) -> String {
     switch metric {
-    case "sleep.duration": "最近睡眠"
-    case "restingHeartRate": "静息心率"
-    default: "HRV（SDNN）"
+    case "sleep.duration": L10n.text("health.recoveryview.recent.sleep.b25c17")
+    case "restingHeartRate": L10n.text("health.recoveryview.resting.heart.rate.ca24f8")
+    default: "HRV (SDNN)"
     }
   }
   static func value(_ value: Double, unit: MetricUnit) -> String {
     if unit == .seconds {
-      return "\((value / 3600).formatted(.number.precision(.fractionLength(1)))) 小时"
+      return L10n.text("health.recoveryview.hours.89d17f", String((value / 3600).formatted(.number.precision(.fractionLength(1)).locale(L10n.locale))))
     }
     return
-      "\(value.formatted(.number.precision(.fractionLength(0)))) \(unit == .milliseconds ? "ms" : "次/分")"
+      "\(value.formatted(.number.precision(.fractionLength(0)).locale(L10n.locale))) \(unit == .milliseconds ? "ms" : L10n.text("health.recoveryview.beats.per.minute"))"
   }
 }

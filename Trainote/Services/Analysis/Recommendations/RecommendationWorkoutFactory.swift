@@ -124,13 +124,13 @@ enum RecommendationWorkoutFactory {
           1, Int((Double(exercise.strengthSets.count) * percent / 100).rounded(.down)))
         exercise.strengthSets = Array(exercise.sortedStrengthSets.prefix(retained))
       }
-      workout.notes = "今日建议：工作组保留 \(Int(percent))%。"
+      workout.notes = L10n.text("domain.advice.setRetention", Int(percent))
     } else if candidate.action == .increaseRIR {
       guard let rir = parameters["minimumRIR"], rir.rounded() == rir, (0...5).contains(rir) else {
         throw AnalysisFailure.invalidInput
       }
       // RIR fields are observed results, never prefill a prescribed target as a measurement.
-      workout.notes = "今日建议：每组至少保留 \(Int(rir)) 次余力；完成后再记录实际 RIR。"
+      workout.notes = L10n.text("domain.advice.minimumRIR", Int(rir))
     }
     for set in workout.exercises.flatMap(\.strengthSets) {
       set.isCompleted = false

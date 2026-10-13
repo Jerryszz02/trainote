@@ -1,0 +1,97 @@
+{
+  "recording.first.workout": {
+    "en": "Start recording your first workout.",
+    "zh-Hans": "开始记录你的第一场训练。",
+    "comment": "Interaction and recording screen text"
+  },
+  "recording.start.directly": {
+    "en": "Start directly",
+    "zh-Hans": "直接开始",
+    "comment": "Interaction and recording screen text"
+  },
+  "recording.first.meal": {
+    "en": "Record your first meal today.",
+    "zh-Hans": "记录今天的第一餐。",
+    "comment": "Interaction and recording screen text"
+  },
+  "recording.workout.settings.notes": {
+    "en": "Workout settings and notes",
+    "zh-Hans": "训练设置与备注",
+    "comment": "Interaction and recording screen text"
+  },
+  "recording.expanded": {
+    "en": "Expanded",
+    "zh-Hans": "已展开",
+    "comment": "Interaction and recording screen text"
+  },
+  "recording.collapsed": {
+    "en": "Collapsed",
+    "zh-Hans": "已收起",
+    "comment": "Interaction and recording screen text"
+  },
+  "recording.finish.workout": {
+    "en": "Finish workout",
+    "zh-Hans": "结束训练",
+    "comment": "Interaction and recording screen text"
+  },
+  "recording.food.sources": {
+    "en": "Recent / Favorites / Meals / Copy",
+    "zh-Hans": "最近 / 常用 / 固定餐 / 复制",
+    "comment": "Interaction and recording screen text"
+  },
+  "recording.food.draft.retained": {
+    "en": "Reused food records are saved. Your current draft is preserved.",
+    "zh-Hans": "复用记录已保存，当前草稿仍保留。",
+    "comment": "Interaction and recording screen text"
+  },
+  "recording.hide.totals": {
+    "en": "Hide totals",
+    "zh-Hans": "收起总量",
+    "comment": "Interaction and recording screen text"
+  },
+  "recording.edit.totals": {
+    "en": "Edit totals",
+    "zh-Hans": "修改总量",
+    "comment": "Interaction and recording screen text"
+  },
+  "recording.entry.totals": {
+    "en": "Nutrition totals for this entry",
+    "zh-Hans": "本条记录营养总量",
+    "comment": "Interaction and recording screen text"
+  },
+  "recording.discard.food.draft.question": {
+    "en": "Discard your unsaved food draft?",
+    "zh-Hans": "放弃未保存的饮食草稿？",
+    "comment": "Interaction and recording screen text"
+  },
+  "recording.discard.draft": {
+    "en": "Discard draft",
+    "zh-Hans": "放弃草稿",
+    "comment": "Interaction and recording screen text"
+  },
+  "recording.more.options": {
+    "en": "More options",
+    "zh-Hans": "更多选项",
+    "comment": "Interaction and recording screen text"
+  },
+  "recording.rir.label": {
+    "en": "Reps in reserve (RIR)",
+    "zh-Hans": "还能做几次（RIR）",
+    "comment": "Interaction and recording screen text"
+  },
+  "recording.set.status": {
+    "en": "Set %lld · %@",
+    "zh-Hans": "第 %lld 组 · %@",
+    "comment": "Set number with completion status"
+  },
+  "recording.set.weight": {
+    "en": "Set %lld, weight, kilograms",
+    "zh-Hans": "第 %lld 组，重量，公斤",
+    "comment": "Accessible weight input label"
+  },
+  "recording.set.field": {
+    "en": "Set %lld, %@",
+    "zh-Hans": "第 %lld 组，%@",
+    "comment": "Accessible repetitions or duration input label"
+  }
+}

@@ -19,7 +19,7 @@ def source(path):
 
 spec = {
     "name": "BodyMapPreview",
-    "options": {"deploymentTarget": {"iOS": "17.0"}, "developmentLanguage": "zh-Hans"},
+    "options": {"deploymentTarget": {"iOS": "17.0"}, "developmentLanguage": "en", "knownRegions": ["en", "zh-Hans"]},
     "settings": {"base": {"SWIFT_VERSION": "5.9", "TARGETED_DEVICE_FAMILY": "1",
                           "GENERATE_INFOPLIST_FILE": "YES", "CODE_SIGNING_ALLOWED": "NO"}},
     "targets": {
@@ -27,6 +27,9 @@ spec = {
             "type": "application", "platform": "iOS",
             "sources": [source("BodyMapPreview/App.swift"), source("BodyMapPreview/PerformanceProbe.swift"),
                         source("Trainote/Features/Recovery/BodyMap"),
+                        source("Trainote/Services/Localization/L10n.swift"),
+                        {"path": source("Trainote/Resources/Localizable.xcstrings"), "buildPhase": "resources"},
+                        {"path": source("Trainote/Resources/InfoPlist.xcstrings"), "buildPhase": "resources"},
                         source("Trainote/Services/Analysis/Contracts/BodyMapPresentation.swift"),
                         source("Trainote/Services/Analysis/Contracts/BodyMapFixtures.swift"),
                         {"path": source("Trainote/Resources/BodyMap"), "buildPhase": "resources"}],

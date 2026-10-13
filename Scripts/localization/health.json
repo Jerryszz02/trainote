@@ -1,0 +1,2770 @@
+{
+  "health.healthrecoveryintegration.recovery.resources.could.not.be.loaded.e5af04": {
+    "en": "Recovery resources could not be loaded. Your workout, food and check-in records are still available.",
+    "zh-Hans": "恢复分析资源暂时无法载入。训练、饮食和体感记录仍可使用。",
+    "comment": "HealthRecoveryIntegration display text"
+  },
+  "health.healthrecoveryintegration.recovery.could.not.be.updated.try.0b10e8": {
+    "en": "Recovery could not be updated. Try again later. Your records are preserved.",
+    "zh-Hans": "暂时无法更新恢复状态，请稍后重试。原有记录仍保留。",
+    "comment": "HealthRecoveryIntegration display text"
+  },
+  "health.healthrecoveryintegration.pain.or.limited.movement.is.recorded.7b08a6": {
+    "en": "Pain or limited movement is recorded. Review the affected muscles before planning training.",
+    "zh-Hans": "已记录疼痛或活动受限，先查看受影响肌群，再安排训练。",
+    "comment": "HealthRecoveryIntegration display text"
+  },
+  "health.healthrecoveryintegration.you.reported.feeling.tired.today.review.75bacb": {
+    "en": "You reported feeling tired today. Review recovery before planning training.",
+    "zh-Hans": "今天体感偏疲惫，查看恢复状态后再安排训练。",
+    "comment": "HealthRecoveryIntegration display text"
+  },
+  "health.healthrecoveryintegration.choose.a.workout.template.and.start.edd184": {
+    "en": "Choose a workout template and start when it suits you.",
+    "zh-Hans": "先选择一套训练模板，按自己的安排开始。",
+    "comment": "HealthRecoveryIntegration display text"
+  },
+  "health.healthrecoveryintegration.some.workouts.have.no.allocated.muscle.65b731": {
+    "en": "Some workouts have no allocated muscle load. Review coverage and how you feel first.",
+    "zh-Hans": "部分训练尚未分配肌群负荷，先查看记录覆盖与体感。",
+    "comment": "HealthRecoveryIntegration display text"
+  },
+  "health.healthrecoveryintegration.review.today.s.recovery.using.your.bff516": {
+    "en": "Review today's recovery using your recorded workouts and check-ins.",
+    "zh-Hans": "结合已记录的训练与体感，查看今天的恢复状态。",
+    "comment": "HealthRecoveryIntegration display text"
+  },
+  "health.trendanalysisdestination.review.nutrition.targets.with.weight.trends.bdf157": {
+    "en": "Review nutrition targets with weight trends",
+    "zh-Hans": "用体重趋势复核营养目标",
+    "comment": "TrendAnalysisDestination display text"
+  },
+  "health.trendanalysisdestination.build.up.weight.and.complete.food.94f135": {
+    "en": "Build up weight and complete food records before reviewing weekly suggestions. Existing manual targets are preserved; suggestions take effect only when you adopt them.",
+    "zh-Hans": "先积累体重与完整饮食记录，再查看每周建议。已有手动目标会保留，建议只有经过你采用才会生效。",
+    "comment": "TrendAnalysisDestination display text"
+  },
+  "health.trendanalysisdestination.you.can.add.body.details.and.03fd52": {
+    "en": "You can add body details and weight later. Apple Health and AI are optional.",
+    "zh-Hans": "身体资料和体重可以稍后填写；Apple 健康与 AI 均可不启用。",
+    "comment": "TrendAnalysisDestination display text"
+  },
+  "health.trendanalysisdestination.enable.weekly.suggestions.512d36": {
+    "en": "Enable weekly suggestions",
+    "zh-Hans": "启用每周建议",
+    "comment": "TrendAnalysisDestination display text"
+  },
+  "health.trendanalysisdestination.keep.current.mode.and.view.trends.9e6c54": {
+    "en": "Keep current mode and view trends",
+    "zh-Hans": "保留原模式并查看趋势",
+    "comment": "TrendAnalysisDestination display text"
+  },
+  "health.trendanalysisdestination.methods.and.data.use.df2501": {
+    "en": "Methods and data use",
+    "zh-Hans": "计算方法与数据使用",
+    "comment": "TrendAnalysisDestination display text"
+  },
+  "health.trendanalysisdestination.trend.analysis.cc7a87": {
+    "en": "Trend analysis",
+    "zh-Hans": "趋势分析",
+    "comment": "TrendAnalysisDestination display text"
+  },
+  "health.trendanalysisdestination.done.33246f": {
+    "en": "Done",
+    "zh-Hans": "完成",
+    "comment": "TrendAnalysisDestination display text"
+  },
+  "health.healthhelpview.methods.and.scope.16b0da": {
+    "en": "Methods and scope",
+    "zh-Hans": "分析方法与适用范围",
+    "comment": "HealthHelpView display text"
+  },
+  "health.healthhelpview.trend.and.recovery.analysis.uses.workout.c38346": {
+    "en": "Trend and recovery analysis uses workout, food, weight, optional health trends and check-ins. Windows, weights and thresholds for trend smoothing, working-set load, RIR and time decay are versioned engineering defaults. They have not been shown to accurately measure individual physiological recovery.",
+    "zh-Hans": "趋势与恢复分析使用训练记录、饮食、体重、可选健康趋势及体感。趋势平滑、工作组负荷、RIR 与时间衰减等规则中的窗口、权重和阈值是有版本的工程初值，尚未证明能准确测量个人生理恢复。",
+    "comment": "HealthHelpView display text"
+  },
+  "health.healthhelpview.the.recovery.index.estimates.training.readiness.54ffcb": {
+    "en": "The recovery index estimates training readiness. It is not a percentage of muscle recovery, injury probability or medical diagnosis. Missing records remain unknown; pain and movement limits are handled separately and cannot be offset by a high score.",
+    "zh-Hans": "恢复指数表示模型估计的训练准备度，不是肌肉恢复百分比、损伤概率或医疗诊断。缺少记录显示未知；疼痛和活动受限独立处理，不能被高分抵消。",
+    "comment": "HealthHelpView display text"
+  },
+  "health.healthhelpview.general.nutrition.suggestions.are.for.healthy.2d4323": {
+    "en": "General nutrition suggestions are for healthy adults doing everyday fitness. Minors, pregnancy, breastfeeding, medical conditions and other special nutrition needs should use manual targets or a professional plan. Adopting targets requires your choice; an app update does not change old manual targets automatically.",
+    "zh-Hans": "通用营养建议面向健康成年人的日常健身。未成年人、孕哺期、疾病管理和其他特殊营养需求应保留手动目标或使用专业方案。目标采用需要明确选择；旧手动目标不会因升级而自动改变。",
+    "comment": "HealthHelpView display text"
+  },
+  "health.healthhelpview.trends.and.weekly.nutrition.suggestions.24f35a": {
+    "en": "Trends and weekly nutrition suggestions",
+    "zh-Hans": "趋势与每周营养建议",
+    "comment": "HealthHelpView display text"
+  },
+  "health.healthhelpview.a.representative.daily.weight.is.selected.13ddad": {
+    "en": "A representative daily weight is selected in the analysis time zone without mixing sources: your chosen reading first, then morning readings or the median from your preferred source. Raw records are preserved. Missing dates are not filled with zero; outliers are flagged for review. Smoothing uses a 7-day time constant, and rate estimates use the last 21 complete days.",
+    "zh-Hans": "体重先按分析时区选择每天的代表值，不混合不同来源：优先你指定的读数，其次首选来源的晨间值或中位数。原始记录保留；没有记录的日期不补零，异常值会提示复核。趋势平滑采用 7 天时间常数，速度估计取最近 21 个完整日。",
+    "comment": "HealthHelpView display text"
+  },
+  "health.healthhelpview.weekly.adjustments.require.weight.records.spanning.caa175": {
+    "en": "Weekly adjustments require weight records spanning at least 14 days, readings on 8 dates, and at least 3 dates in each of the two weeks. At least 12 of the last 14 days must be explicitly confirmed as complete food records. Today is still in progress and excluded from completed-week reviews. Editing food records invalidates their previous completeness confirmation.",
+    "zh-Hans": "每周调整至少需要跨越 14 天的体重记录、8 个有读数的日期和前后两周各 3 天记录；最近 14 天至少 12 天明确确认饮食完整。今天未结束，不计入已完成周的复核。饮食修改会使旧的完整确认失效。",
+    "comment": "HealthHelpView display text"
+  },
+  "health.healthhelpview.daily.intake.is.compared.with.the.1579a6": {
+    "en": "Daily intake is compared with the target in effect that day. Unknown historical targets or differences above 15% require an adherence review before any target adjustment. Initial targets and a new baseline after profile changes require explicit adoption. Later adjustments happen at most once every 7 days, capped at 100 kcal or 5% of the current target. The lower bound uses both the current resting energy estimate and the initial estimate for this cycle; watch activity calories are not added back.",
+    "zh-Hans": "饮食摄入按每一天当时的目标比较；历史目标未知或偏差超过 15% 时先复核执行，不据此自动改目标。初始目标和资料更新后的新基线都需要明确采用。之后每 7 天最多调整一次，每次不超过 100 kcal 或当前目标的 5%，下限由当前静息能量估计与本周期初始估计共同约束；手表活动热量不再加回。",
+    "comment": "HealthHelpView display text"
+  },
+  "health.healthhelpview.these.ranges.weights.and.thresholds.are.d8a6e6": {
+    "en": "These ranges, weights and thresholds are engineering defaults. Average intake is a reference from recorded food, not measured total energy expenditure. Adoption and undo both preserve history. Undo pauses reviews for 7 days, then resumes your chosen mode.",
+    "zh-Hans": "这些范围、权重与阈值是工程初值。摄入均值仅是已记录的摄入参考，不是实测总消耗。目标采用和撤销都会保留历史；撤销后暂停复核 7 天，再按你原先选择的模式执行。",
+    "comment": "HealthHelpView display text"
+  },
+  "health.healthhelpview.how.the.recovery.index.works.1b0803": {
+    "en": "How the recovery index works",
+    "zh-Hans": "恢复指数如何计算",
+    "comment": "HealthHelpView display text"
+  },
+  "health.healthhelpview.only.completed.mapped.working.sets.are.d45810": {
+    "en": "Only completed, mapped working sets are used; warm-up sets are excluded. Historical sets with an unknown type are treated as working sets. Missing RIR uses default effort and retains a missing-data flag. Primary muscles have weight 1, secondary muscles 0.5; the maximum weight is used for each muscle. These weights are not EMG proportions.",
+    "zh-Hans": "仅使用已完成、可映射的工作组；热身组不计入。历史组类型未知时暂按工作组，未填 RIR 使用默认努力程度，并保留缺失标记。主肌群权重 1、次肌群 0.5，同一肌群取最大权重；这些权重不是肌电比例。",
+    "comment": "HealthHelpView display text"
+  },
+  "health.healthhelpview.local.load.uses.the.last.28.5cb351": {
+    "en": "Local load uses the last 28 days with exponential time decay and an initial 36-hour time constant. The recovery index is 100 × exp(−remaining weighted load / 6), rounded to the nearest 5 points. Scores of 80 or above, 50–75 and below 50 are engineering thresholds without physiological accuracy validation. Muscles without usable records remain unknown.",
+    "zh-Hans": "局部负荷取最近 28 天记录，随时间指数衰减，初始时间常数为 36 小时；恢复指数为 100 × exp(−残余加权负荷 / 6)，显示时取最近的 5 分。显示 80 及以上、50–75、低于 50 分为三档工程阈值，未经生理准确性验证。没有可用记录的肌群保持未知。",
+    "comment": "HealthHelpView display text"
+  },
+  "health.healthhelpview.the.exercise.catalog.contains.1.324.a9b89d": {
+    "en": "The exercise catalog contains 1,324 entries: 38 have engineering text mappings, 1,175 await review and 111 are not applicable. Unreviewed exercises, unsupported recording modes and external strength activities without exercise-level records leave coverage gaps. Duration is not converted to working sets.",
+    "zh-Hans": "当前动作表共 1,324 项，其中 38 项完成工程文本映射、1,175 项待核查、111 项不适用。未核查动作、未支持的记录方式或没有逐动作记录的外部力量活动都会留下覆盖缺口；时长不会换算成工作组。",
+    "comment": "HealthHelpView display text"
+  },
+  "health.healthhelpview.sleep.resting.heart.rate.and.hrv.32467a": {
+    "en": "Sleep, resting heart rate and HRV show systemic status separately and do not directly reduce local muscle scores. Personal baselines require enough records with the same source, device, definition and context. Unknown sources are not mixed. Pain and movement limits take priority over scores; unanswered questions are not treated as symptom-free.",
+    "zh-Hans": "睡眠、静息心率和 HRV 单独呈现全身状态，不直接扣减局部肌群分数。个人基线需同一来源、设备、定义和情境的足够记录；未知来源不混合。疼痛和活动受限优先于分数，未回答不能当作无症状。",
+    "comment": "HealthHelpView display text"
+  },
+  "health.healthhelpview.personal.calibration.and.reset.c88df2": {
+    "en": "Personal calibration and reset",
+    "zh-Hans": "个体校准与重置",
+    "comment": "HealthHelpView display text"
+  },
+  "health.healthhelpview.calibration.reads.the.last.90.days.44bf37": {
+    "en": "Calibration reads the last 90 days and requires at least 6 fitting pairs followed by 4 independent validation pairs. Comparisons require the same exercise, recording mode, set order, weight and recorded RIR, plus pre-workout check-ins. Data gaps exclude unsuitable comparisons.",
+    "zh-Hans": "校准读取最近 90 天，至少需要 6 对拟合记录和随后独立的 4 对验证记录。仅比较相同动作、记录方式、组顺序、重量和已填写 RIR 的表现；还需训练前体感回答，数据缺口会排除不合格的比较。",
+    "comment": "HealthHelpView display text"
+  },
+  "health.healthhelpview.candidate.parameters.must.outperform.both.baseline.b85e6a": {
+    "en": "Candidate parameters must outperform both baseline and current parameters on later held-out records, improving by at least 5% and more than 1 squared-error point. Evaluation happens at most every 7 days, with changes capped at 10% and time constants limited to 24–72 hours. This does not prove individual prediction validity; equipment identity, tempo and technique changes are not currently measured.",
+    "zh-Hans": "候选参数必须在留出的后续记录上同时优于基础参数和当前参数，至少改善 5% 且超过 1 个平方误差点；最多每 7 天评估一次，每次调整不超过 10%，时间常数限制在 24–72 小时。它不能证明个人预测有效，器械实体、节奏与技术变化目前未被测量。",
+    "comment": "HealthHelpView display text"
+  },
+  "health.healthhelpview.reset.personal.calibration.on.the.recovery.b20b1b": {
+    "en": "Reset personal calibration on the recovery page. Only a new accumulation start time is saved; workout and check-in history is preserved. Calculations read current data again and do not reuse old fits after records are edited or deleted.",
+    "zh-Hans": "恢复页可重置个体校准，只保存重新积累的起始时间，保留训练和体感历史。计算时重新读取当前数据，编辑或删除记录后不复用旧的拟合结果。",
+    "comment": "HealthHelpView display text"
+  },
+  "health.healthhelpview.data.and.apple.health.20baa0": {
+    "en": "Data and Apple Health",
+    "zh-Hans": "数据与 Apple 健康",
+    "comment": "HealthHelpView display text"
+  },
+  "health.healthhelpview.manual.records.include.workouts.rir.food.da9aac": {
+    "en": "Manual records include workouts, RIR, food, targets, body details, weight and optional check-ins. Read access to weight, sleep, resting heart rate, HRV SDNN, steps, active energy and workouts is requested only after you connect. Write access is not requested.",
+    "zh-Hans": "手动记录包括训练、RIR、饮食、目标、身体资料、体重和可选体感。只有主动连接后才请求读取体重、睡眠、静息心率、HRV SDNN、步数、活动能量和训练；不请求写入权限。",
+    "comment": "HealthHelpView display text"
+  },
+  "health.healthhelpview.to.manage.read.access.open.health.14b60c": {
+    "en": "To manage read access, open Health on your iPhone, tap Summary → your photo or initials at the top right → Apps → Trainote, then change each permission under Allow Trainote to Read. Follow this path in Health.",
+    "zh-Hans": "管理读取权限：打开 iPhone 上的“健康”App，依次轻点“摘要”→右上角头像或姓名首字母→“App”→“Trainote”，调整各项“从‘健康’读取数据”的许可。请按此路径操作。",
+    "comment": "HealthHelpView display text"
+  },
+  "health.healthhelpview.you.can.share.only.some.data.30e895": {
+    "en": "You can share only some data types. No samples, read failures and no connection are handled separately; empty data does not indicate denied access. Imported data is used for local analysis and cached for up to 90 days. The cache and read anchors are excluded from system backups and exported JSON.",
+    "zh-Hans": "可只共享部分类型。没有样本、读取失败和未连接会分别处理，空数据不表示拒绝权限。导入数据用于本机分析，缓存最多保留 90 天；缓存及读取锚点不进入系统备份或导出的 JSON。",
+    "comment": "HealthHelpView display text"
+  },
+  "health.healthhelpview.sync.runs.on.foreground.refresh.and.735b9a": {
+    "en": "Sync runs on foreground refresh and system notifications; continuous real-time updates are not guaranteed. Revoking access in Health may not be detected immediately. To clear imported data, use Disconnect and delete imported health data in this app's settings.",
+    "zh-Hans": "同步随前台刷新和系统通知进行，不保证持续实时。系统内撤回读取权限不一定立即被 App 识别；需要清除已导入内容时，请在本 App 设置中使用“断开并删除健康导入数据”。",
+    "comment": "HealthHelpView display text"
+  },
+  "health.healthhelpview.ai.and.deepseek.a6db6a": {
+    "en": "AI and DeepSeek",
+    "zh-Hans": "AI 与 DeepSeek",
+    "comment": "HealthHelpView display text"
+  },
+  "health.healthhelpview.basic.reports.organize.current.trends.recovery.38a6a9": {
+    "en": "Basic reports organize current trends, recovery facts and rule-based suggestions locally. Review evidence to check values and missing records. Historical AI reports are read-only; return to current suggestions to confirm starting a workout.",
+    "zh-Hans": "基础报告在本机整理当前趋势、恢复事实和规则建议。查看依据可以核对数值与缺失记录；历史 AI 报告只读，训练采用需要回到当前建议重新确认。",
+    "comment": "HealthHelpView display text"
+  },
+  "health.healthhelpview.ai.consent.is.separate.from.the.3665a4": {
+    "en": "AI consent is separate from the health connection. AI reports are not yet available, and no data is sent to DeepSeek. You can use locally generated basic reports. When AI becomes available, you will receive its data-processing notice and can choose whether to enable it.",
+    "zh-Hans": "AI 同意与健康连接独立。当前 AI 报告尚未开放，不向 DeepSeek 发送数据；可使用本机生成的基础报告。开放后会提供对应的数据处理说明，由你单独选择是否启用。",
+    "comment": "HealthHelpView display text"
+  },
+  "health.healthhelpview.when.enabled.reports.send.only.necessary.42d36d": {
+    "en": "When enabled, reports send only necessary fact summaries, rule candidates and missing-data flags. They exclude names, contact details, free-text notes, precise location and complete heart-rate series. Each new report rechecks health data readability; failed reads never upload old cached health data to fill gaps.",
+    "zh-Hans": "启用后的报告仅发送必要的事实汇总、规则候选和缺失标记，不发送姓名、联系方式、自由文本备注、精确位置或完整心率序列。每次新报告重新确认健康数据可读，读取失败时不会用旧健康缓存补齐上传。",
+    "comment": "HealthHelpView display text"
+  },
+  "health.healthhelpview.the.provider.api.s.retention.reuse.b014f7": {
+    "en": "The provider API's retention, reuse, opt-out and deletion arrangements have not been verified. No promise of third-party zero retention or exclusion from training is made here. A proxy that does not save content does not mean the provider does not retain it.",
+    "zh-Hans": "尚未核实供应商 API 的保留、再利用、退出和删除安排，因此这里不承诺第三方零保留或不用于训练。代理不保存正文不等于供应商不保留。",
+    "comment": "HealthHelpView display text"
+  },
+  "health.healthhelpview.storage.withdrawal.and.deletion.f403ec": {
+    "en": "Storage, withdrawal and deletion",
+    "zh-Hans": "存储、撤回与删除",
+    "comment": "HealthHelpView display text"
+  },
+  "health.healthhelpview.manual.records.stay.on.this.device.769a6c": {
+    "en": "Manual records stay on this device until you delete them. Trainote has no ads, analytics tracking or added telemetry and does not sell health records. Health cache and consent records are stored separately and are not transferred in JSON backups.",
+    "zh-Hans": "手动记录保存在本机，直到你删除。Trainote 不包含广告、分析追踪或新增遥测，不出售健康记录。健康缓存与同意记录独立存储，不随 JSON 备份转移。",
+    "comment": "HealthHelpView display text"
+  },
+  "health.healthhelpview.disconnecting.health.stops.sync.clears.imported.00d82a": {
+    "en": "Disconnecting health stops sync, clears imported cache and anchors, and deletes dependent analysis reports while preserving manual records. It does not delete original data in Apple Health. Failures prompt you to retry.",
+    "zh-Hans": "断开健康连接会停止同步、清除导入缓存和锚点，并删除依赖它们的分析报告，保留手动记录；不会删除 Apple 健康中的原始数据。失败会提示重试。",
+    "comment": "HealthHelpView display text"
+  },
+  "health.healthhelpview.turning.off.ai.cancels.future.requests.5907d2": {
+    "en": "Turning off AI cancels future requests and retries and withdraws server authorization. Retry when offline or after a failure. Health connection and local calculation remain available; historical AI reports can be deleted separately. Cancelling an already sent request cannot guarantee provider deletion.",
+    "zh-Hans": "关闭 AI 会取消后续请求与重试，并撤回服务器授权；离线或失败时需要重试。健康连接与本地计算保留。历史 AI 报告可单独删除。已经发出的请求不能保证通过取消就让供应商删除数据。",
+    "comment": "HealthHelpView display text"
+  },
+  "health.healthhelpview.backups.v1.v2.582936": {
+    "en": "Backups v1 / v2",
+    "zh-Hans": "备份 v1 / v2",
+    "comment": "HealthHelpView display text"
+  },
+  "health.healthhelpview.exports.use.v2.json.both.v1.a5b92c": {
+    "en": "Exports use v2 JSON. Both v1 and v2 can be restored; unknown future versions are rejected. Older app versions may not read v2. Exports include manual health details, target history, workouts and food records. They exclude imported health cache, sync anchors, health or AI consent, device credentials and derived reports.",
+    "zh-Hans": "当前导出 v2 JSON，可恢复 v1 和 v2，未来未知版本会被拒绝。旧版 App 不保证能读 v2。导出包括手动健康资料、目标历史、训练和饮食记录，不包括健康导入缓存、同步锚点、健康或 AI 同意、设备凭据和派生报告。",
+    "comment": "HealthHelpView display text"
+  },
+  "health.healthhelpview.restore.checks.ids.and.skips.records.302a0e": {
+    "en": "Restore checks IDs and skips records already present without deleting current records. A backup cannot restore authorization; you must choose again. Backups are saved where you choose and may contain personal health information. System backups and saved copies are managed by you and your device settings.",
+    "zh-Hans": "恢复会检查并跳过已有相同 ID 的记录，不删除当前记录。恢复备份不能恢复授权，仍需重新选择。备份保存在你选择的位置，可能含个人健康信息；系统备份或你保存的副本由你及设备设置管理。",
+    "comment": "HealthHelpView display text"
+  },
+  "health.healthhelpview.help.and.contact.7cca8d": {
+    "en": "Help and contact",
+    "zh-Hans": "帮助与联系",
+    "comment": "HealthHelpView display text"
+  },
+  "health.healthhelpview.report.problems.on.the.project.s.5556e5": {
+    "en": "Report problems on the project's issue page. Do not attach real health records, complete backups or credentials to public issues.",
+    "zh-Hans": "遇到问题可通过项目问题页反馈。请勿在公开问题中附上真实健康记录、完整备份或凭据。",
+    "comment": "HealthHelpView display text"
+  },
+  "health.healthhelpview.contact.the.maintainer.on.github.d4bfc8": {
+    "en": "Contact the maintainer on GitHub",
+    "zh-Hans": "在 GitHub 联系维护者",
+    "comment": "HealthHelpView display text"
+  },
+  "health.healthhelpview.methods.and.data.use.93b2bb": {
+    "en": "Methods and data use",
+    "zh-Hans": "方法与数据使用",
+    "comment": "HealthHelpView display text"
+  },
+  "health.healthonboardingview.keep.recording.choose.your.analysis.cc9165": {
+    "en": "Keep recording; choose your analysis",
+    "zh-Hans": "记录照常，分析由你选择",
+    "comment": "HealthOnboardingView display text"
+  },
+  "health.healthonboardingview.workouts.food.and.backups.can.stay.3ab8ec": {
+    "en": "Workouts, food and backups can stay entirely on this device. Choose the two options below independently. You can enable them later in settings.",
+    "zh-Hans": "训练、饮食和备份可以仅在本机使用。下面两项分别选择，跳过后仍可在设置中开启。",
+    "comment": "HealthOnboardingView display text"
+  },
+  "health.healthonboardingview.apple.health.6de270": {
+    "en": "Apple Health",
+    "zh-Hans": "Apple 健康",
+    "comment": "HealthOnboardingView display text"
+  },
+  "health.healthonboardingview.read.the.weight.sleep.resting.heart.6bba43": {
+    "en": "Read the weight, sleep, resting heart rate, HRV, steps, active energy and workouts you choose to share for local analysis. Trainote does not write to Apple Health.",
+    "zh-Hans": "读取你选择共享的体重、睡眠、静息心率、HRV、步数、活动能量和训练，用于本机分析。不向 Apple 健康写入。",
+    "comment": "HealthOnboardingView display text"
+  },
+  "health.healthonboardingview.read.status.48e33e": {
+    "en": "Read status",
+    "zh-Hans": "读取状态",
+    "comment": "HealthOnboardingView display text"
+  },
+  "health.healthonboardingview.manage.access.in.health.tap.summary.fc8c28": {
+    "en": "Manage access: in Health, tap Summary → your photo → Apps → Trainote.",
+    "zh-Hans": "管理权限：在“健康”App 的摘要中点头像 → App → Trainote。",
+    "comment": "HealthOnboardingView display text"
+  },
+  "health.healthonboardingview.refresh.health.data.a1d25f": {
+    "en": "Refresh health data",
+    "zh-Hans": "刷新健康读取",
+    "comment": "HealthOnboardingView display text"
+  },
+  "health.healthonboardingview.connect.apple.health.eb4d4c": {
+    "en": "Connect Apple Health",
+    "zh-Hans": "连接 Apple 健康",
+    "comment": "HealthOnboardingView display text"
+  },
+  "health.healthonboardingview.ai.reports.9885c1": {
+    "en": "AI reports",
+    "zh-Hans": "AI 报告",
+    "comment": "HealthOnboardingView display text"
+  },
+  "health.healthonboardingview.learn.about.and.choose.ai.reports.1336fa": {
+    "en": "Learn about and choose AI reports",
+    "zh-Hans": "了解并选择 AI 报告",
+    "comment": "HealthOnboardingView display text"
+  },
+  "health.healthonboardingview.methods.privacy.and.data.use.8e0893": {
+    "en": "Methods, privacy and data use",
+    "zh-Hans": "查看方法、隐私与数据使用",
+    "comment": "HealthOnboardingView display text"
+  },
+  "health.healthonboardingview.continue.with.trainote.d4888a": {
+    "en": "Continue with Trainote",
+    "zh-Hans": "继续使用 Trainote",
+    "comment": "HealthOnboardingView display text"
+  },
+  "health.healthonboardingview.use.locally.for.now.cc562e": {
+    "en": "Use locally for now",
+    "zh-Hans": "暂时仅本地使用",
+    "comment": "HealthOnboardingView display text"
+  },
+  "health.healthonboardingview.welcome.to.trainote.4df5d8": {
+    "en": "Welcome to Trainote",
+    "zh-Hans": "欢迎使用 Trainote",
+    "comment": "HealthOnboardingView display text"
+  },
+  "health.healthonboardingview.optional.third.party.processing.6c71ab": {
+    "en": "Optional third-party processing",
+    "zh-Hans": "可选的第三方处理",
+    "comment": "HealthOnboardingView display text"
+  },
+  "health.healthonboardingview.ai.reports.explain.local.calculations.and.651995": {
+    "en": "AI reports explain local calculations and allowed suggestions. When enabled, necessary workout, food, weight and health trend summaries are processed by DeepSeek through a proxy. Connecting Apple Health does not consent to third-party sharing.",
+    "zh-Hans": "AI 报告用于解释本地计算结果和已允许的建议。启用后，必要的训练、饮食、体重和健康趋势汇总会通过代理交由 DeepSeek 处理。Apple 健康连接不代表同意向第三方发送。",
+    "comment": "HealthOnboardingView display text"
+  },
+  "health.healthonboardingview.report.inputs.exclude.names.contact.details.59947b": {
+    "en": "Report inputs exclude names, contact details, free-text notes, precise location and complete raw heart-rate series. AI cannot change targets or workout history.",
+    "zh-Hans": "报告输入不包含姓名、联系方式、自由文本备注、精确位置或完整原始心率序列。AI 不能修改目标或训练历史。",
+    "comment": "HealthOnboardingView display text"
+  },
+  "health.healthonboardingview.current.status.045859": {
+    "en": "Current status",
+    "zh-Hans": "当前状态",
+    "comment": "HealthOnboardingView display text"
+  },
+  "health.healthonboardingview.read.this.version.s.processing.notice.8aec61": {
+    "en": "Read this version's processing notice before enabling AI. Turning it off stops future sends and retries. Cancelling requests does not automatically delete data already sent to third parties.",
+    "zh-Hans": "启用前请阅读此版本的处理说明。关闭后停止后续发送与重试，已发送的数据不因取消请求而自动从第三方删除。",
+    "comment": "HealthOnboardingView display text"
+  },
+  "health.healthonboardingview.agree.to.this.processing.and.enable.4e1fd9": {
+    "en": "Agree to this processing and enable AI reports",
+    "zh-Hans": "同意上述处理并启用 AI 报告",
+    "comment": "HealthOnboardingView display text"
+  },
+  "health.healthonboardingview.no.records.are.currently.sent.to.4a7205": {
+    "en": "No records are currently sent to DeepSeek, and AI consent is not saved in advance.",
+    "zh-Hans": "当前不会向 DeepSeek 发送记录，也不会预先保存 AI 同意。",
+    "comment": "HealthOnboardingView display text"
+  },
+  "health.healthonboardingview.full.methods.and.privacy.notice.e9f00c": {
+    "en": "Full methods and privacy notice",
+    "zh-Hans": "完整方法与隐私说明",
+    "comment": "HealthOnboardingView display text"
+  },
+  "health.healthonboardingview.action.incomplete.223fb3": {
+    "en": "Action incomplete",
+    "zh-Hans": "操作未完成",
+    "comment": "HealthOnboardingView display text"
+  },
+  "health.healthonboardingview.ok.cb63c6": {
+    "en": "OK",
+    "zh-Hans": "知道了",
+    "comment": "HealthOnboardingView display text"
+  },
+  "health.healthonboardingview.please.try.again.a7e79b": {
+    "en": "Please try again.",
+    "zh-Hans": "请重试。",
+    "comment": "HealthOnboardingView display text"
+  },
+  "health.recoveryanalysisdestination.recovery.analysis.unavailable.ee1a30": {
+    "en": "Recovery analysis unavailable",
+    "zh-Hans": "恢复分析暂不可用",
+    "comment": "RecoveryAnalysisDestination display text"
+  },
+  "health.recoveryanalysisdestination.try.again.later.existing.records.are.dcd98b": {
+    "en": "Try again later. Existing records are still available.",
+    "zh-Hans": "请稍后重试。原有记录仍可使用。",
+    "comment": "RecoveryAnalysisDestination display text"
+  },
+  "health.recoveryanalysisdestination.recovery.analysis.c172e5": {
+    "en": "Recovery analysis",
+    "zh-Hans": "恢复分析",
+    "comment": "RecoveryAnalysisDestination display text"
+  },
+  "health.recoveryanalysisdestination.training.advice.d3707a": {
+    "en": "Training advice",
+    "zh-Hans": "训练建议",
+    "comment": "RecoveryAnalysisDestination display text"
+  },
+  "health.recoveryanalysisdestination.done.33246f": {
+    "en": "Done",
+    "zh-Hans": "完成",
+    "comment": "RecoveryAnalysisDestination display text"
+  },
+  "health.healthfeatureaccess.disconnect.and.deletion.incomplete.e41b0b": {
+    "en": "Disconnect and deletion incomplete",
+    "zh-Hans": "断开删除未完成",
+    "comment": "HealthFeatureAccess display text"
+  },
+  "health.healthfeatureaccess.processing.health.read.request.8354a0": {
+    "en": "Processing health read request",
+    "zh-Hans": "正在处理健康读取请求",
+    "comment": "HealthFeatureAccess display text"
+  },
+  "health.healthfeatureaccess.not.connected.f2f3e9": {
+    "en": "Not connected",
+    "zh-Hans": "未连接",
+    "comment": "HealthFeatureAccess display text"
+  },
+  "health.healthfeatureaccess.syncing.health.data.5392b0": {
+    "en": "Syncing health data",
+    "zh-Hans": "正在同步健康数据",
+    "comment": "HealthFeatureAccess display text"
+  },
+  "health.healthfeatureaccess.health.reads.unavailable.e967eb": {
+    "en": "Health reads unavailable",
+    "zh-Hans": "健康读取暂不可用",
+    "comment": "HealthFeatureAccess display text"
+  },
+  "health.healthfeatureaccess.health.read.status.unavailable.2843be": {
+    "en": "Health read status unavailable",
+    "zh-Hans": "健康读取状态暂不可用",
+    "comment": "HealthFeatureAccess display text"
+  },
+  "health.healthfeatureaccess.some.health.data.did.not.sync.6df122": {
+    "en": "Some health data did not sync",
+    "zh-Hans": "部分健康数据同步未完成",
+    "comment": "HealthFeatureAccess display text"
+  },
+  "health.healthfeatureaccess.imported.health.data.on.this.device.1ce009": {
+    "en": "Imported health data on this device",
+    "zh-Hans": "本机已有健康导入数据",
+    "comment": "HealthFeatureAccess display text"
+  },
+  "health.healthfeatureaccess.no.health.samples.read.yet.e36db5": {
+    "en": "No health samples read yet",
+    "zh-Hans": "暂未读取到健康样本",
+    "comment": "HealthFeatureAccess display text"
+  },
+  "health.healthfeatureaccess.connection.request.completed.waiting.to.sync.976913": {
+    "en": "Connection request completed; waiting to sync",
+    "zh-Hans": "已完成连接请求，等待同步",
+    "comment": "HealthFeatureAccess display text"
+  },
+  "health.healthfeatureaccess.read.access.is.managed.in.health.d632e0": {
+    "en": "Read access is managed in Health. The system does not report read permission results to Trainote.",
+    "zh-Hans": "读取许可由“健康”App 管理；系统不会向 Trainote 报告读取许可结果。",
+    "comment": "HealthFeatureAccess display text"
+  },
+  "health.healthfeatureaccess.connection.request.completed.health.read.status.b2457f": {
+    "en": "Connection request completed. Health read status is unavailable. %@",
+    "zh-Hans": "连接请求已完成。健康读取状态暂不可用。%@",
+    "comment": "HealthFeatureAccess display text"
+  },
+  "health.healthfeatureaccess.syncing.b852b8": {
+    "en": "Syncing.",
+    "zh-Hans": "正在同步。",
+    "comment": "HealthFeatureAccess display text"
+  },
+  "health.healthfeatureaccess.the.latest.sync.partly.failed.40658f": {
+    "en": "The latest sync partly failed.",
+    "zh-Hans": "最近同步部分失败。",
+    "comment": "HealthFeatureAccess display text"
+  },
+  "health.healthfeatureaccess.the.latest.sync.completed.d74893": {
+    "en": "The latest sync completed.",
+    "zh-Hans": "最近同步已完成。",
+    "comment": "HealthFeatureAccess display text"
+  },
+  "health.healthfeatureaccess.waiting.for.sync.to.complete.b9da6b": {
+    "en": "Waiting for sync to complete.",
+    "zh-Hans": "等待同步完成。",
+    "comment": "HealthFeatureAccess display text"
+  },
+  "health.healthfeatureaccess.no.imported.samples.are.on.this.6c714c": {
+    "en": "No imported samples are on this device. Access may not be granted, or there may be no data.",
+    "zh-Hans": "本机暂无导入样本，可能是未授权或没有数据。",
+    "comment": "HealthFeatureAccess display text"
+  },
+  "health.healthfeatureaccess.imported.samples.are.on.this.device.8f3704": {
+    "en": "Imported samples are on this device; this does not confirm that read access is still valid.",
+    "zh-Hans": "本机有已导入样本，不代表当前读取许可仍有效。",
+    "comment": "HealthFeatureAccess display text"
+  },
+  "health.healthfeatureaccess.connection.request.completed.287fd4": {
+    "en": "Connection request completed. %@ %@ %@",
+    "zh-Hans": "连接请求已完成。%@%@%@",
+    "comment": "HealthFeatureAccess display text"
+  },
+  "health.healthfeatureaccess.health.reads.are.unavailable.existing.records.a843bb": {
+    "en": "Health reads are unavailable. Existing records are still available. Restart and try again.",
+    "zh-Hans": "健康读取暂不可用。原有记录可继续使用，请重新启动后重试。",
+    "comment": "HealthFeatureAccess display text"
+  },
+  "health.healthfeatureaccess.connection.request.completed.readable.data.depends.21bf11": {
+    "en": "Connection request completed. Readable data depends on your choices in Apple Health. No samples does not mean denied access.",
+    "zh-Hans": "已完成连接请求。实际可读内容取决于你在 Apple 健康中选择的数据；没有样本不代表拒绝权限。",
+    "comment": "HealthFeatureAccess display text"
+  },
+  "health.healthfeatureaccess.connection.request.completed.but.health.sync.8f3dcf": {
+    "en": "Connection request completed, but health sync is incomplete. Try again later; local records are still available.",
+    "zh-Hans": "连接请求已完成，但健康同步未完成。请稍后重试；本地记录仍可使用。",
+    "comment": "HealthFeatureAccess display text"
+  },
+  "health.healthfeatureaccess.the.health.connection.request.could.not.1b4179": {
+    "en": "The health connection request could not be completed. Try again. Local records are still available.",
+    "zh-Hans": "未能完成健康连接请求，请重试。本地记录仍可使用。",
+    "comment": "HealthFeatureAccess display text"
+  },
+  "health.healthfeatureaccess.the.health.data.service.is.unavailable.4b6a8e": {
+    "en": "The health data service is unavailable; deletion is incomplete. Restart and try again.",
+    "zh-Hans": "健康数据服务不可用，尚未完成删除。请重新启动后重试。",
+    "comment": "HealthFeatureAccess display text"
+  },
+  "health.healthfeatureaccess.disconnected.and.deleted.imported.health.data.d1af18": {
+    "en": "Disconnected and deleted imported health data and related reports. Manual records are preserved.",
+    "zh-Hans": "已断开并删除健康导入数据及相关报告。手动记录已保留。",
+    "comment": "HealthFeatureAccess display text"
+  },
+  "health.healthfeatureaccess.this.sync.has.stopped.but.some.f14728": {
+    "en": "This sync has stopped, but some deletion or saving is incomplete. Retry Disconnect and delete; this operation has not completed deletion.",
+    "zh-Hans": "已停止本次同步，但部分删除或保存未完成。请重试“断开并删除”，不要把本次操作视为删除成功。",
+    "comment": "HealthFeatureAccess display text"
+  },
+  "health.healthfeatureaccess.ai.reports.enabled.you.can.turn.d55401": {
+    "en": "AI reports enabled. You can turn them off in settings at any time.",
+    "zh-Hans": "已启用 AI 报告。可随时在设置中关闭。",
+    "comment": "HealthFeatureAccess display text"
+  },
+  "health.healthfeatureaccess.ai.activation.is.incomplete.and.sending.a073b9": {
+    "en": "AI activation is incomplete and sending has stopped. Withdrawal still needs a retry; complete it in settings.",
+    "zh-Hans": "AI 启用未完成，已停止发送。撤回仍需重试，请在设置中完成撤回。",
+    "comment": "HealthFeatureAccess display text"
+  },
+  "health.healthfeatureaccess.ai.reports.could.not.be.enabled.d68d60": {
+    "en": "AI reports could not be enabled. Consent for this attempt has been withdrawn. Local basic reports remain available.",
+    "zh-Hans": "未能启用 AI 报告。已撤回本次同意，继续使用本地基础报告。",
+    "comment": "HealthFeatureAccess display text"
+  },
+  "health.healthfeatureaccess.future.sending.has.stopped.local.saving.fc6c5d": {
+    "en": "Future sending has stopped. Local saving or server withdrawal is incomplete; retry withdrawal.",
+    "zh-Hans": "已停止后续发送。本机保存或服务器撤回尚未完成，请重试撤回。",
+    "comment": "HealthFeatureAccess display text"
+  },
+  "health.healthfeatureaccess.ai.reports.turned.off.health.connection.7f10e4": {
+    "en": "AI reports turned off. Health connection and local analysis remain available. Historical reports can be deleted separately.",
+    "zh-Hans": "已关闭 AI 报告。健康连接和本地分析继续保留，历史报告可单独删除。",
+    "comment": "HealthFeatureAccess display text"
+  },
+  "health.healthfeatureaccess.ai.withdrawal.is.incomplete.and.future.85c993": {
+    "en": "AI withdrawal is incomplete and future sending has stopped. Retry withdrawal in settings.",
+    "zh-Hans": "AI 撤回尚未完成，已停止后续发送。请在设置中重试撤回。",
+    "comment": "HealthFeatureAccess display text"
+  },
+  "health.healthfeatureaccess.ai.reports.on.this.device.deleted.d1dfdc": {
+    "en": "AI reports on this device deleted.",
+    "zh-Hans": "已删除本机 AI 报告。",
+    "comment": "HealthFeatureAccess display text"
+  },
+  "health.healthfeatureaccess.report.deletion.is.incomplete.try.again.b6a183": {
+    "en": "Report deletion is incomplete. Try again.",
+    "zh-Hans": "报告删除未完成，请重试。",
+    "comment": "HealthFeatureAccess display text"
+  },
+  "health.healthreportsview.report.scope.6c0964": {
+    "en": "Report scope",
+    "zh-Hans": "报告范围",
+    "comment": "HealthReportsView display text"
+  },
+  "health.healthreportsview.today.574cd4": {
+    "en": "Today",
+    "zh-Hans": "今日",
+    "comment": "HealthReportsView display text"
+  },
+  "health.healthreportsview.trends.376df6": {
+    "en": "Trends",
+    "zh-Hans": "趋势",
+    "comment": "HealthReportsView display text"
+  },
+  "health.healthreportsview.recovery.79748c": {
+    "en": "Recovery",
+    "zh-Hans": "恢复",
+    "comment": "HealthReportsView display text"
+  },
+  "health.healthreportsview.this.week.e16e82": {
+    "en": "This week",
+    "zh-Hans": "本周",
+    "comment": "HealthReportsView display text"
+  },
+  "health.healthreportsview.refresh.report.ec87f6": {
+    "en": "Refresh report",
+    "zh-Hans": "刷新报告",
+    "comment": "HealthReportsView display text"
+  },
+  "health.healthreportsview.reading.local.records.95272c": {
+    "en": "Reading local records",
+    "zh-Hans": "正在读取本地记录",
+    "comment": "HealthReportsView display text"
+  },
+  "health.healthreportsview.the.current.report.needs.updating.refresh.89b72a": {
+    "en": "The current report needs updating. Refresh to view it.",
+    "zh-Hans": "当前报告需要更新，请刷新后查看。",
+    "comment": "HealthReportsView display text"
+  },
+  "health.healthreportsview.basic.reports.are.generated.locally.ai.ffd0d4": {
+    "en": "Basic reports are generated locally. AI reports are not yet available; no records are currently sent.",
+    "zh-Hans": "基础报告在本机生成。AI 报告待开放，当前不会发送记录。",
+    "comment": "HealthReportsView display text"
+  },
+  "health.healthreportsview.historical.ai.reports.4adc1e": {
+    "en": "Historical AI reports",
+    "zh-Hans": "历史 AI 报告",
+    "comment": "HealthReportsView display text"
+  },
+  "health.healthreportsview.methods.privacy.and.data.use.7b28ee": {
+    "en": "Methods, privacy and data use",
+    "zh-Hans": "方法、隐私与数据使用",
+    "comment": "HealthReportsView display text"
+  },
+  "health.healthreportsview.analysis.reports.84de87": {
+    "en": "Analysis reports",
+    "zh-Hans": "分析报告",
+    "comment": "HealthReportsView display text"
+  },
+  "health.healthreportsview.report.expired.eb3415": {
+    "en": "Report expired",
+    "zh-Hans": "报告已失效",
+    "comment": "HealthReportsView display text"
+  },
+  "health.healthreportsview.go.back.and.refresh.the.report.dee17a": {
+    "en": "Go back and refresh the report.",
+    "zh-Hans": "返回后刷新报告。",
+    "comment": "HealthReportsView display text"
+  },
+  "health.healthreportsview.no.historical.ai.reports.9eaa66": {
+    "en": "No historical AI reports",
+    "zh-Hans": "暂无历史 AI 报告",
+    "comment": "HealthReportsView display text"
+  },
+  "health.healthreportsview.when.ai.reports.become.available.successfully.ce6128": {
+    "en": "When AI reports become available, successfully generated reports will be saved on this device. Basic reports are recalculated from current records.",
+    "zh-Hans": "AI 报告开放后，成功生成的报告会保存在本机。基础报告随当前记录重新计算。",
+    "comment": "HealthReportsView display text"
+  },
+  "health.healthreportsview.report.deleted.aa1129": {
+    "en": "Report deleted",
+    "zh-Hans": "报告已删除",
+    "comment": "HealthReportsView display text"
+  },
+  "health.healthreportsview.analysis.at.the.time.6ae3cf": {
+    "en": "Analysis at the time",
+    "zh-Hans": "当时的分析",
+    "comment": "HealthReportsView display text"
+  },
+  "health.healthreportsview.records.through.dfa634": {
+    "en": "Records through",
+    "zh-Hans": "记录截止",
+    "comment": "HealthReportsView display text"
+  },
+  "health.healthreportsview.values.come.from.local.rules.and.ed2907": {
+    "en": "Values come from local rules and records. Recovery scores and parameters are engineering estimates; missing records remain unknown. Historical suggestions cannot directly start a workout.",
+    "zh-Hans": "数值来自本地规则和记录。恢复分数与参数仍是工程估计；缺失记录保留为未知。历史建议不能直接开始训练。",
+    "comment": "HealthReportsView display text"
+  },
+  "health.healthreportsview.facts.and.evidence.8e249b": {
+    "en": "Facts and evidence",
+    "zh-Hans": "事实与依据",
+    "comment": "HealthReportsView display text"
+  },
+  "health.healthreportsview.period.f017c8": {
+    "en": "Period: %@–%@",
+    "zh-Hans": "统计区间：%@—%@",
+    "comment": "HealthReportsView display text"
+  },
+  "health.healthreportsview.manual.records.d98299": {
+    "en": "Manual records",
+    "zh-Hans": "手动记录",
+    "comment": "HealthReportsView display text"
+  },
+  "health.healthreportsview.apple.health.6de270": {
+    "en": "Apple Health",
+    "zh-Hans": "Apple 健康",
+    "comment": "HealthReportsView display text"
+  },
+  "health.healthreportsview.local.calculation.6c8568": {
+    "en": "Local calculation",
+    "zh-Hans": "本地计算",
+    "comment": "HealthReportsView display text"
+  },
+  "health.healthreportsview.full.methods.and.data.use.b1ffd1": {
+    "en": "Full methods and data use",
+    "zh-Hans": "完整方法与数据使用",
+    "comment": "HealthReportsView display text"
+  },
+  "health.healthreportsview.report.evidence.cf091a": {
+    "en": "Report evidence",
+    "zh-Hans": "报告依据",
+    "comment": "HealthReportsView display text"
+  },
+  "health.healthreportsview.representative.daily.weight.2da445": {
+    "en": "Representative daily weight",
+    "zh-Hans": "当日代表体重",
+    "comment": "HealthReportsView display text"
+  },
+  "health.healthreportsview.weekly.weight.change.02cb7a": {
+    "en": "Weekly weight change",
+    "zh-Hans": "每周体重变化",
+    "comment": "HealthReportsView display text"
+  },
+  "health.healthreportsview.recorded.average.daily.calories.40b1c1": {
+    "en": "Recorded average daily calories",
+    "zh-Hans": "已记录日均热量",
+    "comment": "HealthReportsView display text"
+  },
+  "health.healthreportsview.calibrated.intake.reference.2817ed": {
+    "en": "Calibrated intake reference",
+    "zh-Hans": "校准摄入参考",
+    "comment": "HealthReportsView display text"
+  },
+  "health.healthreportsview.records.without.allocated.muscles.5258f3": {
+    "en": "Records without allocated muscles",
+    "zh-Hans": "尚未分配肌群的记录",
+    "comment": "HealthReportsView display text"
+  },
+  "health.healthreportsview.estimated.muscle.readiness.83a407": {
+    "en": "Estimated muscle readiness",
+    "zh-Hans": "肌群准备度估计",
+    "comment": "HealthReportsView display text"
+  },
+  "health.healthreportsview.estimated.remaining.load.275ec1": {
+    "en": "Estimated remaining load",
+    "zh-Hans": "剩余负荷估计",
+    "comment": "HealthReportsView display text"
+  },
+  "health.healthreportsview.latest.workout.load.1885fa": {
+    "en": "Latest workout load",
+    "zh-Hans": "最近一次训练负荷",
+    "comment": "HealthReportsView display text"
+  },
+  "health.healthreportsview.recovery.time.parameter.c598e4": {
+    "en": "Recovery time parameter",
+    "zh-Hans": "恢复时间参数",
+    "comment": "HealthReportsView display text"
+  },
+  "health.healthreportsview.external.workout.duration.e5d32c": {
+    "en": "External workout duration",
+    "zh-Hans": "外部训练时长",
+    "comment": "HealthReportsView display text"
+  },
+  "health.healthreportsview.today.s.check.in.abc88b": {
+    "en": "Today's check-in",
+    "zh-Hans": "今日体感",
+    "comment": "HealthReportsView display text"
+  },
+  "health.healthreportsview.perceived.sleep.f21dc3": {
+    "en": "Perceived sleep",
+    "zh-Hans": "主观睡眠",
+    "comment": "HealthReportsView display text"
+  },
+  "health.healthreportsview.template.for.this.workout.299a26": {
+    "en": "Template for this workout",
+    "zh-Hans": "本次模板选择",
+    "comment": "HealthReportsView display text"
+  },
+  "health.healthreportsview.today.s.training.availability.037220": {
+    "en": "Today's training availability",
+    "zh-Hans": "今日可训练安排",
+    "comment": "HealthReportsView display text"
+  },
+  "health.healthreportsview.weekly.training.schedule.b7ee28": {
+    "en": "Weekly training schedule",
+    "zh-Hans": "每周训练安排",
+    "comment": "HealthReportsView display text"
+  },
+  "health.healthreportsview.pain.or.movement.limits.a5fe16": {
+    "en": "Pain or movement limits",
+    "zh-Hans": "疼痛或活动限制",
+    "comment": "HealthReportsView display text"
+  },
+  "health.healthreportsview.recent.working.sets.8ff387": {
+    "en": "Recent working sets",
+    "zh-Hans": "近期工作组",
+    "comment": "HealthReportsView display text"
+  },
+  "health.healthreportsview.significant.soreness.d8d9c9": {
+    "en": "Significant soreness",
+    "zh-Hans": "明显酸痛",
+    "comment": "HealthReportsView display text"
+  },
+  "health.healthreportsview.feeling.tired.cd1942": {
+    "en": "Feeling tired",
+    "zh-Hans": "疲惫体感",
+    "comment": "HealthReportsView display text"
+  },
+  "health.healthreportsview.soreness.records.a0d3d1": {
+    "en": "Soreness records",
+    "zh-Hans": "酸痛记录",
+    "comment": "HealthReportsView display text"
+  },
+  "health.healthreportsview.pain.records.687527": {
+    "en": "Pain records",
+    "zh-Hans": "疼痛记录",
+    "comment": "HealthReportsView display text"
+  },
+  "health.healthreportsview.movement.limits.44018b": {
+    "en": "Movement limits",
+    "zh-Hans": "活动限制",
+    "comment": "HealthReportsView display text"
+  },
+  "health.healthreportsview.goal.direction.4a9679": {
+    "en": "Goal direction",
+    "zh-Hans": "目标方向",
+    "comment": "HealthReportsView display text"
+  },
+  "health.healthreportsview.systemic.status.116dd1": {
+    "en": "Systemic status",
+    "zh-Hans": "全身状态",
+    "comment": "HealthReportsView display text"
+  },
+  "health.healthreportsview.sleep.ca5f73": {
+    "en": "Sleep",
+    "zh-Hans": "睡眠",
+    "comment": "HealthReportsView display text"
+  },
+  "health.healthreportsview.resting.heart.rate.ca24f8": {
+    "en": "Resting heart rate",
+    "zh-Hans": "静息心率",
+    "comment": "HealthReportsView display text"
+  },
+  "health.healthreportsview.personal.baseline.ab4294": {
+    "en": "Personal baseline",
+    "zh-Hans": "个人基线",
+    "comment": "HealthReportsView display text"
+  },
+  "health.healthreportsview.change.from.baseline.f8fb69": {
+    "en": "Change from baseline",
+    "zh-Hans": "相对基线变化",
+    "comment": "HealthReportsView display text"
+  },
+  "health.healthreportsview.recent.records.3b6770": {
+    "en": "Recent records",
+    "zh-Hans": "近期记录",
+    "comment": "HealthReportsView display text"
+  },
+  "health.healthreportsview.recorded.metric.db09dd": {
+    "en": "Recorded metric",
+    "zh-Hans": "记录指标",
+    "comment": "HealthReportsView display text"
+  },
+  "health.healthanalysisdestinations.trend.analysis.cc7a87": {
+    "en": "Trend analysis",
+    "zh-Hans": "趋势分析",
+    "comment": "HealthAnalysisDestinations display text"
+  },
+  "health.healthanalysisdestinations.recovery.analysis.c172e5": {
+    "en": "Recovery analysis",
+    "zh-Hans": "恢复分析",
+    "comment": "HealthAnalysisDestinations display text"
+  },
+  "health.healthanalysisdestinations.this.feature.is.not.yet.available.4cf963": {
+    "en": "This feature is not yet available. Workout and food recording are available as usual.",
+    "zh-Hans": "此功能尚未开放。训练和饮食记录可以照常使用。",
+    "comment": "HealthAnalysisDestinations display text"
+  },
+  "health.healthanalysisdestinations.methods.and.data.use.93b2bb": {
+    "en": "Methods and data use",
+    "zh-Hans": "方法与数据使用",
+    "comment": "HealthAnalysisDestinations display text"
+  },
+  "health.healthreportintegration.ai.reports.are.not.yet.available.e59eb3": {
+    "en": "AI reports are not yet available. View locally generated basic reports now and choose whether to enable AI when it becomes available.",
+    "zh-Hans": "AI 报告尚未开放，目前可查看本机生成的基础报告；开放后可单独选择启用。",
+    "comment": "HealthReportIntegration display text"
+  },
+  "health.healthreportintegration.ai.withdrawal.is.incomplete.local.basic.f1d885": {
+    "en": "AI withdrawal is incomplete. Local basic reports are shown; retry withdrawal in settings.",
+    "zh-Hans": "AI 撤回尚未完成；当前显示本地基础报告，请在设置中重试撤回。",
+    "comment": "HealthReportIntegration display text"
+  },
+  "health.healthreportintegration.ai.withdrawal.is.incomplete.retry.in.52139d": {
+    "en": "AI withdrawal is incomplete. Retry in settings. Workouts, food and local analysis are still available.",
+    "zh-Hans": "AI 撤回尚未完成，请在设置中重试。训练、饮食和本地分析仍可使用。",
+    "comment": "HealthReportIntegration display text"
+  },
+  "health.healthreportintegration.records.or.templates.changed.or.could.dca91e": {
+    "en": "Records or templates changed, or could not be read. Refresh the report and try again.",
+    "zh-Hans": "记录或模板已变化，或暂时无法读取。请刷新报告后重试。",
+    "comment": "HealthReportIntegration display text"
+  },
+  "health.trendentryforms.details.needed.for.calculation.c30175": {
+    "en": "Details needed for calculation",
+    "zh-Hans": "计算所需资料",
+    "comment": "TrendEntryForms display text"
+  },
+  "health.trendentryforms.height.cm.034d28": {
+    "en": "Height (cm)",
+    "zh-Hans": "身高（cm）",
+    "comment": "TrendEntryForms display text"
+  },
+  "health.trendentryforms.age.28c02e": {
+    "en": "Age",
+    "zh-Hans": "年龄",
+    "comment": "TrendEntryForms display text"
+  },
+  "health.trendentryforms.sex.parameter.used.by.the.formula.4b1cf6": {
+    "en": "Sex parameter used by the formula",
+    "zh-Hans": "公式使用的生理性别参数",
+    "comment": "TrendEntryForms display text"
+  },
+  "health.trendentryforms.leave.blank.for.now.8a0e34": {
+    "en": "Leave blank for now",
+    "zh-Hans": "暂不填写",
+    "comment": "TrendEntryForms display text"
+  },
+  "health.trendentryforms.male.parameter.bcc5f3": {
+    "en": "Male parameter",
+    "zh-Hans": "男性参数",
+    "comment": "TrendEntryForms display text"
+  },
+  "health.trendentryforms.female.parameter.98a7e6": {
+    "en": "Female parameter",
+    "zh-Hans": "女性参数",
+    "comment": "TrendEntryForms display text"
+  },
+  "health.trendentryforms.activity.level.cc69e0": {
+    "en": "Activity level",
+    "zh-Hans": "活动水平",
+    "comment": "TrendEntryForms display text"
+  },
+  "health.trendentryforms.sedentary.746954": {
+    "en": "Sedentary",
+    "zh-Hans": "久坐",
+    "comment": "TrendEntryForms display text"
+  },
+  "health.trendentryforms.light.activity.4ca50d": {
+    "en": "Light activity",
+    "zh-Hans": "轻活动",
+    "comment": "TrendEntryForms display text"
+  },
+  "health.trendentryforms.moderate.activity.52a8b4": {
+    "en": "Moderate activity",
+    "zh-Hans": "中等活动",
+    "comment": "TrendEntryForms display text"
+  },
+  "health.trendentryforms.high.activity.7ba775": {
+    "en": "High activity",
+    "zh-Hans": "高活动",
+    "comment": "TrendEntryForms display text"
+  },
+  "health.trendentryforms.activity.level.includes.daily.activity.and.6c52e3": {
+    "en": "Activity level includes daily activity and training. Watch activity calories are not added back individually.",
+    "zh-Hans": "活动水平包含日常活动和训练，不会再逐卡路里加回手表活动热量。",
+    "comment": "TrendEntryForms display text"
+  },
+  "health.trendentryforms.training.days.per.week.abc26a": {
+    "en": "Training days per week",
+    "zh-Hans": "每周训练天数",
+    "comment": "TrendEntryForms display text"
+  },
+  "health.trendentryforms.days.d26a55": {
+    "en": "%lld days",
+    "zh-Hans": "%lld 天",
+    "comment": "TrendEntryForms display text",
+    "enOne": "%lld day"
+  },
+  "health.trendentryforms.body.goal.47f1d8": {
+    "en": "Body goal",
+    "zh-Hans": "身体目标",
+    "comment": "TrendEntryForms display text"
+  },
+  "health.trendentryforms.goal.direction.4a9679": {
+    "en": "Goal direction",
+    "zh-Hans": "目标方向",
+    "comment": "TrendEntryForms display text"
+  },
+  "health.trendentryforms.maintain.weight.0da638": {
+    "en": "Maintain weight",
+    "zh-Hans": "维持体重",
+    "comment": "TrendEntryForms display text"
+  },
+  "health.trendentryforms.lose.fat.170fab": {
+    "en": "Lose fat",
+    "zh-Hans": "减脂",
+    "comment": "TrendEntryForms display text"
+  },
+  "health.trendentryforms.gain.muscle.5ea5b9": {
+    "en": "Gain muscle",
+    "zh-Hans": "增肌",
+    "comment": "TrendEntryForms display text"
+  },
+  "health.trendentryforms.eligibility.for.general.suggestions.99a3db": {
+    "en": "Eligibility for general suggestions",
+    "zh-Hans": "通用建议适用条件",
+    "comment": "TrendEntryForms display text"
+  },
+  "health.trendentryforms.not.confirmed.yet.0cb1a6": {
+    "en": "Not confirmed yet",
+    "zh-Hans": "暂不确认",
+    "comment": "TrendEntryForms display text"
+  },
+  "health.trendentryforms.adult.everyday.fitness.with.no.special.705c61": {
+    "en": "Adult everyday fitness with no special nutrition needs",
+    "zh-Hans": "成年日常健身，无特殊营养需求",
+    "comment": "TrendEntryForms display text"
+  },
+  "health.trendentryforms.special.needs.or.unsure.d580ef": {
+    "en": "Special needs or unsure",
+    "zh-Hans": "有特殊需求或不确定",
+    "comment": "TrendEntryForms display text"
+  },
+  "health.trendentryforms.for.pregnancy.breastfeeding.medical.conditions.or.7c0329": {
+    "en": "For pregnancy, breastfeeding, medical conditions or special nutrition plans, you can keep recording and use manual targets.",
+    "zh-Hans": "孕哺期、疾病管理或需特殊营养方案时，可继续记录并使用手动目标。",
+    "comment": "TrendEntryForms display text"
+  },
+  "health.trendentryforms.use.suggestion.mode.after.saving.i.c29444": {
+    "en": "Use suggestion mode after saving; I choose adoption",
+    "zh-Hans": "保存后使用建议模式，由我采用",
+    "comment": "TrendEntryForms display text"
+  },
+  "health.trendentryforms.body.details.and.goals.704565": {
+    "en": "Body details and goals",
+    "zh-Hans": "身体资料与目标",
+    "comment": "TrendEntryForms display text"
+  },
+  "health.trendentryforms.cancel.4d0b46": {
+    "en": "Cancel",
+    "zh-Hans": "取消",
+    "comment": "TrendEntryForms display text"
+  },
+  "health.trendentryforms.save.fadf24": {
+    "en": "Save",
+    "zh-Hans": "保存",
+    "comment": "TrendEntryForms display text"
+  },
+  "health.trendentryforms.enter.a.valid.height.and.age.5b4353": {
+    "en": "Enter a valid height and age.",
+    "zh-Hans": "请输入有效的身高和年龄。",
+    "comment": "TrendEntryForms display text"
+  },
+  "health.trendentryforms.check.the.numeric.ranges.in.your.fb8b30": {
+    "en": "Check the numeric ranges in your profile.",
+    "zh-Hans": "请检查资料中的数值范围。",
+    "comment": "TrendEntryForms display text"
+  },
+  "health.trendentryforms.weigh.in.time.61905f": {
+    "en": "Weigh-in time",
+    "zh-Hans": "称重时间",
+    "comment": "TrendEntryForms display text"
+  },
+  "health.trendentryforms.weight.kg.7df6f0": {
+    "en": "Weight (kg)",
+    "zh-Hans": "体重（kg）",
+    "comment": "TrendEntryForms display text"
+  },
+  "health.trendentryforms.this.is.a.manual.record.edit.8a757d": {
+    "en": "This is a manual record. Edit Apple Health records in their original source.",
+    "zh-Hans": "此记录来源为手动。Apple 健康记录请在原来源中编辑。",
+    "comment": "TrendEntryForms display text"
+  },
+  "health.trendentryforms.record.weight.158001": {
+    "en": "Record weight",
+    "zh-Hans": "记录体重",
+    "comment": "TrendEntryForms display text"
+  },
+  "health.trendentryforms.edit.weight.1a3a47": {
+    "en": "Edit weight",
+    "zh-Hans": "编辑体重",
+    "comment": "TrendEntryForms display text"
+  },
+  "health.trendentryforms.enter.a.valid.weight.in.kilograms.7c4573": {
+    "en": "Enter a valid weight in kilograms.",
+    "zh-Hans": "请输入有效的公斤数。",
+    "comment": "TrendEntryForms display text"
+  },
+  "health.trendentryforms.preferred.source.8cbeb9": {
+    "en": "Preferred source",
+    "zh-Hans": "常用来源",
+    "comment": "TrendEntryForms display text"
+  },
+  "health.trendentryforms.prefer.8c9728": {
+    "en": "Prefer",
+    "zh-Hans": "优先使用",
+    "comment": "TrendEntryForms display text"
+  },
+  "health.trendentryforms.automatic.manual.first.ea8efd": {
+    "en": "Automatic (manual first)",
+    "zh-Hans": "自动选择（优先手动）",
+    "comment": "TrendEntryForms display text"
+  },
+  "health.trendentryforms.manual.2a4a4d": {
+    "en": "Manual",
+    "zh-Hans": "手动",
+    "comment": "TrendEntryForms display text"
+  },
+  "health.trendentryforms.manual.records.d98299": {
+    "en": "Manual records",
+    "zh-Hans": "手动记录",
+    "comment": "TrendEntryForms display text"
+  },
+  "health.trendentryforms.apple.health.1c3cac": {
+    "en": "Apple Health · %@",
+    "zh-Hans": "Apple 健康 · %@",
+    "comment": "TrendEntryForms display text"
+  },
+  "health.trendentryforms.record.time.zone.cfb447": {
+    "en": "Record time zone: %@",
+    "zh-Hans": "记录时区：%@",
+    "comment": "TrendEntryForms display text"
+  },
+  "health.trendentryforms.selected.as.the.representative.daily.reading.89ad96": {
+    "en": "Selected as the representative daily reading",
+    "zh-Hans": "已指定为当天代表读数",
+    "comment": "TrendEntryForms display text"
+  },
+  "health.trendentryforms.outlier.awaiting.review.excluded.from.trend.92e23e": {
+    "en": "Outlier awaiting review; excluded from trend calculation for now",
+    "zh-Hans": "异常值待复核，暂未用于趋势计算",
+    "comment": "TrendEntryForms display text"
+  },
+  "health.trendentryforms.use.as.the.representative.daily.reading.20df50": {
+    "en": "Use as the representative daily reading",
+    "zh-Hans": "作为当天代表读数",
+    "comment": "TrendEntryForms display text"
+  },
+  "health.trendentryforms.edit.a7f814": {
+    "en": "Edit",
+    "zh-Hans": "编辑",
+    "comment": "TrendEntryForms display text"
+  },
+  "health.trendentryforms.delete.3755f5": {
+    "en": "Delete",
+    "zh-Hans": "删除",
+    "comment": "TrendEntryForms display text"
+  },
+  "health.trendentryforms.weight.records.and.sources.4351f2": {
+    "en": "Weight records and sources",
+    "zh-Hans": "体重记录与来源",
+    "comment": "TrendEntryForms display text"
+  },
+  "health.trendentryforms.delete.this.manual.weight.record.c08a84": {
+    "en": "Delete this manual weight record?",
+    "zh-Hans": "删除这条手动体重？",
+    "comment": "TrendEntryForms display text"
+  },
+  "health.trendview.body.details.and.goal.direction.ad25de": {
+    "en": "Body details and goal direction",
+    "zh-Hans": "身体资料与目标方向",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.edit.manual.nutrition.targets.9bc7a5": {
+    "en": "Edit manual nutrition targets",
+    "zh-Hans": "编辑手动营养目标",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.methods.and.data.use.df2501": {
+    "en": "Methods and data use",
+    "zh-Hans": "计算方法与数据使用",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.trend.analysis.cc7a87": {
+    "en": "Trend analysis",
+    "zh-Hans": "趋势分析",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.record.weight.158001": {
+    "en": "Record weight",
+    "zh-Hans": "记录体重",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.could.not.complete.a49f84": {
+    "en": "Could not complete",
+    "zh-Hans": "未能完成",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.ok.27e4fe": {
+    "en": "OK",
+    "zh-Hans": "好",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.enable.weekly.automatic.adoption.918ef7": {
+    "en": "Enable weekly automatic adoption?",
+    "zh-Hans": "开启每周自动采用？",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.enable.automatic.adoption.193285": {
+    "en": "Enable automatic adoption",
+    "zh-Hans": "开启自动采用",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.cancel.4d0b46": {
+    "en": "Cancel",
+    "zh-Hans": "取消",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.you.adopt.the.initial.targets.first.b01f1e": {
+    "en": "You adopt the initial targets first. Later adjustments require sufficient records and boundary checks, happen at most every 7 days and are capped at 100 kcal or 5% of the current target. You can pause or undo at any time.",
+    "zh-Hans": "初始目标由你先采用。之后仅在记录充分且通过边界检查时，每 7 天最多调整一次，每次不超过 100 kcal 或当前目标的 5%。可随时暂停或撤销。",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.no.food.records.for.this.day.9fc2f9": {
+    "en": "No food records for this day",
+    "zh-Hans": "这一天没有饮食记录",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.confirm.no.intake.and.mark.complete.cf8066": {
+    "en": "Confirm no intake and mark complete",
+    "zh-Hans": "确认当天没有摄入，标记完整",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.keep.adding.records.29d868": {
+    "en": "Keep adding records",
+    "zh-Hans": "继续补记",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.missing.records.are.not.treated.as.13c1c7": {
+    "en": "Missing records are not treated as 0 kcal. Use this only when you confirm there was no intake.",
+    "zh-Hans": "缺少记录不会自动按 0 kcal 处理；仅在确认没有摄入时使用此操作。",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.trend.weight.dfd7ed": {
+    "en": "Trend weight",
+    "zh-Hans": "趋势体重",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.record.weight.to.start.building.a.2b359d": {
+    "en": "Record weight to start building a trend",
+    "zh-Hans": "记录体重后开始建立趋势",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.goal.direction.4a9679": {
+    "en": "Goal direction",
+    "zh-Hans": "目标方向",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.not.set.4c3ba6": {
+    "en": "Not set",
+    "zh-Hans": "待设置",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.complete.profile.2707e3": {
+    "en": "Complete profile",
+    "zh-Hans": "完善资料",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.rate.over.the.last.21.days.574730": {
+    "en": "Rate over the last 21 days",
+    "zh-Hans": "近 21 天变化速度",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.2f.week.67786a": {
+    "en": "%+.2f%% / week",
+    "zh-Hans": "%+.2f%% / 周",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.next.review.c0ddc0": {
+    "en": "Next review",
+    "zh-Hans": "下次复核",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.body.details.updated.after.7.days.92cef0": {
+    "en": "Body details updated. After 7 days of observation, review and adopt new initial targets to rebuild the baseline.",
+    "zh-Hans": "身体资料已更新。观察满 7 天后，请核对并采用新的初始目标，重新建立基线。",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.weight.kg.157e4a": {
+    "en": "Weight · kg",
+    "zh-Hans": "体重 · kg",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.time.range.2be904": {
+    "en": "Time range",
+    "zh-Hans": "时间范围",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.4.weeks.e9fcd6": {
+    "en": "4 weeks",
+    "zh-Hans": "4 周",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.12.weeks.4945ee": {
+    "en": "12 weeks",
+    "zh-Hans": "12 周",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.all.778fc8": {
+    "en": "All",
+    "zh-Hans": "全部",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.no.weight.records.yet.479161": {
+    "en": "No weight records yet",
+    "zh-Hans": "还没有体重记录",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.record.weight.manually.or.connect.apple.4ed497": {
+    "en": "Record weight manually or connect Apple Health to read existing records.",
+    "zh-Hans": "可以手动记录，也可连接 Apple 健康读取已有记录。",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.date.b6fed9": {
+    "en": "Date",
+    "zh-Hans": "日期",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.weight.319359": {
+    "en": "Weight",
+    "zh-Hans": "体重",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.manual.weight.3a6160": {
+    "en": "Manual weight",
+    "zh-Hans": "手动体重",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.apple.health.weight.59a2eb": {
+    "en": "Apple Health weight",
+    "zh-Hans": "Apple 健康体重",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.1f.kilograms.e871a8": {
+    "en": "%.1f kilograms",
+    "zh-Hans": "%.1f 公斤",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.smoothed.trend.99ca06": {
+    "en": "Smoothed trend",
+    "zh-Hans": "平滑趋势",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.dots.are.source.readings.and.the.365667": {
+    "en": "Dots are source readings and the curve is a smoothed estimate. Outlying representative readings stay in the records and are flagged for review.",
+    "zh-Hans": "圆点为来源记录，曲线为平滑估计；异常代表值保留在记录中并提示复核。",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.weight.records.and.sources.4351f2": {
+    "en": "Weight records and sources",
+    "zh-Hans": "体重记录与来源",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.intake.completeness.61c19d": {
+    "en": "Intake completeness",
+    "zh-Hans": "摄入完整度",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.14.days.through.yesterday.2a2411": {
+    "en": "14 days through yesterday",
+    "zh-Hans": "截至昨天的 14 天",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.14.days.confirmed.7090fb": {
+    "en": "%@ / 14 days confirmed",
+    "zh-Hans": "%@ / 14 天已确认",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.confirmation.date.b4aa5a": {
+    "en": "Confirmation date",
+    "zh-Hans": "确认日期",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.selected.day.confirmed.complete.f794cf": {
+    "en": "Selected day confirmed complete",
+    "zh-Hans": "所选日期已确认完整",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.food.records.for.this.day.are.add823": {
+    "en": "Food records for this day are complete",
+    "zh-Hans": "当天饮食已记完整",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.confirm.again.after.editing.food.records.1b445b": {
+    "en": "Confirm again after editing food records. Unconfirmed days are excluded from average intake.",
+    "zh-Hans": "编辑饮食记录后需要重新确认。未确认的日期不用于平均摄入。",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.recorded.d94731": {
+    "en": "Recorded",
+    "zh-Hans": "已记录",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.recorded.calories.27ef14": {
+    "en": "Recorded calories",
+    "zh-Hans": "已记录热量",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.calories.kcal.pale.bars.are.unconfirmed.ea2a67": {
+    "en": "Calories · kcal. Pale bars are unconfirmed records; blank dates are unknown.",
+    "zh-Hans": "热量 · kcal。浅色为未确认完整的记录；空白日期表示未知。",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.nutrition.targets.144c16": {
+    "en": "Nutrition targets",
+    "zh-Hans": "营养目标",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.target.mode.09c02b": {
+    "en": "Target mode",
+    "zh-Hans": "目标模式",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.manual.2a4a4d": {
+    "en": "Manual",
+    "zh-Hans": "手动",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.suggest.then.adopt.da8750": {
+    "en": "Suggest, then adopt",
+    "zh-Hans": "建议后采用",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.adopt.automatically.each.week.4096e5": {
+    "en": "Adopt automatically each week",
+    "zh-Hans": "每周自动采用",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.current.25e74d": {
+    "en": "Current",
+    "zh-Hans": "当前",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.effective.ae28ab": {
+    "en": "Effective: %@",
+    "zh-Hans": "生效日：%@",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.suggested.c5134e": {
+    "en": "Suggested",
+    "zh-Hans": "建议",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.calorie.adjustment.0f.kcal.a345d5": {
+    "en": "Calorie adjustment %+.0f kcal",
+    "zh-Hans": "热量调整 %+.0f kcal",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.initial.targets.based.on.body.details.6b2ac0": {
+    "en": "Initial targets based on body details",
+    "zh-Hans": "根据身体资料建立初始目标",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.suggestion.evidence.a8c05c": {
+    "en": "Suggestion evidence",
+    "zh-Hans": "建议依据",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.this.is.an.initial.estimate.for.fa9fb5": {
+    "en": "This is an initial estimate for the new setup and needs your confirmation. Observe for at least 7 days after adoption before adjusting.",
+    "zh-Hans": "这是新配置的初始估计，需要你确认；采用后至少观察 7 天再调整。",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.adopt.new.initial.targets.c49356": {
+    "en": "Adopt new initial targets",
+    "zh-Hans": "采用新的初始目标",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.adopt.suggestion.8b65eb": {
+    "en": "Adopt suggestion",
+    "zh-Hans": "采用建议",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.skip.for.now.review.in.7.592da6": {
+    "en": "Skip for now; review in 7 days",
+    "zh-Hans": "暂不采用，7 天后复核",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.resume.suggestion.reviews.dfd8dc": {
+    "en": "Resume suggestion reviews",
+    "zh-Hans": "恢复建议复核",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.pause.adjustments.for.7.days.ed13ce": {
+    "en": "Pause adjustments for 7 days",
+    "zh-Hans": "暂停调整 7 天",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.target.history.a2fc48": {
+    "en": "Target history",
+    "zh-Hans": "目标历史",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.history.is.preserved.after.adoption.or.db37a7": {
+    "en": "History is preserved after adoption or manual saving. Existing targets are not invented as past targets.",
+    "zh-Hans": "采用或手动保存后保留历史；当前旧目标不会被虚构成过去的目标。",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.restored.by.undo.a83748": {
+    "en": "Restored by undo",
+    "zh-Hans": "撤销恢复",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.undone.61063b": {
+    "en": "Undone",
+    "zh-Hans": "已撤销",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.undo.and.pause.for.7.days.d32b67": {
+    "en": "Undo and pause for 7 days",
+    "zh-Hans": "撤销并暂停 7 天",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.restore.the.previous.targets.resume.reviews.51d993": {
+    "en": "Restore the previous targets; resume reviews with your original settings after the pause.",
+    "zh-Hans": "恢复上次目标，暂停后仍按原设置复核。",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.this.is.the.first.target.with.b56593": {
+    "en": "This is the first target, with no earlier value to restore. You can edit manual targets.",
+    "zh-Hans": "这是首个目标，没有可恢复的旧值。可在手动目标中修改。",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.carbs.g.protein.g.fat.g.5af02d": {
+    "en": "Carbs %@ g · Protein %@ g · Fat %@ g",
+    "zh-Hans": "碳水 %@ g · 蛋白质 %@ g · 脂肪 %@ g",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.maintain.06fbde": {
+    "en": "Maintain",
+    "zh-Hans": "维持",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.lose.fat.170fab": {
+    "en": "Lose fat",
+    "zh-Hans": "减脂",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.gain.muscle.5ea5b9": {
+    "en": "Gain muscle",
+    "zh-Hans": "增肌",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.suggestion.adopted.bb7a31": {
+    "en": "Suggestion adopted",
+    "zh-Hans": "已采用建议",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.automatic.adoption.996751": {
+    "en": "Automatic adoption",
+    "zh-Hans": "自动采用",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.add.body.details.to.generate.initial.1fb59a": {
+    "en": "Add body details to generate initial suggestions, or keep using manual targets.",
+    "zh-Hans": "补充身体资料后可生成初始建议，也可继续使用手动目标。",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.not.enough.weight.records.at.least.30cdcc": {
+    "en": "Not enough weight records: at least a 14-day span, 8 weigh-in days and 3 days in each of the last two weeks are needed.",
+    "zh-Hans": "体重记录不足：需要至少 14 天跨度、8 个称重日，最近两周各至少 3 天。",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.at.least.12.of.the.last.a9e4fd": {
+    "en": "At least 12 of the last 14 days need confirmed complete food records. Targets are kept for now.",
+    "zh-Hans": "最近 14 天至少需要 12 天确认饮食完整，暂时保留目标。",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.building.a.baseline.observe.for.at.a42812": {
+    "en": "Building a baseline. Observe for at least 7 days after target or profile changes.",
+    "zh-Hans": "正在建立基线，目标或资料变更后至少观察 7 天。",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.using.manual.targets.you.can.choose.bcdb3c": {
+    "en": "Using manual targets. You can choose suggestion mode and decide whether to adopt.",
+    "zh-Hans": "当前使用手动目标。可选择建议模式，由你决定是否采用。",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.adjustments.paused.current.targets.are.kept.74bb86": {
+    "en": "Adjustments paused; current targets are kept.",
+    "zh-Hans": "已暂停调整，当前目标保持不变。",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.your.current.body.details.or.nutrition.533285": {
+    "en": "Your current body details or nutrition budget need review. Use manual targets or a professional plan.",
+    "zh-Hans": "当前身体条件或营养预算需要复核，请使用手动目标或专业方案。",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.review.unusual.weights.body.details.or.b59daa": {
+    "en": "Review unusual weights, body details or intake differences from historical targets. Current targets are kept.",
+    "zh-Hans": "请复核异常体重、身体资料或摄入与历史目标的差异，当前目标保持不变。",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.recent.changes.are.within.the.goal.5caf24": {
+    "en": "Recent changes are within the goal tolerance. Keep current targets.",
+    "zh-Hans": "近期变化在目标容差内，保持当前目标。",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.weight.could.not.be.read.retry.89a8b3": {
+    "en": "Weight could not be read. Retry or record weight manually for now.",
+    "zh-Hans": "体重读取失败，可重试或先记录手动体重。",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.formula.energy.reference.26695c": {
+    "en": "Formula energy reference",
+    "zh-Hans": "公式能量参考",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.target.rate.d9e3a8": {
+    "en": "Target rate",
+    "zh-Hans": "目标速度",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.recent.rate.29b7d0": {
+    "en": "Recent rate",
+    "zh-Hans": "近期速度",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.complete.food.days.d5dad7": {
+    "en": "Complete food days",
+    "zh-Hans": "完整饮食日",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.intake.difference.from.historical.targets.6a6733": {
+    "en": "Intake difference from historical targets",
+    "zh-Hans": "与历史目标摄入差异",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.week.76712a": {
+    "en": "%/week",
+    "zh-Hans": "%/周",
+    "comment": "TrendView display text"
+  },
+  "health.trendview.days.c3304d": {
+    "en": "days",
+    "zh-Hans": "天",
+    "comment": "TrendView display text"
+  },
+  "health.trendviewmodel.read.failed.refresh.and.try.again.0e7af4": {
+    "en": "Read failed. Refresh and try again.",
+    "zh-Hans": "读取失败，请刷新后重试。",
+    "comment": "TrendViewModel display text"
+  },
+  "health.trendviewmodel.targets.could.not.be.saved.refresh.ba03a4": {
+    "en": "Targets could not be saved. Refresh and try again.",
+    "zh-Hans": "本次目标未能保存，请刷新后重试。",
+    "comment": "TrendViewModel display text"
+  },
+  "health.trendviewmodel.target.status.changed.or.needs.review.ae9b13": {
+    "en": "Target status changed or needs review. Refresh and confirm again.",
+    "zh-Hans": "目标状态已变化或需要复核，请刷新后重新确认。",
+    "comment": "TrendViewModel display text"
+  },
+  "health.trendviewmodel.the.action.could.not.be.completed.a4b679": {
+    "en": "The action could not be completed. Check your input and try again.",
+    "zh-Hans": "未能完成操作，请检查输入并重试。",
+    "comment": "TrendViewModel display text"
+  },
+  "health.trendviewmodel.saved.but.the.display.has.not.9bbe8f": {
+    "en": "Saved, but the display has not refreshed. Refresh the page to check; no need to save again.",
+    "zh-Hans": "已保存，但显示尚未刷新。请刷新页面核对，无需再次保存。",
+    "comment": "TrendViewModel display text"
+  },
+  "health.recoverycheckinview.overall.feeling.today.141564": {
+    "en": "Overall feeling today",
+    "zh-Hans": "今天整体感觉",
+    "comment": "RecoveryCheckInView display text"
+  },
+  "health.recoverycheckinview.overall.feeling.0eb92f": {
+    "en": "Overall feeling",
+    "zh-Hans": "整体感觉",
+    "comment": "RecoveryCheckInView display text"
+  },
+  "health.recoverycheckinview.unanswered.db09b9": {
+    "en": "Unanswered",
+    "zh-Hans": "未回答",
+    "comment": "RecoveryCheckInView display text"
+  },
+  "health.recoverycheckinview.ok.27e4fe": {
+    "en": "Good",
+    "zh-Hans": "好",
+    "comment": "RecoveryCheckInView display text"
+  },
+  "health.recoverycheckinview.okay.f0aacc": {
+    "en": "Okay",
+    "zh-Hans": "一般",
+    "comment": "RecoveryCheckInView display text"
+  },
+  "health.recoverycheckinview.tired.8174d1": {
+    "en": "Tired",
+    "zh-Hans": "疲惫",
+    "comment": "RecoveryCheckInView display text"
+  },
+  "health.recoverycheckinview.sleep.quality.optional.229e9c": {
+    "en": "Sleep quality (optional)",
+    "zh-Hans": "睡眠感受（可选）",
+    "comment": "RecoveryCheckInView display text"
+  },
+  "health.recoverycheckinview.poor.8046a5": {
+    "en": "Poor",
+    "zh-Hans": "较差",
+    "comment": "RecoveryCheckInView display text"
+  },
+  "health.recoverycheckinview.other.muscles.5ca4ad": {
+    "en": "Other muscles",
+    "zh-Hans": "其他肌群",
+    "comment": "RecoveryCheckInView display text"
+  },
+  "health.recoverycheckinview.recently.trained.muscles.2369da": {
+    "en": "Recently trained muscles",
+    "zh-Hans": "最近训练肌群",
+    "comment": "RecoveryCheckInView display text"
+  },
+  "health.recoverycheckinview.only.fill.in.muscles.you.notice.f6f0c4": {
+    "en": "Only fill in muscles you notice. Pain and limited movement independently restrict related training suggestions.",
+    "zh-Hans": "只填有感受的肌群即可。疼痛和活动受限会独立限制相关训练建议。",
+    "comment": "RecoveryCheckInView display text"
+  },
+  "health.recoverycheckinview.quick.check.in.70302a": {
+    "en": "Quick check-in",
+    "zh-Hans": "十秒体感",
+    "comment": "RecoveryCheckInView display text"
+  },
+  "health.recoverycheckinview.skip.31a985": {
+    "en": "Skip",
+    "zh-Hans": "跳过",
+    "comment": "RecoveryCheckInView display text"
+  },
+  "health.recoverycheckinview.save.fadf24": {
+    "en": "Save",
+    "zh-Hans": "保存",
+    "comment": "RecoveryCheckInView display text"
+  },
+  "health.recoverycheckinview.check.in.has.not.been.saved.f6b8d2": {
+    "en": "Check-in has not been saved. Try again.",
+    "zh-Hans": "体感尚未保存，请重试。",
+    "comment": "RecoveryCheckInView display text"
+  },
+  "health.recoverycheckinview.soreness.1796dc": {
+    "en": "Soreness",
+    "zh-Hans": "酸痛",
+    "comment": "RecoveryCheckInView display text"
+  },
+  "health.recoverycheckinview.none.720777": {
+    "en": "None",
+    "zh-Hans": "无",
+    "comment": "RecoveryCheckInView display text"
+  },
+  "health.recoverycheckinview.mild.eb4f04": {
+    "en": "Mild",
+    "zh-Hans": "轻",
+    "comment": "RecoveryCheckInView display text"
+  },
+  "health.recoverycheckinview.significant.d13e81": {
+    "en": "Significant",
+    "zh-Hans": "明显",
+    "comment": "RecoveryCheckInView display text"
+  },
+  "health.recoverycheckinview.pain.2515a7": {
+    "en": "Pain",
+    "zh-Hans": "疼痛",
+    "comment": "RecoveryCheckInView display text"
+  },
+  "health.recoverycheckinview.yes.fbd5b7": {
+    "en": "Yes",
+    "zh-Hans": "有",
+    "comment": "RecoveryCheckInView display text"
+  },
+  "health.recoverycheckinview.limited.movement.4b936a": {
+    "en": "Limited movement",
+    "zh-Hans": "活动受限",
+    "comment": "RecoveryCheckInView display text"
+  },
+  "health.recoveryview.analysis.could.not.be.updated.204ff8": {
+    "en": "Analysis could not be updated",
+    "zh-Hans": "暂时无法更新分析",
+    "comment": "RecoveryView display text"
+  },
+  "health.recoveryview.retry.e2d53a": {
+    "en": "Retry",
+    "zh-Hans": "重试",
+    "comment": "RecoveryView display text"
+  },
+  "health.recoveryview.recovery.index.0cee65": {
+    "en": "Recovery index",
+    "zh-Hans": "恢复指数",
+    "comment": "RecoveryView display text"
+  },
+  "health.recoveryview.select.a.muscle.to.review.recent.415cc4": {
+    "en": "Select a muscle to review recent load and check-ins",
+    "zh-Hans": "选择肌群查看最近负荷与体感",
+    "comment": "RecoveryView display text"
+  },
+  "health.recoveryview.health.data.could.not.be.read.d10ecc": {
+    "en": "Health data could not be read. Showing local records.",
+    "zh-Hans": "健康数据暂时无法读取，当前显示本地记录。",
+    "comment": "RecoveryView display text"
+  },
+  "health.recoveryview.how.do.you.feel.today.7be6f0": {
+    "en": "How do you feel today?",
+    "zh-Hans": "今天感觉如何？",
+    "comment": "RecoveryView display text"
+  },
+  "health.recoveryview.add.a.quick.check.in.or.db5806": {
+    "en": "Add a quick check-in, or skip.",
+    "zh-Hans": "十秒补充体感，也可以跳过。",
+    "comment": "RecoveryView display text"
+  },
+  "health.recoveryview.fill.in.a2272f": {
+    "en": "Fill in",
+    "zh-Hans": "填写",
+    "comment": "RecoveryView display text"
+  },
+  "health.recoveryview.skip.31a985": {
+    "en": "Skip",
+    "zh-Hans": "跳过",
+    "comment": "RecoveryView display text"
+  },
+  "health.recoveryview.record.or.edit.today.s.check.268c2c": {
+    "en": "Record or edit today's check-in",
+    "zh-Hans": "记录或修改今日体感",
+    "comment": "RecoveryView display text"
+  },
+  "health.recoveryview.reset.personal.calibration.a77810": {
+    "en": "Reset personal calibration",
+    "zh-Hans": "重置个体校准",
+    "comment": "RecoveryView display text"
+  },
+  "health.recoveryview.start.collecting.new.calibration.records.now.4ae9c0": {
+    "en": "Start collecting new calibration records now?",
+    "zh-Hans": "从现在重新积累校准记录？",
+    "comment": "RecoveryView display text"
+  },
+  "health.recoveryview.reset.calibration.1892ea": {
+    "en": "Reset calibration",
+    "zh-Hans": "重置校准",
+    "comment": "RecoveryView display text"
+  },
+  "health.recoveryview.cancel.4d0b46": {
+    "en": "Cancel",
+    "zh-Hans": "取消",
+    "comment": "RecoveryView display text"
+  },
+  "health.recoveryview.workout.and.check.in.history.is.6ae7e7": {
+    "en": "Workout and check-in history is preserved. The recovery index will use baseline parameters first.",
+    "zh-Hans": "训练和体感历史会保留，恢复指数先使用基础参数。",
+    "comment": "RecoveryView display text"
+  },
+  "health.recoveryview.methods.and.data.use.df2501": {
+    "en": "Methods and data use",
+    "zh-Hans": "计算方法与数据使用",
+    "comment": "RecoveryView display text"
+  },
+  "health.recoveryview.reading.local.records.95272c": {
+    "en": "Reading local records",
+    "zh-Hans": "正在读取本地记录",
+    "comment": "RecoveryView display text"
+  },
+  "health.recoveryview.recovery.analysis.c172e5": {
+    "en": "Recovery analysis",
+    "zh-Hans": "恢复分析",
+    "comment": "RecoveryView display text"
+  },
+  "health.recoveryview.reading.or.calculation.failed.existing.workout.fd7207": {
+    "en": "Reading or calculation failed. Existing workout records are preserved. Try again later.",
+    "zh-Hans": "读取或计算失败。原有训练记录仍保留，可稍后重试。",
+    "comment": "RecoveryView display text"
+  },
+  "health.recoveryview.pain.flagged.related.training.is.excluded.80c1e1": {
+    "en": "Pain flagged: related training is excluded from suggestions for now",
+    "zh-Hans": "已标记疼痛：相关训练暂不列入建议",
+    "comment": "RecoveryView display text"
+  },
+  "health.recoveryview.limited.movement.flagged.related.training.is.d326c4": {
+    "en": "Limited movement flagged: related training is excluded from suggestions for now",
+    "zh-Hans": "已标记活动受限：相关训练暂不列入建议",
+    "comment": "RecoveryView display text"
+  },
+  "health.recoveryview.last.workout.d330e0": {
+    "en": "Last workout",
+    "zh-Hans": "上次训练",
+    "comment": "RecoveryView display text"
+  },
+  "health.recoveryview.latest.weighted.working.sets.8b9560": {
+    "en": "Latest weighted working sets",
+    "zh-Hans": "最近一次加权工作组",
+    "comment": "RecoveryView display text"
+  },
+  "health.recoveryview.last.days.days.with.usable.records.3cddc0": {
+    "en": "Last %@ days: %@ days with usable records for this muscle",
+    "zh-Hans": "近 %@ 天：%@ 天有该肌群可用记录",
+    "comment": "RecoveryView display text"
+  },
+  "health.recoveryview.update.this.muscle.s.check.in.016fd6": {
+    "en": "Update this muscle's check-in",
+    "zh-Hans": "更新这块肌群的体感",
+    "comment": "RecoveryView display text"
+  },
+  "health.recoveryview.about.the.score.2e7f5a": {
+    "en": "About the score",
+    "zh-Hans": "分数说明",
+    "comment": "RecoveryView display text"
+  },
+  "health.recoveryview.systemic.status.116dd1": {
+    "en": "Systemic status",
+    "zh-Hans": "全身状态",
+    "comment": "RecoveryView display text"
+  },
+  "health.recoveryview.today.s.check.in.abc88b": {
+    "en": "Today's check-in",
+    "zh-Hans": "今日体感",
+    "comment": "RecoveryView display text"
+  },
+  "health.recoveryview.ok.27e4fe": {
+    "en": "Good",
+    "zh-Hans": "好",
+    "comment": "RecoveryView display text"
+  },
+  "health.recoveryview.okay.f0aacc": {
+    "en": "Okay",
+    "zh-Hans": "一般",
+    "comment": "RecoveryView display text"
+  },
+  "health.recoveryview.tired.8174d1": {
+    "en": "Tired",
+    "zh-Hans": "疲惫",
+    "comment": "RecoveryView display text"
+  },
+  "health.recoveryview.perceived.sleep.f21dc3": {
+    "en": "Perceived sleep",
+    "zh-Hans": "主观睡眠",
+    "comment": "RecoveryView display text"
+  },
+  "health.recoveryview.poor.8046a5": {
+    "en": "Poor",
+    "zh-Hans": "较差",
+    "comment": "RecoveryView display text"
+  },
+  "health.recoveryview.personal.baseline.1ce343": {
+    "en": "Personal baseline: %@",
+    "zh-Hans": "个人基线：%@",
+    "comment": "RecoveryView display text"
+  },
+  "health.recoveryview.building.a.personal.baseline.f1f535": {
+    "en": "Building a personal baseline",
+    "zh-Hans": "正在建立个人基线",
+    "comment": "RecoveryView display text"
+  },
+  "health.recoveryview.from.baseline.6c59f5": {
+    "en": "From baseline: %@%%",
+    "zh-Hans": "相对基线：%@%%",
+    "comment": "RecoveryView display text"
+  },
+  "health.recoveryview.external.workouts.from.apple.health.are.67eaae": {
+    "en": "External workouts from Apple Health are activity references only. Muscle load needs exercise-level records.",
+    "zh-Hans": "Apple 健康的外部训练仅作活动参考，肌群负荷需逐动作记录。",
+    "comment": "RecoveryView display text"
+  },
+  "health.recoveryview.good.readiness.d4d8e0": {
+    "en": "Good readiness",
+    "zh-Hans": "状态较好",
+    "comment": "RecoveryView display text"
+  },
+  "health.recoveryview.train.moderately.726903": {
+    "en": "Train moderately",
+    "zh-Hans": "适度安排",
+    "comment": "RecoveryView display text"
+  },
+  "health.recoveryview.prioritize.recovery.41ef55": {
+    "en": "Prioritize recovery",
+    "zh-Hans": "优先恢复",
+    "comment": "RecoveryView display text"
+  },
+  "health.recoveryview.training.limited.e1184e": {
+    "en": "Training limited",
+    "zh-Hans": "训练受限",
+    "comment": "RecoveryView display text"
+  },
+  "health.recoveryview.waiting.for.records.dda84c": {
+    "en": "Waiting for records",
+    "zh-Hans": "待建立记录",
+    "comment": "RecoveryView display text"
+  },
+  "health.recoveryview.current.check.ins.or.personal.baselines.409d9e": {
+    "en": "Current check-ins or personal baselines show no sustained change",
+    "zh-Hans": "当前体感或个人基线未提示持续变化",
+    "comment": "RecoveryView display text"
+  },
+  "health.recoveryview.watch.how.you.feel.and.recent.ee3afa": {
+    "en": "Watch how you feel and recent changes",
+    "zh-Hans": "留意体感与近期变化",
+    "comment": "RecoveryView display text"
+  },
+  "health.recoveryview.sustained.changes.with.fatigue.reduce.training.adfa04": {
+    "en": "Sustained changes with fatigue; reduce training today",
+    "zh-Hans": "连续变化伴随疲惫，今天适当减量",
+    "comment": "RecoveryView display text"
+  },
+  "health.recoveryview.not.enough.systemic.status.records.yet.6961a5": {
+    "en": "Not enough systemic status records yet",
+    "zh-Hans": "尚无足够的全身状态记录",
+    "comment": "RecoveryView display text"
+  },
+  "health.recoveryview.estimated.from.recorded.working.sets.rir.9fb233": {
+    "en": "Estimated from recorded working sets, RIR and elapsed time.",
+    "zh-Hans": "根据已记录工作组、RIR 和经过时间估计。",
+    "comment": "RecoveryView display text"
+  },
+  "health.recoveryview.some.sets.have.no.rir.default.04f5f5": {
+    "en": "Some sets have no RIR; default effort is used.",
+    "zh-Hans": "部分组未填 RIR，采用默认努力程度。",
+    "comment": "RecoveryView display text"
+  },
+  "health.recoveryview.historical.set.types.are.unknown.counted.2c7f90": {
+    "en": "Historical set types are unknown; counted as working sets for now.",
+    "zh-Hans": "历史组类型未区分，暂按工作组计入。",
+    "comment": "RecoveryView display text"
+  },
+  "health.recoveryview.unreviewed.exercises.unsupported.recording.modes.or.e7db9c": {
+    "en": "Unreviewed exercises, unsupported recording modes or external strength training without exercise records prevent a complete readiness estimate.",
+    "zh-Hans": "存在待核查动作、未支持的记录方式或未逐动作记录的外部力量训练，暂不计算完整准备度。",
+    "comment": "RecoveryView display text"
+  },
+  "health.recoveryview.significant.soreness.reduce.related.training.volume.0a6eb7": {
+    "en": "Significant soreness: reduce related training volume first.",
+    "zh-Hans": "明显酸痛：优先减少相关训练量。",
+    "comment": "RecoveryView display text"
+  },
+  "health.recoveryview.mild.soreness.recorded.adjust.training.based.2492f9": {
+    "en": "Mild soreness recorded. Adjust training based on this session's performance.",
+    "zh-Hans": "已记录轻微酸痛，结合本次表现安排训练。",
+    "comment": "RecoveryView display text"
+  },
+  "health.recoveryview.pain.and.limited.movement.are.independent.ce3fea": {
+    "en": "Pain and limited movement are independent of the score. Update your check-in first.",
+    "zh-Hans": "疼痛或活动受限独立于分数，需先更新体感。",
+    "comment": "RecoveryView display text"
+  },
+  "health.recoveryview.personal.parameters.adjusted.conservatively.after.time.856857": {
+    "en": "Personal parameters adjusted conservatively after time-based held-out comparisons.",
+    "zh-Hans": "个体参数通过时间留出比较后保守调整。",
+    "comment": "RecoveryView display text"
+  },
+  "health.recoveryview.not.enough.usable.recent.records.this.d711ed": {
+    "en": "Not enough usable recent records. This updates after you complete and record workouts.",
+    "zh-Hans": "近期可用记录不足；完成并记录训练后会更新。",
+    "comment": "RecoveryView display text"
+  },
+  "health.recoveryview.recent.sleep.b25c17": {
+    "en": "Recent sleep",
+    "zh-Hans": "最近睡眠",
+    "comment": "RecoveryView display text"
+  },
+  "health.recoveryview.resting.heart.rate.ca24f8": {
+    "en": "Resting heart rate",
+    "zh-Hans": "静息心率",
+    "comment": "RecoveryView display text"
+  },
+  "health.recoveryview.hours.89d17f": {
+    "en": "%@ hours",
+    "zh-Hans": "%@ 小时",
+    "comment": "RecoveryView display text"
+  },
+  "health.bodymapanatomyview.view.muscle.details.7376b2": {
+    "en": "View muscle details",
+    "zh-Hans": "查看肌群详情",
+    "comment": "BodyMapAnatomyView display text"
+  },
+  "health.bodymapsceneview.rotatable.3d.body.7e45cc": {
+    "en": "Rotatable 3D body",
+    "zh-Hans": "可旋转的三维人体",
+    "comment": "BodyMapSceneView display text"
+  },
+  "health.bodymapsceneview.front.9c61cc": {
+    "en": "Front",
+    "zh-Hans": "前面",
+    "comment": "BodyMapSceneView display text"
+  },
+  "health.bodymapsceneview.drag.left.or.right.to.rotate.a930d0": {
+    "en": "Drag left or right to rotate, or use the Front and Back buttons. The muscle list has the same information.",
+    "zh-Hans": "左右拖动旋转，或使用前面、背面按钮。肌群列表提供相同内容。",
+    "comment": "BodyMapSceneView display text"
+  },
+  "health.bodymapsceneview.back.2d9ca5": {
+    "en": "Back",
+    "zh-Hans": "背面",
+    "comment": "BodyMapSceneView display text"
+  },
+  "health.bodymapsceneview.side.70aa11": {
+    "en": "Side",
+    "zh-Hans": "侧面",
+    "comment": "BodyMapSceneView display text"
+  },
+  "health.bodymapsceneview.view.muscle.details.7376b2": {
+    "en": "View muscle details",
+    "zh-Hans": "查看肌群详情",
+    "comment": "BodyMapSceneView display text"
+  },
+  "health.bodymappreviewfixtures.muscle.map.sample.data.7fc611": {
+    "en": "Muscle map · Sample data",
+    "zh-Hans": "肌肉图 · 合成数据",
+    "comment": "BodyMapPreviewFixtures display text"
+  },
+  "health.bodymappreviewfixtures.muscle.map.waiting.for.records.71559d": {
+    "en": "Muscle map · Waiting for records",
+    "zh-Hans": "肌肉图 · 待建立记录",
+    "comment": "BodyMapPreviewFixtures display text"
+  },
+  "health.bodymappreviewfixtures.muscle.list.accessibility.4fe303": {
+    "en": "Muscle list · Accessibility",
+    "zh-Hans": "肌群列表 · 辅助功能",
+    "comment": "BodyMapPreviewFixtures display text"
+  },
+  "health.bodymaprendererview.muscle.recovery.index.a6164e": {
+    "en": "Muscle recovery index",
+    "zh-Hans": "肌群恢复指数",
+    "comment": "BodyMapRendererView display text"
+  },
+  "health.bodymaprendererview.body.map.f7851a": {
+    "en": "Body map",
+    "zh-Hans": "人体图",
+    "comment": "BodyMapRendererView display text"
+  },
+  "health.bodymaprendererview.muscle.list.82c206": {
+    "en": "Muscle list",
+    "zh-Hans": "肌群列表",
+    "comment": "BodyMapRendererView display text"
+  },
+  "health.bodymaprendererview.waiting.for.records.dda84c": {
+    "en": "Waiting for records",
+    "zh-Hans": "待建立记录",
+    "comment": "BodyMapRendererView display text"
+  },
+  "health.bodymaprendererview.muscle.status.appears.here.after.you.18800f": {
+    "en": "Muscle status appears here after you record workouts.",
+    "zh-Hans": "记录训练后，肌群状态会显示在这里。",
+    "comment": "BodyMapRendererView display text"
+  },
+  "health.bodymaprendererview.showing.a.muscle.list.tap.to.a28dec": {
+    "en": "Showing a muscle list. Tap to view details.",
+    "zh-Hans": "以肌群列表显示，点按查看详情。",
+    "comment": "BodyMapRendererView display text"
+  },
+  "health.bodymaprendererview.body.display.mode.087fc2": {
+    "en": "Body display mode",
+    "zh-Hans": "人体显示方式",
+    "comment": "BodyMapRendererView display text"
+  },
+  "health.bodymaprendererview.muscle.map.5badd3": {
+    "en": "Muscle map",
+    "zh-Hans": "肌肉图",
+    "comment": "BodyMapRendererView display text"
+  },
+  "health.bodymaprendererview.3d.rotation.754d6c": {
+    "en": "3D rotation",
+    "zh-Hans": "3D 旋转",
+    "comment": "BodyMapRendererView display text"
+  },
+  "health.bodymaprendererview.front.9c61cc": {
+    "en": "Front",
+    "zh-Hans": "前面",
+    "comment": "BodyMapRendererView display text"
+  },
+  "health.bodymaprendererview.back.2d9ca5": {
+    "en": "Back",
+    "zh-Hans": "背面",
+    "comment": "BodyMapRendererView display text"
+  },
+  "health.bodymaprendererview.drag.left.or.right.to.rotate.50627a": {
+    "en": "Drag left or right to rotate",
+    "zh-Hans": "左右拖动旋转",
+    "comment": "BodyMapRendererView display text"
+  },
+  "health.bodymaprendererview.front.70c219": {
+    "en": "Front",
+    "zh-Hans": "正面",
+    "comment": "BodyMapRendererView display text"
+  },
+  "health.bodymaprendererview.view.muscle.details.7376b2": {
+    "en": "View muscle details",
+    "zh-Hans": "查看肌群详情",
+    "comment": "BodyMapRendererView display text"
+  },
+  "health.bodymaprendererview.low.b9ee25": {
+    "en": "Low",
+    "zh-Hans": "低",
+    "comment": "BodyMapRendererView display text"
+  },
+  "health.bodymaprendererview.high.b096b3": {
+    "en": "High",
+    "zh-Hans": "高",
+    "comment": "BodyMapRendererView display text"
+  },
+  "health.bodymaprendererview.unknown.d9c32a": {
+    "en": "Unknown",
+    "zh-Hans": "未知",
+    "comment": "BodyMapRendererView display text"
+  },
+  "health.bodymaprendererview.pain.or.limited.movement.amber.indicator.1dac3f": {
+    "en": "Pain or limited movement · Amber indicator",
+    "zh-Hans": "疼痛或活动受限 · 琥珀色提示",
+    "comment": "BodyMapRendererView display text"
+  },
+  "health.bodymaprendererview.pain.or.limited.movement.amber.dashed.96740a": {
+    "en": "Pain or limited movement · Amber dashed indicator",
+    "zh-Hans": "疼痛或活动受限 · 琥珀色虚线提示",
+    "comment": "BodyMapRendererView display text"
+  },
+  "health.bodymaprendererview.scores.shown.in.steps.of.5.d1d719": {
+    "en": "Scores shown in steps of 5 · Tap a muscle for details",
+    "zh-Hans": "分数按 5 分显示 · 点按肌群查看详情",
+    "comment": "BodyMapRendererView display text"
+  },
+  "health.bodymaprenderinput.chest.a6577e": {
+    "en": "Chest",
+    "zh-Hans": "胸",
+    "comment": "BodyMapRenderInput display text"
+  },
+  "health.bodymaprenderinput.back.e072ff": {
+    "en": "Back",
+    "zh-Hans": "背",
+    "comment": "BodyMapRenderInput display text"
+  },
+  "health.bodymaprenderinput.shoulders.dd0ea6": {
+    "en": "Shoulders",
+    "zh-Hans": "肩",
+    "comment": "BodyMapRenderInput display text"
+  },
+  "health.bodymaprenderinput.biceps.9eee82": {
+    "en": "Biceps",
+    "zh-Hans": "肱二头",
+    "comment": "BodyMapRenderInput display text"
+  },
+  "health.bodymaprenderinput.triceps.87f8af": {
+    "en": "Triceps",
+    "zh-Hans": "肱三头",
+    "comment": "BodyMapRenderInput display text"
+  },
+  "health.bodymaprenderinput.forearms.05789a": {
+    "en": "Forearms",
+    "zh-Hans": "前臂",
+    "comment": "BodyMapRenderInput display text"
+  },
+  "health.bodymaprenderinput.core.10d95f": {
+    "en": "Core",
+    "zh-Hans": "核心",
+    "comment": "BodyMapRenderInput display text"
+  },
+  "health.bodymaprenderinput.glutes.447078": {
+    "en": "Glutes",
+    "zh-Hans": "臀",
+    "comment": "BodyMapRenderInput display text"
+  },
+  "health.bodymaprenderinput.quads.8f5d54": {
+    "en": "Quads",
+    "zh-Hans": "股四头",
+    "comment": "BodyMapRenderInput display text"
+  },
+  "health.bodymaprenderinput.hamstrings.9218b4": {
+    "en": "Hamstrings",
+    "zh-Hans": "腘绳肌",
+    "comment": "BodyMapRenderInput display text"
+  },
+  "health.bodymaprenderinput.calves.733e65": {
+    "en": "Calves",
+    "zh-Hans": "小腿",
+    "comment": "BodyMapRenderInput display text"
+  },
+  "health.bodymaprenderinput.waiting.for.records.e0d73f": {
+    "en": "%@ · Waiting for records",
+    "zh-Hans": "%@ · 待建立记录",
+    "comment": "BodyMapRenderInput display text"
+  },
+  "health.bodymaprenderinput.waiting.for.records.dda84c": {
+    "en": "Waiting for records",
+    "zh-Hans": "待建立记录",
+    "comment": "BodyMapRenderInput display text"
+  },
+  "health.bodymaprenderinput.points.af77b9": {
+    "en": "%lld points",
+    "zh-Hans": "%lld 分",
+    "comment": "BodyMapRenderInput display text",
+    "enOne": "%lld point"
+  },
+  "health.bodymaprenderinput.unknown.d9c32a": {
+    "en": "Unknown",
+    "zh-Hans": "未知",
+    "comment": "BodyMapRenderInput display text"
+  },
+  "health.bodymaprenderinput.pain.limited.27f305": {
+    "en": "Pain / limited",
+    "zh-Hans": "疼痛/受限",
+    "comment": "BodyMapRenderInput display text"
+  },
+  "health.bodymaprenderinput.pain.reported.508f5b": {
+    "en": "Pain reported",
+    "zh-Hans": "疼痛反馈",
+    "comment": "BodyMapRenderInput display text"
+  },
+  "health.bodymaprenderinput.limited.movement.4b936a": {
+    "en": "Limited movement",
+    "zh-Hans": "活动受限",
+    "comment": "BodyMapRenderInput display text"
+  },
+  "health.bodymaprenderinput.prioritize.recovery.41ef55": {
+    "en": "Prioritize recovery",
+    "zh-Hans": "优先恢复",
+    "comment": "BodyMapRenderInput display text"
+  },
+  "health.bodymaprenderinput.train.moderately.726903": {
+    "en": "Train moderately",
+    "zh-Hans": "适度安排",
+    "comment": "BodyMapRenderInput display text"
+  },
+  "health.bodymaprenderinput.good.readiness.d4d8e0": {
+    "en": "Good readiness",
+    "zh-Hans": "状态较好",
+    "comment": "BodyMapRenderInput display text"
+  },
+  "health.bodymaprenderinput.limited.936333": {
+    "en": "Limited",
+    "zh-Hans": "受限",
+    "comment": "BodyMapRenderInput display text"
+  },
+  "health.trainingadviceview.workout.in.progress.9b5f5a": {
+    "en": "Workout in progress",
+    "zh-Hans": "进行中的训练",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.you.already.have.a.workout.in.63ffd7": {
+    "en": "You already have a workout in progress. Complete or end it before creating a new workout from advice.",
+    "zh-Hans": "你已有一条进行中的训练。完成或结束它后，才能按建议创建新训练。",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.continue.current.workout.df1345": {
+    "en": "Continue current workout",
+    "zh-Hans": "继续进行中的训练",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.this.workout.3658d6": {
+    "en": "This workout",
+    "zh-Hans": "本次训练",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.choose.a.template.860cb3": {
+    "en": "Choose a template",
+    "zh-Hans": "选择模板",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.not.selected.22c7d7": {
+    "en": "Not selected",
+    "zh-Hans": "尚未选择",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.this.selects.a.template.for.this.dc4235": {
+    "en": "This selects a template for this workout only. It does not create a recurring training plan.",
+    "zh-Hans": "这里只选择本次想用的模板，不会自动建立长期训练计划。",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.alternative.624cdd": {
+    "en": "Alternative: %@",
+    "zh-Hans": "备选：%@",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.training.days.optional.0e438b": {
+    "en": "Training days (optional)",
+    "zh-Hans": "可训练日（可选）",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.add.training.days.a27ac3": {
+    "en": "Add training days",
+    "zh-Hans": "填写可训练日",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.clear.day.selection.3525f4": {
+    "en": "Clear day selection",
+    "zh-Hans": "清除日期选择",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.view.today.s.advice.ae535c": {
+    "en": "View today's advice",
+    "zh-Hans": "查看今日建议",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.today.s.advice.d93d0e": {
+    "en": "Today's advice",
+    "zh-Hans": "今日建议",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.additional.pain.or.movement.limits.training.9feb7a": {
+    "en": "Additional pain or movement limits: %@. Training involving these muscles remains restricted.",
+    "zh-Hans": "另有疼痛或活动受限记录：%@。涉及这些肌群的训练仍受限制。",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.choose.parameters.for.this.workout.58299a": {
+    "en": "Choose parameters for this workout",
+    "zh-Hans": "选择本次参数",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.minimum.reps.in.reserve.355e09": {
+    "en": "Minimum reps in reserve",
+    "zh-Hans": "至少保留余力",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.working.sets.to.retain.3952d1": {
+    "en": "Working sets to retain",
+    "zh-Hans": "保留工作组",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.reps.793578": {
+    "en": " reps",
+    "zh-Hans": " 次",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.continue.with.these.parameters.1bd635": {
+    "en": "Continue with these parameters",
+    "zh-Hans": "按这些参数继续",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.advice.uses.current.records.and.your.c85a7b": {
+    "en": "Advice uses current records and your selected template. Records are re-read before starting. Review advice again if your check-in, restrictions or template change.",
+    "zh-Hans": "建议基于当前记录和所选模板。开始前会重新读取记录；如果体感、限制或模板改变，需要重新查看建议。",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.choose.a.template.to.view.advice.a404c9": {
+    "en": "Choose a template to view advice. Missing recovery or nutrition evidence will prompt a review.",
+    "zh-Hans": "选好本次模板后查看建议；恢复或饮食证据不足时会提示复核。",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.training.advice.d3707a": {
+    "en": "Training advice",
+    "zh-Hans": "训练建议",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.start.a.workout.using.this.advice.c15226": {
+    "en": "Start a workout using this advice?",
+    "zh-Hans": "按这条建议开始训练？",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.confirm.and.start.c1b24a": {
+    "en": "Confirm and start",
+    "zh-Hans": "确认并开始",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.cancel.4d0b46": {
+    "en": "Cancel",
+    "zh-Hans": "取消",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.a.new.workout.in.progress.will.2cf232": {
+    "en": "A new workout in progress will be created. Original templates and history are preserved.",
+    "zh-Hans": "会新建一条进行中的训练记录；原模板和历史记录保持不变。",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.could.not.start.workout.794e41": {
+    "en": "Could not start workout",
+    "zh-Hans": "无法开始训练",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.ok.cb63c6": {
+    "en": "OK",
+    "zh-Hans": "知道了",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.refresh.and.try.again.507e0f": {
+    "en": "Refresh and try again.",
+    "zh-Hans": "请刷新后重试。",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.view.or.edit.today.s.check.fcfaea": {
+    "en": "View or edit today's check-in",
+    "zh-Hans": "查看或修改今日体感",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.template.e97a69": {
+    "en": "Template: %@",
+    "zh-Hans": "模板：%@",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.view.nutrition.trends.107102": {
+    "en": "View nutrition trends",
+    "zh-Hans": "查看饮食趋势",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.view.recovery.records.27666f": {
+    "en": "View recovery records",
+    "zh-Hans": "查看恢复记录",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.choose.parameters.and.start.db4831": {
+    "en": "Choose parameters and start",
+    "zh-Hans": "选择参数并开始",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.a.workout.is.already.in.progress.99115d": {
+    "en": "A workout is already in progress. Tap Continue current workout to return to it.",
+    "zh-Hans": "已有进行中的训练。请点击“继续进行中的训练”返回这条记录。",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.the.selected.or.alternative.template.changed.0d8d84": {
+    "en": "The selected or alternative template changed. Review today's advice again.",
+    "zh-Hans": "所选模板或备选模板已变化。请重新查看今日建议。",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.check.in.schedule.or.workout.records.ebcef2": {
+    "en": "Check-in, schedule or workout records changed. Review today's advice again.",
+    "zh-Hans": "体感、日程或训练记录已变化。请重新查看今日建议。",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.the.workout.could.not.be.saved.41cb59": {
+    "en": "The workout could not be saved. Check local records and try again.",
+    "zh-Hans": "暂时无法保存训练，请检查本地记录后重试。",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.today.s.check.in.could.not.99489c": {
+    "en": "Today's check-in could not be read. Try again later.",
+    "zh-Hans": "暂时无法读取今日体感，请稍后重试。",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.today.is.not.among.your.available.a80a0d": {
+    "en": "Today is not among your available training days.",
+    "zh-Hans": "你填写的可训练日不包括今天。",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.your.profile.has.0.training.days.e0b830": {
+    "en": "Your profile has 0 training days per week.",
+    "zh-Hans": "个人资料中的每周训练天数为 0。",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.you.recorded.feeling.tired.today.so.c683e9": {
+    "en": "You recorded feeling tired today, so rest comes first.",
+    "zh-Hans": "你今天记录了整体疲惫，因此先安排休息。",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.systemic.recovery.status.indicates.limited.training.d9e389": {
+    "en": "Systemic recovery status indicates limited training.",
+    "zh-Hans": "全身恢复状态显示训练受限。",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.systemic.recovery.status.prioritizes.recovery.bd9b09": {
+    "en": "Systemic recovery status prioritizes recovery.",
+    "zh-Hans": "全身恢复状态显示优先恢复。",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.the.original.template.involves.flagged.for.88df60": {
+    "en": "The original template involves %@, flagged for pain or limited movement, so an alternative template is used.",
+    "zh-Hans": "原选模板涉及%@，这些肌群已标记疼痛或活动受限，因此改用备选模板。",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.pain.or.limited.movement.is.recorded.e214b5": {
+    "en": "Pain or limited movement is recorded for %@, which the selected template involves.",
+    "zh-Hans": "%@已记录疼痛或活动受限，所选模板涉及这些肌群。",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.pain.or.limited.movement.is.recorded.bcb842": {
+    "en": "Pain or limited movement is recorded, and the selected template's exercise mappings are not fully reviewed.",
+    "zh-Hans": "有肌群记录了疼痛或活动受限，而所选模板的动作映射尚未完整核对。",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.related.muscles.have.significant.soreness.recorded.5bbebc": {
+    "en": "Related muscles have significant soreness recorded today.",
+    "zh-Hans": "相关肌群今天记录了明显酸痛。",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.related.muscles.completed.working.sets.in.68fb1d": {
+    "en": "Related muscles completed %lld working sets in the last 24 hours.",
+    "zh-Hans": "相关肌群近 24 小时完成了 %lld 组工作组。",
+    "comment": "TrainingAdviceView display text",
+    "enOne": "Related muscles completed %lld working set in the last 24 hours."
+  },
+  "health.trainingadviceview.the.selected.muscles.are.not.ready.10aa2e": {
+    "en": "The selected muscles are not ready to use the template without changes.",
+    "zh-Hans": "所选肌群的恢复状态尚未达到直接沿用模板的条件。",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.the.selected.template.s.exercise.mappings.5ffe50": {
+    "en": "The selected template's exercise mappings or related recovery records are insufficient to confirm readiness.",
+    "zh-Hans": "所选模板的动作映射或相关肌群恢复记录尚不足以确认。",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.no.template.is.selected.for.this.d189ff": {
+    "en": "No template is selected for this workout yet.",
+    "zh-Hans": "尚未选择本次训练模板。",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.current.records.for.the.selected.muscles.67f9f4": {
+    "en": "Current records for the selected muscles do not trigger reduction or avoidance rules.",
+    "zh-Hans": "所选肌群当前记录未触发减量或避开训练的规则。",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.food.records.differ.from.targets.and.5ec170": {
+    "en": "Food records differ from targets and need review.",
+    "zh-Hans": "饮食记录与目标存在需复核的差异。",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.sunday.c34057": {
+    "en": "Sunday",
+    "zh-Hans": "周日",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.monday.792c34": {
+    "en": "Monday",
+    "zh-Hans": "周一",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.tuesday.8f0344": {
+    "en": "Tuesday",
+    "zh-Hans": "周二",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.wednesday.254556": {
+    "en": "Wednesday",
+    "zh-Hans": "周三",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.thursday.18f1fd": {
+    "en": "Thursday",
+    "zh-Hans": "周四",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.friday.4344fc": {
+    "en": "Friday",
+    "zh-Hans": "周五",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.saturday.f0c619": {
+    "en": "Saturday",
+    "zh-Hans": "周六",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.use.selected.template.3d49bc": {
+    "en": "Use selected template",
+    "zh-Hans": "按所选模板训练",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.reduce.working.sets.e29d3d": {
+    "en": "Reduce working sets",
+    "zh-Hans": "减少工作组",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.keep.more.reps.in.reserve.f3f61c": {
+    "en": "Keep more reps in reserve",
+    "zh-Hans": "保留更多余力",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.use.alternative.template.448c80": {
+    "en": "Use alternative template",
+    "zh-Hans": "改用备选模板",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.rest.d172c6": {
+    "en": "Rest",
+    "zh-Hans": "安排休息",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.optional.light.activity.dd4c0f": {
+    "en": "Optional light activity",
+    "zh-Hans": "可选轻活动",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.review.template.and.recovery.first.d75aba": {
+    "en": "Review template and recovery first",
+    "zh-Hans": "先复核模板与恢复记录",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.review.nutrition.targets.and.records.35a35e": {
+    "en": "Review nutrition targets and records",
+    "zh-Hans": "复核饮食目标与记录",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.current.records.allow.the.selected.template.568686": {
+    "en": "Current records allow the selected template. Adjust to how you actually feel.",
+    "zh-Hans": "当前记录允许使用所选模板；仍请按实际感受调整。",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.keep.working.sets.within.the.suggested.c6be9c": {
+    "en": "Keep working sets within the suggested range without increasing weight.",
+    "zh-Hans": "工作组保留在建议范围内，不增加负重。",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.target.rir.is.a.training.cue.61eea5": {
+    "en": "Target RIR is a training cue. Record actual RIR after completing the set.",
+    "zh-Hans": "目标 RIR 是训练提示，完成后再填写实际 RIR。",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.use.only.the.alternative.template.you.5d7fda": {
+    "en": "Use only the alternative template you explicitly selected, with reviewed mappings and no restricted muscles.",
+    "zh-Hans": "仅使用你显式选定、已审核映射且不涉及受限肌群的备选模板。",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.current.records.suggest.rest.today.no.a45439": {
+    "en": "Current records suggest rest today. No workout is created.",
+    "zh-Hans": "当前记录提示今天先休息，不会创建训练。",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.choose.light.activity.based.on.how.f674a3": {
+    "en": "Choose light activity based on how you feel. No intensity is prescribed or workout created here.",
+    "zh-Hans": "可按体感选择轻活动；这里不规定强度或创建训练。",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.training.or.recovery.evidence.is.insufficient.0285fe": {
+    "en": "Training or recovery evidence is insufficient. Review templates, records and check-ins first.",
+    "zh-Hans": "缺少可确认的训练或恢复证据；先检查模板、记录和体感。",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.trainingadviceview.nutrition.differences.are.reviewed.separately.and.b52c3a": {
+    "en": "Nutrition differences are reviewed separately and do not lower muscle recovery scores.",
+    "zh-Hans": "饮食差异单独复核，不用于降低肌群恢复分数。",
+    "comment": "TrainingAdviceView display text"
+  },
+  "health.aireportcard.recorded.metric.db09dd": {
+    "en": "Recorded metric",
+    "zh-Hans": "记录指标",
+    "comment": "AIReportCard display text"
+  },
+  "health.aireportcard.basic.report.9a5716": {
+    "en": "Basic report",
+    "zh-Hans": "基础报告",
+    "comment": "AIReportCard display text"
+  },
+  "health.aireportcard.ai.reports.9885c1": {
+    "en": "AI reports",
+    "zh-Hans": "AI 报告",
+    "comment": "AIReportCard display text"
+  },
+  "health.aireportcard.history.19e0e3": {
+    "en": "History",
+    "zh-Hans": "历史记录",
+    "comment": "AIReportCard display text"
+  },
+  "health.aireportcard.needs.update.30e81c": {
+    "en": "Needs update",
+    "zh-Hans": "待更新",
+    "comment": "AIReportCard display text"
+  },
+  "health.aireportcard.view.evidence.and.details.1d9ddc": {
+    "en": "View evidence and details",
+    "zh-Hans": "查看依据与说明",
+    "comment": "AIReportCard display text"
+  },
+  "health.aireportcard.valid.until.9dc24f": {
+    "en": "Valid until %@",
+    "zh-Hans": "适用至 %@",
+    "comment": "AIReportCard display text"
+  },
+  "health.recoveryview.beats.per.minute": {
+    "en": "bpm",
+    "zh-Hans": "次/分",
+    "comment": "Heart rate unit"
+  },
+  "health.trainingadviceview.parameter.value": {
+    "en": "%@: %@%@",
+    "zh-Hans": "%@：%@%@",
+    "comment": "Training parameter name, formatted value and unit"
+  }
+}

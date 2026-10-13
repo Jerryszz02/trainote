@@ -43,6 +43,33 @@ final class HealthFeatureAccessTests: XCTestCase {
     try? FileManager.default.removeItem(at: directory)
     super.tearDown()
   }
+  func testOpenStatusAndErrorSwitchLanguageWithoutRepeatingOperations() async throws {
+    let preference = LanguageSettings.shared.preference
+    defer { LanguageSettings.shared.preference = preference }
+    LanguageSettings.shared.preference = .english
+    let consent = try LocalConsentStore(url: directory.appendingPathComponent("consent.json"))
+    let reports = TestReportLifecycle()
+    let access = HealthFeatureAccess(consent: consent, health: nil, reports: reports) { _ in }
+    await access.enableAI()
+    XCTAssertEqual(access.statusMessage, "AI reports enabled. You can turn them off in settings at any time.")
+    let activationCount = reports.activations
+    let storedConsent = consent.record(for: .aiReports)
+    LanguageSettings.shared.preference = .simplifiedChinese
+    XCTAssertEqual(access.statusMessage, "已启用 AI 报告。可随时在设置中关闭。")
+    XCTAssertEqual(reports.activations, activationCount)
+    XCTAssertEqual(consent.record(for: .aiReports), storedConsent)
+    await access.connectHealth()
+    XCTAssertEqual(access.errorMessage, "健康读取暂不可用。原有记录可继续使用，请重新启动后重试。")
+    LanguageSettings.shared.preference = .english
+    XCTAssertEqual(access.errorMessage, "Health reads are unavailable. Existing records are still available. Restart and try again.")
+    XCTAssertEqual(reports.activations, activationCount)
+    reports.deletionFails = true
+    access.deleteReports()
+    XCTAssertEqual(access.errorMessage, "Report deletion is incomplete. Try again.")
+    LanguageSettings.shared.preference = .simplifiedChinese
+    XCTAssertEqual(access.errorMessage, "报告删除未完成，请重试。")
+  }
+
   func testAssemblyDoesNotGrantConsentAndRegistersCacheBeforeUse() throws {
     let consent = try LocalConsentStore(url: directory.appendingPathComponent("consent.json"))
     let reports = TestReportLifecycle()
@@ -129,29 +156,29 @@ final class HealthFeatureAccessTests: XCTestCase {
     let health = HealthDataService(client: client, cache: cache, consent: consent)
     let access = HealthFeatureAccess(
       consent: consent, health: health, reports: TestReportLifecycle()) { _ in }
-    XCTAssertEqual(access.healthConnectionLabel, "未连接")
+    XCTAssertEqual(access.healthConnectionLabel, L10n.text("health.healthfeatureaccess.not.connected.f2f3e9"))
 
     await access.connectHealth()
     XCTAssertTrue(access.healthConnected, "本地同意只说明已请求健康读取")
-    XCTAssertEqual(access.healthConnectionLabel, "暂未读取到健康样本")
-    XCTAssertTrue(access.healthConnectionDetail?.contains("最近同步已完成") == true)
-    XCTAssertTrue(access.healthConnectionDetail?.contains("可能是未授权或没有数据") == true)
+    XCTAssertEqual(access.healthConnectionLabel, L10n.text("health.healthfeatureaccess.no.health.samples.read.yet.e36db5"))
+    XCTAssertTrue(access.healthConnectionDetail?.contains(L10n.text("health.healthfeatureaccess.the.latest.sync.completed.d74893")) == true)
+    XCTAssertTrue(access.healthConnectionDetail?.contains(L10n.text("health.healthfeatureaccess.no.imported.samples.are.on.this.6c714c")) == true)
 
     let sample = AnalysisFixtures.health(.complete).samples[0]
     client.batches[.bodyMass] = .init(
       type: .bodyMass, added: [sample], deletedIDs: [],
       newAnchor: Data([1]), queriedAt: AnalysisFixtures.asOf)
     try await health.refresh()
-    XCTAssertEqual(access.healthConnectionLabel, "本机已有健康导入数据")
-    XCTAssertTrue(access.healthConnectionDetail?.contains("不代表当前读取许可仍有效") == true)
+    XCTAssertEqual(access.healthConnectionLabel, L10n.text("health.healthfeatureaccess.imported.health.data.on.this.device.1ce009"))
+    XCTAssertTrue(access.healthConnectionDetail?.contains(L10n.text("health.healthfeatureaccess.imported.samples.are.on.this.device.8f3704")) == true)
 
     client.failedTypes = [.sleep]
     do {
       try await health.refresh()
       XCTFail("Expected the sleep query to fail")
     } catch {}
-    XCTAssertEqual(access.healthConnectionLabel, "部分健康数据同步未完成")
-    XCTAssertTrue(access.healthConnectionDetail?.contains("最近同步部分失败") == true)
+    XCTAssertEqual(access.healthConnectionLabel, L10n.text("health.healthfeatureaccess.some.health.data.did.not.sync.6df122"))
+    XCTAssertTrue(access.healthConnectionDetail?.contains(L10n.text("health.healthfeatureaccess.the.latest.sync.partly.failed.40658f")) == true)
   }
   func testDisconnectFailureIsNotReportedAsSuccessfulDeletion() async throws {
     let reports = TestReportLifecycle()

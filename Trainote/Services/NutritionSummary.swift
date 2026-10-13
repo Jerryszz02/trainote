@@ -103,8 +103,9 @@ struct DailyNutritionSummary {
 }
 
 enum NutritionMath {
-  static let calorieCalculationNote =
-    "热量按碳水 × 4 + 蛋白质 × 4 + 脂肪 × 9 自动计算（kcal）。酒精、糖醇等可能使结果与包装标签不同；已有标签热量在修改营养素后重新计算。"
+  static var calorieCalculationNote: String {
+    L10n.text("domain.nutrition.calculationNote")
+  }
 
   static func calories(carbohydrates: Double, protein: Double, fat: Double) -> Double {
     carbohydrates * 4 + protein * 4 + fat * 9
@@ -145,22 +146,22 @@ enum PortionInputMode: String, CaseIterable, Identifiable {
 
   var title: String {
     switch self {
-    case .perServing: "按份"
-    case .per100g: "按每 100 克"
+    case .perServing: L10n.text("domain.per.serving")
+    case .per100g: L10n.text("domain.per.100.g")
     }
   }
 
   var nutrientSectionTitle: String {
     switch self {
-    case .perServing: "每份营养"
-    case .per100g: "每 100 克营养"
+    case .perServing: L10n.text("domain.nutrition.per.serving")
+    case .per100g: L10n.text("domain.nutrition.per.100.g")
     }
   }
 
   var amountTitle: String {
     switch self {
-    case .perServing: "数量（份）"
-    case .per100g: "重量（克）"
+    case .perServing: L10n.text("domain.amount.servings")
+    case .per100g: L10n.text("domain.weight.g")
     }
   }
 }
@@ -219,7 +220,7 @@ struct FoodNutritionDraft: Equatable {
     inputMode: PortionInputMode = .perServing,
     amount: Double = 1,
     perUnit: NutritionValues = NutritionValues(),
-    servingDescription: String = "1 份",
+    servingDescription: String = L10n.text("core.default.serving.description"),
     sourcePresetID: UUID? = nil,
     sourceMealTemplateID: UUID? = nil,
     preservingRecordedCalories: Bool = false
@@ -252,7 +253,7 @@ struct FoodNutritionDraft: Equatable {
     inputMode = mode
     amount = mode == .per100g ? quantity * 100 : quantity
     if mode == .perServing && FoodPortionMath.isPer100g(servingDescription) {
-      servingDescription = "1 份"
+      servingDescription = L10n.text("core.default.serving.description")
     }
   }
 
@@ -453,7 +454,7 @@ enum FoodLogCopier {
 enum NutritionFormatting {
   static func number(_ value: Double, fraction: Int = 1) -> String {
     guard value.isFinite else { return "—" }
-    return value.formatted(.number.precision(.fractionLength(0...fraction)))
+    return value.formatted(.number.precision(.fractionLength(0...fraction)).locale(L10n.locale))
   }
 }
 

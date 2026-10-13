@@ -14,7 +14,7 @@ struct ActiveWorkoutView: View {
   @State private var showingPicker = false
   @State private var addedExerciseID: UUID?
   @State private var showingDiscard = false
-  @State private var message: String?
+  @State private var message: L10n.Message?
   @AppStorage("training.restSeconds") private var restDuration = 90
 
   var body: some View {
@@ -25,13 +25,13 @@ struct ActiveWorkoutView: View {
             TimelineView(.periodic(from: .now, by: 1)) { timeline in
               let remaining = max(Int(end.timeIntervalSince(timeline.date).rounded(.up)), 0)
               HStack {
-                Label(remaining > 0 ? "休息中" : "休息结束", systemImage: "timer")
+                Label(remaining > 0 ? L10n.text("core.resting") : L10n.text("core.rest.finished"), systemImage: "timer")
                 Spacer()
-                Text("\(remaining) 秒").monospacedDigit()
+                Text(L10n.text("core.sec", remaining)).monospacedDigit()
                   .accessibilityIdentifier("workout.restRemaining")
               }
             }
-            Button("结束休息") { workout.restEndsAt = nil }
+            Button(L10n.text("core.end.rest")) { workout.restEndsAt = nil }
           }
         }
         ForEach(workout.sortedExercises) { exercise in
@@ -46,67 +46,68 @@ struct ActiveWorkoutView: View {
           .id(exercise.id)
         }
         Section {
-          Button("添加动作", systemImage: "plus.circle.fill") { showingPicker = true }
+          Button(L10n.text("core.add.exercise"), systemImage: "plus.circle.fill") { showingPicker = true }
             .accessibilityIdentifier("workout.addExercise")
         }
         Button { showingDetails.toggle() } label: {
-          Label("训练设置与备注", systemImage: showingDetails ? "chevron.down" : "chevron.right")
+          Label(L10n.text("recording.workout.settings.notes"), systemImage: showingDetails ? "chevron.down" : "chevron.right")
             .frame(minHeight: 44)
         }
-        .accessibilityValue(showingDetails ? "已展开" : "已收起")
+        .accessibilityValue(showingDetails ? L10n.text("recording.expanded") : L10n.text("recording.collapsed"))
         .accessibilityIdentifier("workout.details")
         if showingDetails {
-          Section("训练信息") {
-            TextField("训练名称", text: $workout.title).accessibilityIdentifier("workout.title")
-            TextField("备注（可选）", text: $workout.notes, axis: .vertical)
+          Section(L10n.text("core.workout.details")) {
+            TextField(L10n.text("core.workout.name"), text: $workout.title).accessibilityIdentifier("workout.title")
+            TextField(L10n.text("core.notes.optional"), text: $workout.notes, axis: .vertical)
             if isHistoricalEdit {
-              DatePicker("开始时间", selection: $workout.startedAt, in: ...Date.now)
+              DatePicker(L10n.text("core.start.time"), selection: $workout.startedAt, in: ...Date.now)
               DatePicker(
-                "结束时间",
+                L10n.text("core.end.time"),
                 selection: Binding(
                   get: { workout.endedAt ?? workout.startedAt }, set: { workout.endedAt = $0 }),
                 in: workout.startedAt...max(workout.startedAt, Date.now))
             } else {
-              LabeledContent("已用时") {
+              LabeledContent(L10n.text("core.elapsed.time")) {
                 Text(workout.startedAt, style: .timer).monospacedDigit()
               }
             }
           }
           if !isHistoricalEdit {
-            Section("组间休息") {
-              Picker("完成组后休息", selection: $restDuration) {
-                Text("60 秒").tag(60)
-                Text("90 秒").tag(90)
-                Text("120 秒").tag(120)
-              }.pickerStyle(.segmented)
+            Section(L10n.text("core.rest.between.sets")) {
+              Picker(L10n.text("core.rest.after.completing.a.set"), selection: $restDuration) {
+                Text(L10n.text("core.60.sec")).tag(60)
+                Text(L10n.text("core.90.sec")).tag(90)
+                Text(L10n.text("core.120.sec")).tag(120)
+              }.modifier(CoreAdaptivePickerStyle())
               if let end = workout.restEndsAt {
-                Button("+30 秒") { workout.restEndsAt = max(end, .now).addingTimeInterval(30) }
+                Button(L10n.text("core.30.sec")) { workout.restEndsAt = max(end, .now).addingTimeInterval(30) }
               }
             }
           }
         }
         if !isHistoricalEdit {
           Section {
-            Button("放弃这场训练", role: .destructive) { showingDiscard = true }
+            Button(L10n.text("core.discard.this.workout"), role: .destructive) { showingDiscard = true }
               .accessibilityIdentifier("workout.discard")
           }
         }
       }
-      .navigationTitle(isHistoricalEdit ? "编辑训练" : "进行中")
+      .localizationTestControls()
+      .navigationTitle(isHistoricalEdit ? L10n.text("core.edit.workout") : L10n.text("core.in.progress"))
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
         ToolbarItem(placement: .confirmationAction) {
-          Button(isHistoricalEdit ? "保存" : "结束训练", action: finish).accessibilityIdentifier(
+          Button(isHistoricalEdit ? L10n.text("settings.save") : L10n.text("recording.finish.workout"), action: finish).accessibilityIdentifier(
             "workout.finish")
         }
         if isHistoricalEdit {
           ToolbarItem(placement: .cancellationAction) {
-            Button("取消") { dismiss() }.accessibilityIdentifier("workout.edit.cancel")
+            Button(L10n.text("settings.cancel")) { dismiss() }.accessibilityIdentifier("workout.edit.cancel")
           }
         }
         ToolbarItemGroup(placement: .keyboard) {
           Spacer()
-          Button("收起键盘") {
+          Button(L10n.text("core.dismiss.keyboard")) {
             UIApplication.shared.sendAction(
               #selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
           }
@@ -119,7 +120,7 @@ struct ActiveWorkoutView: View {
         }
       }
       .sheet(isPresented: $showingPicker) {
-        ExercisePickerView(title: "添加训练动作") { item in
+        ExercisePickerView(title: L10n.text("core.add.workout.exercise")) { item in
           let exercise = RoutineFactory.workoutExercise(
             from: item, orderIndex: workout.exercises.count)
           exercise.workout = workout
@@ -127,17 +128,17 @@ struct ActiveWorkoutView: View {
           addedExerciseID = exercise.id
         }
       }
-      .confirmationDialog("放弃这场训练？", isPresented: $showingDiscard, titleVisibility: .visible) {
-        Button("放弃并删除", role: .destructive, action: discard)
-        Button("继续训练", role: .cancel) {}
+      .confirmationDialog(L10n.text("core.discard.this.workout.143"), isPresented: $showingDiscard, titleVisibility: .visible) {
+        Button(L10n.text("core.discard.and.delete"), role: .destructive, action: discard)
+        Button(L10n.text("core.continue.workout"), role: .cancel) {}
       }
       .alert(
-        "请检查记录", isPresented: Binding(get: { message != nil }, set: { if !$0 { message = nil } })
+        L10n.text("core.check.your.records"), isPresented: Binding(get: { message != nil }, set: { if !$0 { message = nil } })
       ) {
-        if !isHistoricalEdit { Button("重试保存") { persist() } }
-        Button("知道了", role: .cancel) { message = nil }
+        if !isHistoricalEdit { Button(L10n.text("core.retry.saving")) { persist() } }
+        Button(L10n.text("core.ok"), role: .cancel) { message = nil }
       } message: {
-        Text(message ?? "请重试。")
+        Text(message?.text ?? L10n.text("core.please.try.again"))
       }
       .onChange(of: editFingerprint) { _, _ in persist() }
       .onChange(of: scenePhase) { _, phase in if phase != .active { persist() } }
@@ -178,24 +179,24 @@ struct ActiveWorkoutView: View {
       return
     }
     do { try modelContext.save() } catch {
-      message = "记录尚未保存。输入仍保留，请重试。\(error.localizedDescription)"
+      message = L10n.Message(resolving: { L10n.text("core.records.have.not.been.saved.your.input.is.preserved.please.try.again" , String(describing: error.localizedDescription)) })
     }
   }
 
   private func finish() {
     if let invalid = workout.validationMessage {
-      message = invalid
+      message = L10n.Message(resolving: { workout.validationMessage ?? invalid })
       return
     }
     if isHistoricalEdit {
       guard let end = workout.endedAt, end >= workout.startedAt else {
-        message = "结束时间不能早于开始时间。"
+        message = L10n.Message(resolving: { L10n.text("core.end.time.cannot.be.earlier.than.start.time") })
         return
       }
       do {
         try saveHistory?()
         dismiss()
-      } catch { message = "修改未能保存，请重试。\(error.localizedDescription)" }
+      } catch { message = L10n.Message(resolving: { L10n.text("core.could.not.save.changes.please.try.again" , String(describing: error.localizedDescription)) }) }
       return
     }
     let previousEnd = workout.endedAt
@@ -210,7 +211,7 @@ struct ActiveWorkoutView: View {
       workout.status = .inProgress
       workout.endedAt = previousEnd
       workout.restEndsAt = previousRest
-      message = "训练未能完成保存，请重试。\(error.localizedDescription)"
+      message = L10n.Message(resolving: { L10n.text("core.could.not.finish.and.save.the.workout.please.try.again" , String(describing: error.localizedDescription)) })
     }
   }
 
@@ -221,7 +222,7 @@ struct ActiveWorkoutView: View {
       dismiss()
     } catch {
       modelContext.rollback()
-      message = "删除失败，记录仍保留。\(error.localizedDescription)"
+      message = L10n.Message(resolving: { L10n.text("core.delete.failed.your.records.are.preserved" , String(describing: error.localizedDescription)) })
     }
   }
 }
@@ -233,7 +234,7 @@ private struct WorkoutExerciseEditor: View {
   let history: [Workout]
   let isDraft: Bool
   let restDuration: Int
-  let reportError: (String) -> Void
+  let reportError: (L10n.Message) -> Void
   let onDelete: () -> Void
   @State private var pendingMode: TrackingMode?
   @State private var confirmingMode = false
@@ -248,7 +249,7 @@ private struct WorkoutExerciseEditor: View {
   var body: some View {
     Section {
       Picker(
-        "记录方式",
+        L10n.text("core.tracking.mode"),
         selection: Binding(
           get: { exercise.trackingMode },
           set: { mode in
@@ -261,7 +262,7 @@ private struct WorkoutExerciseEditor: View {
       }.accessibilityIdentifier("exercise.mode.\(exercise.id.uuidString)")
       if let previous {
         VStack(alignment: .leading, spacing: 6) {
-          Text("上次表现").font(.caption.weight(.semibold)).foregroundStyle(.secondary)
+          Text(L10n.text("core.previous.performance")).font(.caption.weight(.semibold)).foregroundStyle(.secondary)
           if previous.trackingMode.usesSets {
             ForEach(
               previous.sortedStrengthSets.filter {
@@ -269,15 +270,15 @@ private struct WorkoutExerciseEditor: View {
               }
             ) { set in
               Text(
-                "第 \(set.orderIndex + 1) 组：\(WorkoutValueFormatting.set(set, mode: previous.trackingMode))"
+                L10n.text("core.set.154", set.orderIndex + 1, String(describing: WorkoutValueFormatting.set(set, mode: previous.trackingMode)))
               )
               .font(.caption).monospacedDigit()
             }
           } else if let cardio = previous.cardioEntries.first(where: { $0.isValid }) {
-            Text("\(cardio.durationSeconds / 60) 分钟 · \(cardio.distanceKilometers.formatted()) km")
+            Text(L10n.text("core.min.km", cardio.durationSeconds / 60, String(describing: cardio.distanceKilometers.formatted(.number.locale(L10n.locale)))))
               .font(.caption)
           }
-          Button("沿用上次完成数据") {
+          Button(L10n.text("core.use.previous.completed.values")) {
             if exercise.trackingMode.usesSets {
               confirmingPrevious = true
             } else {
@@ -290,13 +291,13 @@ private struct WorkoutExerciseEditor: View {
               Form {
                 Section {
                   LabeledContent(
-                    "时长", value: "\(draft.durationSeconds / 60) 分 \(draft.durationSeconds % 60) 秒")
-                  LabeledContent("距离", value: "\(draft.distanceKilometers.formatted()) km")
-                  LabeledContent("消耗", value: "\(draft.calories.formatted()) kcal")
+                    L10n.text("core.duration"), value: L10n.text("core.min.sec" , String(describing: draft.durationSeconds / 60), String(describing: draft.durationSeconds % 60)))
+                  LabeledContent(L10n.text("core.distance"), value: "\(draft.distanceKilometers.formatted(.number.locale(L10n.locale))) km")
+                  LabeledContent(L10n.text("core.calories.burned"), value: "\(draft.calories.formatted(.number.locale(L10n.locale))) kcal")
                 } footer: {
-                  Text("这是上次的成绩。只有本次已完成相同训练时才确认；需要调整时，请取消并填写本次实际成绩。")
+                  Text(L10n.text("core.these.are.your.previous.results.confirm.only.if.you.completed.the.same.workout.this.t"))
                 }
-                Button("确认本次已完成") {
+                Button(L10n.text("core.confirm.completed.this.time")) {
                   guard let cardio = exercise.cardioEntries.first else { return }
                   cardio.durationSeconds = draft.durationSeconds
                   cardio.distanceKilometers = draft.distanceKilometers
@@ -305,11 +306,12 @@ private struct WorkoutExerciseEditor: View {
                 }
                 .accessibilityIdentifier("cardio.history.confirm")
               }
-              .navigationTitle("确认本次有氧成绩")
+              .localizationTestControls()
+    .navigationTitle(L10n.text("core.confirm.today.s.cardio.results"))
               .navigationBarTitleDisplayMode(.inline)
               .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                  Button("取消") { previousCardioDraft = nil }
+                  Button(L10n.text("core.cancel")) { previousCardioDraft = nil }
                     .accessibilityIdentifier("cardio.history.cancel")
                 }
               }
@@ -321,7 +323,7 @@ private struct WorkoutExerciseEditor: View {
         ForEach(exercise.sortedStrengthSets) { set in
           StrengthSetRow(strengthSet: set, mode: exercise.trackingMode) {
             if !set.isCompleted && !set.isValid(for: exercise.trackingMode) {
-              reportError("请先填写有效的\(exercise.trackingMode == .duration ? "时长" : "次数和重量")。")
+              reportError(L10n.Message(resolving: { L10n.text("core.enter.valid.first", exercise.trackingMode == .duration ? L10n.text("core.duration") : L10n.text("core.repetitions.and.weight")) }))
               return
             }
             set.isCompleted.toggle()
@@ -336,35 +338,34 @@ private struct WorkoutExerciseEditor: View {
             }
           }
         }
-        Button("增加一组", systemImage: "plus") { addSet() }
+        Button(L10n.text("core.add.a.set"), systemImage: "plus") { addSet() }
       } else if let cardio = exercise.cardioEntries.first {
         CardioEntryEditor(cardio: cardio)
       }
-      TextField("动作备注（可选）", text: $exercise.notes, axis: .vertical)
-      Button("移除动作", role: .destructive) { confirmingDelete = true }
+      TextField(L10n.text("core.exercise.notes.optional"), text: $exercise.notes, axis: .vertical)
+      Button(L10n.text("core.remove.exercise"), role: .destructive) { confirmingDelete = true }
     } header: {
       VStack(alignment: .leading, spacing: 3) {
-        Text(exercise.nameZhSnapshot)
-        Text(exercise.nameEnSnapshot).font(.caption).textCase(nil)
+        Text(exercise.displayName)
       }
     }
-    .confirmationDialog("切换记录方式？", isPresented: $confirmingMode, titleVisibility: .visible) {
-      Button("切换") { applyMode() }
-      Button("取消", role: .cancel) { pendingMode = nil }
+    .confirmationDialog(L10n.text("core.change.tracking.mode"), isPresented: $confirmingMode, titleVisibility: .visible) {
+      Button(L10n.text("core.change")) { applyMode() }
+      Button(L10n.text("core.cancel"), role: .cancel) { pendingMode = nil }
     } message: {
-      Text("会保留各方式已填写的数值，并重置组的完成状态与 RIR。请确认当前方式的实际完成数据。")
+      Text(L10n.text("core.values.for.each.mode.will.be.preserved.set.completion.and.rir.will.be.reset.verify.yo"))
     }
-    .confirmationDialog("用上次数据替换当前参数？", isPresented: $confirmingPrevious, titleVisibility: .visible)
+    .confirmationDialog(L10n.text("core.replace.current.values.with.previous.results"), isPresented: $confirmingPrevious, titleVisibility: .visible)
     {
-      Button("沿用并重置完成状态") { copyPrevious() }
-      Button("取消", role: .cancel) {}
+      Button(L10n.text("core.apply.and.reset.completion")) { copyPrevious() }
+      Button(L10n.text("core.cancel"), role: .cancel) {}
     } message: {
-      Text("复制后的组需要重新标记完成，RIR 可按本次感受填写。")
+      Text(L10n.text("core.mark.copied.sets.as.completed.again.and.enter.rir.based.on.how.you.feel.this.time"))
     }
-    .confirmationDialog("移除这个动作和已记录的组？", isPresented: $confirmingDelete, titleVisibility: .visible)
+    .confirmationDialog(L10n.text("core.remove.this.exercise.and.its.recorded.sets"), isPresented: $confirmingDelete, titleVisibility: .visible)
     {
-      Button("移除动作", role: .destructive, action: onDelete)
-      Button("取消", role: .cancel) {}
+      Button(L10n.text("core.remove.exercise"), role: .destructive, action: onDelete)
+      Button(L10n.text("core.cancel"), role: .cancel) {}
     }
   }
 
@@ -427,10 +428,13 @@ private struct StrengthSetRow: View {
   let onDelete: () -> Void
   var body: some View {
     VStack(alignment: .leading, spacing: 10) {
-      HStack {
+      let headerLayout = dynamicTypeSize.isAccessibilitySize
+        ? AnyLayout(VStackLayout(alignment: .leading, spacing: 8))
+        : AnyLayout(HStackLayout())
+      headerLayout {
         Button(action: onComplete) {
           Label(
-            "第 \(strengthSet.orderIndex + 1) 组 · \(strengthSet.isCompleted ? "已完成" : "完成本组")",
+            L10n.text("recording.set.status", strengthSet.orderIndex + 1, strengthSet.isCompleted ? L10n.text("core.completed") : L10n.text("core.mark.complete")),
             systemImage: strengthSet.isCompleted ? "checkmark.circle.fill" : "circle"
           )
           .foregroundStyle(strengthSet.isCompleted ? Color.green : Color.primary)
@@ -439,31 +443,31 @@ private struct StrengthSetRow: View {
         }
         .buttonStyle(.borderless)
         .accessibilityLabel(
-          "第 \(strengthSet.orderIndex + 1) 组，\(strengthSet.isCompleted ? "已完成" : "完成本组")"
+          L10n.text("core.set.171", strengthSet.orderIndex + 1, strengthSet.isCompleted ? L10n.text("core.completed") : L10n.text("core.mark.complete"))
         )
         .accessibilityIdentifier("strengthSet.complete.\(strengthSet.id.uuidString)")
         Spacer()
         Button(role: .destructive, action: onDelete) {
           Image(systemName: "trash").frame(minWidth: 44, minHeight: 44).contentShape(Rectangle())
         }
-        .accessibilityLabel("删除组").buttonStyle(.borderless)
+        .accessibilityLabel(L10n.text("core.delete.set")).buttonStyle(.borderless)
       }
       if mode == .strength {
-        Text("重量").font(.subheadline)
+        Text(L10n.text("settings.weight")).font(.subheadline)
         HStack {
           Button {
             strengthSet.weightKilograms = max(strengthSet.weightKilograms - 2.5, 0)
           } label: {
             Image(systemName: "minus.circle").frame(minWidth: 44, minHeight: 44).contentShape(Rectangle())
           }
-          .frame(minWidth: 44, minHeight: 44).accessibilityLabel("减重 2.5 公斤").buttonStyle(
+          .frame(minWidth: 44, minHeight: 44).accessibilityLabel(L10n.text("core.decrease.weight.by.2.5.kg")).buttonStyle(
             .borderless)
-          TextField(
-            "重量", value: $strengthSet.weightKilograms,
-            format: .number.precision(.fractionLength(0...2))
+          StableNumberField(
+            L10n.text("settings.weight"), value: $strengthSet.weightKilograms,
+            format: .number.precision(.fractionLength(0...2)).locale(L10n.locale)
           )
           .keyboardType(.decimalPad).multilineTextAlignment(.trailing).accessibilityLabel(
-            "第 \(strengthSet.orderIndex + 1) 组，重量，公斤"
+            L10n.text("recording.set.weight", strengthSet.orderIndex + 1)
           )
           .accessibilityIdentifier("strengthSet.weight.\(strengthSet.id.uuidString)")
           Text("kg").foregroundStyle(.secondary)
@@ -472,7 +476,7 @@ private struct StrengthSetRow: View {
           } label: {
             Image(systemName: "plus.circle").frame(minWidth: 44, minHeight: 44).contentShape(Rectangle())
           }
-          .frame(minWidth: 44, minHeight: 44).accessibilityLabel("加重 2.5 公斤").buttonStyle(
+          .frame(minWidth: 44, minHeight: 44).accessibilityLabel(L10n.text("core.increase.weight.by.2.5.kg")).buttonStyle(
             .borderless)
         }
       }
@@ -481,47 +485,47 @@ private struct StrengthSetRow: View {
         ? AnyLayout(VStackLayout(alignment: .leading, spacing: 8))
         : AnyLayout(HStackLayout())
       fieldLayout {
-        Text(mode == .duration ? "时长" : "次数")
+        Text(mode == .duration ? L10n.text("core.duration") : L10n.text("core.repetitions"))
         Spacer()
-        TextField(
-          mode == .duration ? "秒数" : "次数",
+        StableNumberField(
+          mode == .duration ? L10n.text("core.seconds") : L10n.text("core.repetitions"),
           value: mode == .duration ? $strengthSet.durationSeconds : $strengthSet.repetitions,
-          format: .number
+          format: .number.locale(L10n.locale)
         )
         .keyboardType(.numberPad).multilineTextAlignment(.trailing)
         .accessibilityLabel(
-          "第 \(strengthSet.orderIndex + 1) 组，\(mode == .duration ? "时长，秒" : "次数")"
+          L10n.text("recording.set.field", strengthSet.orderIndex + 1, mode == .duration ? L10n.text("core.duration.in.seconds") : L10n.text("core.repetitions"))
         )
         .accessibilityIdentifier(
           "strengthSet.\(mode == .duration ? "duration" : "repetitions").\(strengthSet.id.uuidString)"
         )
-        Text(mode == .duration ? "秒" : "次").foregroundStyle(.secondary)
+        Text(mode == .duration ? L10n.text("core.sec.187") : L10n.text("core.reps.188")).foregroundStyle(.secondary)
       }
       Button { showOptions.toggle() } label: {
-        Label("更多选项", systemImage: showOptions ? "chevron.down" : "chevron.right")
+        Label(L10n.text("recording.more.options"), systemImage: showOptions ? "chevron.down" : "chevron.right")
           .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
           .contentShape(Rectangle())
       }
       .buttonStyle(.borderless)
-      .accessibilityValue(showOptions ? "已展开" : "已收起")
+      .accessibilityValue(showOptions ? L10n.text("recording.expanded") : L10n.text("recording.collapsed"))
       .accessibilityIdentifier("strengthSet.more.\(strengthSet.id.uuidString)")
       if showOptions {
         Picker(
-          "组类型",
+          L10n.text("core.set.type"),
           selection: Binding(
             get: { strengthSet.setRole }, set: { strengthSet.setRole = $0 }
           )
         ) {
-          Text("工作组").tag(SetRole.working)
-          Text("热身组").tag(SetRole.warmup)
-          if strengthSet.setRole == .unknown { Text("历史未区分").tag(SetRole.unknown) }
+          Text(L10n.text("core.working.set")).tag(SetRole.working)
+          Text(L10n.text("core.warm.up.set")).tag(SetRole.warmup)
+          if strengthSet.setRole == .unknown { Text(L10n.text("core.unspecified.in.history")).tag(SetRole.unknown) }
         }
         .accessibilityIdentifier("strengthSet.role.\(strengthSet.id.uuidString)")
         if mode == .strength || mode == .repetitions {
-          Picker("还能做几次（RIR）", selection: $strengthSet.rir) {
-            Text("未记录").tag(Int?.none)
+          Picker(L10n.text("recording.rir.label"), selection: $strengthSet.rir) {
+            Text(L10n.text("core.not.recorded")).tag(Int?.none)
             ForEach(0...5, id: \.self) { value in
-              Text(value == 5 ? "5 次或以上" : "\(value) 次").tag(Optional(value))
+              Text(value == 5 ? L10n.text("core.5.or.more.reps") : L10n.text("core.reps", value)).tag(Optional(value))
             }
           }
           .accessibilityIdentifier("strengthSet.rir.\(strengthSet.id.uuidString)")
@@ -535,21 +539,21 @@ private struct StrengthSetRow: View {
 private struct CardioEntryEditor: View {
   @Bindable var cardio: CardioEntry
   var body: some View {
-    LabeledContent("时长（分钟）") {
-      TextField("0", value: durationMinutes, format: .number.precision(.fractionLength(0...1)))
+    LabeledContent(L10n.text("core.duration.minutes")) {
+      StableNumberField("0", value: durationMinutes, format: .number.precision(.fractionLength(0...1)).locale(L10n.locale))
         .keyboardType(.decimalPad).multilineTextAlignment(.trailing).accessibilityIdentifier(
           "cardio.duration")
     }
-    LabeledContent("距离（km，可选）") {
-      TextField(
-        "0", value: $cardio.distanceKilometers, format: .number.precision(.fractionLength(0...2))
+    LabeledContent(L10n.text("core.distance.km.optional")) {
+      StableNumberField(
+        "0", value: $cardio.distanceKilometers, format: .number.precision(.fractionLength(0...2)).locale(L10n.locale).locale(L10n.locale)
       )
-      .keyboardType(.decimalPad).multilineTextAlignment(.trailing).accessibilityLabel("距离公里")
+      .keyboardType(.decimalPad).multilineTextAlignment(.trailing).accessibilityLabel(L10n.text("core.distance.in.kilometers"))
       .accessibilityIdentifier("cardio.distance")
     }
-    LabeledContent("消耗（kcal，可选）") {
-      TextField("0", value: $cardio.calories, format: .number.precision(.fractionLength(0...1)))
-        .keyboardType(.decimalPad).multilineTextAlignment(.trailing).accessibilityLabel("消耗千卡")
+    LabeledContent(L10n.text("core.calories.burned.kcal.optional")) {
+      StableNumberField("0", value: $cardio.calories, format: .number.precision(.fractionLength(0...1)).locale(L10n.locale))
+        .keyboardType(.decimalPad).multilineTextAlignment(.trailing).accessibilityLabel(L10n.text("core.calories.burned.in.kilocalories"))
         .accessibilityIdentifier("cardio.calories")
     }
   }
@@ -568,10 +572,10 @@ enum WorkoutValueFormatting {
     switch mode {
     case .strength:
       return
-        "\(set.weightKilograms.formatted(.number.precision(.fractionLength(0...2)))) kg × \(set.repetitions) 次"
-    case .repetitions: return "\(set.repetitions) 次"
-    case .duration: return "\(set.durationSeconds) 秒"
-    case .cardio: return "有氧"
+        L10n.text("core.kg.reps.194" , String(describing: set.weightKilograms.formatted(.number.precision(.fractionLength(0...2)).locale(L10n.locale))), String(describing: set.repetitions))
+    case .repetitions: return L10n.text("core.reps", set.repetitions)
+    case .duration: return L10n.text("core.sec", set.durationSeconds)
+    case .cardio: return L10n.text("core.cardio")
     }
   }
 }

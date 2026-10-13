@@ -66,9 +66,9 @@ final class BodyMapSceneContainer: UIView, UIGestureRecognizerDelegate {
     sceneView.antialiasingMode = .multisampling4X
     sceneView.accessibilityIdentifier = "bodyMap.scene"
     sceneView.isAccessibilityElement = true
-    sceneView.accessibilityLabel = "可旋转的三维人体"
-    sceneView.accessibilityValue = "前面"
-    sceneView.accessibilityHint = "左右拖动旋转，或使用前面、背面按钮。肌群列表提供相同内容。"
+    sceneView.accessibilityLabel = L10n.text("health.bodymapsceneview.rotatable.3d.body.7e45cc")
+    sceneView.accessibilityValue = L10n.text("health.bodymapsceneview.front.9c61cc")
+    sceneView.accessibilityHint = L10n.text("health.bodymapsceneview.drag.left.or.right.to.rotate.a930d0")
     addSubview(sceneView)
     let pan = UIPanGestureRecognizer(target: self, action: #selector(drag(_:)))
     pan.delegate = self
@@ -137,6 +137,10 @@ final class BodyMapSceneContainer: UIView, UIGestureRecognizerDelegate {
       self.input = input
       model.update(input: input)
     }
+    sceneView.accessibilityLabel = L10n.text("health.bodymapsceneview.rotatable.3d.body.7e45cc")
+    sceneView.accessibilityHint = L10n.text("health.bodymapsceneview.drag.left.or.right.to.rotate.a930d0")
+    let facing = cos(model.body.eulerAngles.y)
+    sceneView.accessibilityValue = facing > 0.85 ? L10n.text("health.bodymapsceneview.front.9c61cc") : facing < -0.85 ? L10n.text("health.bodymapsceneview.back.2d9ca5") : L10n.text("health.bodymapsceneview.side.70aa11")
     sceneView.preferredFramesPerSecond = policy.framesPerSecond
     sceneView.antialiasingMode = policy == .economical ? .none : .multisampling4X
     sceneView.isPlaying = false
@@ -149,7 +153,7 @@ final class BodyMapSceneContainer: UIView, UIGestureRecognizerDelegate {
     guard let model, angle.isFinite else { return }
     model.rotate(to: angle)
     let facing = cos(angle)
-    sceneView.accessibilityValue = facing > 0.85 ? "前面" : facing < -0.85 ? "背面" : "侧面"
+    sceneView.accessibilityValue = facing > 0.85 ? L10n.text("health.bodymapsceneview.front.9c61cc") : facing < -0.85 ? L10n.text("health.bodymapsceneview.back.2d9ca5") : L10n.text("health.bodymapsceneview.side.70aa11")
     updateLabels()
   }
 
@@ -198,7 +202,7 @@ final class BodyMapSceneContainer: UIView, UIGestureRecognizerDelegate {
         selected ? UIColor.label.cgColor : region.color.withAlphaComponent(0.5).cgColor
       button.layer.borderWidth = selected ? 2 : 1
       button.accessibilityLabel = region.accessibilityText
-      button.accessibilityHint = "查看肌群详情"
+      button.accessibilityHint = L10n.text("health.bodymapsceneview.view.muscle.details.7376b2")
       button.accessibilityTraits = selected ? [.button, .selected] : [.button]
       let left = item.frame.midX < bounds.midX
       let endpoint = CGPoint(x: left ? item.frame.maxX : item.frame.minX, y: item.frame.midY)

@@ -5,7 +5,7 @@ final class DailyUseUpgradeUITests: XCTestCase {
   override func setUpWithError() throws {
     continueAfterFailure = false
     app = XCUIApplication()
-    app.launchArguments = ["-ui-testing"]
+    app.launchArguments = ["-AppleLanguages", "(zh-Hans)", "-AppleLocale", "zh_CN", "-appearance.language", "zh-Hans", "-ui-testing"]
     app.launch()
   }
 
@@ -232,7 +232,7 @@ final class DailyUseUpgradeUITests: XCTestCase {
     app.buttons["workout.finish"].tap()
     XCTAssertTrue(app.alerts["请检查记录"].waitForExistence(timeout: 3))
     app.terminate()
-    app.launchArguments = ["-ui-testing", "-ui-testing-readonly"]
+    app.launchArguments = ["-AppleLanguages", "(zh-Hans)", "-AppleLocale", "zh_CN", "-appearance.language", "zh-Hans", "-ui-testing", "-ui-testing-readonly"]
     app.launch()
     app.buttons["today.settings"].tap()
     app.buttons["每日营养目标"].tap()
@@ -243,7 +243,7 @@ final class DailyUseUpgradeUITests: XCTestCase {
 
   func testTrainingDraftAndRestTimerSurviveRelaunch() {
     app.terminate()
-    app.launchArguments = ["-ui-testing-persistent"]
+    app.launchArguments = ["-AppleLanguages", "(zh-Hans)", "-AppleLocale", "zh_CN", "-appearance.language", "zh-Hans", "-ui-testing-persistent"]
     app.launch()
     app.tabBars.buttons["训练"].tap()
     if app.buttons["training.activeWorkout"].exists {
