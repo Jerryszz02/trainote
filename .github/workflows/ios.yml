@@ -11,7 +11,8 @@ concurrency:
 jobs:
   test:
     runs-on: macos-latest
-    timeout-minutes: 60
+    # The combined interaction/localization suite exceeds the former 58–59 minute baseline.
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
       - name: Check exercise recording modes
