@@ -29,14 +29,14 @@ struct BodyMapRendererView: View {
   var body: some View {
     VStack(alignment: .leading, spacing: 12) {
       HStack {
-        Text("肌群恢复指数").font(.headline)
+        Text(L10n.text("health.bodymaprendererview.muscle.recovery.index.a6164e")).font(.headline)
         Spacer()
         if policy != .list {
           Button {
             showsList.toggle()
           } label: {
             Label(
-              showsList ? "人体图" : "肌群列表", systemImage: showsList ? "figure.stand" : "list.bullet"
+              showsList ? L10n.text("health.bodymaprendererview.body.map.f7851a") : L10n.text("health.bodymaprendererview.muscle.list.82c206"), systemImage: showsList ? "figure.stand" : "list.bullet"
             )
             .frame(minHeight: 44)
           }
@@ -45,22 +45,22 @@ struct BodyMapRendererView: View {
         }
       }
       if input.isEmpty {
-        Label("待建立记录", systemImage: "questionmark.circle")
+        Label(L10n.text("health.bodymaprendererview.waiting.for.records.dda84c"), systemImage: "questionmark.circle")
           .font(.subheadline).foregroundStyle(Color(uiColor: .label).opacity(0.75))
-        Text("记录训练后，肌群状态会显示在这里。")
+        Text(L10n.text("health.bodymaprendererview.muscle.status.appears.here.after.you.18800f"))
           .font(.caption).foregroundStyle(Color(uiColor: .label).opacity(0.75))
       }
       if policy == .list || showsList {
         if policy == .list {
-          Text("以肌群列表显示，点按查看详情。")
+          Text(L10n.text("health.bodymaprendererview.showing.a.muscle.list.tap.to.a28dec"))
             .font(.caption).foregroundStyle(Color(uiColor: .label).opacity(0.75))
             .accessibilityIdentifier("bodyMap.fallback")
         }
         muscleList
       } else {
-        Picker("人体显示方式", selection: $shows3D) {
-          Text("肌肉图").tag(false)
-          Text("3D 旋转").tag(true)
+        Picker(L10n.text("health.bodymaprendererview.body.display.mode.087fc2"), selection: $shows3D) {
+          Text(L10n.text("health.bodymaprendererview.muscle.map.5badd3")).tag(false)
+          Text(L10n.text("health.bodymaprendererview.3d.rotation.754d6c")).tag(true)
         }
         .pickerStyle(.segmented)
         .accessibilityIdentifier("bodyMap.displayMode")
@@ -69,17 +69,17 @@ struct BodyMapRendererView: View {
             Button {
               setViewpoint(.front)
             } label: {
-              Text("前面").frame(minHeight: 32)
+              Text(L10n.text("health.bodymaprendererview.front.9c61cc")).frame(minHeight: 32)
             }
             .accessibilityIdentifier("bodyMap.front")
             Button {
               setViewpoint(.back)
             } label: {
-              Text("背面").frame(minHeight: 32)
+              Text(L10n.text("health.bodymaprendererview.back.2d9ca5")).frame(minHeight: 32)
             }
             .accessibilityIdentifier("bodyMap.back")
             Spacer()
-            Label("左右拖动旋转", systemImage: "rotate.3d")
+            Label(L10n.text("health.bodymaprendererview.drag.left.or.right.to.rotate.50627a"), systemImage: "rotate.3d")
               .font(.caption).foregroundStyle(Color(uiColor: .label).opacity(0.75))
           }
           .buttonStyle(.bordered)
@@ -99,8 +99,8 @@ struct BodyMapRendererView: View {
             .frame(height: 330)
             .clipShape(RoundedRectangle(cornerRadius: 18))
           HStack {
-            Text("正面").frame(maxWidth: .infinity)
-            Text("背面").frame(maxWidth: .infinity)
+            Text(L10n.text("health.bodymaprendererview.front.70c219")).frame(maxWidth: .infinity)
+            Text(L10n.text("health.bodymaprendererview.back.2d9ca5")).frame(maxWidth: .infinity)
           }
           .font(.caption).foregroundStyle(.secondary)
         }
@@ -167,7 +167,7 @@ struct BodyMapRendererView: View {
         }
         .buttonStyle(.plain)
         .accessibilityLabel(region.accessibilityText)
-        .accessibilityHint("查看肌群详情")
+        .accessibilityHint(L10n.text("health.bodymaprendererview.view.muscle.details.7376b2"))
         .accessibilityAddTraits(input.selected == region.muscle ? .isSelected : [])
         .accessibilityIdentifier("bodyMap.row.\(region.muscle.rawValue)")
         if region.muscle != .calves { Divider() }
@@ -179,7 +179,7 @@ struct BodyMapRendererView: View {
     VStack(alignment: .leading, spacing: 6) {
       HStack(spacing: 14) {
         Label {
-          Text("低")
+          Text(L10n.text("health.bodymaprendererview.low.b9ee25"))
         } icon: {
           Image(systemName: "circle.fill").foregroundStyle(
             colorScheme == .dark
@@ -188,20 +188,20 @@ struct BodyMapRendererView: View {
         }
         Image(systemName: "arrow.right").foregroundStyle(Color(uiColor: .label).opacity(0.75))
         Label {
-          Text("高")
+          Text(L10n.text("health.bodymaprendererview.high.b096b3"))
         } icon: {
           Image(systemName: "circle.fill").foregroundStyle(
             colorScheme == .dark
               ? Color(red: 0.25, green: 0.80, blue: 0.55)
               : Color(red: 0.10, green: 0.42, blue: 0.28))
         }
-        Label("未知", systemImage: "questionmark.circle").foregroundStyle(
+        Label(L10n.text("health.bodymaprendererview.unknown.d9c32a"), systemImage: "questionmark.circle").foregroundStyle(
           Color(uiColor: .label).opacity(0.75))
       }
-      Label(shows3D ? "疼痛或活动受限 · 琥珀色提示" : "疼痛或活动受限 · 琥珀色虚线提示",
+      Label(shows3D ? L10n.text("health.bodymaprendererview.pain.or.limited.movement.amber.indicator.1dac3f") : L10n.text("health.bodymaprendererview.pain.or.limited.movement.amber.dashed.96740a"),
         systemImage: "exclamationmark.triangle")
         .foregroundStyle(Color(uiColor: .label).opacity(0.8))
-      Text("分数按 5 分显示 · 点按肌群查看详情")
+      Text(L10n.text("health.bodymaprendererview.scores.shown.in.steps.of.5.d1d719"))
         .foregroundStyle(Color(uiColor: .label).opacity(0.75))
     }
     .font(.caption)

@@ -83,46 +83,50 @@ struct TrainoteApp: App {
 
   var body: some Scene {
     WindowGroup {
-      switch containerResult {
-      case .success(let container):
-        if let healthFoundation, let healthAccess, let recoveryIntegration, let trendIntegration,
-          let trainingAdvice, let reportIntegration
-        {
-          AppShell(
-            analysisDestinations: .verifiedModules(
-              trend: trendIntegration, recovery: recoveryIntegration, advice: trainingAdvice),
-            recoveryIntegration: recoveryIntegration, trainingAdvice: trainingAdvice,
-            reportIntegration: reportIntegration
-          )
-          .environment(catalog)
-          .environment(healthFoundation)
-          .environment(healthAccess)
-          .modelContainer(container)
-          .task { await catalog.load() }
-          .task {
-            await healthAccess.resumePendingRevocation()
-            await healthFoundation.resume()
-            recoveryIntegration.reloadToday()
-            trendIntegration.refreshAfterHealthSync()
-            trainingAdvice.refresh()
-            await reportIntegration.refreshLocalAfterHealthSync()
-          }
-          .onChange(of: scenePhase) { _, phase in
-            if phase == .active {
-              Task {
-                await healthAccess.resumePendingRevocation()
-                await healthFoundation.resume()
-                recoveryIntegration.reloadToday()
-                trendIntegration.refreshAfterHealthSync()
-                trainingAdvice.refresh()
-                await reportIntegration.refreshLocalAfterHealthSync()
+      Group {
+        switch containerResult {
+        case .success(let container):
+          if let healthFoundation, let healthAccess, let recoveryIntegration, let trendIntegration,
+            let trainingAdvice, let reportIntegration
+          {
+            AppShell(
+              analysisDestinations: .verifiedModules(
+                trend: trendIntegration, recovery: recoveryIntegration, advice: trainingAdvice),
+              recoveryIntegration: recoveryIntegration, trainingAdvice: trainingAdvice,
+              reportIntegration: reportIntegration
+            )
+            .environment(catalog)
+            .environment(healthFoundation)
+            .environment(healthAccess)
+            .modelContainer(container)
+            .task { await catalog.load() }
+            .task {
+              await healthAccess.resumePendingRevocation()
+              await healthFoundation.resume()
+              recoveryIntegration.reloadToday()
+              trendIntegration.refreshAfterHealthSync()
+              trainingAdvice.refresh()
+              await reportIntegration.refreshLocalAfterHealthSync()
+            }
+            .onChange(of: scenePhase) { _, phase in
+              if phase == .active {
+                LanguageSettings.shared.refreshSystem()
+                Task {
+                  await healthAccess.resumePendingRevocation()
+                  await healthFoundation.resume()
+                  recoveryIntegration.reloadToday()
+                  trendIntegration.refreshAfterHealthSync()
+                  trainingAdvice.refresh()
+                  await reportIntegration.refreshLocalAfterHealthSync()
+                }
               }
             }
           }
+        case .failure(let error):
+          PersistenceErrorView(message: error.localizedDescription)
         }
-      case .failure(let error):
-        PersistenceErrorView(message: error.localizedDescription)
       }
+      .environment(\.locale, L10n.locale)
     }
   }
 }
@@ -180,11 +184,11 @@ private struct PersistenceErrorView: View {
 
   var body: some View {
     ContentUnavailableView {
-      Label("无法打开本地数据", systemImage: "externaldrive.badge.exclamationmark")
+      Label(L10n.text("storage.openFailed"), systemImage: "externaldrive.badge.exclamationmark")
     } description: {
       Text(message)
     } actions: {
-      Text("Trainote 不会用临时数据库替代你的记录。请重新启动 App。")
+      Text(L10n.text("storage.restart"))
         .font(.footnote)
         .foregroundStyle(.secondary)
     }

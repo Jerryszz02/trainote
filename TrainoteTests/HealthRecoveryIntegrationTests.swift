@@ -37,7 +37,7 @@ final class HealthRecoveryIntegrationTests: XCTestCase {
     try RecoveryCheckInWriter.save(draft, repository: repository, at: now)
     integration.reloadToday(at: now.addingTimeInterval(1), timeZone: .gmt)
     XCTAssertTrue(integration.needsRecoveryReview)
-    XCTAssertTrue(integration.todayMessage(hasRoutines: false).contains("疼痛"))
+    XCTAssertEqual(integration.todayMessage(hasRoutines: false), L10n.text("health.healthrecoveryintegration.pain.or.limited.movement.is.recorded.7b08a6"))
     XCTAssertTrue(integration.suggestedMuscles(at: now).contains(.chest))
     var fresh = try integration.checkInDraft(at: now, timeZone: .gmt)
     XCTAssertEqual(fresh.id, draft.id)

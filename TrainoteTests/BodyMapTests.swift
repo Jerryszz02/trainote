@@ -23,11 +23,11 @@ final class BodyMapTests: XCTestCase {
     XCTAssertNil(input[.chest].score)
     XCTAssertEqual(input[.back].score, 88)
     // Render the supplied state, do not re-classify it.
-    XCTAssertEqual(input[.back].status, "优先恢复")
+    XCTAssertEqual(input[.back].status, L10n.text("health.bodymaprenderinput.prioritize.recovery.41ef55"))
     XCTAssertEqual(input.selected, .back)
-    XCTAssertEqual(input[.shoulders].status, "疼痛反馈")
+    XCTAssertEqual(input[.shoulders].status, L10n.text("health.bodymaprenderinput.pain.reported.508f5b"))
     XCTAssertTrue(input[.shoulders].isLimited)
-    XCTAssertEqual(input[.glutes].status, "活动受限 · 待建立记录")
+    XCTAssertEqual(input[.glutes].status, L10n.text("health.bodymaprenderinput.waiting.for.records.e0d73f", L10n.text("health.bodymaprenderinput.limited.movement.4b936a")))
     XCTAssertEqual(input[.quads].displayedScore, 0)
     XCTAssertEqual(input.regions.count, 11)
     XCTAssertNil(input[.hamstrings].score)
@@ -37,7 +37,7 @@ final class BodyMapTests: XCTestCase {
     let unknown = BodyMapRegion(muscle: .chest, score: nil, status: "状态较好")
     let zero = BodyMapRegion(muscle: .chest, score: 0, status: "优先恢复")
     XCTAssertNil(unknown.displayedScore)
-    XCTAssertEqual(unknown.status, "待建立记录")
+    XCTAssertEqual(unknown.status, L10n.text("health.bodymaprenderinput.waiting.for.records.dda84c"))
     XCTAssertEqual(zero.displayedScore, 0)
     XCTAssertNotEqual(unknown.color, zero.color)
     for value in [Double.nan, .infinity, -.infinity, -1, 101] {
@@ -81,7 +81,7 @@ final class BodyMapTests: XCTestCase {
     view.layoutIfNeeded()
     let chest = try XCTUnwrap(view.subviews.compactMap { $0 as? UIButton }
       .first { $0.accessibilityIdentifier == "bodyMap.label.chest" })
-    XCTAssertTrue(chest.accessibilityLabel?.contains("未知") ?? false)
+    XCTAssertTrue(chest.accessibilityLabel?.contains(L10n.text("health.bodymaprenderinput.unknown.d9c32a")) ?? false)
     XCTAssertTrue(chest.accessibilityTraits.contains(.selected))
     XCTAssertTrue(chest.point(inside: CGPoint(x: chest.bounds.width * 0.25,
       y: chest.bounds.height * 0.5), with: nil))

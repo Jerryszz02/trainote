@@ -1,0 +1,1897 @@
+{
+  "core.today.s.guidance": {
+    "en": "Today's guidance",
+    "zh-Hans": "今日建议",
+    "comment": "Application-owned core screen text"
+  },
+  "core.health.data.is.temporarily.unavailable.local.records.are.shown": {
+    "en": "Health data is temporarily unavailable. Local records are shown.",
+    "zh-Hans": "健康数据暂时无法读取，当前显示本地记录。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.how.do.you.feel.today.add.a.ten.second.check.in.or.skip.it": {
+    "en": "How do you feel today? Add a ten-second check-in, or skip it.",
+    "zh-Hans": "今天感觉如何？可以用十秒补充体感，也可以跳过。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.check.in.unavailable": {
+    "en": "Check-in unavailable",
+    "zh-Hans": "体感暂时无法打开",
+    "comment": "Application-owned core screen text"
+  },
+  "core.ok": {
+    "en": "OK",
+    "zh-Hans": "知道了",
+    "comment": "Application-owned core screen text"
+  },
+  "core.please.try.again.later": {
+    "en": "Please try again later.",
+    "zh-Hans": "请稍后重试。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.add.or.edit.a.ten.second.check.in": {
+    "en": "Add or edit a ten-second check-in",
+    "zh-Hans": "记录或修改十秒体感",
+    "comment": "Application-owned core screen text"
+  },
+  "core.could.not.read.your.existing.check.in.please.try.again.later": {
+    "en": "Could not read your existing check-in. Please try again later.",
+    "zh-Hans": "未能读取已有体感，请稍后重试。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.skip": {
+    "en": "Skip",
+    "zh-Hans": "跳过",
+    "comment": "Application-owned core screen text"
+  },
+  "core.use.your.selected.routine.and.check.how.you.feel.before.starting": {
+    "en": "Use your selected routine and check how you feel before starting.",
+    "zh-Hans": "可按所选模板训练，开始前再核对今日体感。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.consider.reducing.today.s.workload.review.working.sets.and.reps.in.reserve": {
+    "en": "Consider reducing today's workload. Review working sets and reps in reserve.",
+    "zh-Hans": "今天建议适当减量，可查看工作组和余力范围。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.consider.the.selected.alternative.routine.after.reviewing.its.conditions": {
+    "en": "Consider the selected alternative routine after reviewing its conditions.",
+    "zh-Hans": "可考虑所选备选模板，先查看适用条件。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.prioritize.rest.or.light.activity.based.on.how.you.feel.today": {
+    "en": "Prioritize rest or light activity based on how you feel today.",
+    "zh-Hans": "今天优先休息或按体感选择轻活动。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.your.food.records.differ.from.your.goals.review.them.in.trends": {
+    "en": "Your food records differ from your goals. Review them in Trends.",
+    "zh-Hans": "饮食记录与目标存在差异，可到趋势页复核。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.there.is.not.enough.recorded.data.yet.review.your.routine.recovery.records.and.check.": {
+    "en": "There is not enough recorded data yet. Review your routine, recovery records, and check-in.",
+    "zh-Hans": "记录覆盖还不足，先核对模板、恢复记录和体感。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.previous.week": {
+    "en": "Previous week",
+    "zh-Hans": "上一周",
+    "comment": "Application-owned core screen text"
+  },
+  "core.monday.to.sunday": {
+    "en": "Monday to Sunday",
+    "zh-Hans": "周一至周日",
+    "comment": "Application-owned core screen text"
+  },
+  "core.next.week": {
+    "en": "Next week",
+    "zh-Hans": "下一周",
+    "comment": "Application-owned core screen text"
+  },
+  "core.back.to.this.week": {
+    "en": "Back to this week",
+    "zh-Hans": "回到本周",
+    "comment": "Application-owned core screen text"
+  },
+  "core.training.totals": {
+    "en": "Training totals",
+    "zh-Hans": "训练积累",
+    "comment": "Application-owned core screen text"
+  },
+  "core.completed.workouts": {
+    "en": "Completed workouts",
+    "zh-Hans": "完成训练",
+    "comment": "Application-owned core screen text"
+  },
+  "core.reps": {
+    "en": "%lld reps",
+    "zh-Hans": "%lld 次",
+    "comment": "Application-owned core screen text",
+    "enOne": "%lld rep"
+  },
+  "core.completed.sets": {
+    "en": "Completed sets",
+    "zh-Hans": "完成组数",
+    "comment": "Application-owned core screen text"
+  },
+  "core.sets": {
+    "en": "%lld sets",
+    "zh-Hans": "%lld 组",
+    "comment": "Application-owned core screen text",
+    "enOne": "%lld set"
+  },
+  "core.strength.training.volume": {
+    "en": "Strength training volume",
+    "zh-Hans": "负重训练容量",
+    "comment": "Application-owned core screen text"
+  },
+  "core.kg.reps": {
+    "en": "%@ kg·reps",
+    "zh-Hans": "%@ kg·次",
+    "comment": "Application-owned core screen text"
+  },
+  "core.volume.includes.completed.valid.weight.reps.sets.only.your.first.result.establishes.a": {
+    "en": "Volume includes completed, valid weight × reps sets only. Your first result establishes a baseline.",
+    "zh-Hans": "容量只统计重量 × 次数模式中已完成的有效组；首次成绩作为基线。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.this.week.s.personal.records": {
+    "en": "This week's personal records",
+    "zh-Hans": "本周突破",
+    "comment": "Application-owned core screen text"
+  },
+  "core.no.new.weight.or.volume.records.this.week.every.valid.record.becomes.a.reference.for.": {
+    "en": "No new weight or volume records this week. Every valid record becomes a reference for next time.",
+    "zh-Hans": "本周还没有新的重量或容量纪录。每一次有效记录都会成为下次的参考。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.food.records": {
+    "en": "Food records",
+    "zh-Hans": "饮食记录",
+    "comment": "Application-owned core screen text"
+  },
+  "core.days.with.records": {
+    "en": "Days with records",
+    "zh-Hans": "有记录的日期",
+    "comment": "Application-owned core screen text"
+  },
+  "core.days": {
+    "en": "%lld days",
+    "zh-Hans": "%lld 天",
+    "comment": "Application-owned core screen text",
+    "enOne": "%lld day"
+  },
+  "core.days.with.available.goals": {
+    "en": "Days with available goals",
+    "zh-Hans": "可解析目标的日期",
+    "comment": "Application-owned core screen text"
+  },
+  "core.7.days": {
+    "en": "%lld / 7 days",
+    "zh-Hans": "%lld / 7 天",
+    "comment": "Application-owned core screen text"
+  },
+  "core.average.recorded.calories.per.day": {
+    "en": "Average recorded calories per day",
+    "zh-Hans": "日均已记录热量",
+    "comment": "Application-owned core screen text"
+  },
+  "core.average.recorded.protein.per.day": {
+    "en": "Average recorded protein per day",
+    "zh-Hans": "日均已记录蛋白质",
+    "comment": "Application-owned core screen text"
+  },
+  "core.date": {
+    "en": "Date",
+    "zh-Hans": "日期",
+    "comment": "Application-owned core screen text"
+  },
+  "core.recorded.calories": {
+    "en": "Recorded calories",
+    "zh-Hans": "已记录热量",
+    "comment": "Application-owned core screen text"
+  },
+  "core.kcal": {
+    "en": "%@ kcal",
+    "zh-Hans": "%@ 千卡",
+    "comment": "Application-owned core screen text"
+  },
+  "core.no.food.records.with.nutrition.values.this.week": {
+    "en": "No food records with nutrition values this week.",
+    "zh-Hans": "这一周尚无已填写营养的饮食记录。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.averages.use.only.the.days.with.recorded.nutrition.values.goals.reflect.each.day.s.hi": {
+    "en": "Averages use only the %lld days with recorded nutrition values. Goals reflect each day's history. Missing days are not treated as zero intake, and recorded values may not reflect total daily intake.",
+    "zh-Hans": "平均值仅按填写过营养的 %lld 天计算。目标按各日历史显示；漏记日期不按零摄入处理，已记录数值不代表全天实际摄入。",
+    "comment": "Application-owned core screen text",
+    "enOne": "Averages use only the %lld day with recorded nutrition values. Goals reflect each day's history. Missing days are not treated as zero intake, and recorded values may not reflect total daily intake."
+  },
+  "core.food.entries.have.no.nutrition.values": {
+    "en": "%lld food entries have no nutrition values",
+    "zh-Hans": "%lld 条食物未填写营养",
+    "comment": "Application-owned core screen text",
+    "enOne": "%lld food entry has no nutrition values"
+  },
+  "core.daily.overview": {
+    "en": "Daily overview",
+    "zh-Hans": "每日概览",
+    "comment": "Application-owned core screen text"
+  },
+  "core.nutrition.not.recorded": {
+    "en": "Nutrition not recorded",
+    "zh-Hans": "营养未记录",
+    "comment": "Application-owned core screen text"
+  },
+  "core.goal.kcal": {
+    "en": "Goal %@ kcal",
+    "zh-Hans": "目标 %@ kcal",
+    "comment": "Application-owned core screen text"
+  },
+  "core.no.goal.set": {
+    "en": "No goal set",
+    "zh-Hans": "未设置目标",
+    "comment": "Application-owned core screen text"
+  },
+  "core.no.historical.goal": {
+    "en": "No historical goal",
+    "zh-Hans": "无历史目标",
+    "comment": "Application-owned core screen text"
+  },
+  "core.workouts": {
+    "en": "%lld workouts",
+    "zh-Hans": "%lld 次训练",
+    "comment": "Application-owned core screen text",
+    "enOne": "%lld workout"
+  },
+  "core.weekly.review": {
+    "en": "Weekly review",
+    "zh-Hans": "每周回顾",
+    "comment": "Application-owned core screen text"
+  },
+  "core.basic.reports.and.history": {
+    "en": "Basic reports and history",
+    "zh-Hans": "基础报告与历史",
+    "comment": "Application-owned core screen text"
+  },
+  "core.today": {
+    "en": "Today",
+    "zh-Hans": "今日",
+    "comment": "Application-owned core screen text"
+  },
+  "core.library": {
+    "en": "Library",
+    "zh-Hans": "资料库",
+    "comment": "Application-owned core screen text"
+  },
+  "core.settings": {
+    "en": "Settings",
+    "zh-Hans": "设置",
+    "comment": "Application-owned core screen text"
+  },
+  "core.could.not.save": {
+    "en": "Could not save",
+    "zh-Hans": "未能保存",
+    "comment": "Application-owned core screen text"
+  },
+  "core.please.try.again": {
+    "en": "Please try again.",
+    "zh-Hans": "请重试。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.choose.a.routine.and.start.when.it.suits.you": {
+    "en": "Choose a routine and start when it suits you.",
+    "zh-Hans": "先选择一套训练模板，按自己的安排开始。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.review.today.s.recovery.alongside.your.training.records.and.how.you.feel": {
+    "en": "Review today's recovery alongside your training records and how you feel.",
+    "zh-Hans": "结合训练记录与体感，查看今天的恢复状态。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.start.with.a.workout.and.a.meal": {
+    "en": "Start with a workout and a meal",
+    "zh-Hans": "从一套训练和一餐开始",
+    "comment": "Application-owned core screen text"
+  },
+  "core.save.exercises.and.foods.you.use.often.for.next.time.set.goals.whenever.you.like": {
+    "en": "Save exercises and foods you use often for next time. Set goals whenever you like.",
+    "zh-Hans": "先保存常做的动作和常吃的食物，下次直接复用。目标可以随时设置。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.create.a.routine": {
+    "en": "Create a routine",
+    "zh-Hans": "建立训练模板",
+    "comment": "Application-owned core screen text"
+  },
+  "core.log.your.first.meal": {
+    "en": "Log your first meal",
+    "zh-Hans": "记录第一餐",
+    "comment": "Application-owned core screen text"
+  },
+  "core.set.daily.nutrition.goals": {
+    "en": "Set daily nutrition goals",
+    "zh-Hans": "设置每日营养目标",
+    "comment": "Application-owned core screen text"
+  },
+  "core.favorite.routines": {
+    "en": "Favorite routines",
+    "zh-Hans": "常用训练模板",
+    "comment": "Application-owned core screen text"
+  },
+  "core.manage.routines": {
+    "en": "Manage routines",
+    "zh-Hans": "管理模板",
+    "comment": "Application-owned core screen text"
+  },
+  "core.this.routine.has.invalid.values.edit.it.in.the.library.first": {
+    "en": "This routine has invalid values. Edit it in the Library first.",
+    "zh-Hans": "模板包含无效参数，请先在资料库中编辑修正。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.could.not.start.the.workout.please.try.again": {
+    "en": "Could not start the workout. Please try again. %@",
+    "zh-Hans": "训练未能开始，请重试。%@",
+    "comment": "Application-owned core screen text"
+  },
+  "core.exercises": {
+    "en": "%lld exercises",
+    "zh-Hans": "%lld 个动作",
+    "comment": "Application-owned core screen text",
+    "enOne": "%lld exercise"
+  },
+  "core.weekly.review.and.personal.records": {
+    "en": "Weekly review and personal records",
+    "zh-Hans": "每周回顾与 PR",
+    "comment": "Application-owned core screen text"
+  },
+  "core.see.changes.in.your.training.and.food.records": {
+    "en": "See changes in your training and food records",
+    "zh-Hans": "看见训练积累和饮食记录的变化",
+    "comment": "Application-owned core screen text"
+  },
+  "core.log.every.set.and.every.meal.today": {
+    "en": "Log every set and every meal today.",
+    "zh-Hans": "把今天的每一组和每一餐记下来。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.nutrition.progress": {
+    "en": "Nutrition progress",
+    "zh-Hans": "营养进度",
+    "comment": "Application-owned core screen text"
+  },
+  "core.set.goals": {
+    "en": "Set goals",
+    "zh-Hans": "设置目标",
+    "comment": "Application-owned core screen text"
+  },
+  "core.continue.workout": {
+    "en": "Continue workout",
+    "zh-Hans": "继续训练",
+    "comment": "Application-owned core screen text"
+  },
+  "core.start.workout": {
+    "en": "Start workout",
+    "zh-Hans": "开始训练",
+    "comment": "Application-owned core screen text"
+  },
+  "core.pick.up.where.you.left.off": {
+    "en": "Pick up where you left off",
+    "zh-Hans": "接着完成这一场",
+    "comment": "Application-owned core screen text"
+  },
+  "core.blank.workout.or.routine": {
+    "en": "Blank workout or routine",
+    "zh-Hans": "空白或训练模板",
+    "comment": "Application-owned core screen text"
+  },
+  "core.log.food": {
+    "en": "Log food",
+    "zh-Hans": "记录饮食",
+    "comment": "Application-owned core screen text"
+  },
+  "core.a.meal.or.food": {
+    "en": "A meal or food",
+    "zh-Hans": "一餐或食物",
+    "comment": "Application-owned core screen text"
+  },
+  "core.today.s.training": {
+    "en": "Today's training",
+    "zh-Hans": "今日训练",
+    "comment": "Application-owned core screen text"
+  },
+  "core.no.workouts.yet": {
+    "en": "No workouts yet",
+    "zh-Hans": "还没有训练记录",
+    "comment": "Application-owned core screen text"
+  },
+  "core.start.a.workout.to.see.its.summary.here": {
+    "en": "Start a workout to see its summary here.",
+    "zh-Hans": "开始一场训练后，摘要会出现在这里。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.exercises.81": {
+    "en": "%lld exercises · %@",
+    "zh-Hans": "%lld 个动作 · %@",
+    "comment": "Application-owned core screen text",
+    "enOne": "%lld exercise · %@"
+  },
+  "core.remaining": {
+    "en": "%@ remaining / %@",
+    "zh-Hans": "剩余 %@ / %@",
+    "comment": "Nutrition progress"
+  },
+  "core.over": {
+    "en": "%@ over / %@",
+    "zh-Hans": "超出 %@ / %@",
+    "comment": "Nutrition progress"
+  },
+  "core.no.goal.set.yet": {
+    "en": "No goal set yet",
+    "zh-Hans": "尚未设置目标",
+    "comment": "Application-owned core screen text"
+  },
+  "core.consumed.goal": {
+    "en": "%@, consumed %@ %@, goal %@, %@ %@",
+    "zh-Hans": "%@，已摄入 %@ %@，目标 %@，%@ %@",
+    "comment": "Application-owned core screen text"
+  },
+  "core.consumed.no.goal.set.yet": {
+    "en": "%@, consumed %@ %@, no goal set yet",
+    "zh-Hans": "%@，已摄入 %@ %@，尚未设置目标",
+    "comment": "Application-owned core screen text"
+  },
+  "core.exercise.catalog": {
+    "en": "Exercise catalog",
+    "zh-Hans": "动作目录",
+    "comment": "Application-owned core screen text"
+  },
+  "core.routines": {
+    "en": "Routines",
+    "zh-Hans": "训练模板",
+    "comment": "Application-owned core screen text"
+  },
+  "core.in.progress": {
+    "en": "In progress",
+    "zh-Hans": "进行中",
+    "comment": "Application-owned core screen text"
+  },
+  "core.history": {
+    "en": "History",
+    "zh-Hans": "历史",
+    "comment": "Application-owned core screen text"
+  },
+  "core.no.completed.workouts.yet": {
+    "en": "No completed workouts yet",
+    "zh-Hans": "还没有完成的训练",
+    "comment": "Application-owned core screen text"
+  },
+  "core.tap.the.plus.button.at.the.top.right.to.start.your.first.workout": {
+    "en": "Tap the plus button at the top right to start your first workout.",
+    "zh-Hans": "点击右上角加号开始第一场训练。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.delete": {
+    "en": "Delete",
+    "zh-Hans": "删除",
+    "comment": "Application-owned core screen text"
+  },
+  "core.training": {
+    "en": "Training",
+    "zh-Hans": "训练",
+    "comment": "Application-owned core screen text"
+  },
+  "core.delete.this.workout": {
+    "en": "Delete this workout?",
+    "zh-Hans": "删除这条训练记录？",
+    "comment": "Application-owned core screen text"
+  },
+  "core.cancel": {
+    "en": "Cancel",
+    "zh-Hans": "取消",
+    "comment": "Application-owned core screen text"
+  },
+  "core.exercises.and.sets.will.also.be.deleted.this.cannot.be.undone": {
+    "en": "Exercises and sets will also be deleted. This cannot be undone.",
+    "zh-Hans": "训练动作和组记录会一起删除，此操作无法撤销。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.save.failed": {
+    "en": "Save failed",
+    "zh-Hans": "保存失败",
+    "comment": "Application-owned core screen text"
+  },
+  "core.blank.workout": {
+    "en": "Blank workout",
+    "zh-Hans": "空白训练",
+    "comment": "Application-owned core screen text"
+  },
+  "core.my.routines": {
+    "en": "My routines",
+    "zh-Hans": "我的训练模板",
+    "comment": "Application-owned core screen text"
+  },
+  "core.no.routines.yet.create.one.in.the.library": {
+    "en": "No routines yet. Create one in the Library.",
+    "zh-Hans": "还没有训练模板，可在资料库中创建。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.cannot.start.workout": {
+    "en": "Cannot start workout",
+    "zh-Hans": "无法开始训练",
+    "comment": "Application-owned core screen text"
+  },
+  "core.train.again": {
+    "en": "Train again",
+    "zh-Hans": "再次训练",
+    "comment": "Application-owned core screen text"
+  },
+  "core.saved.as.a.routine": {
+    "en": "Saved as a routine",
+    "zh-Hans": "已保存为训练模板",
+    "comment": "Application-owned core screen text"
+  },
+  "core.save.as.a.routine": {
+    "en": "Save as a routine",
+    "zh-Hans": "保存为训练模板",
+    "comment": "Application-owned core screen text"
+  },
+  "core.personal.records": {
+    "en": "Personal records",
+    "zh-Hans": "突破 PR",
+    "comment": "Application-owned core screen text"
+  },
+  "core.workout.details": {
+    "en": "Workout details",
+    "zh-Hans": "训练信息",
+    "comment": "Application-owned core screen text"
+  },
+  "core.start": {
+    "en": "Start",
+    "zh-Hans": "开始",
+    "comment": "Application-owned core screen text"
+  },
+  "core.end": {
+    "en": "End",
+    "zh-Hans": "结束",
+    "comment": "Application-owned core screen text"
+  },
+  "core.status": {
+    "en": "Status",
+    "zh-Hans": "状态",
+    "comment": "Application-owned core screen text"
+  },
+  "core.training.volume": {
+    "en": "Training volume",
+    "zh-Hans": "负重容量",
+    "comment": "Application-owned core screen text"
+  },
+  "core.set": {
+    "en": "Set %lld",
+    "zh-Hans": "第 %lld 组",
+    "comment": "Application-owned core screen text",
+    "enOne": "Set %lld"
+  },
+  "core.completed": {
+    "en": "Completed",
+    "zh-Hans": "已完成",
+    "comment": "Application-owned core screen text"
+  },
+  "core.incomplete": {
+    "en": "Incomplete",
+    "zh-Hans": "未完成",
+    "comment": "Application-owned core screen text"
+  },
+  "core.duration": {
+    "en": "Duration",
+    "zh-Hans": "时长",
+    "comment": "Application-owned core screen text"
+  },
+  "core.min.sec": {
+    "en": "%@ min %@ sec",
+    "zh-Hans": "%@ 分 %@ 秒",
+    "comment": "Application-owned core screen text"
+  },
+  "core.distance": {
+    "en": "Distance",
+    "zh-Hans": "距离",
+    "comment": "Application-owned core screen text"
+  },
+  "core.calories.burned": {
+    "en": "Calories burned",
+    "zh-Hans": "消耗",
+    "comment": "Application-owned core screen text"
+  },
+  "core.edit": {
+    "en": "Edit",
+    "zh-Hans": "编辑",
+    "comment": "Application-owned core screen text"
+  },
+  "core.action.failed": {
+    "en": "Action failed",
+    "zh-Hans": "操作失败",
+    "comment": "Application-owned core screen text"
+  },
+  "core.workout.name": {
+    "en": "Workout name",
+    "zh-Hans": "训练名称",
+    "comment": "Application-owned core screen text"
+  },
+  "core.notes.optional": {
+    "en": "Notes (optional)",
+    "zh-Hans": "备注（可选）",
+    "comment": "Application-owned core screen text"
+  },
+  "core.start.time": {
+    "en": "Start time",
+    "zh-Hans": "开始时间",
+    "comment": "Application-owned core screen text"
+  },
+  "core.end.time": {
+    "en": "End time",
+    "zh-Hans": "结束时间",
+    "comment": "Application-owned core screen text"
+  },
+  "core.elapsed.time": {
+    "en": "Elapsed time",
+    "zh-Hans": "已用时",
+    "comment": "Application-owned core screen text"
+  },
+  "core.rest.between.sets": {
+    "en": "Rest between sets",
+    "zh-Hans": "组间休息",
+    "comment": "Application-owned core screen text"
+  },
+  "core.rest.after.completing.a.set": {
+    "en": "Rest after completing a set",
+    "zh-Hans": "完成组后休息",
+    "comment": "Application-owned core screen text"
+  },
+  "core.60.sec": {
+    "en": "60 sec",
+    "zh-Hans": "60 秒",
+    "comment": "Application-owned core screen text"
+  },
+  "core.90.sec": {
+    "en": "90 sec",
+    "zh-Hans": "90 秒",
+    "comment": "Application-owned core screen text"
+  },
+  "core.120.sec": {
+    "en": "120 sec",
+    "zh-Hans": "120 秒",
+    "comment": "Application-owned core screen text"
+  },
+  "core.resting": {
+    "en": "Resting",
+    "zh-Hans": "休息中",
+    "comment": "Application-owned core screen text"
+  },
+  "core.rest.finished": {
+    "en": "Rest finished",
+    "zh-Hans": "休息结束",
+    "comment": "Application-owned core screen text"
+  },
+  "core.sec": {
+    "en": "%lld sec",
+    "zh-Hans": "%lld 秒",
+    "comment": "Application-owned core screen text",
+    "enOne": "%lld sec"
+  },
+  "core.30.sec": {
+    "en": "+30 sec",
+    "zh-Hans": "+30 秒",
+    "comment": "Application-owned core screen text"
+  },
+  "core.end.rest": {
+    "en": "End rest",
+    "zh-Hans": "结束休息",
+    "comment": "Application-owned core screen text"
+  },
+  "core.add.exercise": {
+    "en": "Add exercise",
+    "zh-Hans": "添加动作",
+    "comment": "Application-owned core screen text"
+  },
+  "core.discard.this.workout": {
+    "en": "Discard this workout",
+    "zh-Hans": "放弃这场训练",
+    "comment": "Application-owned core screen text"
+  },
+  "core.edit.workout": {
+    "en": "Edit workout",
+    "zh-Hans": "编辑训练",
+    "comment": "Application-owned core screen text"
+  },
+  "core.save": {
+    "en": "Save",
+    "zh-Hans": "保存",
+    "comment": "Application-owned core screen text"
+  },
+  "core.done": {
+    "en": "Done",
+    "zh-Hans": "完成",
+    "comment": "Application-owned core screen text"
+  },
+  "core.dismiss.keyboard": {
+    "en": "Dismiss keyboard",
+    "zh-Hans": "收起键盘",
+    "comment": "Application-owned core screen text"
+  },
+  "core.add.workout.exercise": {
+    "en": "Add workout exercise",
+    "zh-Hans": "添加训练动作",
+    "comment": "Application-owned core screen text"
+  },
+  "core.discard.this.workout.143": {
+    "en": "Discard this workout?",
+    "zh-Hans": "放弃这场训练？",
+    "comment": "Application-owned core screen text"
+  },
+  "core.discard.and.delete": {
+    "en": "Discard and delete",
+    "zh-Hans": "放弃并删除",
+    "comment": "Application-owned core screen text"
+  },
+  "core.check.your.records": {
+    "en": "Check your records",
+    "zh-Hans": "请检查记录",
+    "comment": "Application-owned core screen text"
+  },
+  "core.retry.saving": {
+    "en": "Retry saving",
+    "zh-Hans": "重试保存",
+    "comment": "Application-owned core screen text"
+  },
+  "core.records.have.not.been.saved.your.input.is.preserved.please.try.again": {
+    "en": "Records have not been saved. Your input is preserved. Please try again. %@",
+    "zh-Hans": "记录尚未保存。输入仍保留，请重试。%@",
+    "comment": "Application-owned core screen text"
+  },
+  "core.end.time.cannot.be.earlier.than.start.time": {
+    "en": "End time cannot be earlier than start time.",
+    "zh-Hans": "结束时间不能早于开始时间。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.could.not.save.changes.please.try.again": {
+    "en": "Could not save changes. Please try again. %@",
+    "zh-Hans": "修改未能保存，请重试。%@",
+    "comment": "Application-owned core screen text"
+  },
+  "core.could.not.finish.and.save.the.workout.please.try.again": {
+    "en": "Could not finish and save the workout. Please try again. %@",
+    "zh-Hans": "训练未能完成保存，请重试。%@",
+    "comment": "Application-owned core screen text"
+  },
+  "core.delete.failed.your.records.are.preserved": {
+    "en": "Delete failed. Your records are preserved. %@",
+    "zh-Hans": "删除失败，记录仍保留。%@",
+    "comment": "Application-owned core screen text"
+  },
+  "core.tracking.mode": {
+    "en": "Tracking mode",
+    "zh-Hans": "记录方式",
+    "comment": "Application-owned core screen text"
+  },
+  "core.previous.performance": {
+    "en": "Previous performance",
+    "zh-Hans": "上次表现",
+    "comment": "Application-owned core screen text"
+  },
+  "core.set.154": {
+    "en": "Set %lld: %@",
+    "zh-Hans": "第 %lld 组：%@",
+    "comment": "Application-owned core screen text",
+    "enOne": "Set %lld: %@"
+  },
+  "core.min.km": {
+    "en": "%lld min · %@ km",
+    "zh-Hans": "%lld 分钟 · %@ km",
+    "comment": "Application-owned core screen text"
+  },
+  "core.use.previous.completed.values": {
+    "en": "Use previous completed values",
+    "zh-Hans": "沿用上次完成数据",
+    "comment": "Application-owned core screen text"
+  },
+  "core.these.are.your.previous.results.confirm.only.if.you.completed.the.same.workout.this.t": {
+    "en": "These are your previous results. Confirm only if you completed the same workout this time. To adjust them, cancel and enter your actual results.",
+    "zh-Hans": "这是上次的成绩。只有本次已完成相同训练时才确认；需要调整时，请取消并填写本次实际成绩。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.confirm.completed.this.time": {
+    "en": "Confirm completed this time",
+    "zh-Hans": "确认本次已完成",
+    "comment": "Application-owned core screen text"
+  },
+  "core.confirm.today.s.cardio.results": {
+    "en": "Confirm today's cardio results",
+    "zh-Hans": "确认本次有氧成绩",
+    "comment": "Application-owned core screen text"
+  },
+  "core.enter.valid.first": {
+    "en": "Enter valid %@ first.",
+    "zh-Hans": "请先填写有效的%@。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.add.a.set": {
+    "en": "Add a set",
+    "zh-Hans": "增加一组",
+    "comment": "Application-owned core screen text"
+  },
+  "core.exercise.notes.optional": {
+    "en": "Exercise notes (optional)",
+    "zh-Hans": "动作备注（可选）",
+    "comment": "Application-owned core screen text"
+  },
+  "core.remove.exercise": {
+    "en": "Remove exercise",
+    "zh-Hans": "移除动作",
+    "comment": "Application-owned core screen text"
+  },
+  "core.change.tracking.mode": {
+    "en": "Change tracking mode?",
+    "zh-Hans": "切换记录方式？",
+    "comment": "Application-owned core screen text"
+  },
+  "core.change": {
+    "en": "Change",
+    "zh-Hans": "切换",
+    "comment": "Application-owned core screen text"
+  },
+  "core.values.for.each.mode.will.be.preserved.set.completion.and.rir.will.be.reset.verify.yo": {
+    "en": "Values for each mode will be preserved. Set completion and RIR will be reset. Verify your actual results for this mode.",
+    "zh-Hans": "会保留各方式已填写的数值，并重置组的完成状态与 RIR。请确认当前方式的实际完成数据。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.replace.current.values.with.previous.results": {
+    "en": "Replace current values with previous results?",
+    "zh-Hans": "用上次数据替换当前参数？",
+    "comment": "Application-owned core screen text"
+  },
+  "core.apply.and.reset.completion": {
+    "en": "Apply and reset completion",
+    "zh-Hans": "沿用并重置完成状态",
+    "comment": "Application-owned core screen text"
+  },
+  "core.mark.copied.sets.as.completed.again.and.enter.rir.based.on.how.you.feel.this.time": {
+    "en": "Mark copied sets as completed again, and enter RIR based on how you feel this time.",
+    "zh-Hans": "复制后的组需要重新标记完成，RIR 可按本次感受填写。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.remove.this.exercise.and.its.recorded.sets": {
+    "en": "Remove this exercise and its recorded sets?",
+    "zh-Hans": "移除这个动作和已记录的组？",
+    "comment": "Application-owned core screen text"
+  },
+  "core.set.171": {
+    "en": "Set %lld, %@",
+    "zh-Hans": "第 %lld 组，%@",
+    "comment": "Application-owned core screen text",
+    "enOne": "Set %lld, %@"
+  },
+  "core.delete.set": {
+    "en": "Delete set",
+    "zh-Hans": "删除组",
+    "comment": "Application-owned core screen text"
+  },
+  "core.set.type": {
+    "en": "Set type",
+    "zh-Hans": "组类型",
+    "comment": "Application-owned core screen text"
+  },
+  "core.working.set": {
+    "en": "Working set",
+    "zh-Hans": "工作组",
+    "comment": "Application-owned core screen text"
+  },
+  "core.warm.up.set": {
+    "en": "Warm-up set",
+    "zh-Hans": "热身组",
+    "comment": "Application-owned core screen text"
+  },
+  "core.unspecified.in.history": {
+    "en": "Unspecified in history",
+    "zh-Hans": "历史未区分",
+    "comment": "Application-owned core screen text"
+  },
+  "core.reps.in.reserve.rir": {
+    "en": "Reps in reserve (RIR)",
+    "zh-Hans": "保留次数 RIR",
+    "comment": "Application-owned core screen text"
+  },
+  "core.not.recorded": {
+    "en": "Not recorded",
+    "zh-Hans": "未记录",
+    "comment": "Application-owned core screen text"
+  },
+  "core.5.or.more.reps": {
+    "en": "5 or more reps",
+    "zh-Hans": "5 次或以上",
+    "comment": "Application-owned core screen text"
+  },
+  "core.estimate.how.many.more.reps.you.could.have.completed.at.the.end.of.this.set.optional": {
+    "en": "Estimate how many more reps you could have completed at the end of this set. Optional.",
+    "zh-Hans": "这组结束时，估计还能再完成几次。可跳过。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.decrease.weight.by.2.5.kg": {
+    "en": "Decrease weight by 2.5 kg",
+    "zh-Hans": "减重 2.5 公斤",
+    "comment": "Application-owned core screen text"
+  },
+  "core.weight": {
+    "en": "Weight",
+    "zh-Hans": "重量",
+    "comment": "Application-owned core screen text"
+  },
+  "core.increase.weight.by.2.5.kg": {
+    "en": "Increase weight by 2.5 kg",
+    "zh-Hans": "加重 2.5 公斤",
+    "comment": "Application-owned core screen text"
+  },
+  "core.repetitions": {
+    "en": "Repetitions",
+    "zh-Hans": "次数",
+    "comment": "Application-owned core screen text"
+  },
+  "core.seconds": {
+    "en": "Seconds",
+    "zh-Hans": "秒数",
+    "comment": "Application-owned core screen text"
+  },
+  "core.duration.in.seconds": {
+    "en": "Duration in seconds",
+    "zh-Hans": "时长秒数",
+    "comment": "Application-owned core screen text"
+  },
+  "core.sec.187": {
+    "en": "sec",
+    "zh-Hans": "秒",
+    "comment": "Application-owned core screen text"
+  },
+  "core.reps.188": {
+    "en": "reps",
+    "zh-Hans": "次",
+    "comment": "Application-owned core screen text"
+  },
+  "core.duration.minutes": {
+    "en": "Duration (minutes)",
+    "zh-Hans": "时长（分钟）",
+    "comment": "Application-owned core screen text"
+  },
+  "core.distance.km.optional": {
+    "en": "Distance (km, optional)",
+    "zh-Hans": "距离（km，可选）",
+    "comment": "Application-owned core screen text"
+  },
+  "core.distance.in.kilometers": {
+    "en": "Distance in kilometers",
+    "zh-Hans": "距离公里",
+    "comment": "Application-owned core screen text"
+  },
+  "core.calories.burned.kcal.optional": {
+    "en": "Calories burned (kcal, optional)",
+    "zh-Hans": "消耗（kcal，可选）",
+    "comment": "Application-owned core screen text"
+  },
+  "core.calories.burned.in.kilocalories": {
+    "en": "Calories burned in kilocalories",
+    "zh-Hans": "消耗千卡",
+    "comment": "Application-owned core screen text"
+  },
+  "core.kg.reps.194": {
+    "en": "%@ kg × %@ reps",
+    "zh-Hans": "%@ kg × %@ 次",
+    "comment": "Application-owned core screen text"
+  },
+  "core.cardio": {
+    "en": "Cardio",
+    "zh-Hans": "有氧",
+    "comment": "Application-owned core screen text"
+  },
+  "core.food.library.category": {
+    "en": "Food library category",
+    "zh-Hans": "饮食资料类型",
+    "comment": "Application-owned core screen text"
+  },
+  "core.new": {
+    "en": "New",
+    "zh-Hans": "新建",
+    "comment": "Application-owned core screen text"
+  },
+  "core.delete.this.favorite.food": {
+    "en": "Delete this favorite food?",
+    "zh-Hans": "删除常用食物？",
+    "comment": "Application-owned core screen text"
+  },
+  "core.existing.food.records.will.remain.unchanged": {
+    "en": "Existing food records will remain unchanged.",
+    "zh-Hans": "已经记录的饮食不会改变。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.delete.this.saved.meal": {
+    "en": "Delete this saved meal?",
+    "zh-Hans": "删除固定餐？",
+    "comment": "Application-owned core screen text"
+  },
+  "core.ok.201": {
+    "en": "OK",
+    "zh-Hans": "好",
+    "comment": "Application-owned core screen text"
+  },
+  "core.favorite.foods": {
+    "en": "Favorite foods",
+    "zh-Hans": "常用食物",
+    "comment": "Application-owned core screen text"
+  },
+  "core.no.favorite.foods.yet": {
+    "en": "No favorite foods yet",
+    "zh-Hans": "还没有常用食物",
+    "comment": "Application-owned core screen text"
+  },
+  "core.saved.meals": {
+    "en": "Saved meals",
+    "zh-Hans": "固定餐",
+    "comment": "Application-owned core screen text"
+  },
+  "core.no.saved.meals.yet": {
+    "en": "No saved meals yet",
+    "zh-Hans": "还没有固定餐",
+    "comment": "Application-owned core screen text"
+  },
+  "core.foods": {
+    "en": "%lld foods",
+    "zh-Hans": "%lld 项食物",
+    "comment": "Application-owned core screen text",
+    "enOne": "%lld food"
+  },
+  "core.delete.failed.please.try.again": {
+    "en": "Delete failed: %@. Please try again.",
+    "zh-Hans": "删除失败：%@。请重试。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.food": {
+    "en": "Food",
+    "zh-Hans": "食物",
+    "comment": "Application-owned core screen text"
+  },
+  "core.name": {
+    "en": "Name",
+    "zh-Hans": "名称",
+    "comment": "Application-owned core screen text"
+  },
+  "core.nutrition.basis": {
+    "en": "Nutrition basis",
+    "zh-Hans": "营养基准",
+    "comment": "Application-owned core screen text"
+  },
+  "core.serving.description": {
+    "en": "Serving description",
+    "zh-Hans": "每份说明",
+    "comment": "Application-owned core screen text"
+  },
+  "core.calories": {
+    "en": "Calories",
+    "zh-Hans": "热量",
+    "comment": "Application-owned core screen text"
+  },
+  "core.carbs": {
+    "en": "Carbs",
+    "zh-Hans": "碳水",
+    "comment": "Application-owned core screen text"
+  },
+  "core.protein": {
+    "en": "Protein",
+    "zh-Hans": "蛋白质",
+    "comment": "Application-owned core screen text"
+  },
+  "core.fat": {
+    "en": "Fat",
+    "zh-Hans": "脂肪",
+    "comment": "Application-owned core screen text"
+  },
+  "core.new.favorite.food": {
+    "en": "New favorite food",
+    "zh-Hans": "新建常用食物",
+    "comment": "Application-owned core screen text"
+  },
+  "core.edit.favorite.food": {
+    "en": "Edit favorite food",
+    "zh-Hans": "编辑常用食物",
+    "comment": "Application-owned core screen text"
+  },
+  "core.enter.a.name.and.serving.description.nutrition.values.must.be.finite.and.nonnegative": {
+    "en": "Enter a name and serving description. Nutrition values must be finite and nonnegative.",
+    "zh-Hans": "请填写名称和份量说明，营养数值必须为有限非负数。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.save.failed.your.changes.are.still.in.the.form.please.try.again": {
+    "en": "Save failed: %@. Your changes are still in the form. Please try again.",
+    "zh-Hans": "保存失败：%@。修改仍保留在表单中，请重试。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.save.failed.your.input.is.still.in.the.form.please.try.again": {
+    "en": "Save failed: %@. Your input is still in the form. Please try again.",
+    "zh-Hans": "保存失败：%@。输入仍保留在表单中，请重试。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.add.from.favorite.foods": {
+    "en": "Add from favorite foods",
+    "zh-Hans": "从常用食物添加",
+    "comment": "Application-owned core screen text"
+  },
+  "core.new.saved.meal": {
+    "en": "New saved meal",
+    "zh-Hans": "新建固定餐",
+    "comment": "Application-owned core screen text"
+  },
+  "core.edit.saved.meal": {
+    "en": "Edit saved meal",
+    "zh-Hans": "编辑固定餐",
+    "comment": "Application-owned core screen text"
+  },
+  "core.close": {
+    "en": "Close",
+    "zh-Hans": "关闭",
+    "comment": "Application-owned core screen text"
+  },
+  "core.discard.this.new.saved.meal": {
+    "en": "Discard this new saved meal?",
+    "zh-Hans": "放弃新固定餐？",
+    "comment": "Application-owned core screen text"
+  },
+  "core.discard": {
+    "en": "Discard",
+    "zh-Hans": "放弃",
+    "comment": "Application-owned core screen text"
+  },
+  "core.keep.editing": {
+    "en": "Keep editing",
+    "zh-Hans": "继续编辑",
+    "comment": "Application-owned core screen text"
+  },
+  "core.unsaved.changes.will.not.be.added.to.the.library": {
+    "en": "Unsaved changes will not be added to the Library.",
+    "zh-Hans": "尚未保存的修改不会保留到资料库。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.enter.a.meal.name.and.add.at.least.one.food.with.a.valid.quantity": {
+    "en": "Enter a meal name and add at least one food with a valid quantity.",
+    "zh-Hans": "请填写固定餐名称，并至少添加一项数量有效的食物。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.quantity": {
+    "en": "Quantity",
+    "zh-Hans": "数量",
+    "comment": "Application-owned core screen text"
+  },
+  "core.servings": {
+    "en": "servings",
+    "zh-Hans": "份",
+    "comment": "Application-owned core screen text"
+  },
+  "core.search.favorite.foods": {
+    "en": "Search favorite foods",
+    "zh-Hans": "搜索常用食物",
+    "comment": "Application-owned core screen text"
+  },
+  "core.no.favorite.foods": {
+    "en": "No favorite foods",
+    "zh-Hans": "没有常用食物",
+    "comment": "Application-owned core screen text"
+  },
+  "core.no.matching.favorite.foods": {
+    "en": "No matching favorite foods",
+    "zh-Hans": "没有匹配的常用食物",
+    "comment": "Application-owned core screen text"
+  },
+  "core.choose.favorite.food": {
+    "en": "Choose favorite food",
+    "zh-Hans": "选择常用食物",
+    "comment": "Application-owned core screen text"
+  },
+  "core.library.category": {
+    "en": "Library category",
+    "zh-Hans": "资料类型",
+    "comment": "Application-owned core screen text"
+  },
+  "core.exercise.catalog.failed.to.load": {
+    "en": "Exercise catalog failed to load",
+    "zh-Hans": "动作目录加载失败",
+    "comment": "Application-owned core screen text"
+  },
+  "core.retry": {
+    "en": "Retry",
+    "zh-Hans": "重试",
+    "comment": "Application-owned core screen text"
+  },
+  "core.search.1.324.exercises": {
+    "en": "Search 1,324 exercises",
+    "zh-Hans": "搜索 1,324 个动作",
+    "comment": "Application-owned core screen text"
+  },
+  "core.body.part": {
+    "en": "Body part",
+    "zh-Hans": "身体部位",
+    "comment": "Application-owned core screen text"
+  },
+  "core.all": {
+    "en": "All",
+    "zh-Hans": "全部",
+    "comment": "Application-owned core screen text"
+  },
+  "core.equipment": {
+    "en": "Equipment",
+    "zh-Hans": "器械",
+    "comment": "Application-owned core screen text"
+  },
+  "core.muscle.group": {
+    "en": "Muscle group",
+    "zh-Hans": "肌群",
+    "comment": "Application-owned core screen text"
+  },
+  "core.clear.filters": {
+    "en": "Clear filters",
+    "zh-Hans": "清除筛选",
+    "comment": "Application-owned core screen text"
+  },
+  "core.filter": {
+    "en": "Filter",
+    "zh-Hans": "筛选",
+    "comment": "Application-owned core screen text"
+  },
+  "core.a.workout.is.already.in.progress": {
+    "en": "A workout is already in progress",
+    "zh-Hans": "已有进行中的训练",
+    "comment": "Application-owned core screen text"
+  },
+  "core.finish.or.discard.before.starting.another.workout": {
+    "en": "Finish or discard “%@” before starting another workout.",
+    "zh-Hans": "完成或放弃「%@」后，即可开始另一场训练。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.no.routines.yet": {
+    "en": "No routines yet",
+    "zh-Hans": "还没有训练模板",
+    "comment": "Application-owned core screen text"
+  },
+  "core.save.your.usual.exercises.and.default.training.values.as.a.routine": {
+    "en": "Save your usual exercises and default training values as a routine.",
+    "zh-Hans": "把常用动作和默认训练参数保存成一套模板。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.new.routine": {
+    "en": "New routine",
+    "zh-Hans": "新建训练模板",
+    "comment": "Application-owned core screen text"
+  },
+  "core.delete.this.routine": {
+    "en": "Delete this routine?",
+    "zh-Hans": "删除这个训练模板？",
+    "comment": "Application-owned core screen text"
+  },
+  "core.completed.and.ongoing.workouts.will.remain.unchanged": {
+    "en": "Completed and ongoing workouts will remain unchanged.",
+    "zh-Hans": "已经完成或正在进行的训练不会受到影响。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.delete.failed": {
+    "en": "Delete failed",
+    "zh-Hans": "删除失败",
+    "comment": "Application-owned core screen text"
+  },
+  "core.this.routine.has.invalid.values.edit.it.first": {
+    "en": "This routine has invalid values. Edit it first.",
+    "zh-Hans": "模板包含无效参数，请先编辑修正。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.new.routine.256": {
+    "en": "New routine",
+    "zh-Hans": "新训练模板",
+    "comment": "Application-owned core screen text"
+  },
+  "core.basic.details": {
+    "en": "Basic details",
+    "zh-Hans": "基本信息",
+    "comment": "Application-owned core screen text"
+  },
+  "core.routine.name": {
+    "en": "Routine name",
+    "zh-Hans": "模板名称",
+    "comment": "Application-owned core screen text"
+  },
+  "core.exercises.259": {
+    "en": "Exercises",
+    "zh-Hans": "动作",
+    "comment": "Application-owned core screen text"
+  },
+  "core.no.exercises.yet": {
+    "en": "No exercises yet.",
+    "zh-Hans": "还没有动作。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.edit.routine": {
+    "en": "Edit routine",
+    "zh-Hans": "编辑训练模板",
+    "comment": "Application-owned core screen text"
+  },
+  "core.add.routine.exercise": {
+    "en": "Add routine exercise",
+    "zh-Hans": "添加模板动作",
+    "comment": "Application-owned core screen text"
+  },
+  "core.cannot.save.routine": {
+    "en": "Cannot save routine",
+    "zh-Hans": "无法保存训练模板",
+    "comment": "Application-owned core screen text"
+  },
+  "core.discard.this.new.routine": {
+    "en": "Discard this new routine?",
+    "zh-Hans": "放弃新训练模板？",
+    "comment": "Application-owned core screen text"
+  },
+  "core.sets.265": {
+    "en": "sets",
+    "zh-Hans": "组",
+    "comment": "Application-owned core screen text"
+  },
+  "core.sets.266": {
+    "en": "Sets",
+    "zh-Hans": "组数",
+    "comment": "Application-owned core screen text"
+  },
+  "core.seconds.per.set": {
+    "en": "Seconds per set",
+    "zh-Hans": "每组秒数",
+    "comment": "Application-owned core screen text"
+  },
+  "core.default.duration": {
+    "en": "Default duration",
+    "zh-Hans": "默认时长",
+    "comment": "Application-owned core screen text"
+  },
+  "core.minutes": {
+    "en": "minutes",
+    "zh-Hans": "分钟",
+    "comment": "Application-owned core screen text"
+  },
+  "core.default.distance": {
+    "en": "Default distance",
+    "zh-Hans": "默认距离",
+    "comment": "Application-owned core screen text"
+  },
+  "core.favorite.foods.and.saved.meals": {
+    "en": "Favorite foods and saved meals",
+    "zh-Hans": "常用食物与固定餐",
+    "comment": "Application-owned core screen text"
+  },
+  "core.record.date": {
+    "en": "Record date",
+    "zh-Hans": "记录日期",
+    "comment": "Application-owned core screen text"
+  },
+  "core.no.food.records.on.this.day": {
+    "en": "No food records on this day",
+    "zh-Hans": "当天没有饮食记录",
+    "comment": "Application-owned core screen text"
+  },
+  "core.tap.the.plus.button.at.the.top.right.to.log.food.directly.reuse.recent.records.choose": {
+    "en": "Tap the plus button at the top right to log food directly, reuse recent records, choose favorite foods or saved meals, or copy a meal.",
+    "zh-Hans": "点击右上角加号，可选择直接记录、最近记录、常用食物、固定餐或复制某一餐。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.nutrition": {
+    "en": "Nutrition",
+    "zh-Hans": "饮食",
+    "comment": "Application-owned core screen text"
+  },
+  "core.add.food": {
+    "en": "Add food",
+    "zh-Hans": "添加饮食",
+    "comment": "Application-owned core screen text"
+  },
+  "core.delete.this.food.record": {
+    "en": "Delete this food record?",
+    "zh-Hans": "删除这条饮食记录？",
+    "comment": "Application-owned core screen text"
+  },
+  "core.nutrition.totals.for.this.day.will.update.immediately": {
+    "en": "Nutrition totals for this day will update immediately.",
+    "zh-Hans": "当天营养汇总会立即更新。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.no.food.records.on.this.day.279": {
+    "en": "No food records on this day",
+    "zh-Hans": "这一天没有饮食记录",
+    "comment": "Application-owned core screen text"
+  },
+  "core.confirm.no.intake.and.mark.complete": {
+    "en": "Confirm no intake and mark complete",
+    "zh-Hans": "确认当天没有摄入，标记完整",
+    "comment": "Application-owned core screen text"
+  },
+  "core.keep.logging": {
+    "en": "Keep logging",
+    "zh-Hans": "继续补记",
+    "comment": "Application-owned core screen text"
+  },
+  "core.missing.records.are.not.automatically.treated.as.0.kcal.use.this.only.when.you.confir": {
+    "en": "Missing records are not automatically treated as 0 kcal. Use this only when you confirm there was no intake.",
+    "zh-Hans": "缺少记录不会自动按 0 kcal 处理；仅在确认没有摄入时使用此操作。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.daily.nutrition": {
+    "en": "Daily nutrition",
+    "zh-Hans": "当日营养",
+    "comment": "Application-owned core screen text"
+  },
+  "core.calories.284": {
+    "en": "Calories",
+    "zh-Hans": "卡路里",
+    "comment": "Application-owned core screen text"
+  },
+  "core.no.nutrition.values.in.this.day.s.records": {
+    "en": "No nutrition values in this day's records",
+    "zh-Hans": "当天记录都未填写营养",
+    "comment": "Application-owned core screen text"
+  },
+  "core.food.records.for.this.date.confirmed.complete": {
+    "en": "Food records for this date confirmed complete",
+    "zh-Hans": "所选日期饮食已确认完整",
+    "comment": "Application-owned core screen text"
+  },
+  "core.confirm.food.records.for.this.date.are.complete": {
+    "en": "Confirm food records for this date are complete",
+    "zh-Hans": "确认所选日期饮食已记完整",
+    "comment": "Application-owned core screen text"
+  },
+  "core.confirm.again.after.editing.food.records.trends.include.only.the.14.days.through.yest": {
+    "en": "Confirm again after editing food records. Trends include only the 14 days through yesterday.",
+    "zh-Hans": "编辑饮食后需重新确认；趋势统计只计截至昨天的 14 天。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.nutrition.values.not.entered": {
+    "en": "Nutrition values not entered",
+    "zh-Hans": "未填写营养",
+    "comment": "Application-owned core screen text"
+  },
+  "core.could.not.confirm.complete.food.records.please.try.again": {
+    "en": "Could not confirm complete food records. Please try again.",
+    "zh-Hans": "未能确认饮食完整，请重试。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.log.directly": {
+    "en": "Log directly",
+    "zh-Hans": "直接记录",
+    "comment": "Application-owned core screen text"
+  },
+  "core.enter.food.and.nutrition.manually": {
+    "en": "Enter food and nutrition manually",
+    "zh-Hans": "手动填写食物和营养",
+    "comment": "Application-owned core screen text"
+  },
+  "core.recent.records": {
+    "en": "Recent records",
+    "zh-Hans": "最近记录",
+    "comment": "Application-owned core screen text"
+  },
+  "core.choose.a.food.you.ve.logged.and.adjust.the.portion": {
+    "en": "Choose a food you've logged and adjust the portion",
+    "zh-Hans": "从吃过的食物里选，可改份量",
+    "comment": "Application-owned core screen text"
+  },
+  "core.quickly.log.a.favorite.food": {
+    "en": "Quickly log a favorite food",
+    "zh-Hans": "从常用食物快速记录",
+    "comment": "Application-owned core screen text"
+  },
+  "core.log.a.full.meal.and.adjust.each.portion": {
+    "en": "Log a full meal and adjust each portion",
+    "zh-Hans": "整套记录，逐项调整份量",
+    "comment": "Application-owned core screen text"
+  },
+  "core.copy.a.meal": {
+    "en": "Copy a meal",
+    "zh-Hans": "复制某一餐",
+    "comment": "Application-owned core screen text"
+  },
+  "core.copy.a.meal.from.another.date": {
+    "en": "Copy a meal from another date",
+    "zh-Hans": "把某天某餐整体复制过来",
+    "comment": "Application-owned core screen text"
+  },
+  "core.every.option.shows.a.nutrition.preview.before.saving": {
+    "en": "Every option shows a nutrition preview before saving.",
+    "zh-Hans": "所有方式都会在保存前显示营养总量预览。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.carbs.g.protein.g.fat.g": {
+    "en": "Carbs %@g · Protein %@g · Fat %@g",
+    "zh-Hans": "碳水 %@g · 蛋白质 %@g · 脂肪 %@g",
+    "comment": "Application-owned core screen text"
+  },
+  "core.portion.description": {
+    "en": "Portion description",
+    "zh-Hans": "份量说明",
+    "comment": "Application-owned core screen text"
+  },
+  "core.meal": {
+    "en": "Meal",
+    "zh-Hans": "餐次",
+    "comment": "Application-owned core screen text"
+  },
+  "core.record.time": {
+    "en": "Record time",
+    "zh-Hans": "记录时间",
+    "comment": "Application-owned core screen text"
+  },
+  "core.nutrition.totals.for.this.entry.editable": {
+    "en": "Nutrition totals for this entry (editable)",
+    "zh-Hans": "本条记录营养总量（营养素可修正）",
+    "comment": "Application-owned core screen text"
+  },
+  "core.changing.the.portion.scales.nutrition.using.the.current.unit.values.after.editing.tot": {
+    "en": "Changing the portion scales nutrition using the current unit values. After editing totals, further portion changes use the corrected density.",
+    "zh-Hans": "修改份量会按当前单位营养自动缩放；手动修改总量后，再改份量会按修正后的密度计算。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.also.save.as.a.favorite.food": {
+    "en": "Also save as a favorite food",
+    "zh-Hans": "同时保存为常用食物",
+    "comment": "Application-owned core screen text"
+  },
+  "core.favorite.food.will.be.saved": {
+    "en": "Favorite food will be saved %@.",
+    "zh-Hans": "常用食物按%@保存。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.edit.food.record": {
+    "en": "Edit food record",
+    "zh-Hans": "编辑饮食",
+    "comment": "Application-owned core screen text"
+  },
+  "core.totals.preview.values.are.out.of.range.check.your.input": {
+    "en": "Totals preview: values are out of range. Check your input.",
+    "zh-Hans": "总量预览：数值超出范围，请检查输入。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.totals.preview.kcal.carbs.g.protein.g.fat.g": {
+    "en": "Totals preview: %@ kcal · Carbs %@g · Protein %@g · Fat %@g",
+    "zh-Hans": "总量预览：%@ kcal · 碳水 %@g · 蛋白质 %@g · 脂肪 %@g",
+    "comment": "Application-owned core screen text"
+  },
+  "core.check.the.name.portion.and.nutrition.values.values.must.be.finite.and.nonnegative.and": {
+    "en": "Check the name, portion, and nutrition values. Values must be finite and nonnegative, and the portion must be greater than 0.",
+    "zh-Hans": "请检查名称、份量和营养数值：数值必须为有限非负数，份量必须大于 0。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.record.details": {
+    "en": "Record details",
+    "zh-Hans": "记录参数",
+    "comment": "Application-owned core screen text"
+  },
+  "core.per.100.grams": {
+    "en": "Per 100 grams",
+    "zh-Hans": "每 100 克",
+    "comment": "Application-owned core screen text"
+  },
+  "core.nutrition.totals.preview": {
+    "en": "Nutrition totals preview",
+    "zh-Hans": "营养总量预览",
+    "comment": "Application-owned core screen text"
+  },
+  "core.selected.food": {
+    "en": "Selected food",
+    "zh-Hans": "已选食物",
+    "comment": "Application-owned core screen text"
+  },
+  "core.choose.again": {
+    "en": "Choose again",
+    "zh-Hans": "重新选择",
+    "comment": "Application-owned core screen text"
+  },
+  "core.this.favorite.food.uses.values.per.100.grams.enter.the.actual.weight.in.grams": {
+    "en": "This favorite food uses values per 100 grams. Enter the actual weight in grams.",
+    "zh-Hans": "该常用食物按每 100 克记录，请输入实际克数。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.enter.the.number.of.servings.nutrition.will.scale.automatically": {
+    "en": "Enter the number of servings. Nutrition will scale automatically.",
+    "zh-Hans": "请输入实际份数，营养会按份自动换算。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.no.favorite.foods.yet.create.one.in.the.library": {
+    "en": "No favorite foods yet. Create one in the Library.",
+    "zh-Hans": "还没有常用食物，可在资料库中创建。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.no.matching.favorite.foods.320": {
+    "en": "No matching favorite foods.",
+    "zh-Hans": "没有匹配的常用食物。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.log.favorite.food": {
+    "en": "Log favorite food",
+    "zh-Hans": "记录常用食物",
+    "comment": "Application-owned core screen text"
+  },
+  "core.log": {
+    "en": "Log",
+    "zh-Hans": "记录",
+    "comment": "Application-owned core screen text"
+  },
+  "core.check.the.portion.it.must.be.finite.and.greater.than.0": {
+    "en": "Check the portion: it must be finite and greater than 0.",
+    "zh-Hans": "请检查份量：必须为大于 0 的有限数值。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.save.failed.please.try.again": {
+    "en": "Save failed: %@. Please try again.",
+    "zh-Hans": "保存失败：%@。请重试。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.saving.creates.a.new.independent.record.the.original.history.will.remain.unchanged": {
+    "en": "Saving creates a new independent record. The original history will remain unchanged.",
+    "zh-Hans": "保存时会生成新的独立记录，不会修改原来的历史。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.no.reusable.historical.records.yet": {
+    "en": "No reusable historical records yet.",
+    "zh-Hans": "还没有可复用的历史记录。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.approx.kcal": {
+    "en": "%@ · approx. %@ kcal/%@",
+    "zh-Hans": "%@ · 约 %@ kcal/%@",
+    "comment": "Application-owned core screen text"
+  },
+  "core.search.recent.records": {
+    "en": "Search recent records",
+    "zh-Hans": "搜索最近记录",
+    "comment": "Application-owned core screen text"
+  },
+  "core.log.recent.food": {
+    "en": "Log recent food",
+    "zh-Hans": "记录最近食物",
+    "comment": "Application-owned core screen text"
+  },
+  "core.food.portions.adjust.separately": {
+    "en": "Food portions (adjust separately)",
+    "zh-Hans": "食物份量（可单独调整）",
+    "comment": "Application-owned core screen text"
+  },
+  "core.nutrition.totals.preview.for.this.entry": {
+    "en": "Nutrition totals preview for this entry",
+    "zh-Hans": "本条记录营养总量预览",
+    "comment": "Application-owned core screen text"
+  },
+  "core.log.this.meal": {
+    "en": "Log this meal",
+    "zh-Hans": "记录这一餐",
+    "comment": "Application-owned core screen text"
+  },
+  "core.choose.a.different.saved.meal": {
+    "en": "Choose a different saved meal",
+    "zh-Hans": "重新选择固定餐",
+    "comment": "Application-owned core screen text"
+  },
+  "core.no.saved.meals.yet.create.one.in.the.library": {
+    "en": "No saved meals yet. Create one in the Library.",
+    "zh-Hans": "还没有固定餐，可在资料库中创建。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.log.saved.meal": {
+    "en": "Log saved meal",
+    "zh-Hans": "记录固定餐",
+    "comment": "Application-owned core screen text"
+  },
+  "core.adjust.saved.meal.portions": {
+    "en": "Adjust saved meal portions",
+    "zh-Hans": "调整固定餐份量",
+    "comment": "Application-owned core screen text"
+  },
+  "core.a.food.has.an.invalid.quantity.check.and.try.again.quantities.must.be.finite.and.grea": {
+    "en": "A food has an invalid quantity. Check and try again. Quantities must be finite and greater than 0.",
+    "zh-Hans": "有食物的数量无效，请检查后重试（数量必须为大于 0 的有限数值）。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.source.meal.to.copy": {
+    "en": "Source (meal to copy)",
+    "zh-Hans": "来源（复制哪一餐）",
+    "comment": "Application-owned core screen text"
+  },
+  "core.yesterday": {
+    "en": "Yesterday",
+    "zh-Hans": "昨天",
+    "comment": "Application-owned core screen text"
+  },
+  "core.today.340": {
+    "en": "Today",
+    "zh-Hans": "今天",
+    "comment": "Application-owned core screen text"
+  },
+  "core.destination": {
+    "en": "Destination",
+    "zh-Hans": "目标",
+    "comment": "Application-owned core screen text"
+  },
+  "core.preview": {
+    "en": "Preview",
+    "zh-Hans": "预览",
+    "comment": "Application-owned core screen text"
+  },
+  "core.no.records.to.copy.for.this.date.and.meal": {
+    "en": "No records to copy for this date and meal.",
+    "zh-Hans": "该日期和餐次没有可复制的记录。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.number.of.records": {
+    "en": "Number of records",
+    "zh-Hans": "记录数量",
+    "comment": "Application-owned core screen text"
+  },
+  "core.entries": {
+    "en": "%lld entries",
+    "zh-Hans": "%lld 条",
+    "comment": "Application-owned core screen text",
+    "enOne": "%lld entry"
+  },
+  "core.copying.creates.new.records.and.preserves.their.source.information.original.records.r": {
+    "en": "Copying creates new records and preserves their source information. Original records remain unchanged.",
+    "zh-Hans": "复制会生成全新记录并保留来源信息，原记录不会改变。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.copy.to.destination.meal": {
+    "en": "Copy to destination meal",
+    "zh-Hans": "复制到目标餐次",
+    "comment": "Application-owned core screen text"
+  },
+  "core.copy.records": {
+    "en": "Copy %lld records?",
+    "zh-Hans": "确认复制 %lld 条记录？",
+    "comment": "Application-owned core screen text",
+    "enOne": "Copy %lld record?"
+  },
+  "core.copy": {
+    "en": "Copy",
+    "zh-Hans": "复制",
+    "comment": "Application-owned core screen text"
+  },
+  "core.copy.to": {
+    "en": "Copy to %@ %@.",
+    "zh-Hans": "将复制到 %@ %@。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.a.record.has.invalid.data.and.cannot.be.copied": {
+    "en": "A record has invalid data and cannot be copied.",
+    "zh-Hans": "有记录的数据无效，无法复制。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.an.animation.is.not.available.for.this.exercise.yet.see.the.instructions.below": {
+    "en": "An animation is not available for this exercise yet. See the instructions below.",
+    "zh-Hans": "此动作暂未收录动态演示，可查看下方动作说明。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.pause.animation": {
+    "en": "Pause animation",
+    "zh-Hans": "暂停演示",
+    "comment": "Application-owned core screen text"
+  },
+  "core.play.animation": {
+    "en": "Play animation",
+    "zh-Hans": "播放演示",
+    "comment": "Application-owned core screen text"
+  },
+  "core.playing": {
+    "en": "Playing",
+    "zh-Hans": "播放中",
+    "comment": "Application-owned core screen text"
+  },
+  "core.paused": {
+    "en": "Paused",
+    "zh-Hans": "已暂停",
+    "comment": "Application-owned core screen text"
+  },
+  "core.preparing": {
+    "en": "Preparing",
+    "zh-Hans": "准备中",
+    "comment": "Application-owned core screen text"
+  },
+  "core.exercise.animation.chest.and.triceps": {
+    "en": "Exercise animation · Chest and triceps",
+    "zh-Hans": "动作演示 · 胸部、肱三头肌",
+    "comment": "Application-owned core screen text"
+  },
+  "core.the.exercise.animation.is.unavailable.see.the.instructions.below": {
+    "en": "The exercise animation is unavailable. See the instructions below.",
+    "zh-Hans": "动作演示暂时无法播放，请查看下方动作说明。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.search.chinese.or.english.names.muscles.or.equipment": {
+    "en": "Search Chinese or English names, muscles, or equipment",
+    "zh-Hans": "搜索中英文名称、肌群或器械",
+    "comment": "Application-owned core screen text"
+  },
+  "core.classification": {
+    "en": "Classification",
+    "zh-Hans": "分类",
+    "comment": "Application-owned core screen text"
+  },
+  "core.target.muscle": {
+    "en": "Target muscle",
+    "zh-Hans": "目标肌肉",
+    "comment": "Application-owned core screen text"
+  },
+  "core.primary.muscle.group": {
+    "en": "Primary muscle group",
+    "zh-Hans": "主要协同肌群",
+    "comment": "Application-owned core screen text"
+  },
+  "core.secondary.muscles": {
+    "en": "Secondary muscles",
+    "zh-Hans": "辅助肌群",
+    "comment": "Application-owned core screen text"
+  },
+  "core.data.from.hasaneyldrm.exercises.dataset.trainote.does.not.include.gym.visual.images.o": {
+    "en": "Data from hasaneyldrm/exercises-dataset. Trainote does not include Gym visual images or GIFs.",
+    "zh-Hans": "数据来自 hasaneyldrm/exercises-dataset。Trainote 未包含 Gym visual 图片或 GIF。",
+    "comment": "Application-owned core screen text"
+  },
+  "core.exercise.details": {
+    "en": "Exercise details",
+    "zh-Hans": "动作详情",
+    "comment": "Application-owned core screen text"
+  },
+  "core.repetitions.and.weight": {
+    "en": "repetitions and weight",
+    "zh-Hans": "次数和重量",
+    "comment": "Nested display text"
+  },
+  "core.mark.complete": {
+    "en": "mark complete",
+    "zh-Hans": "标记完成",
+    "comment": "Nested display text"
+  },
+  "core.100": {
+    "en": "100 g",
+    "zh-Hans": "100 克",
+    "comment": "Nested display text"
+  },
+  "core.remaining.word": {
+    "en": "remaining",
+    "zh-Hans": "剩余",
+    "comment": "Accessibility status"
+  },
+  "core.over.word": {
+    "en": "over",
+    "zh-Hans": "超出",
+    "comment": "Accessibility status"
+  },
+  "core.instructions": {
+    "en": "Instructions",
+    "zh-Hans": "动作说明",
+    "comment": "Current language exercise instructions"
+  },
+  "core.other.instructions": {
+    "en": "View Chinese instructions",
+    "zh-Hans": "查看英文说明",
+    "comment": "Optional other-language instructions"
+  },
+  "core.per.serving": {
+    "en": "per serving",
+    "zh-Hans": "每份",
+    "comment": "Nested display text"
+  },
+  "core.default.serving.description": {
+    "en": "1 serving",
+    "zh-Hans": "1 份",
+    "comment": "Default value for a newly created food. Existing user data is preserved."
+  },
+  "core.rir.unset": {
+    "en": "Unset",
+    "zh-Hans": "未记录",
+    "comment": "Short RIR picker value to fit the largest accessibility size; RIR field label supplies context."
+  }
+}

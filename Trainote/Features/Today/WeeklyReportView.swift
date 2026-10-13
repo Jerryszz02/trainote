@@ -39,39 +39,39 @@ struct WeeklyReportView: View {
     List {
       Section {
         HStack {
-          Button("上一周", systemImage: "chevron.left") { moveWeek(-1) }
+          Button(L10n.text("core.previous.week"), systemImage: "chevron.left") { moveWeek(-1) }
             .labelStyle(.iconOnly).accessibilityIdentifier("report.previousWeek")
           Spacer()
           VStack(spacing: 3) {
             Text(
-              "\(report.interval.start.formatted(.dateTime.month().day())) – \(lastDay.formatted(.dateTime.month().day()))"
+              "\(report.interval.start.formatted(.dateTime.month().day().locale(L10n.locale))) – \(lastDay.formatted(.dateTime.month().day().locale(L10n.locale)))"
             )
             .font(.headline)
-            Text("周一至周日").font(.caption).foregroundStyle(.secondary)
+            Text(L10n.text("core.monday.to.sunday")).font(.caption).foregroundStyle(.secondary)
           }
           Spacer()
-          Button("下一周", systemImage: "chevron.right") { moveWeek(1) }
+          Button(L10n.text("core.next.week"), systemImage: "chevron.right") { moveWeek(1) }
             .labelStyle(.iconOnly)
             .disabled(report.interval.contains(.now))
         }
         if !report.interval.contains(.now) {
-          Button("回到本周") { date = .now }
+          Button(L10n.text("core.back.to.this.week")) { date = .now }
         }
       }
 
-      Section("训练积累") {
-        LabeledContent("完成训练", value: "\(report.trainingCount) 次")
-        LabeledContent("完成组数", value: "\(report.completedSetCount) 组")
+      Section(L10n.text("core.training.totals")) {
+        LabeledContent(L10n.text("core.completed.workouts"), value: L10n.text("core.workouts", report.trainingCount))
+        LabeledContent(L10n.text("core.completed.sets"), value: L10n.text("core.sets", report.completedSetCount))
         LabeledContent(
-          "负重训练容量",
-          value: "\(report.volume.formatted(.number.precision(.fractionLength(0...1)))) kg·次")
-        Text("容量只统计重量 × 次数模式中已完成的有效组；首次成绩作为基线。")
+          L10n.text("core.strength.training.volume"),
+          value: L10n.text("core.kg.reps" , String(describing: report.volume.formatted(.number.precision(.fractionLength(0...1)).locale(L10n.locale)))))
+        Text(L10n.text("core.volume.includes.completed.valid.weight.reps.sets.only.your.first.result.establishes.a"))
           .font(.caption).foregroundStyle(.secondary)
       }
 
-      Section("本周突破") {
+      Section(L10n.text("core.this.week.s.personal.records")) {
         if report.personalRecords.isEmpty {
-          Text("本周还没有新的重量或容量纪录。每一次有效记录都会成为下次的参考。")
+          Text(L10n.text("core.no.new.weight.or.volume.records.this.week.every.valid.record.becomes.a.reference.for."))
             .foregroundStyle(.secondary)
         } else {
           ForEach(report.personalRecords) { record in
@@ -79,7 +79,7 @@ struct WeeklyReportView: View {
               Label("\(record.exerciseName) · \(record.title)", systemImage: "trophy.fill")
                 .font(.subheadline.bold())
               Text(
-                "\(record.previousValue.formatted(.number.precision(.fractionLength(0...1)))) → \(record.value.formatted(.number.precision(.fractionLength(0...1)))) \(record.unit)"
+                "\(record.previousValue.formatted(.number.precision(.fractionLength(0...1)).locale(L10n.locale))) → \(record.value.formatted(.number.precision(.fractionLength(0...1)).locale(L10n.locale))) \(record.unit)"
               )
               .monospacedDigit()
             }
@@ -88,58 +88,58 @@ struct WeeklyReportView: View {
         }
       }
 
-      Section("饮食记录") {
-        LabeledContent("有记录的日期", value: "\(report.nutritionDays) 天")
-        LabeledContent("可解析目标的日期", value: "\(days.filter { $0.targetCalories != nil }.count) / 7 天")
+      Section(L10n.text("core.food.records")) {
+        LabeledContent(L10n.text("core.days.with.records"), value: L10n.text("core.days", report.nutritionDays))
+        LabeledContent(L10n.text("core.days.with.available.goals"), value: L10n.text("core.7.days", days.filter { $0.targetCalories != nil }.count))
         if let calories = report.averageCalories, let protein = report.averageProtein {
           LabeledContent(
-            "日均已记录热量", value: "\(calories.formatted(.number.precision(.fractionLength(0)))) kcal")
+            L10n.text("core.average.recorded.calories.per.day"), value: "\(calories.formatted(.number.precision(.fractionLength(0)).locale(L10n.locale))) kcal")
           LabeledContent(
-            "日均已记录蛋白质", value: "\(protein.formatted(.number.precision(.fractionLength(0...1)))) g")
+            L10n.text("core.average.recorded.protein.per.day"), value: "\(protein.formatted(.number.precision(.fractionLength(0...1)).locale(L10n.locale))) g")
           Chart(days.filter(\.recorded)) { day in
-            BarMark(x: .value("日期", day.date, unit: .day), y: .value("已记录热量", day.calories))
+            BarMark(x: .value(L10n.text("core.date"), day.date, unit: .day), y: .value(L10n.text("core.recorded.calories"), day.calories))
               .foregroundStyle(Color.accentColor)
-              .accessibilityLabel(day.date.formatted(.dateTime.month().day()))
+              .accessibilityLabel(day.date.formatted(.dateTime.month().day().locale(L10n.locale)))
               .accessibilityValue(
-                "\(day.calories.formatted(.number.precision(.fractionLength(0)))) 千卡")
+                L10n.text("core.kcal" , String(describing: day.calories.formatted(.number.precision(.fractionLength(0)).locale(L10n.locale)))))
           }
           .chartXScale(domain: report.interval.start...report.interval.end)
           .frame(height: 160)
         } else {
-          Text("这一周尚无已填写营养的饮食记录。")
+          Text(L10n.text("core.no.food.records.with.nutrition.values.this.week"))
             .foregroundStyle(.secondary)
         }
-        Text("平均值仅按填写过营养的 \(report.nutritionValueDays) 天计算。目标按各日历史显示；漏记日期不按零摄入处理，已记录数值不代表全天实际摄入。")
+        Text(L10n.text("core.averages.use.only.the.days.with.recorded.nutrition.values.goals.reflect.each.day.s.hi", report.nutritionValueDays))
           .font(.caption).foregroundStyle(.secondary)
         if report.unknownFoodCount > 0 {
-          Label("\(report.unknownFoodCount) 条食物未填写营养", systemImage: "info.circle")
+          Label(L10n.text("core.food.entries.have.no.nutrition.values", report.unknownFoodCount), systemImage: "info.circle")
             .font(.caption)
         }
       }
 
-      Section("每日概览") {
+      Section(L10n.text("core.daily.overview")) {
         ForEach(days) { day in
           HStack {
-            Text(day.date.formatted(.dateTime.weekday(.abbreviated).month().day()))
+            Text(day.date.formatted(.dateTime.weekday(.abbreviated).month().day().locale(L10n.locale)))
             Spacer()
             VStack(alignment: .trailing, spacing: 3) {
               Text(
                 day.recorded
-                  ? "\(day.calories.formatted(.number.precision(.fractionLength(0)))) kcal"
-                  : "营养未记录")
+                  ? "\(day.calories.formatted(.number.precision(.fractionLength(0)).locale(L10n.locale))) kcal"
+                  : L10n.text("core.nutrition.not.recorded"))
               Text(
                 day.targetCalories.map {
-                  "目标 \($0.formatted(.number.precision(.fractionLength(0)))) kcal"
-                } ?? (goals.isEmpty && goalRevisions.isEmpty ? "未设置目标" : "无历史目标")
+                  L10n.text("core.goal.kcal" , String(describing: $0.formatted(.number.precision(.fractionLength(0)).locale(L10n.locale))))
+                } ?? (goals.isEmpty && goalRevisions.isEmpty ? L10n.text("core.no.goal.set") : L10n.text("core.no.historical.goal"))
               )
               .font(.caption).foregroundStyle(.secondary)
-              Text("\(day.workouts) 次训练").font(.caption).foregroundStyle(.secondary)
+              Text(L10n.text("core.workouts", day.workouts)).font(.caption).foregroundStyle(.secondary)
             }
           }
         }
       }
     }
-    .navigationTitle("每周回顾")
+    .navigationTitle(L10n.text("core.weekly.review"))
     .accessibilityIdentifier("weeklyReport")
   }
 

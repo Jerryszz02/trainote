@@ -17,27 +17,27 @@ struct RoutinesView: View {
 
   @State private var presentation: RoutinePresentation?
   @State private var pendingDeletion: Routine?
-  @State private var deletionError: String?
+  @State private var deletionError: L10n.Message?
   @State private var selectedWorkout: Workout?
-  @State private var startError: String?
+  @State private var startError: L10n.Message?
 
   private var activeWorkout: Workout? { workouts.first { $0.status == .inProgress } }
 
   var body: some View {
     List {
       if let activeWorkout {
-        Section("已有进行中的训练") {
-          Text("完成或放弃「\(activeWorkout.title)」后，即可开始另一场训练。")
+        Section(L10n.text("core.a.workout.is.already.in.progress")) {
+          Text(L10n.text("core.finish.or.discard.before.starting.another.workout" , String(describing: activeWorkout.title)))
             .font(.subheadline).foregroundStyle(.secondary)
-          Button("继续训练", systemImage: "play.fill") { selectedWorkout = activeWorkout }
+          Button(L10n.text("core.continue.workout"), systemImage: "play.fill") { selectedWorkout = activeWorkout }
             .accessibilityIdentifier("routine.continueWorkout")
         }
       }
       if routines.isEmpty {
         ContentUnavailableView(
-          "还没有训练模板",
+          L10n.text("core.no.routines.yet"),
           systemImage: "list.bullet.rectangle",
-          description: Text("把常用动作和默认训练参数保存成一套模板。")
+          description: Text(L10n.text("core.save.your.usual.exercises.and.default.training.values.as.a.routine"))
         )
       } else {
         ForEach(routines) { routine in
@@ -49,7 +49,7 @@ struct RoutinesView: View {
               HStack {
                 VStack(alignment: .leading, spacing: 4) {
                   Text(routine.name).font(.body.weight(.medium))
-                  Text("\(routine.exercises.count) 个动作")
+                  Text(L10n.text("core.exercises", routine.exercises.count))
                     .font(.caption)
                     .foregroundStyle(.secondary)
                 }
@@ -62,21 +62,21 @@ struct RoutinesView: View {
             }
             .buttonStyle(.plain)
             .accessibilityIdentifier("routine.edit.\(routine.id.uuidString)")
-            Button("开始训练", systemImage: "play.fill") { start(routine) }
+            Button(L10n.text("core.start.workout"), systemImage: "play.fill") { start(routine) }
               .buttonStyle(.borderless)
               .disabled(activeWorkout != nil)
               .accessibilityIdentifier("routine.start.\(routine.id.uuidString)")
           }
           .padding(.vertical, 4)
           .swipeActions {
-            Button("删除", role: .destructive) { pendingDeletion = routine }
+            Button(L10n.text("core.delete"), role: .destructive) { pendingDeletion = routine }
           }
         }
       }
     }
     .toolbar {
       ToolbarItem(placement: .topBarTrailing) {
-        Button("新建训练模板", systemImage: "plus") { createRoutine() }
+        Button(L10n.text("core.new.routine"), systemImage: "plus") { createRoutine() }
           .accessibilityIdentifier("routine.create")
       }
     }
@@ -85,34 +85,34 @@ struct RoutinesView: View {
     }
     .navigationDestination(item: $selectedWorkout) { ActiveWorkoutView(workout: $0) }
     .alert(
-      "无法开始训练",
+      L10n.text("core.cannot.start.workout"),
       isPresented: Binding(get: { startError != nil }, set: { if !$0 { startError = nil } })
     ) {
-      Button("知道了", role: .cancel) {}
+      Button(L10n.text("core.ok"), role: .cancel) {}
     } message: {
-      Text(startError ?? "请重试。")
+      Text(startError?.text ?? L10n.text("core.please.try.again"))
     }
-    .alert("删除这个训练模板？", isPresented: deletionAlertBinding, presenting: pendingDeletion) {
+    .alert(L10n.text("core.delete.this.routine"), isPresented: deletionAlertBinding, presenting: pendingDeletion) {
       routine in
-      Button("删除", role: .destructive) {
+      Button(L10n.text("core.delete"), role: .destructive) {
         modelContext.delete(routine)
         do { try modelContext.save() } catch {
           modelContext.rollback()
-          deletionError = error.localizedDescription
+          deletionError = L10n.Message(resolving: { error.localizedDescription })
         }
         pendingDeletion = nil
       }
-      Button("取消", role: .cancel) { pendingDeletion = nil }
+      Button(L10n.text("core.cancel"), role: .cancel) { pendingDeletion = nil }
     } message: { _ in
-      Text("已经完成或正在进行的训练不会受到影响。")
+      Text(L10n.text("core.completed.and.ongoing.workouts.will.remain.unchanged"))
     }
     .alert(
-      "删除失败",
+      L10n.text("core.delete.failed"),
       isPresented: Binding(get: { deletionError != nil }, set: { if !$0 { deletionError = nil } })
     ) {
-      Button("知道了", role: .cancel) {}
+      Button(L10n.text("core.ok"), role: .cancel) {}
     } message: {
-      Text(deletionError ?? "请重试。")
+      Text(deletionError?.text ?? L10n.text("core.please.try.again"))
     }
   }
 
@@ -130,7 +130,7 @@ struct RoutinesView: View {
         return
       }
       guard !routine.exercises.isEmpty, routine.exercises.allSatisfy(\.hasValidDefaults) else {
-        startError = "模板包含无效参数，请先编辑修正。"
+        startError = L10n.Message(resolving: { L10n.text("core.this.routine.has.invalid.values.edit.it.first") })
         return
       }
       let workout = RoutineFactory.workout(from: routine)
@@ -139,12 +139,12 @@ struct RoutinesView: View {
       selectedWorkout = workout
     } catch {
       modelContext.rollback()
-      startError = error.localizedDescription
+      startError = L10n.Message(resolving: { error.localizedDescription })
     }
   }
 
   private func createRoutine() {
-    let routine = Routine(name: "新训练模板")
+    let routine = Routine(name: L10n.text("core.new.routine.256"))
     presentation = RoutinePresentation(routine: routine, original: nil, isNew: true)
   }
 
@@ -183,7 +183,7 @@ private struct RoutineEditorView: View {
 
   @State private var presentedSheet: RoutineEditorSheet?
   @State private var showCancelConfirmation = false
-  @State private var saveError: String?
+  @State private var saveError: L10n.Message?
 
   private var canSave: Bool {
     !routine.name.trimmed.isEmpty && !routine.exercises.isEmpty
@@ -193,15 +193,15 @@ private struct RoutineEditorView: View {
   var body: some View {
     NavigationStack {
       List {
-        Section("基本信息") {
-          TextField("模板名称", text: $routine.name)
+        Section(L10n.text("core.basic.details")) {
+          TextField(L10n.text("core.routine.name"), text: $routine.name)
             .accessibilityIdentifier("routine.name")
-          TextField("备注（可选）", text: $routine.notes, axis: .vertical)
+          TextField(L10n.text("core.notes.optional"), text: $routine.notes, axis: .vertical)
         }
 
-        Section("动作") {
+        Section(L10n.text("core.exercises.259")) {
           if routine.exercises.isEmpty {
-            Text("还没有动作。")
+            Text(L10n.text("core.no.exercises.yet"))
               .foregroundStyle(.secondary)
           }
           ForEach(routine.sortedExercises) { exercise in
@@ -211,23 +211,24 @@ private struct RoutineEditorView: View {
           }
           .onMove(perform: move)
 
-          Button("添加动作", systemImage: "plus.circle.fill") {
+          Button(L10n.text("core.add.exercise"), systemImage: "plus.circle.fill") {
             presentedSheet = .exercisePicker
           }
           .accessibilityIdentifier("routine.addExercise")
         }
       }
       .environment(\.editMode, .constant(.active))
-      .navigationTitle(isNew ? "新建训练模板" : "编辑训练模板")
+      .localizationTestControls()
+      .navigationTitle(isNew ? L10n.text("core.new.routine") : L10n.text("core.edit.routine"))
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
         ToolbarItem(placement: .cancellationAction) {
-          Button(isNew ? "取消" : "关闭") {
+          Button(isNew ? L10n.text("core.cancel") : L10n.text("core.close")) {
             if isNew { showCancelConfirmation = true } else { dismiss() }
           }
         }
         ToolbarItem(placement: .confirmationAction) {
-          Button("保存", action: save)
+          Button(L10n.text("core.save"), action: save)
             .disabled(!canSave)
             .accessibilityIdentifier("routine.save")
         }
@@ -236,26 +237,26 @@ private struct RoutineEditorView: View {
       .sheet(item: $presentedSheet) { sheet in
         switch sheet {
         case .exercisePicker:
-          ExercisePickerView(title: "添加模板动作") { item in
+          ExercisePickerView(title: L10n.text("core.add.routine.exercise")) { item in
             add(item)
           }
         }
       }
       .alert(
-        "无法保存训练模板",
+        L10n.text("core.cannot.save.routine"),
         isPresented: Binding(get: { saveError != nil }, set: { if !$0 { saveError = nil } })
       ) {
-        Button("知道了", role: .cancel) {}
+        Button(L10n.text("core.ok"), role: .cancel) {}
       } message: {
-        Text(saveError ?? "请稍后重试。")
+        Text(saveError?.text ?? L10n.text("core.please.try.again.later"))
       }
       .confirmationDialog(
-        "放弃新训练模板？", isPresented: $showCancelConfirmation, titleVisibility: .visible
+        L10n.text("core.discard.this.new.routine"), isPresented: $showCancelConfirmation, titleVisibility: .visible
       ) {
-        Button("放弃", role: .destructive) {
+        Button(L10n.text("core.discard"), role: .destructive) {
           dismiss()
         }
-        Button("继续编辑", role: .cancel) {}
+        Button(L10n.text("core.keep.editing"), role: .cancel) {}
       }
     }
   }
@@ -327,12 +328,15 @@ private struct RoutineEditorView: View {
       dismiss()
     } catch {
       modelContext.rollback()
-      saveError = error.localizedDescription
+      saveError = L10n.Message(resolving: { error.localizedDescription })
     }
   }
 }
 
 private struct RoutineExerciseEditor: View {
+  @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+  @ScaledMetric(relativeTo: .body) private var numberWidth = 48.0
+  @ScaledMetric(relativeTo: .body) private var weightWidth = 70.0
   @Bindable var exercise: RoutineExercise
   let onDelete: () -> Void
 
@@ -340,55 +344,57 @@ private struct RoutineExerciseEditor: View {
     VStack(alignment: .leading, spacing: 10) {
       HStack(alignment: .firstTextBaseline) {
         VStack(alignment: .leading) {
-          Text(exercise.nameZhSnapshot).font(.body.weight(.medium))
-          Text(exercise.nameEnSnapshot).font(.caption).foregroundStyle(.secondary)
+          Text(exercise.displayName).font(.body.weight(.medium))
         }
         Spacer()
-        Button("删除", systemImage: "trash", role: .destructive, action: onDelete)
+        Button(L10n.text("core.delete"), systemImage: "trash", role: .destructive, action: onDelete)
           .labelStyle(.iconOnly)
       }
 
-      Picker("记录方式", selection: $exercise.trackingMode) {
+      Picker(L10n.text("core.tracking.mode"), selection: $exercise.trackingMode) {
         ForEach(TrackingMode.allCases) { Text($0.title).tag($0) }
       }
       .accessibilityIdentifier("routine.mode.\(exercise.id.uuidString)")
 
       if exercise.trackingMode == .strength {
-        HStack {
-          numberField("组", value: $exercise.defaultSetCount)
-          numberField("次", value: $exercise.defaultRepetitions)
+        let layout = dynamicTypeSize.isAccessibilitySize
+          ? AnyLayout(VStackLayout(alignment: .leading, spacing: 12))
+          : AnyLayout(HStackLayout())
+        layout {
+          numberField(L10n.text("core.sets.265"), value: $exercise.defaultSetCount)
+          numberField(L10n.text("core.reps.188"), value: $exercise.defaultRepetitions)
           LabeledContent("kg") {
-            TextField(
+            StableNumberField(
               "0", value: $exercise.defaultWeightKilograms,
-              format: .number.precision(.fractionLength(0...2))
+              format: .number.precision(.fractionLength(0...2)).locale(L10n.locale)
             )
             .keyboardType(.decimalPad)
             .multilineTextAlignment(.trailing)
-            .frame(maxWidth: 70)
+            .frame(maxWidth: weightWidth)
           }
         }
       } else if exercise.trackingMode == .repetitions {
-        numberField("组数", value: $exercise.defaultSetCount)
-        numberField("次数", value: $exercise.defaultRepetitions)
+        numberField(L10n.text("core.sets.266"), value: $exercise.defaultSetCount)
+        numberField(L10n.text("core.repetitions"), value: $exercise.defaultRepetitions)
       } else if exercise.trackingMode == .duration {
-        numberField("组数", value: $exercise.defaultSetCount)
-        numberField("每组秒数", value: $exercise.defaultDurationSeconds)
+        numberField(L10n.text("core.sets.266"), value: $exercise.defaultSetCount)
+        numberField(L10n.text("core.seconds.per.set"), value: $exercise.defaultDurationSeconds)
       } else {
-        LabeledContent("默认时长") {
+        LabeledContent(L10n.text("core.default.duration")) {
           HStack {
-            TextField(
-              "0", value: durationMinutes, format: .number.precision(.fractionLength(0...1))
+            StableNumberField(
+              "0", value: durationMinutes, format: .number.precision(.fractionLength(0...1)).locale(L10n.locale)
             )
             .keyboardType(.decimalPad)
             .multilineTextAlignment(.trailing)
-            Text("分钟").foregroundStyle(.secondary)
+            Text(L10n.text("core.minutes")).foregroundStyle(.secondary)
           }
         }
-        LabeledContent("默认距离") {
+        LabeledContent(L10n.text("core.default.distance")) {
           HStack {
-            TextField(
+            StableNumberField(
               "0", value: $exercise.defaultDistanceKilometers,
-              format: .number.precision(.fractionLength(0...2))
+              format: .number.precision(.fractionLength(0...2)).locale(L10n.locale)
             )
             .keyboardType(.decimalPad)
             .multilineTextAlignment(.trailing)
@@ -411,10 +417,10 @@ private struct RoutineExerciseEditor: View {
 
   private func numberField(_ title: String, value: Binding<Int>) -> some View {
     LabeledContent(title) {
-      TextField("0", value: value, format: .number)
+      StableNumberField("0", value: value, format: .number.locale(L10n.locale))
         .keyboardType(.numberPad)
         .multilineTextAlignment(.trailing)
-        .frame(maxWidth: 48)
+        .frame(maxWidth: numberWidth)
     }
   }
 }

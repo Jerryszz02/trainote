@@ -8,28 +8,28 @@ struct HealthOnboardingView: View {
     NavigationStack {
       List {
         Section {
-          Text("记录照常，分析由你选择")
+          Text(L10n.text("health.healthonboardingview.keep.recording.choose.your.analysis.cc9165"))
             .font(.title2.bold())
-          Text("训练、饮食和备份可以仅在本机使用。下面两项分别选择，跳过后仍可在设置中开启。")
+          Text(L10n.text("health.healthonboardingview.workouts.food.and.backups.can.stay.3ab8ec"))
         }
-        Section("Apple 健康") {
-          Text("读取你选择共享的体重、睡眠、静息心率、HRV、步数、活动能量和训练，用于本机分析。不向 Apple 健康写入。")
-          LabeledContent("读取状态", value: access.healthConnectionLabel)
+        Section(L10n.text("health.healthonboardingview.apple.health.6de270")) {
+          Text(L10n.text("health.healthonboardingview.read.the.weight.sleep.resting.heart.6bba43"))
+          LabeledContent(L10n.text("health.healthonboardingview.read.status.48e33e"), value: access.healthConnectionLabel)
           if access.healthConnected {
-            Text("管理权限：在“健康”App 的摘要中点头像 → App → Trainote。")
+            Text(L10n.text("health.healthonboardingview.manage.access.in.health.tap.summary.fc8c28"))
               .font(.footnote).foregroundStyle(.secondary)
           }
-          Button(access.healthConnected ? "刷新健康读取" : "连接 Apple 健康") {
+          Button(access.healthConnected ? L10n.text("health.healthonboardingview.refresh.health.data.a1d25f") : L10n.text("health.healthonboardingview.connect.apple.health.eb4d4c")) {
             Task { await access.connectHealth() }
           }
           .accessibilityIdentifier("health.connect")
           .disabled(access.isBusy || access.health == nil)
         }
-        Section("AI 报告") {
+        Section(L10n.text("health.healthonboardingview.ai.reports.9885c1")) {
           NavigationLink {
             AIConsentView()
           } label: {
-            Label("了解并选择 AI 报告", systemImage: "text.bubble")
+            Label(L10n.text("health.healthonboardingview.learn.about.and.choose.ai.reports.1336fa"), systemImage: "text.bubble")
           }
           .accessibilityIdentifier("health.aiInfo")
           if !access.reports.isConfigured {
@@ -37,9 +37,9 @@ struct HealthOnboardingView: View {
           }
         }
         Section {
-          NavigationLink("查看方法、隐私与数据使用") { HealthHelpView() }
+          NavigationLink(L10n.text("health.healthonboardingview.methods.privacy.and.data.use.8e0893")) { HealthHelpView() }
             .accessibilityIdentifier("health.help")
-          Button(access.healthConnected || access.aiEnabled ? "继续使用 Trainote" : "暂时仅本地使用") {
+          Button(access.healthConnected || access.aiEnabled ? L10n.text("health.healthonboardingview.continue.with.trainote.d4888a") : L10n.text("health.healthonboardingview.use.locally.for.now.cc562e")) {
             onContinue()
           }
           .font(.headline)
@@ -50,7 +50,7 @@ struct HealthOnboardingView: View {
           Section { Text(message).font(.footnote) }
         }
       }
-      .navigationTitle("欢迎使用 Trainote")
+      .navigationTitle(L10n.text("health.healthonboardingview.welcome.to.trainote.4df5d8"))
       .navigationBarTitleDisplayMode(.inline)
       .healthAccessError(access)
     }
@@ -63,26 +63,26 @@ struct AIConsentView: View {
 
   var body: some View {
     List {
-      Section("可选的第三方处理") {
+      Section(L10n.text("health.healthonboardingview.optional.third.party.processing.6c71ab")) {
         Text(
-          "AI 报告用于解释本地计算结果和已允许的建议。启用后，必要的训练、饮食、体重和健康趋势汇总会通过代理交由 DeepSeek 处理。Apple 健康连接不代表同意向第三方发送。")
-        Text("报告输入不包含姓名、联系方式、自由文本备注、精确位置或完整原始心率序列。AI 不能修改目标或训练历史。")
+          L10n.text("health.healthonboardingview.ai.reports.explain.local.calculations.and.651995"))
+        Text(L10n.text("health.healthonboardingview.report.inputs.exclude.names.contact.details.59947b"))
       }
-      Section("当前状态") {
+      Section(L10n.text("health.healthonboardingview.current.status.045859")) {
         if access.reports.isConfigured {
-          Text("启用前请阅读此版本的处理说明。关闭后停止后续发送与重试，已发送的数据不因取消请求而自动从第三方删除。")
-          Button("同意上述处理并启用 AI 报告") { Task { await access.enableAI() } }
+          Text(L10n.text("health.healthonboardingview.read.this.version.s.processing.notice.8aec61"))
+          Button(L10n.text("health.healthonboardingview.agree.to.this.processing.and.enable.4e1fd9")) { Task { await access.enableAI() } }
             .disabled(access.isBusy || access.aiEnabled)
             .accessibilityIdentifier("health.aiConsent")
         } else {
           Text(access.reports.configurationMessage)
             .accessibilityIdentifier("health.aiUnavailable")
-          Text("当前不会向 DeepSeek 发送记录，也不会预先保存 AI 同意。")
+          Text(L10n.text("health.healthonboardingview.no.records.are.currently.sent.to.4a7205"))
         }
       }
-      Section { NavigationLink("完整方法与隐私说明") { HealthHelpView() } }
+      Section { NavigationLink(L10n.text("health.healthonboardingview.full.methods.and.privacy.notice.e9f00c")) { HealthHelpView() } }
     }
-    .navigationTitle("AI 报告")
+    .navigationTitle(L10n.text("health.healthonboardingview.ai.reports.9885c1"))
     .navigationBarTitleDisplayMode(.inline)
     .healthAccessError(access)
   }
@@ -91,14 +91,14 @@ struct AIConsentView: View {
 extension View {
   func healthAccessError(_ access: HealthFeatureAccess) -> some View {
     alert(
-      "操作未完成",
+      L10n.text("health.healthonboardingview.action.incomplete.223fb3"),
       isPresented: Binding(
         get: { access.errorMessage != nil }, set: { if !$0 { access.clearError() } }
       )
     ) {
-      Button("知道了", role: .cancel) { access.clearError() }
+      Button(L10n.text("health.healthonboardingview.ok.cb63c6"), role: .cancel) { access.clearError() }
     } message: {
-      Text(access.errorMessage ?? "请重试。")
+      Text(access.errorMessage ?? L10n.text("health.healthonboardingview.please.try.again.a7e79b"))
     }
   }
 }

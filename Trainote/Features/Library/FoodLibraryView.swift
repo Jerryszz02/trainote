@@ -5,6 +5,12 @@ private enum FoodLibrarySection: String, CaseIterable, Identifiable {
   case presets = "常用食物"
   case meals = "固定餐"
   var id: Self { self }
+  var title: String {
+    switch self {
+    case .presets: L10n.text("core.favorite.foods")
+    case .meals: L10n.text("core.saved.meals")
+    }
+  }
 }
 
 private enum FoodLibraryPresentation: Identifiable {
@@ -32,15 +38,15 @@ struct FoodLibraryView: View {
   @State private var presentation: FoodLibraryPresentation?
   @State private var pendingPresetDeletion: FoodPreset?
   @State private var pendingMealDeletion: MealTemplate?
-  @State private var actionErrorMessage: String?
+  @State private var actionErrorMessage: L10n.Message?
 
   var body: some View {
     List {
       Section {
-        Picker("饮食资料类型", selection: $selectedSection) {
-          ForEach(FoodLibrarySection.allCases) { Text($0.rawValue).tag($0) }
+        Picker(L10n.text("core.food.library.category"), selection: $selectedSection) {
+          ForEach(FoodLibrarySection.allCases) { Text($0.title).tag($0) }
         }
-        .pickerStyle(.segmented)
+        .modifier(CoreAdaptivePickerStyle())
       }
 
       if selectedSection == .presets {
@@ -51,7 +57,7 @@ struct FoodLibraryView: View {
     }
     .toolbar {
       ToolbarItem(placement: .topBarTrailing) {
-        Button("新建", systemImage: "plus") {
+        Button(L10n.text("core.new"), systemImage: "plus") {
           if selectedSection == .presets {
             presentation = .preset(nil)
           } else {
@@ -67,36 +73,36 @@ struct FoodLibraryView: View {
       case .meal(let template): MealTemplateEditor(template: template)
       }
     }
-    .alert("删除常用食物？", isPresented: presetDeletionBinding, presenting: pendingPresetDeletion) {
+    .alert(L10n.text("core.delete.this.favorite.food"), isPresented: presetDeletionBinding, presenting: pendingPresetDeletion) {
       preset in
-      Button("删除", role: .destructive) {
+      Button(L10n.text("core.delete"), role: .destructive) {
         delete(preset)
       }
-      Button("取消", role: .cancel) { pendingPresetDeletion = nil }
+      Button(L10n.text("core.cancel"), role: .cancel) { pendingPresetDeletion = nil }
     } message: { _ in
-      Text("已经记录的饮食不会改变。")
+      Text(L10n.text("core.existing.food.records.will.remain.unchanged"))
     }
-    .alert("删除固定餐？", isPresented: mealDeletionBinding, presenting: pendingMealDeletion) {
+    .alert(L10n.text("core.delete.this.saved.meal"), isPresented: mealDeletionBinding, presenting: pendingMealDeletion) {
       template in
-      Button("删除", role: .destructive) {
+      Button(L10n.text("core.delete"), role: .destructive) {
         delete(template)
       }
-      Button("取消", role: .cancel) { pendingMealDeletion = nil }
+      Button(L10n.text("core.cancel"), role: .cancel) { pendingMealDeletion = nil }
     } message: { _ in
-      Text("已经记录的饮食不会改变。")
+      Text(L10n.text("core.existing.food.records.will.remain.unchanged"))
     }
-    .alert("操作失败", isPresented: actionErrorBinding) {
-      Button("好", role: .cancel) { actionErrorMessage = nil }
+    .alert(L10n.text("core.action.failed"), isPresented: actionErrorBinding) {
+      Button(L10n.text("core.ok.201"), role: .cancel) { actionErrorMessage = nil }
     } message: {
-      Text(actionErrorMessage ?? "")
+      Text(actionErrorMessage?.text ?? "")
     }
   }
 
   @ViewBuilder
   private var presetsContent: some View {
-    Section("常用食物") {
+    Section(L10n.text("core.favorite.foods")) {
       if presets.isEmpty {
-        ContentUnavailableView("还没有常用食物", systemImage: "star")
+        ContentUnavailableView(L10n.text("core.no.favorite.foods.yet"), systemImage: "star")
       } else {
         ForEach(presets) { preset in
           Button {
@@ -119,7 +125,7 @@ struct FoodLibraryView: View {
           }
           .buttonStyle(.plain)
           .swipeActions {
-            Button("删除", role: .destructive) { pendingPresetDeletion = preset }
+            Button(L10n.text("core.delete"), role: .destructive) { pendingPresetDeletion = preset }
           }
         }
       }
@@ -128,9 +134,9 @@ struct FoodLibraryView: View {
 
   @ViewBuilder
   private var templatesContent: some View {
-    Section("固定餐") {
+    Section(L10n.text("core.saved.meals")) {
       if templates.isEmpty {
-        ContentUnavailableView("还没有固定餐", systemImage: "list.bullet.rectangle")
+        ContentUnavailableView(L10n.text("core.no.saved.meals.yet"), systemImage: "list.bullet.rectangle")
       } else {
         ForEach(templates) { template in
           Button {
@@ -139,7 +145,7 @@ struct FoodLibraryView: View {
             HStack {
               VStack(alignment: .leading, spacing: 3) {
                 Text(template.name)
-                Text("\(template.items.count) 项食物")
+                Text(L10n.text("core.foods", template.items.count))
                   .font(.caption)
                   .foregroundStyle(.secondary)
               }
@@ -151,7 +157,7 @@ struct FoodLibraryView: View {
           }
           .buttonStyle(.plain)
           .swipeActions {
-            Button("删除", role: .destructive) { pendingMealDeletion = template }
+            Button(L10n.text("core.delete"), role: .destructive) { pendingMealDeletion = template }
           }
         }
       }
@@ -178,7 +184,7 @@ struct FoodLibraryView: View {
     } catch {
       modelContext.rollback()
       pendingPresetDeletion = nil
-      actionErrorMessage = "删除失败：\(error.localizedDescription)。请重试。"
+      actionErrorMessage = L10n.Message(resolving: { L10n.text("core.delete.failed.please.try.again" , String(describing: error.localizedDescription)) })
     }
   }
 
@@ -190,7 +196,7 @@ struct FoodLibraryView: View {
     } catch {
       modelContext.rollback()
       pendingMealDeletion = nil
-      actionErrorMessage = "删除失败：\(error.localizedDescription)。请重试。"
+      actionErrorMessage = L10n.Message(resolving: { L10n.text("core.delete.failed.please.try.again" , String(describing: error.localizedDescription)) })
     }
   }
 }
@@ -207,7 +213,7 @@ private struct FoodPresetEditor: View {
   @State private var protein: Double
   @State private var fat: Double
   @State private var macrosEdited = false
-  @State private var errorMessage: String?
+  @State private var errorMessage: L10n.Message?
 
   init(preset: FoodPreset?) {
     self.preset = preset
@@ -217,7 +223,7 @@ private struct FoodPresetEditor: View {
       }
         ?? .perServing)
     _name = State(initialValue: preset?.name ?? "")
-    _servingDescription = State(initialValue: preset?.servingDescription ?? "1 份")
+    _servingDescription = State(initialValue: preset?.servingDescription ?? L10n.text("core.default.serving.description"))
     _carbohydrates = State(initialValue: preset?.carbohydratesPerServing ?? 0)
     _protein = State(initialValue: preset?.proteinPerServing ?? 0)
     _fat = State(initialValue: preset?.fatPerServing ?? 0)
@@ -243,58 +249,58 @@ private struct FoodPresetEditor: View {
   var body: some View {
     NavigationStack {
       Form {
-        Section("食物") {
-          TextField("名称", text: $name)
+        Section(L10n.text("core.food")) {
+          TextField(L10n.text("core.name"), text: $name)
             .accessibilityIdentifier("foodPreset.name")
-          Picker("营养基准", selection: $inputMode) {
+          Picker(L10n.text("core.nutrition.basis"), selection: $inputMode) {
             ForEach(PortionInputMode.allCases) { Text($0.title).tag($0) }
           }
-          .pickerStyle(.segmented)
+          .modifier(CoreAdaptivePickerStyle())
           .accessibilityIdentifier("foodPreset.basis")
           if inputMode == .perServing {
-            TextField("每份说明", text: $servingDescription)
+            TextField(L10n.text("core.serving.description"), text: $servingDescription)
           } else {
-            LabeledContent("每份说明") {
+            LabeledContent(L10n.text("core.serving.description")) {
               Text(FoodPortionMath.per100gServingDescription)
                 .foregroundStyle(.secondary)
             }
           }
         }
         Section {
-          LabeledContent("热量", value: "\(NutritionFormatting.number(calories)) kcal")
+          LabeledContent(L10n.text("core.calories"), value: "\(NutritionFormatting.number(calories)) kcal")
             .accessibilityIdentifier("foodPreset.calories")
-          field("碳水", value: $carbohydrates, unit: "g")
-          field("蛋白质", value: $protein, unit: "g")
-          field("脂肪", value: $fat, unit: "g")
+          field(L10n.text("core.carbs"), identifier: "碳水", value: $carbohydrates, unit: "g")
+          field(L10n.text("core.protein"), identifier: "蛋白质", value: $protein, unit: "g")
+          field(L10n.text("core.fat"), identifier: "脂肪", value: $fat, unit: "g")
         } header: {
           Text(inputMode.nutrientSectionTitle)
         } footer: {
           Text(NutritionMath.calorieCalculationNote)
         }
       }
-      .navigationTitle(preset == nil ? "新建常用食物" : "编辑常用食物")
+      .navigationTitle(preset == nil ? L10n.text("core.new.favorite.food") : L10n.text("core.edit.favorite.food"))
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
-        ToolbarItem(placement: .cancellationAction) { Button("取消") { dismiss() } }
+        ToolbarItem(placement: .cancellationAction) { Button(L10n.text("core.cancel")) { dismiss() } }
         ToolbarItem(placement: .confirmationAction) {
-          Button("保存", action: save)
+          Button(L10n.text("core.save"), action: save)
             .disabled(!isValid)
             .accessibilityIdentifier("foodPreset.save")
         }
         NutritionKeyboardDoneToolbar()
       }
-      .alert("保存失败", isPresented: errorBinding) {
-        Button("好", role: .cancel) { errorMessage = nil }
+      .alert(L10n.text("core.save.failed"), isPresented: errorBinding) {
+        Button(L10n.text("core.ok.201"), role: .cancel) { errorMessage = nil }
       } message: {
-        Text(errorMessage ?? "")
+        Text(errorMessage?.text ?? "")
       }
     }
   }
 
-  private func field(_ title: String, value: Binding<Double>, unit: String) -> some View {
+  private func field(_ title: String, identifier: String, value: Binding<Double>, unit: String) -> some View {
     LabeledContent(title) {
       HStack {
-        TextField(
+        StableNumberField(
           "0",
           value: Binding(
             get: { value.wrappedValue },
@@ -303,9 +309,9 @@ private struct FoodPresetEditor: View {
               value.wrappedValue = $0
             }
           ),
-          format: .number.precision(.fractionLength(0...2))
+          format: .number.precision(.fractionLength(0...2)).locale(L10n.locale)
         )
-          .accessibilityIdentifier("foodPreset.nutrient.\(title)")
+          .accessibilityIdentifier("foodPreset.nutrient.\(identifier)")
           .keyboardType(.decimalPad)
           .multilineTextAlignment(.trailing)
         Text(unit).foregroundStyle(.secondary)
@@ -319,7 +325,7 @@ private struct FoodPresetEditor: View {
 
   private func save() {
     guard isValid else {
-      errorMessage = "请填写名称和份量说明，营养数值必须为有限非负数。"
+      errorMessage = L10n.Message(resolving: { L10n.text("core.enter.a.name.and.serving.description.nutrition.values.must.be.finite.and.nonnegative") })
       return
     }
     let description = effectiveServingDescription
@@ -348,7 +354,7 @@ private struct FoodPresetEditor: View {
         preset.proteinPerServing = snapshot.protein
         preset.fatPerServing = snapshot.fat
         preset.updatedAt = snapshot.updatedAt
-        errorMessage = "保存失败：\(error.localizedDescription)。修改仍保留在表单中，请重试。"
+        errorMessage = L10n.Message(resolving: { L10n.text("core.save.failed.your.changes.are.still.in.the.form.please.try.again" , String(describing: error.localizedDescription)) })
       }
     } else {
       let preset = FoodPreset(
@@ -365,7 +371,7 @@ private struct FoodPresetEditor: View {
         dismiss()
       } catch {
         modelContext.delete(preset)
-        errorMessage = "保存失败：\(error.localizedDescription)。输入仍保留在表单中，请重试。"
+        errorMessage = L10n.Message(resolving: { L10n.text("core.save.failed.your.input.is.still.in.the.form.please.try.again" , String(describing: error.localizedDescription)) })
       }
     }
   }
@@ -476,7 +482,7 @@ private struct MealTemplateEditor: View {
   @State private var draft: MealTemplateDraft
   @State private var presentedSheet: MealEditorSheet?
   @State private var showCancelConfirmation = false
-  @State private var errorMessage: String?
+  @State private var errorMessage: L10n.Message?
 
   init(template: MealTemplate?) {
     self.template = template
@@ -488,29 +494,29 @@ private struct MealTemplateEditor: View {
   var body: some View {
     NavigationStack {
       List {
-        Section("固定餐") {
-          TextField("名称", text: $draft.name)
+        Section(L10n.text("core.saved.meals")) {
+          TextField(L10n.text("core.name"), text: $draft.name)
             .accessibilityIdentifier("mealTemplate.name")
-          TextField("备注（可选）", text: $draft.notes, axis: .vertical)
+          TextField(L10n.text("core.notes.optional"), text: $draft.notes, axis: .vertical)
         }
 
-        Section("食物") {
+        Section(L10n.text("core.food")) {
           ForEach($draft.items) { $item in
             MealTemplateItemDraftRow(item: $item) {
               draft.remove(id: item.id)
             }
           }
-          Button("从常用食物添加", systemImage: "plus.circle.fill") {
+          Button(L10n.text("core.add.from.favorite.foods"), systemImage: "plus.circle.fill") {
             presentedSheet = .presetPicker
           }
           .accessibilityIdentifier("mealTemplate.addPreset")
         }
       }
-      .navigationTitle(draft.isNew ? "新建固定餐" : "编辑固定餐")
+      .navigationTitle(draft.isNew ? L10n.text("core.new.saved.meal") : L10n.text("core.edit.saved.meal"))
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
         ToolbarItem(placement: .cancellationAction) {
-          Button(draft.isNew ? "取消" : "关闭") {
+          Button(draft.isNew ? L10n.text("core.cancel") : L10n.text("core.close")) {
             if draft.isNew && !draft.isEmptyDraft {
               showCancelConfirmation = true
             } else {
@@ -519,7 +525,7 @@ private struct MealTemplateEditor: View {
           }
         }
         ToolbarItem(placement: .confirmationAction) {
-          Button("保存", action: save)
+          Button(L10n.text("core.save"), action: save)
             .disabled(!canSave)
             .accessibilityIdentifier("mealTemplate.save")
         }
@@ -531,17 +537,17 @@ private struct MealTemplateEditor: View {
         }
       }
       .confirmationDialog(
-        "放弃新固定餐？", isPresented: $showCancelConfirmation, titleVisibility: .visible
+        L10n.text("core.discard.this.new.saved.meal"), isPresented: $showCancelConfirmation, titleVisibility: .visible
       ) {
-        Button("放弃", role: .destructive) { dismiss() }
-        Button("继续编辑", role: .cancel) {}
+        Button(L10n.text("core.discard"), role: .destructive) { dismiss() }
+        Button(L10n.text("core.keep.editing"), role: .cancel) {}
       } message: {
-        Text("尚未保存的修改不会保留到资料库。")
+        Text(L10n.text("core.unsaved.changes.will.not.be.added.to.the.library"))
       }
-      .alert("保存失败", isPresented: errorBinding) {
-        Button("好", role: .cancel) { errorMessage = nil }
+      .alert(L10n.text("core.save.failed"), isPresented: errorBinding) {
+        Button(L10n.text("core.ok.201"), role: .cancel) { errorMessage = nil }
       } message: {
-        Text(errorMessage ?? "")
+        Text(errorMessage?.text ?? "")
       }
     }
   }
@@ -552,7 +558,7 @@ private struct MealTemplateEditor: View {
 
   private func save() {
     guard canSave else {
-      errorMessage = "请填写固定餐名称，并至少添加一项数量有效的食物。"
+      errorMessage = L10n.Message(resolving: { L10n.text("core.enter.a.meal.name.and.add.at.least.one.food.with.a.valid.quantity") })
       return
     }
     if let template {
@@ -604,7 +610,7 @@ private struct MealTemplateEditor: View {
         template.notes = previousNotes
         template.updatedAt = previousUpdatedAt
         modelContext.rollback()
-        errorMessage = "保存失败：\(error.localizedDescription)。修改仍保留在表单中，请重试。"
+        errorMessage = L10n.Message(resolving: { L10n.text("core.save.failed.your.changes.are.still.in.the.form.please.try.again" , String(describing: error.localizedDescription)) })
       }
     } else {
       let template = MealTemplate(id: draft.id, name: draft.name.trimmed, notes: draft.notes)
@@ -629,13 +635,14 @@ private struct MealTemplateEditor: View {
         dismiss()
       } catch {
         modelContext.rollback()
-        errorMessage = "保存失败：\(error.localizedDescription)。输入仍保留在表单中，请重试。"
+        errorMessage = L10n.Message(resolving: { L10n.text("core.save.failed.your.input.is.still.in.the.form.please.try.again" , String(describing: error.localizedDescription)) })
       }
     }
   }
 }
 
 private struct MealTemplateItemDraftRow: View {
+  @ScaledMetric(relativeTo: .body) private var quantityWidth = 56.0
   @Binding var item: MealTemplateItemDraft
   let onDelete: () -> Void
 
@@ -653,13 +660,13 @@ private struct MealTemplateItemDraftRow: View {
           .foregroundStyle(.secondary)
       }
       Spacer()
-      TextField("数量", value: displayQuantity, format: .number.precision(.fractionLength(0...2)))
+      StableNumberField(L10n.text("core.quantity"), value: displayQuantity, format: .number.precision(.fractionLength(0...2)).locale(L10n.locale))
         .keyboardType(.decimalPad)
         .multilineTextAlignment(.trailing)
-        .frame(maxWidth: 56)
-      Text(FoodPortionMath.isPer100g(item.servingDescriptionSnapshot) ? "g" : "份")
+        .frame(maxWidth: quantityWidth)
+      Text(FoodPortionMath.isPer100g(item.servingDescriptionSnapshot) ? "g" : L10n.text("core.servings"))
         .font(.caption).foregroundStyle(.secondary)
-      Button("删除", systemImage: "trash", role: .destructive, action: onDelete)
+      Button(L10n.text("core.delete"), systemImage: "trash", role: .destructive, action: onDelete)
         .labelStyle(.iconOnly)
     }
   }
@@ -704,18 +711,18 @@ private struct MealTemplatePresetPicker: View {
         }
         .buttonStyle(.plain)
       }
-      .searchable(text: $searchText, prompt: "搜索常用食物")
+      .searchable(text: $searchText, prompt: L10n.text("core.search.favorite.foods"))
       .overlay {
         if presets.isEmpty {
-          ContentUnavailableView("没有常用食物", systemImage: "star")
+          ContentUnavailableView(L10n.text("core.no.favorite.foods"), systemImage: "star")
         } else if filteredPresets.isEmpty {
-          ContentUnavailableView("没有匹配的常用食物", systemImage: "magnifyingglass")
+          ContentUnavailableView(L10n.text("core.no.matching.favorite.foods"), systemImage: "magnifyingglass")
         }
       }
-      .navigationTitle("选择常用食物")
+      .navigationTitle(L10n.text("core.choose.favorite.food"))
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
-        ToolbarItem(placement: .cancellationAction) { Button("取消") { dismiss() } }
+        ToolbarItem(placement: .cancellationAction) { Button(L10n.text("core.cancel")) { dismiss() } }
       }
     }
   }

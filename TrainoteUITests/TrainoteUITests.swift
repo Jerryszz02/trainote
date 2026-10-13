@@ -6,7 +6,7 @@ final class TrainoteUITests: XCTestCase {
   override func setUpWithError() throws {
     continueAfterFailure = false
     app = XCUIApplication()
-    app.launchArguments = ["-ui-testing"]
+    app.launchArguments = ["-AppleLanguages", "(zh-Hans)", "-AppleLocale", "zh_CN", "-appearance.language", "zh-Hans", "-ui-testing"]
     app.launch()
   }
 
@@ -50,6 +50,28 @@ final class TrainoteUITests: XCTestCase {
     screenshot.lifetime = .keepAlways
     add(screenshot)
     app.navigationBars.buttons.element(boundBy: 0).tap()
+    XCTAssertTrue(toggle.waitForNonExistence(timeout: 5))
+    XCTAssertTrue(app.navigationBars["动作详情"].waitForNonExistence(timeout: 3))
+    let library = app.navigationBars["资料库"]
+    let libraryList = app.collectionViews.firstMatch
+    let libraryReady = XCTNSPredicateExpectation(
+      predicate: NSPredicate { _, _ in
+        guard library.exists, libraryList.exists else { return false }
+        let screen = self.app.frame
+        let navigationFrame = library.frame
+        let listFrame = libraryList.frame
+        // AX can round screen-edge coordinates by a fraction of a point.
+        return screen.insetBy(dx: -1, dy: -1).contains(navigationFrame)
+          && screen.insetBy(dx: -1, dy: -1).contains(listFrame)
+          && navigationFrame.width >= screen.width * 0.9
+          && listFrame.width >= screen.width * 0.9
+      }, object: nil)
+    let libraryResult = XCTWaiter.wait(for: [libraryReady], timeout: 5)
+    if libraryResult != .completed {
+      UITestTextInput.recordDiagnostics("Returning to library", field: app.searchFields.firstMatch, in: app)
+    }
+    XCTAssertEqual(libraryResult, .completed,
+      "Returning from the sample must restore the full library before editing search")
     replaceText(in: app.searchFields.firstMatch, with: "3/4 sit-up")
     app.searchFields.firstMatch.typeText("\n")
     app.buttons["exerciseLibrary.item.0001"].tap()
@@ -57,7 +79,7 @@ final class TrainoteUITests: XCTestCase {
     XCTAssertFalse(app.buttons["exerciseAnimation.toggle"].exists)
     XCTAssertTrue(app.staticTexts["分类"].exists)
     app.swipeUp()
-    XCTAssertTrue(app.staticTexts["中文说明"].exists)
+    XCTAssertTrue(app.staticTexts["动作说明"].exists)
   }
 
   func testCatalogSearchUpdatesAndClearsInLibraryAndPicker() {
@@ -200,7 +222,7 @@ final class TrainoteUITests: XCTestCase {
   func testPersistentDataSurvivesRelaunch() {
     app.terminate()
     app = XCUIApplication()
-    app.launchArguments = ["-ui-testing-persistent"]
+    app.launchArguments = ["-AppleLanguages", "(zh-Hans)", "-AppleLocale", "zh_CN", "-appearance.language", "zh-Hans", "-ui-testing-persistent"]
     app.launch()
     let uniqueName = "重启记录-\(UUID().uuidString.prefix(8))"
 
@@ -248,6 +270,7 @@ final class TrainoteUITests: XCTestCase {
     app.tabBars.buttons["饮食"].tap()
     app.buttons["nutrition.add"].tap()
     app.buttons["nutrition.add.direct"].tap()
+    XCTAssertTrue(app.buttons["nutrition.entry.save"].waitForExistence(timeout: 3))
   }
 
   private func revealFoodRow(_ row: XCUIElement) {
@@ -269,28 +292,128 @@ final class TrainoteUITests: XCTestCase {
   }
 
   private func replaceText(in field: XCUIElement, with value: String) {
-    reveal(field)
     UITestTextInput.replace(field, with: value, in: app)
   }
 }
 
 enum UITestTextInput {
+  static func recordDiagnostics(_ context: String, field: XCUIElement, in app: XCUIApplication) {
+    XCTContext.runActivity(named: context) { activity in
+      let observations = """
+        app: \(app.frame)
+        field: exists=\(field.exists), enabled=\(field.isEnabled), hittable=\(field.isHittable), frame=\(field.frame)
+        viewport: \(inputViewport(for: field, in: app))
+        navigation: \(app.navigationBars.allElementsBoundByIndex.map { "\($0.identifier): \($0.frame)" })
+        tabs: \(app.tabBars.allElementsBoundByIndex.map { "\($0.identifier): \($0.frame), hittable=\($0.isHittable)" })
+        keyboards: \(app.keyboards.allElementsBoundByIndex.map { "\($0.frame), hittable=\($0.isHittable)" })
+        lists: \(app.collectionViews.allElementsBoundByIndex.map { "\($0.frame)" })
+        \(app.debugDescription)
+        """
+      let trace = XCTAttachment(string: observations)
+      trace.lifetime = .keepAlways
+      activity.add(trace)
+      let screenshot = XCTAttachment(screenshot: app.screenshot())
+      screenshot.lifetime = .keepAlways
+      activity.add(screenshot)
+    }
+  }
+
+  private static func inputViewport(for field: XCUIElement, in app: XCUIApplication) -> CGRect {
+    inputViewport(isSearch: field.elementType == .searchField, screen: app.frame, in: app)
+  }
+
+  private static func inputViewport(isSearch: Bool, screen: CGRect, in app: XCUIApplication) -> CGRect {
+    var viewport = screen.insetBy(dx: 8, dy: 8)
+    if !isSearch, app.navigationBars.firstMatch.exists {
+      viewport.origin.y = max(viewport.minY, app.navigationBars.firstMatch.frame.maxY)
+    }
+    let bottom: CGFloat
+    if app.keyboards.firstMatch.exists {
+      bottom = app.keyboards.firstMatch.frame.minY - (isSearch ? 0 : 80)
+    } else if !isSearch, app.tabBars.firstMatch.exists {
+      bottom = app.tabBars.firstMatch.frame.minY - 8
+    } else {
+      bottom = screen.maxY - 8
+    }
+    viewport.size.height = max(0, bottom - viewport.minY)
+    return viewport
+  }
+
+  private static func focus(_ field: XCUIElement, in app: XCUIApplication) -> Bool {
+    // Keep XCTest's normal path intact. Geometry polling is only an AX fallback.
+    if field.isHittable {
+      field.tap()
+      return true
+    }
+    let screen = app.frame
+    let isSearch = field.elementType == .searchField
+    var viewport = inputViewport(isSearch: isSearch, screen: screen, in: app)
+    // Scroll only an offscreen form row. AX hittability can remain false for a fully
+    // visible SwiftUI input; blindly swiping in that case moves the correct target away.
+    for _ in 0..<4 {
+      let frame = field.frame
+      guard !frame.isEmpty, !isSearch else { break }
+      if frame.maxY > viewport.maxY { app.swipeUp() }
+      else if frame.minY < viewport.minY { app.swipeDown() }
+      else { break }
+      viewport = inputViewport(isSearch: isSearch, screen: screen, in: app)
+      if field.isHittable {
+        field.tap()
+        return true
+      }
+    }
+    var previousFrame: CGRect? = field.frame
+    var stableSince = Date()
+    let visible = XCTNSPredicateExpectation(
+      predicate: NSPredicate { _, _ in
+        // AX queries can be slow on CI. Poll only the target frame, using the
+        // viewport snapshot above, so two observations fit the existing timeout.
+        let frame = field.frame
+        guard !frame.isEmpty, viewport.contains(frame) else {
+          previousFrame = nil
+          return false
+        }
+        if previousFrame != frame {
+          previousFrame = frame
+          stableSince = Date()
+          return false
+        }
+        return Date().timeIntervalSince(stableSince) >= 0.5
+      }, object: nil)
+    guard XCTWaiter.wait(for: [visible], timeout: 5) == .completed else {
+      recordDiagnostics("Input is not fully visible and stationary", field: field, in: app)
+      XCTFail("Input field must be fully visible and stationary: \(field.identifier), \(field.frame)")
+      return false
+    }
+    let currentScreen = app.frame
+    let currentViewport = inputViewport(isSearch: isSearch, screen: currentScreen, in: app)
+    let frame = field.frame
+    guard field.isEnabled, frame == previousFrame, currentViewport.contains(frame) else {
+      recordDiagnostics("Input moved before focus", field: field, in: app)
+      XCTFail("Input field moved before focus: \(field.identifier)")
+      return false
+    }
+    if field.isHittable {
+      field.tap()
+    } else {
+      // Use only the observed, fully visible frame. Keyboard appearance and exact
+      // read-back below still prove that this specific input acquired the responder.
+      app.coordinate(withNormalizedOffset: .zero)
+        .withOffset(CGVector(dx: frame.midX - currentScreen.minX, dy: frame.midY - currentScreen.minY)).tap()
+    }
+    return true
+  }
+
   static func replace(_ field: XCUIElement, with value: String, in app: XCUIApplication) {
     XCTAssertTrue(field.waitForExistence(timeout: 3))
-    let visible = XCTNSPredicateExpectation(
-      predicate: NSPredicate { _, _ in field.exists && field.isHittable }, object: nil)
-    XCTAssertEqual(
-      XCTWaiter.wait(for: [visible], timeout: 5), .completed,
-      "Input field must be visible: \(field.identifier)")
-    field.tap()
+    guard focus(field, in: app) else { return }
     // hasFocus describes system focus, not the iOS text-input first responder.
     // Wait for the keyboard after a center tap; typeText and read-back verify the target.
     let keyboard = app.keyboards.firstMatch
     if !keyboard.waitForExistence(timeout: 3) {
       // Reopened searchable sheets can finish presenting before acquiring a text responder.
       // Reacquire the still-visible field once, then require the keyboard and exact read-back.
-      XCTAssertTrue(field.isHittable, "Input field moved before focus: \(field.identifier)")
-      field.tap()
+      guard focus(field, in: app) else { return }
     }
     guard keyboard.waitForExistence(timeout: 5) else {
       XCTFail("Keyboard did not appear for input: \(field.identifier)")

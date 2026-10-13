@@ -11,7 +11,11 @@ final class HealthRecoveryIntegration {
   let calibration: RecoveryCalibrationControl
   let service: RecoveryService?
   private(set) var todayResult: RecoveryResult?
-  private(set) var failureMessage: String?
+  private(set) var failureMessageKey: String?
+  private(set) var failureMessage: String? {
+    get { failureMessageKey.map { L10n.text($0) } }
+    set { failureMessageKey = newValue }
+  }
   private(set) var healthReadFailed = false
 
   init(
@@ -25,7 +29,7 @@ final class HealthRecoveryIntegration {
       service = try RecoveryService(bundle: bundle, calibration: calibration)
     } catch {
       service = nil
-      failureMessage = "恢复分析资源暂时无法载入。训练、饮食和体感记录仍可使用。"
+      failureMessage = "health.healthrecoveryintegration.recovery.resources.could.not.be.loaded.e5af04"
     }
   }
 
@@ -64,7 +68,7 @@ final class HealthRecoveryIntegration {
       failureMessage = nil
     } catch {
       todayResult = nil
-      failureMessage = "暂时无法更新恢复状态，请稍后重试。原有记录仍保留。"
+      failureMessage = "health.healthrecoveryintegration.recovery.could.not.be.updated.try.0b10e8"
     }
   }
 
@@ -98,15 +102,15 @@ final class HealthRecoveryIntegration {
   func todayMessage(hasRoutines: Bool) -> String {
     if let failureMessage { return failureMessage }
     if todayResult?.muscles.contains(where: { $0.hasPain || $0.hasMovementLimitation }) == true {
-      return "已记录疼痛或活动受限，先查看受影响肌群，再安排训练。"
+      return L10n.text("health.healthrecoveryintegration.pain.or.limited.movement.is.recorded.7b08a6")
     }
-    if needsRecoveryReview { return "今天体感偏疲惫，查看恢复状态后再安排训练。" }
-    if !hasRoutines { return "先选择一套训练模板，按自己的安排开始。" }
+    if needsRecoveryReview { return L10n.text("health.healthrecoveryintegration.you.reported.feeling.tired.today.review.75bacb") }
+    if !hasRoutines { return L10n.text("health.healthrecoveryintegration.choose.a.workout.template.and.start.edd184") }
     if todayResult?.facts.contains(where: {
       $0.id == "recovery.unallocatedRecords" && ($0.value ?? 0) > 0
     }) == true {
-      return "部分训练尚未分配肌群负荷，先查看记录覆盖与体感。"
+      return L10n.text("health.healthrecoveryintegration.some.workouts.have.no.allocated.muscle.65b731")
     }
-    return "结合已记录的训练与体感，查看今天的恢复状态。"
+    return L10n.text("health.healthrecoveryintegration.review.today.s.recovery.using.your.bff516")
   }
 }

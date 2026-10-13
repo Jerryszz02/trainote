@@ -12,18 +12,18 @@ struct RecoveryCheckInView: View {
   var body: some View {
     NavigationStack {
       Form {
-        Section("今天整体感觉") {
-          Picker("整体感觉", selection: $draft.feeling) {
-            Text("未回答").tag(OverallFeeling?.none)
-            Text("好").tag(Optional(OverallFeeling.good))
-            Text("一般").tag(Optional(OverallFeeling.normal))
-            Text("疲惫").tag(Optional(OverallFeeling.tired))
+        Section(L10n.text("health.recoverycheckinview.overall.feeling.today.141564")) {
+          Picker(L10n.text("health.recoverycheckinview.overall.feeling.0eb92f"), selection: $draft.feeling) {
+            Text(L10n.text("health.recoverycheckinview.unanswered.db09b9")).tag(OverallFeeling?.none)
+            Text(L10n.text("health.recoverycheckinview.ok.27e4fe")).tag(Optional(OverallFeeling.good))
+            Text(L10n.text("health.recoverycheckinview.okay.f0aacc")).tag(Optional(OverallFeeling.normal))
+            Text(L10n.text("health.recoverycheckinview.tired.8174d1")).tag(Optional(OverallFeeling.tired))
           }.accessibilityIdentifier("recovery.checkIn.feeling")
-          Picker("睡眠感受（可选）", selection: $draft.sleepFeeling) {
-            Text("未回答").tag(SleepFeeling?.none)
-            Text("好").tag(Optional(SleepFeeling.good))
-            Text("一般").tag(Optional(SleepFeeling.normal))
-            Text("较差").tag(Optional(SleepFeeling.poor))
+          Picker(L10n.text("health.recoverycheckinview.sleep.quality.optional.229e9c"), selection: $draft.sleepFeeling) {
+            Text(L10n.text("health.recoverycheckinview.unanswered.db09b9")).tag(SleepFeeling?.none)
+            Text(L10n.text("health.recoverycheckinview.ok.27e4fe")).tag(Optional(SleepFeeling.good))
+            Text(L10n.text("health.recoverycheckinview.okay.f0aacc")).tag(Optional(SleepFeeling.normal))
+            Text(L10n.text("health.recoverycheckinview.poor.8046a5")).tag(Optional(SleepFeeling.poor))
           }
         }
         Section {
@@ -33,23 +33,23 @@ struct RecoveryCheckInView: View {
             }
           }
           if !showAllMuscles {
-            Button("其他肌群") { showAllMuscles = true }
+            Button(L10n.text("health.recoverycheckinview.other.muscles.5ca4ad")) { showAllMuscles = true }
           }
         } header: {
-          Text("最近训练肌群")
+          Text(L10n.text("health.recoverycheckinview.recently.trained.muscles.2369da"))
         } footer: {
-          Text("只填有感受的肌群即可。疼痛和活动受限会独立限制相关训练建议。")
+          Text(L10n.text("health.recoverycheckinview.only.fill.in.muscles.you.notice.f6f0c4"))
         }
-        if let error { Text(error).foregroundStyle(.red) }
+        if let error { Text(L10n.text(error)).foregroundStyle(.red) }
       }
-      .navigationTitle("十秒体感")
+      .navigationTitle(L10n.text("health.recoverycheckinview.quick.check.in.70302a"))
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
         ToolbarItem(placement: .cancellationAction) {
-          Button("跳过") { dismiss() }.accessibilityIdentifier("recovery.checkIn.skip")
+          Button(L10n.text("health.recoverycheckinview.skip.31a985")) { dismiss() }.accessibilityIdentifier("recovery.checkIn.skip")
         }
         ToolbarItem(placement: .confirmationAction) {
-          Button("保存") { save() }.accessibilityIdentifier("recovery.checkIn.save")
+          Button(L10n.text("health.recoverycheckinview.save.fadf24")) { save() }.accessibilityIdentifier("recovery.checkIn.save")
         }
       }
     }
@@ -89,7 +89,7 @@ struct RecoveryCheckInView: View {
     do {
       try RecoveryCheckInWriter.save(draft, repository: repository, at: .now)
       dismiss()
-    } catch { self.error = "体感尚未保存，请重试。" }
+    } catch { self.error = "health.recoverycheckinview.check.in.has.not.been.saved.f6b8d2" }
   }
 
 }
@@ -118,23 +118,23 @@ enum RecoveryCheckInWriter {
 private struct MuscleFeedbackEditor: View {
   @Binding var feedback: MuscleFeedbackValue
   var body: some View {
-    Picker("酸痛", selection: $feedback.soreness) {
-      Text("未回答").tag(SorenessLevel?.none)
-      Text("无").tag(Optional(SorenessLevel.none))
-      Text("轻").tag(Optional(SorenessLevel.mild))
-      Text("明显").tag(Optional(SorenessLevel.significant))
+    Picker(L10n.text("health.recoverycheckinview.soreness.1796dc"), selection: $feedback.soreness) {
+      Text(L10n.text("health.recoverycheckinview.unanswered.db09b9")).tag(SorenessLevel?.none)
+      Text(L10n.text("health.recoverycheckinview.none.720777")).tag(Optional(SorenessLevel.none))
+      Text(L10n.text("health.recoverycheckinview.mild.eb4f04")).tag(Optional(SorenessLevel.mild))
+      Text(L10n.text("health.recoverycheckinview.significant.d13e81")).tag(Optional(SorenessLevel.significant))
     }
     .accessibilityIdentifier("recovery.soreness.\(feedback.muscleID.rawValue)")
-    Picker("疼痛", selection: $feedback.hasPain) {
-      Text("未回答").tag(Bool?.none)
-      Text("无").tag(Optional(false))
-      Text("有").tag(Optional(true))
+    Picker(L10n.text("health.recoverycheckinview.pain.2515a7"), selection: $feedback.hasPain) {
+      Text(L10n.text("health.recoverycheckinview.unanswered.db09b9")).tag(Bool?.none)
+      Text(L10n.text("health.recoverycheckinview.none.720777")).tag(Optional(false))
+      Text(L10n.text("health.recoverycheckinview.yes.fbd5b7")).tag(Optional(true))
     }
     .accessibilityIdentifier("recovery.pain.\(feedback.muscleID.rawValue)")
-    Picker("活动受限", selection: $feedback.hasMovementLimitation) {
-      Text("未回答").tag(Bool?.none)
-      Text("无").tag(Optional(false))
-      Text("有").tag(Optional(true))
+    Picker(L10n.text("health.recoverycheckinview.limited.movement.4b936a"), selection: $feedback.hasMovementLimitation) {
+      Text(L10n.text("health.recoverycheckinview.unanswered.db09b9")).tag(Bool?.none)
+      Text(L10n.text("health.recoverycheckinview.none.720777")).tag(Optional(false))
+      Text(L10n.text("health.recoverycheckinview.yes.fbd5b7")).tag(Optional(true))
     }
     .accessibilityIdentifier("recovery.limitation.\(feedback.muscleID.rawValue)")
   }

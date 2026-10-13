@@ -1,0 +1,24 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "NSHealthShareUsageDescription": {
+      "comment": "System HealthKit read permission. iOS selects this language independently of the in-app override.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Read the weight, sleep, resting heart rate, heart rate variability, steps, active energy and workouts you choose to share for on-device trend and recovery analysis."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "读取你选择共享的体重、睡眠、静息心率、心率变异性、步数、活动能量和训练，用于本机趋势与恢复分析。"
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

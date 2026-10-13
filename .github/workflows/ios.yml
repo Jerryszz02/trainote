@@ -11,11 +11,16 @@ concurrency:
 jobs:
   test:
     runs-on: macos-latest
-    timeout-minutes: 60
+    # The combined interaction/localization suite exceeds the former 58–59 minute baseline.
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
       - name: Check exercise recording modes
         run: python3 Scripts/audit_tracking_modes.py
+      - name: Check localization catalog
+        run: |
+          python3 -m unittest discover -s Scripts/localization -p 'test_*.py'
+          python3 Scripts/localization/build_catalog.py --check
       - name: Select an available iPhone simulator
         run: |
           xcodebuild -version
@@ -36,6 +41,7 @@ jobs:
           xcodebuild -project Trainote.xcodeproj -scheme Trainote \
             -destination "platform=iOS Simulator,id=$TRAINOTE_SIMULATOR" \
             -resultBundlePath TestResults.xcresult \
+            -testLanguage zh-Hans -testRegion CN \
             CODE_SIGNING_ALLOWED=NO test
       - name: Upload test evidence
         if: always()

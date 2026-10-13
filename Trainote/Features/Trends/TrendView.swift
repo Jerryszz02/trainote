@@ -42,17 +42,17 @@ struct TrendView: View {
       goalSection
       historySection
       Section {
-        Button("身体资料与目标方向") { showProfile = true }
+        Button(L10n.text("health.trendview.body.details.and.goal.direction.ad25de")) { showProfile = true }
           .accessibilityIdentifier("trend.profile")
-        if let onOpenManualGoal { Button("编辑手动营养目标", action: onOpenManualGoal) }
-        if let onOpenHelp { Button("计算方法与数据使用", action: onOpenHelp) }
+        if let onOpenManualGoal { Button(L10n.text("health.trendview.edit.manual.nutrition.targets.9bc7a5"), action: onOpenManualGoal) }
+        if let onOpenHelp { Button(L10n.text("health.trendview.methods.and.data.use.df2501"), action: onOpenHelp) }
       }
     }
-    .navigationTitle("趋势分析")
+    .navigationTitle(L10n.text("health.trendview.trend.analysis.cc7a87"))
     .accessibilityIdentifier("trend.screen")
     .toolbar {
       ToolbarItem(placement: .primaryAction) {
-        Button("记录体重", systemImage: "plus") { showWeight = true }
+        Button(L10n.text("health.trendview.record.weight.158001"), systemImage: "plus") { showWeight = true }
           .accessibilityIdentifier("trend.addWeight")
       }
     }
@@ -64,35 +64,35 @@ struct TrendView: View {
     .sheet(isPresented: $showProfile) { TrendProfileForm(model: model) }
     .sheet(isPresented: $showWeight) { TrendWeightForm(model: model) }
     .alert(
-      "未能完成",
+      L10n.text("health.trendview.could.not.complete.a49f84"),
       isPresented: Binding(
         get: { model.errorMessage != nil },
         set: {
           if !$0 { model.errorMessage = nil }
         })
     ) {
-      Button("好", role: .cancel) { model.errorMessage = nil }
+      Button(L10n.text("health.trendview.ok.27e4fe"), role: .cancel) { model.errorMessage = nil }
     } message: {
       Text(model.errorMessage ?? "")
     }
     .confirmationDialog(
-      "开启每周自动采用？", isPresented: $showAutomaticConfirmation, titleVisibility: .visible
+      L10n.text("health.trendview.enable.weekly.automatic.adoption.918ef7"), isPresented: $showAutomaticConfirmation, titleVisibility: .visible
     ) {
-      Button("开启自动采用") {
+      Button(L10n.text("health.trendview.enable.automatic.adoption.193285")) {
         model.setMode(.automatic)
         model.reload()
       }
-      Button("取消", role: .cancel) {}
+      Button(L10n.text("health.trendview.cancel.4d0b46"), role: .cancel) {}
     } message: {
-      Text("初始目标由你先采用。之后仅在记录充分且通过边界检查时，每 7 天最多调整一次，每次不超过 100 kcal 或当前目标的 5%。可随时暂停或撤销。")
+      Text(L10n.text("health.trendview.you.adopt.the.initial.targets.first.b01f1e"))
     }
     .confirmationDialog(
-      "这一天没有饮食记录", isPresented: $showEmptyDietConfirmation, titleVisibility: .visible
+      L10n.text("health.trendview.no.food.records.for.this.day.9fc2f9"), isPresented: $showEmptyDietConfirmation, titleVisibility: .visible
     ) {
-      Button("确认当天没有摄入，标记完整") { model.confirmDiet(on: dietDate) }
-      Button("继续补记", role: .cancel) {}
+      Button(L10n.text("health.trendview.confirm.no.intake.and.mark.complete.cf8066")) { model.confirmDiet(on: dietDate) }
+      Button(L10n.text("health.trendview.keep.adding.records.29d868"), role: .cancel) {}
     } message: {
-      Text("缺少记录不会自动按 0 kcal 处理；仅在确认没有摄入时使用此操作。")
+      Text(L10n.text("health.trendview.missing.records.are.not.treated.as.13c1c7"))
     }
   }
   private var overview: some View {
@@ -100,52 +100,52 @@ struct TrendView: View {
       if let value = model.result?.points.last(where: { $0.smoothedKilograms != nil })?
         .smoothedKilograms
       {
-        LabeledContent("趋势体重", value: String(format: "%.1f kg", value))
+        LabeledContent(L10n.text("health.trendview.trend.weight.dfd7ed"), value: String(format: "%.1f kg", locale: L10n.locale, value))
       } else {
-        Text("记录体重后开始建立趋势").foregroundStyle(.secondary)
+        Text(L10n.text("health.trendview.record.weight.to.start.building.a.2b359d")).foregroundStyle(.secondary)
       }
-      LabeledContent("目标方向", value: model.input?.profile?.goalDirection?.trendTitle ?? "待设置")
+      LabeledContent(L10n.text("health.trendview.goal.direction.4a9679"), value: model.input?.profile?.goalDirection?.trendTitle ?? L10n.text("health.trendview.not.set.4c3ba6"))
       if model.needsProfileCompletion {
-        Button("完善资料") { showProfile = true }
+        Button(L10n.text("health.trendview.complete.profile.2707e3")) { showProfile = true }
           .accessibilityIdentifier("trend.completeProfile")
       }
       if let rate = model.result?.weeklyChangePercent {
-        LabeledContent("近 21 天变化速度", value: String(format: "%+.2f%% / 周", rate))
+        LabeledContent(L10n.text("health.trendview.rate.over.the.last.21.days.574730"), value: String(format: L10n.text("health.trendview.2f.week.67786a"), locale: L10n.locale, rate))
       }
       if let next = model.nextReview, next > model.now() {
-        LabeledContent("下次复核", value: next.formatted(date: .abbreviated, time: .omitted))
+        LabeledContent(L10n.text("health.trendview.next.review.c0ddc0"), value: next.formatted(Date.FormatStyle(date: .abbreviated, time: .omitted).locale(L10n.locale)))
       }
       if let hold = model.result?.holdReason {
         Text(hold.trendMessage).foregroundStyle(.secondary).accessibilityIdentifier("trend.hold")
       }
       if let input = model.input, TrendHistory.needsBaselineRebuild(input) {
-        Text("身体资料已更新。观察满 7 天后，请核对并采用新的初始目标，重新建立基线。")
+        Text(L10n.text("health.trendview.body.details.updated.after.7.days.92cef0"))
           .font(.footnote).foregroundStyle(.secondary)
       }
     }
   }
   private var weightChart: some View {
-    Section("体重 · kg") {
-      Picker("时间范围", selection: $rangeDays) {
-        Text("4 周").tag(28)
-        Text("12 周").tag(84)
-        Text("全部").tag(0)
+    Section(L10n.text("health.trendview.weight.kg.157e4a")) {
+      Picker(L10n.text("health.trendview.time.range.2be904"), selection: $rangeDays) {
+        Text(L10n.text("health.trendview.4.weeks.e9fcd6")).tag(28)
+        Text(L10n.text("health.trendview.12.weeks.4945ee")).tag(84)
+        Text(L10n.text("health.trendview.all.778fc8")).tag(0)
       }.pickerStyle(.segmented)
       if points.isEmpty {
         ContentUnavailableView(
-          "还没有体重记录", systemImage: "chart.xyaxis.line",
-          description: Text("可以手动记录，也可连接 Apple 健康读取已有记录。"))
+          L10n.text("health.trendview.no.weight.records.yet.479161"), systemImage: "chart.xyaxis.line",
+          description: Text(L10n.text("health.trendview.record.weight.manually.or.connect.apple.4ed497")))
       } else {
         Chart {
           ForEach(weights) { sample in
-            PointMark(x: .value("日期", sample.measuredAt), y: .value("体重", sample.kilograms))
+            PointMark(x: .value(L10n.text("health.trendview.date.b6fed9"), sample.measuredAt), y: .value(L10n.text("health.trendview.weight.319359"), sample.kilograms))
               .foregroundStyle(.secondary.opacity(0.5)).symbolSize(18)
-              .accessibilityLabel(sample.source.kind == .manual ? "手动体重" : "Apple 健康体重")
-              .accessibilityValue(String(format: "%.1f 公斤", sample.kilograms))
+              .accessibilityLabel(sample.source.kind == .manual ? L10n.text("health.trendview.manual.weight.3a6160") : L10n.text("health.trendview.apple.health.weight.59a2eb"))
+              .accessibilityValue(String(format: L10n.text("health.trendview.1f.kilograms.e871a8"), locale: L10n.locale, sample.kilograms))
           }
           ForEach(Array(points.enumerated()), id: \.offset) { _, point in
             if let smooth = point.smoothedKilograms {
-              LineMark(x: .value("日期", point.date), y: .value("平滑趋势", smooth))
+              LineMark(x: .value(L10n.text("health.trendview.date.b6fed9"), point.date), y: .value(L10n.text("health.trendview.smoothed.trend.99ca06"), smooth))
                 .foregroundStyle(Color.accentColor)
             }
           }
@@ -153,33 +153,33 @@ struct TrendView: View {
         .chartYScale(domain: weightDomain)
         .frame(height: 200)
         .accessibilityIdentifier("trend.weightChart")
-        Text("圆点为来源记录，曲线为平滑估计；异常代表值保留在记录中并提示复核。")
+        Text(L10n.text("health.trendview.dots.are.source.readings.and.the.365667"))
           .font(.caption).foregroundStyle(.secondary)
       }
-      NavigationLink("体重记录与来源") { TrendWeightRecordsView(model: model) }
+      NavigationLink(L10n.text("health.trendview.weight.records.and.sources.4351f2")) { TrendWeightRecordsView(model: model) }
     }
   }
   private var dietSection: some View {
-    Section("摄入完整度") {
+    Section(L10n.text("health.trendview.intake.completeness.61c19d")) {
       if let value = model.result?.facts.first(where: { $0.metric == "diet.completeDays" })?.value {
-        LabeledContent("截至昨天的 14 天", value: "\(Int(value)) / 14 天已确认")
+        LabeledContent(L10n.text("health.trendview.14.days.through.yesterday.2a2411"), value: L10n.text("health.trendview.14.days.confirmed.7090fb", String(Int(value))))
       }
-      DatePicker("确认日期", selection: $dietDate, in: ...model.now(), displayedComponents: .date)
+      DatePicker(L10n.text("health.trendview.confirmation.date.b4aa5a"), selection: $dietDate, in: ...model.now(), displayedComponents: .date)
       let selected = model.input?.nutrition.first { $0.localDate == model.calendar.key(dietDate) }
       if selected?.isComplete == true {
-        Label("所选日期已确认完整", systemImage: "checkmark.circle.fill").foregroundStyle(.green)
+        Label(L10n.text("health.trendview.selected.day.confirmed.complete.f794cf"), systemImage: "checkmark.circle.fill").foregroundStyle(.green)
       } else {
-        Button("当天饮食已记完整") {
+        Button(L10n.text("health.trendview.food.records.for.this.day.are.add823")) {
           if selected?.logIDs.isEmpty != false {
             showEmptyDietConfirmation = true
           } else {
             model.confirmDiet(on: dietDate)
           }
         }.accessibilityIdentifier("trend.confirmDiet")
-        Text("编辑饮食记录后需要重新确认。未确认的日期不用于平均摄入。")
+        Text(L10n.text("health.trendview.confirm.again.after.editing.food.records.1b445b"))
           .font(.caption).foregroundStyle(.secondary)
       }
-      if let totals = selected?.totals { targetRows(totals, prefix: "已记录") }
+      if let totals = selected?.totals { targetRows(totals, prefix: L10n.text("health.trendview.recorded.d94731")) }
       let nutrition =
         model.input?.nutrition.filter {
           model.calendar.date($0.localDate).map { $0 >= start } == true
@@ -187,7 +187,7 @@ struct TrendView: View {
       if !nutrition.isEmpty {
         Chart(Array(nutrition.enumerated()), id: \.offset) { _, day in
           if let date = model.calendar.date(day.localDate) {
-            BarMark(x: .value("日期", date), y: .value("已记录热量", day.totals.calories))
+            BarMark(x: .value(L10n.text("health.trendview.date.b6fed9"), date), y: .value(L10n.text("health.trendview.recorded.calories.27ef14"), day.totals.calories))
               .foregroundStyle(day.isComplete ? Color.accentColor : Color.secondary.opacity(0.4))
           }
         }
@@ -195,101 +195,101 @@ struct TrendView: View {
           AxisMarks(values: .automatic(desiredCount: 3)) { _ in
             AxisGridLine()
             AxisTick()
-            AxisValueLabel(format: .dateTime.month().day())
+            AxisValueLabel(format: .dateTime.month().day().locale(L10n.locale))
           }
         }
         .frame(height: 120)
-        Text("热量 · kcal。浅色为未确认完整的记录；空白日期表示未知。")
+        Text(L10n.text("health.trendview.calories.kcal.pale.bars.are.unconfirmed.ea2a67"))
           .font(.caption).foregroundStyle(.secondary)
       }
     }
   }
   private var goalSection: some View {
-    Section("营养目标") {
+    Section(L10n.text("health.trendview.nutrition.targets.144c16")) {
       Picker(
-        "目标模式",
+        L10n.text("health.trendview.target.mode.09c02b"),
         selection: Binding(
           get: { model.input?.preferences.goalMode ?? .manual },
           set: {
             if $0 == .automatic { showAutomaticConfirmation = true } else { model.setMode($0) }
           })
       ) {
-        Text("手动").tag(GoalMode.manual)
-        Text("建议后采用").tag(GoalMode.suggested)
-        Text("每周自动采用").tag(GoalMode.automatic)
+        Text(L10n.text("health.trendview.manual.2a4a4d")).tag(GoalMode.manual)
+        Text(L10n.text("health.trendview.suggest.then.adopt.da8750")).tag(GoalMode.suggested)
+        Text(L10n.text("health.trendview.adopt.automatically.each.week.4096e5")).tag(GoalMode.automatic)
       }.accessibilityIdentifier("trend.goalMode")
       if let current = model.input?.currentManualTargets {
-        targetRows(current, prefix: "当前")
+        targetRows(current, prefix: L10n.text("health.trendview.current.25e74d"))
         if let latest = model.input.flatMap({
           TrendHistory.effective(at: $0.asOf, history: $0.goalHistory)
         }) {
-          Text("生效日：\(latest.effectiveAt.formatted(date: .abbreviated, time: .omitted))")
+          Text(L10n.text("health.trendview.effective.ae28ab", String(latest.effectiveAt.formatted(Date.FormatStyle(date: .abbreviated, time: .omitted).locale(L10n.locale)))))
             .font(.caption).foregroundStyle(.secondary)
         }
       }
       if let proposal = model.result?.proposal {
-        targetRows(proposal.targets, prefix: "建议")
+        targetRows(proposal.targets, prefix: L10n.text("health.trendview.suggested.c5134e"))
         if let previous = proposal.previousTargets {
           let adjustment =
             TrendNutrition.displayed(proposal.targets).calories
             - TrendNutrition.displayed(previous).calories
-          Text(String(format: "热量调整 %+.0f kcal", adjustment))
+          Text(String(format: L10n.text("health.trendview.calorie.adjustment.0f.kcal.a345d5"), locale: L10n.locale, adjustment))
         } else {
-          Text("根据身体资料建立初始目标")
+          Text(L10n.text("health.trendview.initial.targets.based.on.body.details.6b2ac0"))
         }
-        DisclosureGroup("建议依据") {
+        DisclosureGroup(L10n.text("health.trendview.suggestion.evidence.a8c05c")) {
           ForEach(model.result?.facts.filter { proposal.reasonFactIDs.contains($0.id) } ?? []) {
             fact in
             if let value = fact.value {
               LabeledContent(
-                fact.trendTitle, value: String(format: "%.1f %@", value, fact.unit.trendTitle))
+                fact.trendTitle, value: String(format: "%.1f %@", locale: L10n.locale, value, fact.unit.trendTitle))
             }
           }
         }
         let rebuilding = model.input.map { TrendHistory.needsBaselineRebuild($0) } ?? false
         if rebuilding {
-          Text("这是新配置的初始估计，需要你确认；采用后至少观察 7 天再调整。")
+          Text(L10n.text("health.trendview.this.is.an.initial.estimate.for.fa9fb5"))
             .font(.footnote).foregroundStyle(.secondary)
         }
-        Button(rebuilding ? "采用新的初始目标" : "采用建议") { model.adopt(proposal.id) }
+        Button(rebuilding ? L10n.text("health.trendview.adopt.new.initial.targets.c49356") : L10n.text("health.trendview.adopt.suggestion.8b65eb")) { model.adopt(proposal.id) }
           .disabled(!model.canApplyGoals).accessibilityIdentifier("trend.adopt")
-        Button("暂不采用，7 天后复核") {
+        Button(L10n.text("health.trendview.skip.for.now.review.in.7.592da6")) {
           model.pause(until: model.calendar.adding(days: 7, to: model.now()))
         }
       }
       if model.input?.preferences.pausedUntil.map({ $0 > model.now() }) == true {
-        Button("恢复建议复核") { model.pause(until: nil) }.accessibilityIdentifier("trend.resume")
+        Button(L10n.text("health.trendview.resume.suggestion.reviews.dfd8dc")) { model.pause(until: nil) }.accessibilityIdentifier("trend.resume")
       } else {
-        Button("暂停调整 7 天") { model.pause(until: model.calendar.adding(days: 7, to: model.now())) }
+        Button(L10n.text("health.trendview.pause.adjustments.for.7.days.ed13ce")) { model.pause(until: model.calendar.adding(days: 7, to: model.now())) }
           .accessibilityIdentifier("trend.pause")
       }
     }
   }
   private var historySection: some View {
-    Section("目标历史") {
+    Section(L10n.text("health.trendview.target.history.a2fc48")) {
       let history = TrendHistory.ordered(model.input?.goalHistory ?? []).reversed()
       if history.isEmpty {
-        Text("采用或手动保存后保留历史；当前旧目标不会被虚构成过去的目标。")
+        Text(L10n.text("health.trendview.history.is.preserved.after.adoption.or.db37a7"))
           .foregroundStyle(.secondary)
       }
       ForEach(Array(history)) { revision in
         VStack(alignment: .leading, spacing: 6) {
           HStack {
-            Text(revision.effectiveAt, style: .date)
+            Text(revision.effectiveAt.formatted(Date.FormatStyle(date: .abbreviated, time: .omitted).locale(L10n.locale)))
             Spacer()
-            Text(revision.reversesRevisionID == nil ? revision.origin.trendTitle : "撤销恢复")
+            Text(revision.reversesRevisionID == nil ? revision.origin.trendTitle : L10n.text("health.trendview.restored.by.undo.a83748"))
               .font(.caption).foregroundStyle(.secondary)
           }
           targetRows(revision.targets, prefix: "")
           if TrendHistory.isReversed(revision, history: model.input?.goalHistory ?? []) {
-            Text("已撤销").font(.caption).foregroundStyle(.secondary)
+            Text(L10n.text("health.trendview.undone.61063b")).font(.caption).foregroundStyle(.secondary)
           } else if let input = model.input, TrendGoalWorkflow.canUndo(revision.id, input: input) {
-            Button("撤销并暂停 7 天") { model.undo(revision.id) }
+            Button(L10n.text("health.trendview.undo.and.pause.for.7.days.d32b67")) { model.undo(revision.id) }
               .disabled(!model.canApplyGoals).accessibilityIdentifier("trend.undo")
-            Text("恢复上次目标，暂停后仍按原设置复核。")
+            Text(L10n.text("health.trendview.restore.the.previous.targets.resume.reviews.51d993"))
               .font(.caption).foregroundStyle(.secondary)
           } else if history.count == 1 && revision.origin != .manual {
-            Text("这是首个目标，没有可恢复的旧值。可在手动目标中修改。")
+            Text(L10n.text("health.trendview.this.is.the.first.target.with.b56593"))
               .font(.caption).foregroundStyle(.secondary)
           }
         }
@@ -301,7 +301,7 @@ struct TrendView: View {
     return VStack(alignment: .leading, spacing: 4) {
       Text("\(prefix) \(Int(shown.calories)) kcal").font(.headline).monospacedDigit()
       Text(
-        "碳水 \(Int(shown.carbohydrates)) g · 蛋白质 \(Int(shown.protein)) g · 脂肪 \(Int(shown.fat)) g"
+        L10n.text("health.trendview.carbs.g.protein.g.fat.g.5af02d", String(Int(shown.carbohydrates)), String(Int(shown.protein)), String(Int(shown.fat)))
       )
       .font(.subheadline).foregroundStyle(.secondary)
     }.accessibilityElement(children: .combine)
@@ -309,36 +309,36 @@ struct TrendView: View {
 }
 
 extension GoalDirection {
-  var trendTitle: String { self == .maintain ? "维持" : self == .lose ? "减脂" : "增肌" }
+  var trendTitle: String { self == .maintain ? L10n.text("health.trendview.maintain.06fbde") : self == .lose ? L10n.text("health.trendview.lose.fat.170fab") : L10n.text("health.trendview.gain.muscle.5ea5b9") }
 }
 extension GoalRevisionOrigin {
-  var trendTitle: String { self == .manual ? "手动" : self == .suggested ? "已采用建议" : "自动采用" }
+  var trendTitle: String { self == .manual ? L10n.text("health.trendview.manual.2a4a4d") : self == .suggested ? L10n.text("health.trendview.suggestion.adopted.bb7a31") : L10n.text("health.trendview.automatic.adoption.996751") }
 }
 extension TrendHoldReason {
   var trendMessage: String {
     switch self {
-    case .missingProfile: return "补充身体资料后可生成初始建议，也可继续使用手动目标。"
-    case .insufficientWeights: return "体重记录不足：需要至少 14 天跨度、8 个称重日，最近两周各至少 3 天。"
-    case .incompleteDiet: return "最近 14 天至少需要 12 天确认饮食完整，暂时保留目标。"
-    case .baselineBuilding: return "正在建立基线，目标或资料变更后至少观察 7 天。"
-    case .manualMode: return "当前使用手动目标。可选择建议模式，由你决定是否采用。"
-    case .paused: return "已暂停调整，当前目标保持不变。"
-    case .safetyBoundary: return "当前身体条件或营养预算需要复核，请使用手动目标或专业方案。"
-    case .requiresReview: return "请复核异常体重、身体资料或摄入与历史目标的差异，当前目标保持不变。"
-    case .unchanged: return "近期变化在目标容差内，保持当前目标。"
-    case .readFailed: return "体重读取失败，可重试或先记录手动体重。"
+    case .missingProfile: return L10n.text("health.trendview.add.body.details.to.generate.initial.1fb59a")
+    case .insufficientWeights: return L10n.text("health.trendview.not.enough.weight.records.at.least.30cdcc")
+    case .incompleteDiet: return L10n.text("health.trendview.at.least.12.of.the.last.a9e4fd")
+    case .baselineBuilding: return L10n.text("health.trendview.building.a.baseline.observe.for.at.a42812")
+    case .manualMode: return L10n.text("health.trendview.using.manual.targets.you.can.choose.bcdb3c")
+    case .paused: return L10n.text("health.trendview.adjustments.paused.current.targets.are.kept.74bb86")
+    case .safetyBoundary: return L10n.text("health.trendview.your.current.body.details.or.nutrition.533285")
+    case .requiresReview: return L10n.text("health.trendview.review.unusual.weights.body.details.or.b59daa")
+    case .unchanged: return L10n.text("health.trendview.recent.changes.are.within.the.goal.5caf24")
+    case .readFailed: return L10n.text("health.trendview.weight.could.not.be.read.retry.89a8b3")
     }
   }
 }
 extension MetricFact {
   var trendTitle: String {
     switch metric {
-    case "weight.smoothed": return "趋势体重"
-    case "energy.initialEstimate": return "公式能量参考"
-    case "weight.targetWeeklyChangePercent": return "目标速度"
-    case "weight.weeklyChangePercent": return "近期速度"
-    case "diet.completeDays": return "完整饮食日"
-    case "diet.targetDifferencePercent": return "与历史目标摄入差异"
+    case "weight.smoothed": return L10n.text("health.trendview.trend.weight.dfd7ed")
+    case "energy.initialEstimate": return L10n.text("health.trendview.formula.energy.reference.26695c")
+    case "weight.targetWeeklyChangePercent": return L10n.text("health.trendview.target.rate.d9e3a8")
+    case "weight.weeklyChangePercent": return L10n.text("health.trendview.recent.rate.29b7d0")
+    case "diet.completeDays": return L10n.text("health.trendview.complete.food.days.d5dad7")
+    case "diet.targetDifferencePercent": return L10n.text("health.trendview.intake.difference.from.historical.targets.6a6733")
     default: return metric
     }
   }
@@ -348,9 +348,9 @@ extension MetricUnit {
     switch self {
     case .kilograms: return "kg"
     case .kilocalories: return "kcal"
-    case .percentPerWeek: return "%/周"
+    case .percentPerWeek: return L10n.text("health.trendview.week.76712a")
     case .percent: return "%"
-    case .count: return "天"
+    case .count: return L10n.text("health.trendview.days.c3304d")
     default: return rawValue
     }
   }

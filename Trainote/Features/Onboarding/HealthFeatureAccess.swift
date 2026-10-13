@@ -53,8 +53,17 @@ final class HealthFeatureAccess {
   let reports: any AIReportLifecycle
   private(set) var isBusy = false
   private(set) var isConnectingHealth = false
-  private(set) var errorMessage: String?
-  private(set) var statusMessage: String?
+  private var showsConfigurationMessage = false
+  private(set) var errorMessageKey: String?
+  private(set) var errorMessage: String? {
+    get { showsConfigurationMessage ? reports.configurationMessage : errorMessageKey.map { L10n.text($0) } }
+    set { showsConfigurationMessage = false; errorMessageKey = newValue }
+  }
+  private(set) var statusMessageKey: String?
+  private(set) var statusMessage: String? {
+    get { statusMessageKey.map { L10n.text($0) } }
+    set { statusMessageKey = newValue }
+  }
   private(set) var healthDeletionNeedsRetry = false
   private(set) var aiRevocationNeedsRetry = false
 
@@ -80,47 +89,47 @@ final class HealthFeatureAccess {
   var healthConnected: Bool { consent?.record(for: .healthData)?.isGranted == true }
   /// The local consent means a request was made; HealthKit never reveals read permission.
   var healthConnectionLabel: String {
-    if healthDeletionNeedsRetry { return "断开删除未完成" }
-    if isConnectingHealth && !healthConnected { return "正在处理健康读取请求" }
-    guard healthConnected else { return "未连接" }
-    if (health as? HealthDataService)?.isSyncing == true { return "正在同步健康数据" }
-    if isConnectingHealth { return "正在处理健康读取请求" }
-    guard let health else { return "健康读取暂不可用" }
+    if healthDeletionNeedsRetry { return L10n.text("health.healthfeatureaccess.disconnect.and.deletion.incomplete.e41b0b") }
+    if isConnectingHealth && !healthConnected { return L10n.text("health.healthfeatureaccess.processing.health.read.request.8354a0") }
+    guard healthConnected else { return L10n.text("health.healthfeatureaccess.not.connected.f2f3e9") }
+    if (health as? HealthDataService)?.isSyncing == true { return L10n.text("health.healthfeatureaccess.syncing.health.data.5392b0") }
+    if isConnectingHealth { return L10n.text("health.healthfeatureaccess.processing.health.read.request.8354a0") }
+    guard let health else { return L10n.text("health.healthfeatureaccess.health.reads.unavailable.e967eb") }
     guard let snapshot = try? health.localSnapshot(
       window: .init(start: .distantPast, end: .distantFuture))
-    else { return "健康读取状态暂不可用" }
+    else { return L10n.text("health.healthfeatureaccess.health.read.status.unavailable.2843be") }
     if snapshot.statuses.contains(where: { $0.state == .failed }) {
-      return "部分健康数据同步未完成"
+      return L10n.text("health.healthfeatureaccess.some.health.data.did.not.sync.6df122")
     }
-    if !snapshot.samples.isEmpty { return "本机已有健康导入数据" }
+    if !snapshot.samples.isEmpty { return L10n.text("health.healthfeatureaccess.imported.health.data.on.this.device.1ce009") }
     if snapshot.statuses.contains(where: { $0.state == .noSamples }) {
-      return "暂未读取到健康样本"
+      return L10n.text("health.healthfeatureaccess.no.health.samples.read.yet.e36db5")
     }
-    return "已完成连接请求，等待同步"
+    return L10n.text("health.healthfeatureaccess.connection.request.completed.waiting.to.sync.976913")
   }
   var healthConnectionDetail: String? {
     guard healthConnected else { return nil }
-    let permissionNote = "读取许可由“健康”App 管理；系统不会向 Trainote 报告读取许可结果。"
+    let permissionNote = L10n.text("health.healthfeatureaccess.read.access.is.managed.in.health.d632e0")
     guard let health,
       let snapshot = try? health.localSnapshot(
         window: .init(start: .distantPast, end: .distantFuture))
-    else { return "连接请求已完成。健康读取状态暂不可用。\(permissionNote)" }
+    else { return L10n.text("health.healthfeatureaccess.connection.request.completed.health.read.status.b2457f", String(permissionNote)) }
     let syncNote: String
     if isConnectingHealth || (health as? HealthDataService)?.isSyncing == true {
-      syncNote = "正在同步。"
+      syncNote = L10n.text("health.healthfeatureaccess.syncing.b852b8")
     } else if snapshot.statuses.contains(where: { $0.state == .failed }) {
-      syncNote = "最近同步部分失败。"
+      syncNote = L10n.text("health.healthfeatureaccess.the.latest.sync.partly.failed.40658f")
     } else if !snapshot.statuses.isEmpty && snapshot.statuses.allSatisfy({
       $0.state == .noSamples || $0.state == .samplesAvailable
     }) {
-      syncNote = "最近同步已完成。"
+      syncNote = L10n.text("health.healthfeatureaccess.the.latest.sync.completed.d74893")
     } else {
-      syncNote = "等待同步完成。"
+      syncNote = L10n.text("health.healthfeatureaccess.waiting.for.sync.to.complete.b9da6b")
     }
     let sampleNote = snapshot.samples.isEmpty
-      ? "本机暂无导入样本，可能是未授权或没有数据。"
-      : "本机有已导入样本，不代表当前读取许可仍有效。"
-    return "连接请求已完成。\(syncNote)\(sampleNote)\(permissionNote)"
+      ? L10n.text("health.healthfeatureaccess.no.imported.samples.are.on.this.6c714c")
+      : L10n.text("health.healthfeatureaccess.imported.samples.are.on.this.device.8f3704")
+    return L10n.text("health.healthfeatureaccess.connection.request.completed.287fd4", String(syncNote), String(sampleNote), String(permissionNote))
   }
   var aiEnabled: Bool {
     !aiRevocationNeedsRetry && !reports.serverRevocationPending
@@ -133,7 +142,7 @@ final class HealthFeatureAccess {
   func connectHealth() async {
     guard !isBusy else { return }
     guard let health else {
-      errorMessage = "健康读取暂不可用。原有记录可继续使用，请重新启动后重试。"
+      errorMessage = "health.healthfeatureaccess.health.reads.are.unavailable.existing.records.a843bb"
       return
     }
     isBusy = true
@@ -147,11 +156,11 @@ final class HealthFeatureAccess {
     do {
       try await health.requestReadAuthorization()
       healthDeletionNeedsRetry = false
-      statusMessage = "已完成连接请求。实际可读内容取决于你在 Apple 健康中选择的数据；没有样本不代表拒绝权限。"
+      statusMessage = "health.healthfeatureaccess.connection.request.completed.readable.data.depends.21bf11"
     } catch {
       errorMessage = healthConnected
-        ? "连接请求已完成，但健康同步未完成。请稍后重试；本地记录仍可使用。"
-        : "未能完成健康连接请求，请重试。本地记录仍可使用。"
+        ? "health.healthfeatureaccess.connection.request.completed.but.health.sync.8f3dcf"
+        : "health.healthfeatureaccess.the.health.connection.request.could.not.1b4179"
     }
   }
 
@@ -170,7 +179,7 @@ final class HealthFeatureAccess {
     #endif
     guard !isBusy else { return }
     guard let health else {
-      errorMessage = "健康数据服务不可用，尚未完成删除。请重新启动后重试。"
+      errorMessage = "health.healthfeatureaccess.the.health.data.service.is.unavailable.4b6a8e"
       healthDeletionNeedsRetry = true
       return
     }
@@ -181,13 +190,13 @@ final class HealthFeatureAccess {
     do {
       try await health.disconnectAndDelete()
       healthDeletionNeedsRetry = false
-      statusMessage = "已断开并删除健康导入数据及相关报告。手动记录已保留。"
+      statusMessage = "health.healthfeatureaccess.disconnected.and.deleted.imported.health.data.d1af18"
       #if DEBUG
         HealthUITestTrace.record("disconnect.success")
       #endif
     } catch {
       healthDeletionNeedsRetry = true
-      errorMessage = "已停止本次同步，但部分删除或保存未完成。请重试“断开并删除”，不要把本次操作视为删除成功。"
+      errorMessage = "health.healthfeatureaccess.this.sync.has.stopped.but.some.f14728"
       #if DEBUG
         HealthUITestTrace.record("disconnect.failure")
       #endif
@@ -198,7 +207,8 @@ final class HealthFeatureAccess {
   func enableAI(at date: Date = .now) async {
     guard !isBusy else { return }
     guard reports.isConfigured, let consent else {
-      errorMessage = reports.configurationMessage
+      errorMessage = nil
+      showsConfigurationMessage = true
       return
     }
     isBusy = true
@@ -209,7 +219,7 @@ final class HealthFeatureAccess {
       try consent.grant(.aiReports, version: reports.consentVersion, at: date)
       try await reports.activateConsent()
       aiRevocationNeedsRetry = false
-      statusMessage = "已启用 AI 报告。可随时在设置中关闭。"
+      statusMessage = "health.healthfeatureaccess.ai.reports.enabled.you.can.turn.d55401"
     } catch {
       reports.cancelPendingRequests()
       var rollbackFailed = false
@@ -218,8 +228,8 @@ final class HealthFeatureAccess {
       aiRevocationNeedsRetry = rollbackFailed || reports.serverRevocationPending
       errorMessage =
         aiRevocationNeedsRetry
-        ? "AI 启用未完成，已停止发送。撤回仍需重试，请在设置中完成撤回。"
-        : "未能启用 AI 报告。已撤回本次同意，继续使用本地基础报告。"
+        ? "health.healthfeatureaccess.ai.activation.is.incomplete.and.sending.a073b9"
+        : "health.healthfeatureaccess.ai.reports.could.not.be.enabled.d68d60"
     }
   }
 
@@ -234,9 +244,9 @@ final class HealthFeatureAccess {
     do { try await reports.closeAI(at: date, consent: consent) } catch { failed = true }
     aiRevocationNeedsRetry = failed || reports.serverRevocationPending
     if aiRevocationNeedsRetry {
-      errorMessage = "已停止后续发送。本机保存或服务器撤回尚未完成，请重试撤回。"
+      errorMessage = "health.healthfeatureaccess.future.sending.has.stopped.local.saving.fc6c5d"
     } else {
-      statusMessage = "已关闭 AI 报告。健康连接和本地分析继续保留，历史报告可单独删除。"
+      statusMessage = "health.healthfeatureaccess.ai.reports.turned.off.health.connection.7f10e4"
     }
   }
 
@@ -254,7 +264,7 @@ final class HealthFeatureAccess {
       if retryingLocalAndServer && !aiRevocationNeedsRetry { errorMessage = nil }
     } catch {
       aiRevocationNeedsRetry = true
-      errorMessage = "AI 撤回尚未完成，已停止后续发送。请在设置中重试撤回。"
+      errorMessage = "health.healthfeatureaccess.ai.withdrawal.is.incomplete.and.future.85c993"
     }
   }
 
@@ -264,7 +274,7 @@ final class HealthFeatureAccess {
     reports.cancelPendingRequests()
     do {
       try reports.deleteAllReports()
-      statusMessage = "已删除本机 AI 报告。"
-    } catch { errorMessage = "报告删除未完成，请重试。" }
+      statusMessage = "health.healthfeatureaccess.ai.reports.on.this.device.deleted.d1dfdc"
+    } catch { errorMessage = "health.healthfeatureaccess.report.deletion.is.incomplete.try.again.b6a183" }
   }
 }

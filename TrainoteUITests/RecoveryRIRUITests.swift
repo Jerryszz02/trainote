@@ -3,7 +3,7 @@ import XCTest
 final class RecoveryRIRUITests: XCTestCase {
   func testSelectingRecoveryMuscleRevealsDetailFromAnatomyAndList() {
     let app = XCUIApplication()
-    app.launchArguments = ["-ui-testing"]
+    app.launchArguments = ["-AppleLanguages", "(zh-Hans)", "-AppleLocale", "zh_CN", "-appearance.language", "zh-Hans", "-ui-testing"]
     app.launch()
     app.tabBars.buttons["恢复"].tap()
     let chestAnatomy = app.buttons["bodyMap.label.chest"]
@@ -25,7 +25,7 @@ final class RecoveryRIRUITests: XCTestCase {
 
   func testAccessibilityTextListSelectionKeepsMuscleDetailReachable() {
     let app = XCUIApplication()
-    app.launchArguments = [
+    app.launchArguments = ["-AppleLanguages", "(zh-Hans)", "-AppleLocale", "zh_CN", "-appearance.language", "zh-Hans",
       "-ui-testing",
       "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL",
       "-ui-testing-dark",
@@ -76,7 +76,7 @@ final class RecoveryRIRUITests: XCTestCase {
 
   func testAdviceShowsTiredReasonSeparatePainRestrictionAndOpensCheckIn() {
     let app = XCUIApplication()
-    app.launchArguments = ["-ui-testing"]
+    app.launchArguments = ["-AppleLanguages", "(zh-Hans)", "-AppleLocale", "zh_CN", "-appearance.language", "zh-Hans", "-ui-testing"]
     app.launch()
     app.buttons["today.library"].tap()
     app.buttons["训练模板"].tap()
@@ -132,7 +132,7 @@ final class RecoveryRIRUITests: XCTestCase {
 
   func testAdviceOffersExistingWorkoutBeforeAnotherAdoption() {
     let app = XCUIApplication()
-    app.launchArguments = ["-ui-testing"]
+    app.launchArguments = ["-AppleLanguages", "(zh-Hans)", "-AppleLocale", "zh_CN", "-appearance.language", "zh-Hans", "-ui-testing"]
     app.launch()
     app.tabBars.buttons["训练"].tap()
     app.buttons["training.start"].tap()
@@ -173,7 +173,7 @@ final class RecoveryRIRUITests: XCTestCase {
 
   func testRIRAndRoleSurviveHistoricalEditAndNewTrainingResetsRIR() {
     let app = XCUIApplication()
-    app.launchArguments = ["-ui-testing"]
+    app.launchArguments = ["-AppleLanguages", "(zh-Hans)", "-AppleLocale", "zh_CN", "-appearance.language", "zh-Hans", "-ui-testing"]
     app.launch()
     app.tabBars.buttons["训练"].tap()
     app.buttons["training.start"].tap()

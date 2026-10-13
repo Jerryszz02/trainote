@@ -1,0 +1,754 @@
+{
+  "domain.in.progress": {
+    "en": "In progress",
+    "zh-Hans": "进行中",
+    "comment": "Application-owned presentation text; persisted identifiers remain unchanged."
+  },
+  "domain.completed": {
+    "en": "Completed",
+    "zh-Hans": "已完成",
+    "comment": "Application-owned presentation text; persisted identifiers remain unchanged."
+  },
+  "domain.weight.reps": {
+    "en": "Weight × reps",
+    "zh-Hans": "重量 × 次数",
+    "comment": "Application-owned presentation text; persisted identifiers remain unchanged."
+  },
+  "domain.cardio.duration.distance": {
+    "en": "Cardio (duration / distance)",
+    "zh-Hans": "有氧（时长 / 距离）",
+    "comment": "Application-owned presentation text; persisted identifiers remain unchanged."
+  },
+  "domain.reps": {
+    "en": "Reps",
+    "zh-Hans": "次数",
+    "comment": "Application-owned presentation text; persisted identifiers remain unchanged."
+  },
+  "domain.duration": {
+    "en": "Duration",
+    "zh-Hans": "时长",
+    "comment": "Application-owned presentation text; persisted identifiers remain unchanged."
+  },
+  "domain.breakfast": {
+    "en": "Breakfast",
+    "zh-Hans": "早餐",
+    "comment": "Application-owned presentation text; persisted identifiers remain unchanged."
+  },
+  "domain.lunch": {
+    "en": "Lunch",
+    "zh-Hans": "午餐",
+    "comment": "Application-owned presentation text; persisted identifiers remain unchanged."
+  },
+  "domain.dinner": {
+    "en": "Dinner",
+    "zh-Hans": "晚餐",
+    "comment": "Application-owned presentation text; persisted identifiers remain unchanged."
+  },
+  "domain.snack": {
+    "en": "Snack",
+    "zh-Hans": "加餐",
+    "comment": "Application-owned presentation text; persisted identifiers remain unchanged."
+  },
+  "domain.calories": {
+    "en": "Calories",
+    "zh-Hans": "卡路里",
+    "comment": "Application-owned presentation text; persisted identifiers remain unchanged."
+  },
+  "domain.carbs": {
+    "en": "Carbs",
+    "zh-Hans": "碳水",
+    "comment": "Application-owned presentation text; persisted identifiers remain unchanged."
+  },
+  "domain.protein": {
+    "en": "Protein",
+    "zh-Hans": "蛋白质",
+    "comment": "Application-owned presentation text; persisted identifiers remain unchanged."
+  },
+  "domain.fat": {
+    "en": "Fat",
+    "zh-Hans": "脂肪",
+    "comment": "Application-owned presentation text; persisted identifiers remain unchanged."
+  },
+  "domain.chest": {
+    "en": "Chest",
+    "zh-Hans": "胸部",
+    "comment": "Application-owned presentation text; persisted identifiers remain unchanged."
+  },
+  "domain.back": {
+    "en": "Back",
+    "zh-Hans": "背部",
+    "comment": "Application-owned presentation text; persisted identifiers remain unchanged."
+  },
+  "domain.shoulders": {
+    "en": "Shoulders",
+    "zh-Hans": "肩部",
+    "comment": "Application-owned presentation text; persisted identifiers remain unchanged."
+  },
+  "domain.biceps": {
+    "en": "Biceps",
+    "zh-Hans": "肱二头肌",
+    "comment": "Application-owned presentation text; persisted identifiers remain unchanged."
+  },
+  "domain.triceps": {
+    "en": "Triceps",
+    "zh-Hans": "肱三头肌",
+    "comment": "Application-owned presentation text; persisted identifiers remain unchanged."
+  },
+  "domain.forearms": {
+    "en": "Forearms",
+    "zh-Hans": "前臂",
+    "comment": "Application-owned presentation text; persisted identifiers remain unchanged."
+  },
+  "domain.core": {
+    "en": "Core",
+    "zh-Hans": "核心",
+    "comment": "Application-owned presentation text; persisted identifiers remain unchanged."
+  },
+  "domain.glutes": {
+    "en": "Glutes",
+    "zh-Hans": "臀部",
+    "comment": "Application-owned presentation text; persisted identifiers remain unchanged."
+  },
+  "domain.quads": {
+    "en": "Quads",
+    "zh-Hans": "股四头肌",
+    "comment": "Application-owned presentation text; persisted identifiers remain unchanged."
+  },
+  "domain.hamstrings": {
+    "en": "Hamstrings",
+    "zh-Hans": "腘绳肌",
+    "comment": "Application-owned presentation text; persisted identifiers remain unchanged."
+  },
+  "domain.calves": {
+    "en": "Calves",
+    "zh-Hans": "小腿",
+    "comment": "Application-owned presentation text; persisted identifiers remain unchanged."
+  },
+  "domain.per.serving": {
+    "en": "Per serving",
+    "zh-Hans": "按份",
+    "comment": "Application-owned presentation text; persisted identifiers remain unchanged."
+  },
+  "domain.per.100.g": {
+    "en": "Per 100 g",
+    "zh-Hans": "按每 100 克",
+    "comment": "Application-owned presentation text; persisted identifiers remain unchanged."
+  },
+  "domain.nutrition.per.serving": {
+    "en": "Nutrition per serving",
+    "zh-Hans": "每份营养",
+    "comment": "Application-owned presentation text; persisted identifiers remain unchanged."
+  },
+  "domain.nutrition.per.100.g": {
+    "en": "Nutrition per 100 g",
+    "zh-Hans": "每 100 克营养",
+    "comment": "Application-owned presentation text; persisted identifiers remain unchanged."
+  },
+  "domain.amount.servings": {
+    "en": "Amount (servings)",
+    "zh-Hans": "数量（份）",
+    "comment": "Application-owned presentation text; persisted identifiers remain unchanged."
+  },
+  "domain.weight.g": {
+    "en": "Weight (g)",
+    "zh-Hans": "重量（克）",
+    "comment": "Application-owned presentation text; persisted identifiers remain unchanged."
+  },
+  "domain.weight.pr": {
+    "en": "Weight PR",
+    "zh-Hans": "重量 PR",
+    "comment": "Application-owned presentation text; persisted identifiers remain unchanged."
+  },
+  "domain.session.volume.pr": {
+    "en": "Session volume PR",
+    "zh-Hans": "单次容量 PR",
+    "comment": "Application-owned presentation text; persisted identifiers remain unchanged."
+  },
+  "domain.kg.reps": {
+    "en": "kg·reps",
+    "zh-Hans": "kg·次",
+    "comment": "Application-owned presentation text; persisted identifiers remain unchanged."
+  },
+  "domain.advice.loadError": {
+    "en": "Unable to load training templates. Please try again.",
+    "zh-Hans": "暂时无法读取训练模板，请重试。",
+    "comment": "Application-owned presentation text; persisted identifiers remain unchanged."
+  },
+  "domain.advice.calculationError": {
+    "en": "Unable to calculate advice. Check your local records and try again.",
+    "zh-Hans": "暂时无法计算建议，请检查本地记录后重试。",
+    "comment": "Application-owned presentation text; persisted identifiers remain unchanged."
+  },
+  "domain.backup.tooLarge": {
+    "en": "The backup file is too large.",
+    "zh-Hans": "备份文件过大。",
+    "comment": "Backup error presentation; source errors and archive data stay stable."
+  },
+  "domain.backup.activeWorkoutConflict": {
+    "en": "An active workout already exists. Another active workout cannot be restored.",
+    "zh-Hans": "当前已有进行中的训练，无法恢复另一个进行中的训练。",
+    "comment": "Backup error presentation; source errors and archive data stay stable."
+  },
+  "domain.backup.goalConflict": {
+    "en": "Backup nutrition goals or goal history conflict with local records. No data was imported.",
+    "zh-Hans": "备份中的营养目标或目标历史与本机记录冲突，未导入任何数据。",
+    "comment": "Backup error presentation; source errors and archive data stay stable."
+  },
+  "domain.backup.invalid": {
+    "en": "Invalid backup: %@",
+    "zh-Hans": "备份无效：%@"
+  },
+  "domain.backup.version": {
+    "en": "Unsupported backup version: %lld.",
+    "zh-Hans": "不支持的备份版本：%lld。"
+  },
+  "domain.report.unknown": {
+    "en": "Unknown",
+    "zh-Hans": "未知",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged."
+  },
+  "domain.report.template.selected": {
+    "en": "Template: selected",
+    "zh-Hans": "本次模板：已选择",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged."
+  },
+  "domain.report.significant.soreness.yes": {
+    "en": "Significant soreness: yes",
+    "zh-Hans": "明显酸痛：有",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged."
+  },
+  "domain.report.significant.soreness.no": {
+    "en": "Significant soreness: no",
+    "zh-Hans": "明显酸痛：无",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged."
+  },
+  "domain.report.overall.recovery.ready": {
+    "en": "Overall recovery: ready",
+    "zh-Hans": "全身状态：状态较好",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged."
+  },
+  "domain.report.overall.recovery.monitor.how.you.feel.and.recent.changes": {
+    "en": "Overall recovery: monitor how you feel and recent changes",
+    "zh-Hans": "全身状态：留意体感与近期变化",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged."
+  },
+  "domain.report.overall.recovery.prioritize.recovery": {
+    "en": "Overall recovery: prioritize recovery",
+    "zh-Hans": "全身状态：优先恢复",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged."
+  },
+  "domain.report.overall.recovery.training.limited": {
+    "en": "Overall recovery: training limited",
+    "zh-Hans": "全身状态：训练受限",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged."
+  },
+  "domain.report.soreness.none": {
+    "en": "Soreness: none",
+    "zh-Hans": "酸痛：无",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged."
+  },
+  "domain.report.soreness.mild": {
+    "en": "Soreness: mild",
+    "zh-Hans": "酸痛：轻微",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged."
+  },
+  "domain.report.soreness.significant": {
+    "en": "Soreness: significant",
+    "zh-Hans": "酸痛：明显",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged."
+  },
+  "domain.report.pain": {
+    "en": "Pain",
+    "zh-Hans": "疼痛",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged."
+  },
+  "domain.report.movement.limitation": {
+    "en": "Movement limitation",
+    "zh-Hans": "活动限制",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged."
+  },
+  "domain.report.yes": {
+    "en": "Yes",
+    "zh-Hans": "是",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged."
+  },
+  "domain.report.no": {
+    "en": "No",
+    "zh-Hans": "否",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged."
+  },
+  "domain.report.s": {
+    "en": "s",
+    "zh-Hans": "秒",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged."
+  },
+  "domain.report.bpm": {
+    "en": "bpm",
+    "zh-Hans": "次/分",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged."
+  },
+  "domain.report.count": {
+    "en": "count",
+    "zh-Hans": "次",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged."
+  },
+  "domain.report.points": {
+    "en": "points",
+    "zh-Hans": "分",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged."
+  },
+  "domain.report.kg.week": {
+    "en": "kg/week",
+    "zh-Hans": "kg/周",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged."
+  },
+  "domain.report.week": {
+    "en": "%/week",
+    "zh-Hans": "%/周",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged."
+  },
+  "domain.report.days.week": {
+    "en": "days/week",
+    "zh-Hans": "天/周",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged."
+  },
+  "domain.report.muscle.groups": {
+    "en": "muscle groups",
+    "zh-Hans": "个肌群",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged."
+  },
+  "domain.report.sets": {
+    "en": "sets",
+    "zh-Hans": "组",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged."
+  },
+  "domain.report.goal.maintain": {
+    "en": "Goal: maintain",
+    "zh-Hans": "目标：维持",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged."
+  },
+  "domain.report.goal.lose.fat": {
+    "en": "Goal: lose fat",
+    "zh-Hans": "目标：减脂",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged."
+  },
+  "domain.report.goal.gain.muscle": {
+    "en": "Goal: gain muscle",
+    "zh-Hans": "目标：增肌",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged."
+  },
+  "domain.report.tired": {
+    "en": "Tired",
+    "zh-Hans": "疲惫",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged."
+  },
+  "domain.report.normal": {
+    "en": "Normal",
+    "zh-Hans": "一般",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged."
+  },
+  "domain.report.good": {
+    "en": "Good",
+    "zh-Hans": "良好",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged."
+  },
+  "domain.report.poor": {
+    "en": "Poor",
+    "zh-Hans": "较差",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged."
+  },
+  "domain.report.today.s.feeling.tired": {
+    "en": "Today’s feeling: tired",
+    "zh-Hans": "今日体感：疲惫",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged."
+  },
+  "domain.report.today.s.feeling.is.not.marked.tired": {
+    "en": "Today’s feeling is not marked tired",
+    "zh-Hans": "今日体感未标记疲惫",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged."
+  },
+  "domain.report.schedule.training.available": {
+    "en": "Schedule: training available",
+    "zh-Hans": "日程：允许训练",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged."
+  },
+  "domain.report.schedule.no.training.scheduled": {
+    "en": "Schedule: no training scheduled",
+    "zh-Hans": "日程：未安排训练",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged."
+  },
+  "domain.report.load": {
+    "en": "Load: %@",
+    "zh-Hans": "负荷值：%@",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged."
+  },
+  "domain.report.boolean": {
+    "en": "%@: %@",
+    "zh-Hans": "%@：%@",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged."
+  },
+  "domain.report.deviation": {
+    "en": "Sustained deviation from personal baseline: %@",
+    "zh-Hans": "连续偏离个人基线：%@",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged."
+  },
+  "domain.report.feeling": {
+    "en": "Today’s feeling: %@",
+    "zh-Hans": "今日体感：%@",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged."
+  },
+  "domain.report.sleep": {
+    "en": "Subjective sleep: %@",
+    "zh-Hans": "主观睡眠：%@",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged."
+  },
+  "domain.report.completeDays": {
+    "en": "14 days through yesterday: %lld days confirmed complete",
+    "zh-Hans": "截至昨天的 14 天：%lld 天已确认完整",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged.",
+    "enOne": "14 days through yesterday: %lld day confirmed complete"
+  },
+  "domain.report.noRecord": {
+    "en": "No record available: %@.",
+    "zh-Hans": "暂无可用记录：%@。",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged."
+  },
+  "domain.report.record": {
+    "en": "Recorded value: %@.",
+    "zh-Hans": "记录值：%@。",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged."
+  },
+  "domain.report.estimated": {
+    "en": "Records are incomplete or estimated: %@.",
+    "zh-Hans": "记录仍有缺失或估计：%@。",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged."
+  },
+  "domain.report.insufficientTrend": {
+    "en": "Insufficient trend history: at least %lld days of history, %lld weighing days, and %lld days in each of the last two weeks are required.",
+    "zh-Hans": "趋势记录不足：需至少 %lld 天跨度、%lld 个称重日，且最近两周各至少 %lld 天。",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged."
+  },
+  "domain.nutrition.calculationNote": {
+    "en": "Calories are calculated as carbs × 4 + protein × 4 + fat × 9 (kcal). Alcohol and sugar alcohols may cause differences from package labels. Label calories are recalculated after nutrients are edited.",
+    "zh-Hans": "热量按碳水 × 4 + 蛋白质 × 4 + 脂肪 × 9 自动计算（kcal）。酒精、糖醇等可能使结果与包装标签不同；已有标签热量在修改营养素后重新计算。",
+    "comment": "Application-owned presentation text; persisted identifiers remain unchanged."
+  },
+  "domain.advice.setRetention": {
+    "en": "Today’s advice: retain %lld%% of working sets.",
+    "zh-Hans": "今日建议：工作组保留 %lld%%。",
+    "comment": "New app-generated workout note. Saved user notes remain verbatim."
+  },
+  "domain.advice.minimumRIR": {
+    "en": "Today’s advice: keep at least %lld reps in reserve per set; record actual RIR afterward.",
+    "zh-Hans": "今日建议：每组至少保留 %lld 次余力；完成后再记录实际 RIR。",
+    "comment": "New app-generated workout note. Saved user notes remain verbatim."
+  },
+  "domain.backup.reason.duplicateIDs": {
+    "en": "Duplicate IDs exist.",
+    "zh-Hans": "存在重复 ID。",
+    "comment": "Backup error presentation; source errors and archive data stay stable."
+  },
+  "domain.backup.reason.profileConflict": {
+    "en": "Profiles or daily records conflict.",
+    "zh-Hans": "档案或每日记录冲突。",
+    "comment": "Backup error presentation; source errors and archive data stay stable."
+  },
+  "domain.backup.reason.duplicateProposal": {
+    "en": "Duplicate goal proposals.",
+    "zh-Hans": "目标建议重复。",
+    "comment": "Backup error presentation; source errors and archive data stay stable."
+  },
+  "domain.backup.reason.invalidHealthRecord": {
+    "en": "Invalid manual health fields or duplicate IDs.",
+    "zh-Hans": "健康手动记录字段无效或 ID 重复。",
+    "comment": "Backup error presentation; source errors and archive data stay stable."
+  },
+  "domain.backup.reason.activeProfileConflict": {
+    "en": "This device already has an active profile. Another active profile cannot be imported.",
+    "zh-Hans": "本机已有活动档案，无法导入另一个活动档案。",
+    "comment": "Backup error presentation; source errors and archive data stay stable."
+  },
+  "domain.backup.reason.checkInConflict": {
+    "en": "Check-ins for the same day conflict.",
+    "zh-Hans": "同一天的体感记录冲突。",
+    "comment": "Backup error presentation; source errors and archive data stay stable."
+  },
+  "domain.backup.reason.dietCompletenessConflict": {
+    "en": "Diet completeness marks for the same day conflict.",
+    "zh-Hans": "同一天的饮食完整标记冲突。",
+    "comment": "Backup error presentation; source errors and archive data stay stable."
+  },
+  "domain.backup.reason.proposalConflict": {
+    "en": "Goal proposals conflict with local records.",
+    "zh-Hans": "目标建议与本机记录冲突。",
+    "comment": "Backup error presentation; source errors and archive data stay stable."
+  },
+  "domain.backup.reason.invalidVersionJSON": {
+    "en": "Invalid JSON format or version field.",
+    "zh-Hans": "JSON 格式或版本字段不正确。",
+    "comment": "Backup error presentation; source errors and archive data stay stable."
+  },
+  "domain.backup.reason.invalidJSON": {
+    "en": "Invalid JSON format or fields.",
+    "zh-Hans": "JSON 格式或字段不正确。",
+    "comment": "Backup error presentation; source errors and archive data stay stable."
+  },
+  "domain.backup.reason.recordIDConflict": {
+    "en": "Record IDs conflict with other local objects.",
+    "zh-Hans": "记录 ID 与本机的其他对象冲突。",
+    "comment": "Backup error presentation; source errors and archive data stay stable."
+  },
+  "domain.backup.reason.creationDate": {
+    "en": "Invalid creation date.",
+    "zh-Hans": "创建时间不合理。",
+    "comment": "Backup error presentation; source errors and archive data stay stable."
+  },
+  "domain.backup.reason.multipleActiveWorkouts": {
+    "en": "A backup cannot contain multiple active workouts.",
+    "zh-Hans": "备份中不能有多个进行中的训练。",
+    "comment": "Backup error presentation; source errors and archive data stay stable."
+  },
+  "domain.backup.reason.workoutFields": {
+    "en": "Incomplete workout fields.",
+    "zh-Hans": "训练字段不完整。",
+    "comment": "Backup error presentation; source errors and archive data stay stable."
+  },
+  "domain.backup.reason.completedWorkoutResult": {
+    "en": "A completed workout has no valid result or end date.",
+    "zh-Hans": "已完成训练缺少有效结果或结束时间。",
+    "comment": "Backup error presentation; source errors and archive data stay stable."
+  },
+  "domain.backup.reason.routineFields": {
+    "en": "Incomplete training template fields.",
+    "zh-Hans": "训练计划字段不完整。",
+    "comment": "Backup error presentation; source errors and archive data stay stable."
+  },
+  "domain.backup.reason.routineExercise": {
+    "en": "Invalid training template exercise.",
+    "zh-Hans": "训练计划动作无效。",
+    "comment": "Backup error presentation; source errors and archive data stay stable."
+  },
+  "domain.backup.reason.foodFields": {
+    "en": "Invalid food fields.",
+    "zh-Hans": "食物字段无效。",
+    "comment": "Backup error presentation; source errors and archive data stay stable."
+  },
+  "domain.backup.reason.mealFields": {
+    "en": "Invalid meal template fields.",
+    "zh-Hans": "固定餐字段无效。",
+    "comment": "Backup error presentation; source errors and archive data stay stable."
+  },
+  "domain.backup.reason.mealItem": {
+    "en": "Invalid meal template item.",
+    "zh-Hans": "固定餐项目无效。",
+    "comment": "Backup error presentation; source errors and archive data stay stable."
+  },
+  "domain.backup.reason.foodLog": {
+    "en": "Invalid food log.",
+    "zh-Hans": "饮食记录无效。",
+    "comment": "Backup error presentation; source errors and archive data stay stable."
+  },
+  "domain.backup.reason.nutritionGoal": {
+    "en": "Invalid nutrition goal.",
+    "zh-Hans": "营养目标无效。",
+    "comment": "Backup error presentation; source errors and archive data stay stable."
+  },
+  "domain.backup.reason.exerciseFields": {
+    "en": "Invalid workout exercise fields.",
+    "zh-Hans": "训练动作字段无效。",
+    "comment": "Backup error presentation; source errors and archive data stay stable."
+  },
+  "domain.backup.reason.setValues": {
+    "en": "Invalid set values.",
+    "zh-Hans": "训练组数值无效。",
+    "comment": "Backup error presentation; source errors and archive data stay stable."
+  },
+  "domain.backup.reason.cardioValues": {
+    "en": "Invalid cardio values.",
+    "zh-Hans": "有氧数值无效。",
+    "comment": "Backup error presentation; source errors and archive data stay stable."
+  },
+  "domain.report.template.today": {
+    "en": "Today’s schedule and feeling come from current records. See the report evidence for available facts.",
+    "zh-Hans": "今日安排与体感来自当前记录；请结合报告依据查看可用事实。",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged."
+  },
+  "domain.report.template.trend": {
+    "en": "Trend focuses on weight changes and diet records confirmed complete through yesterday.",
+    "zh-Hans": "趋势重点查看体重变化和截至昨天的饮食完整记录。",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged."
+  },
+  "domain.report.template.recovery": {
+    "en": "Recovery focuses on today’s feeling, sleep and muscle records. Missing values remain unknown.",
+    "zh-Hans": "恢复重点查看今日体感、睡眠与肌群记录；缺失项保持未知。",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged."
+  },
+  "domain.report.template.weekly": {
+    "en": "This week’s review combines weight changes, diet completeness and recovery records.",
+    "zh-Hans": "本周回顾结合体重变化、饮食完整度与恢复记录。",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged."
+  },
+  "domain.report.template.keepPlan": {
+    "en": "You may keep your original training plan.",
+    "zh-Hans": "可保持原训练计划。",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged."
+  },
+  "domain.report.template.reduceSets": {
+    "en": "You may reduce working sets using the rule-based candidate.",
+    "zh-Hans": "可按规则候选减少工作组。",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged."
+  },
+  "domain.report.template.increaseRIR": {
+    "en": "You may increase reps in reserve using the rule-based candidate.",
+    "zh-Hans": "可按规则候选增加保留次数。",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged."
+  },
+  "domain.report.template.swapTrainingDay": {
+    "en": "You may consider swapping training days.",
+    "zh-Hans": "可考虑调换训练日。",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged."
+  },
+  "domain.report.template.rest": {
+    "en": "You may consider rest.",
+    "zh-Hans": "可考虑休息。",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged."
+  },
+  "domain.report.template.lightActivity": {
+    "en": "You may consider light activity.",
+    "zh-Hans": "可考虑轻活动。",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged."
+  },
+  "domain.report.template.choosePlan": {
+    "en": "Choose a training template or goal first.",
+    "zh-Hans": "先选择训练模板或目标。",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged."
+  },
+  "domain.report.template.reviewNutrition": {
+    "en": "You may review your nutrition goals and logged adherence.",
+    "zh-Hans": "可复核当前营养目标与执行记录。",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged."
+  },
+  "domain.report.template.availableRecords": {
+    "en": "Current records provide the following facts and candidate suggestions.",
+    "zh-Hans": "根据当前记录，可查看以下事实与候选建议。",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged."
+  },
+  "domain.report.template.insufficientRecords": {
+    "en": "There are not enough records yet. Add records to see changes.",
+    "zh-Hans": "当前记录不足，补充记录后再看变化。",
+    "comment": "Display only. Chinese report protocol and historical report content are unchanged."
+  },
+  "domain.report.present": {
+    "en": "Yes",
+    "zh-Hans": "有"
+  },
+  "domain.report.absent": {
+    "en": "No",
+    "zh-Hans": "无"
+  },
+  "domain.report.syntheticExample": {
+    "en": "Synthetic data example",
+    "zh-Hans": "合成数据示例",
+    "comment": "Display of the known fixture summary only."
+  },
+  "domain.report.quantity.daysPerWeek.one": {
+    "en": "%@ day/week",
+    "zh-Hans": "%@天/周",
+    "comment": "Display only. Parameter is the formatted numeric value; singular uses actual value == 1, without truncating fractional scores."
+  },
+  "domain.report.quantity.daysPerWeek.other": {
+    "en": "%@ days/week",
+    "zh-Hans": "%@天/周",
+    "comment": "Display only. Parameter is the formatted numeric value; singular uses actual value == 1, without truncating fractional scores."
+  },
+  "domain.report.quantity.muscleGroups.one": {
+    "en": "%@ muscle group",
+    "zh-Hans": "%@个肌群",
+    "comment": "Display only. Parameter is the formatted numeric value; singular uses actual value == 1, without truncating fractional scores."
+  },
+  "domain.report.quantity.muscleGroups.other": {
+    "en": "%@ muscle groups",
+    "zh-Hans": "%@个肌群",
+    "comment": "Display only. Parameter is the formatted numeric value; singular uses actual value == 1, without truncating fractional scores."
+  },
+  "domain.report.quantity.sets.one": {
+    "en": "%@ set",
+    "zh-Hans": "%@组",
+    "comment": "Display only. Parameter is the formatted numeric value; singular uses actual value == 1, without truncating fractional scores."
+  },
+  "domain.report.quantity.sets.other": {
+    "en": "%@ sets",
+    "zh-Hans": "%@组",
+    "comment": "Display only. Parameter is the formatted numeric value; singular uses actual value == 1, without truncating fractional scores."
+  },
+  "domain.report.quantity.count.one": {
+    "en": "%@ count",
+    "zh-Hans": "%@次",
+    "comment": "Display only. Parameter is the formatted numeric value; singular uses actual value == 1, without truncating fractional scores."
+  },
+  "domain.report.quantity.count.other": {
+    "en": "%@ counts",
+    "zh-Hans": "%@次",
+    "comment": "Display only. Parameter is the formatted numeric value; singular uses actual value == 1, without truncating fractional scores."
+  },
+  "domain.report.quantity.score.one": {
+    "en": "%@ point",
+    "zh-Hans": "%@分",
+    "comment": "Display only. Parameter is the formatted numeric value; singular uses actual value == 1, without truncating fractional scores."
+  },
+  "domain.report.quantity.score.other": {
+    "en": "%@ points",
+    "zh-Hans": "%@分",
+    "comment": "Display only. Parameter is the formatted numeric value; singular uses actual value == 1, without truncating fractional scores."
+  },
+  "domain.report.quantity.kilograms": {
+    "en": "%@ kg",
+    "zh-Hans": "%@kg",
+    "comment": "Display only. Parameter is the localized formatted number. Unit spacing is controlled by each language; protocol stays unchanged."
+  },
+  "domain.report.quantity.centimeters": {
+    "en": "%@ cm",
+    "zh-Hans": "%@cm",
+    "comment": "Display only. Parameter is the localized formatted number. Unit spacing is controlled by each language; protocol stays unchanged."
+  },
+  "domain.report.quantity.kilocalories": {
+    "en": "%@ kcal",
+    "zh-Hans": "%@kcal",
+    "comment": "Display only. Parameter is the localized formatted number. Unit spacing is controlled by each language; protocol stays unchanged."
+  },
+  "domain.report.quantity.grams": {
+    "en": "%@ g",
+    "zh-Hans": "%@g",
+    "comment": "Display only. Parameter is the localized formatted number. Unit spacing is controlled by each language; protocol stays unchanged."
+  },
+  "domain.report.quantity.seconds": {
+    "en": "%@ s",
+    "zh-Hans": "%@秒",
+    "comment": "Display only. Parameter is the localized formatted number. Unit spacing is controlled by each language; protocol stays unchanged."
+  },
+  "domain.report.quantity.milliseconds": {
+    "en": "%@ ms",
+    "zh-Hans": "%@ms",
+    "comment": "Display only. Parameter is the localized formatted number. Unit spacing is controlled by each language; protocol stays unchanged."
+  },
+  "domain.report.quantity.beatsPerMinute": {
+    "en": "%@ bpm",
+    "zh-Hans": "%@次/分",
+    "comment": "Display only. Parameter is the localized formatted number. Unit spacing is controlled by each language; protocol stays unchanged."
+  },
+  "domain.report.quantity.percent": {
+    "en": "%@%%",
+    "zh-Hans": "%@%%",
+    "comment": "Display only. Parameter is the localized formatted number. Unit spacing is controlled by each language; protocol stays unchanged."
+  },
+  "domain.report.quantity.kilogramsPerWeek": {
+    "en": "%@ kg/week",
+    "zh-Hans": "%@kg/周",
+    "comment": "Display only. Parameter is the localized formatted number. Unit spacing is controlled by each language; protocol stays unchanged."
+  },
+  "domain.report.quantity.percentPerWeek": {
+    "en": "%@%%/week",
+    "zh-Hans": "%@%%/周",
+    "comment": "Display only. Parameter is the localized formatted number. Unit spacing is controlled by each language; protocol stays unchanged."
+  }
+}

@@ -16,7 +16,7 @@ final class FoodPreset {
   init(
     id: UUID = UUID(),
     name: String,
-    servingDescription: String = "1 份",
+    servingDescription: String = L10n.text("core.default.serving.description"),
     caloriesPerServing: Double,
     carbohydratesPerServing: Double,
     proteinPerServing: Double,

@@ -23,11 +23,11 @@ struct ExercisePickerView: View {
       Group {
         if let errorMessage = catalog.errorMessage {
           ContentUnavailableView {
-            Label("动作目录加载失败", systemImage: "exclamationmark.triangle")
+            Label(L10n.text("core.exercise.catalog.failed.to.load"), systemImage: "exclamationmark.triangle")
           } description: {
             Text(errorMessage)
           } actions: {
-            Button("重试") { Task { await catalog.load() } }
+            Button(L10n.text("core.retry")) { Task { await catalog.load() } }
           }
         } else if catalog.isLoading {
           ProgressView()
@@ -50,10 +50,10 @@ struct ExercisePickerView: View {
       .navigationTitle(title)
       .navigationBarTitleDisplayMode(.inline)
       .task { await catalog.load() }
-      .searchable(text: $query, prompt: "搜索中英文名称、肌群或器械")
+      .searchable(text: $query, prompt: L10n.text("core.search.chinese.or.english.names.muscles.or.equipment"))
       .toolbar {
         ToolbarItem(placement: .cancellationAction) {
-          Button("取消") { dismiss() }
+          Button(L10n.text("core.cancel")) { dismiss() }
         }
         ToolbarItem(placement: .topBarTrailing) {
           filterMenu
@@ -64,27 +64,27 @@ struct ExercisePickerView: View {
 
   private var filterMenu: some View {
     Menu {
-      Menu("身体部位") {
-        Button("全部") { bodyPart = nil }
+      Menu(L10n.text("core.body.part")) {
+        Button(L10n.text("core.all")) { bodyPart = nil }
         ForEach(catalog.bodyParts, id: \.self) { value in
           Button(ExerciseLabel.bodyPart(value)) { bodyPart = value }
         }
       }
-      Menu("器械") {
-        Button("全部") { equipment = nil }
+      Menu(L10n.text("core.equipment")) {
+        Button(L10n.text("core.all")) { equipment = nil }
         ForEach(catalog.equipmentTypes, id: \.self) { value in
           Button(ExerciseLabel.equipment(value)) { equipment = value }
         }
       }
-      Menu("肌群") {
-        Button("全部") { muscleGroup = nil }
+      Menu(L10n.text("core.muscle.group")) {
+        Button(L10n.text("core.all")) { muscleGroup = nil }
         ForEach(catalog.muscleGroups, id: \.self) { value in
-          Button(value) { muscleGroup = value }
+          Button(ExerciseLabel.muscleGroup(value)) { muscleGroup = value }
         }
       }
       if bodyPart != nil || equipment != nil || muscleGroup != nil {
         Divider()
-        Button("清除筛选", role: .destructive) {
+        Button(L10n.text("core.clear.filters"), role: .destructive) {
           bodyPart = nil
           equipment = nil
           muscleGroup = nil
@@ -92,7 +92,7 @@ struct ExercisePickerView: View {
       }
     } label: {
       Label(
-        "筛选",
+        L10n.text("core.filter"),
         systemImage: bodyPart == nil && equipment == nil && muscleGroup == nil
           ? "line.3.horizontal.decrease.circle" : "line.3.horizontal.decrease.circle.fill")
     }
@@ -113,10 +113,6 @@ struct ExerciseRow: View {
       VStack(alignment: .leading, spacing: 3) {
         Text(item.displayName)
           .font(.body.weight(.medium))
-        Text(item.nameEn)
-          .font(.caption)
-          .foregroundStyle(.secondary)
-          .lineLimit(1)
         Text(
           "\(ExerciseLabel.bodyPart(item.bodyPart)) · \(ExerciseLabel.equipment(item.equipment))"
         )
@@ -141,40 +137,39 @@ struct ExerciseDetailView: View {
       Section {
         VStack(alignment: .leading, spacing: 6) {
           Text(item.displayName).font(.title2.bold())
-          Text(item.nameEn).foregroundStyle(.secondary)
         }
         .padding(.vertical, 4)
       }
 
-      Section("分类") {
-        LabeledContent("身体部位", value: ExerciseLabel.bodyPart(item.bodyPart))
-        LabeledContent("器械", value: ExerciseLabel.equipment(item.equipment))
-        LabeledContent("目标肌肉", value: item.target)
-        LabeledContent("主要协同肌群", value: item.muscleGroup)
+      Section(L10n.text("core.classification")) {
+        LabeledContent(L10n.text("core.body.part"), value: ExerciseLabel.bodyPart(item.bodyPart))
+        LabeledContent(L10n.text("core.equipment"), value: ExerciseLabel.equipment(item.equipment))
+        LabeledContent(L10n.text("core.target.muscle"), value: ExerciseLabel.muscle(item.target))
+        LabeledContent(L10n.text("core.primary.muscle.group"), value: ExerciseLabel.muscleGroup(item.muscleGroup))
         if !item.secondaryMuscles.isEmpty {
-          LabeledContent("辅助肌群", value: item.secondaryMuscles.joined(separator: "、"))
+          LabeledContent(L10n.text("core.secondary.muscles"), value: item.secondaryMuscles.map(ExerciseLabel.muscle).joined(separator: L10n.language == .english ? ", " : "、"))
         }
       }
 
-      Section("中文说明") {
-        ForEach(Array(item.stepsZh.enumerated()), id: \.offset) { index, step in
+      Section(L10n.text("core.instructions")) {
+        ForEach(Array(item.displaySteps.enumerated()), id: \.offset) { index, step in
           instructionRow(index: index, text: step)
         }
-      }
-
-      Section("English Instructions") {
-        ForEach(Array(item.stepsEn.enumerated()), id: \.offset) { index, step in
-          instructionRow(index: index, text: step)
+        DisclosureGroup(L10n.text("core.other.instructions")) {
+          Text(L10n.language == .english ? item.nameZh : item.nameEn)
+          ForEach(Array((L10n.language == .english ? item.stepsZh : item.stepsEn).enumerated()), id: \.offset) { index, step in
+            instructionRow(index: index, text: step)
+          }
         }
       }
 
       Section {
-        Text("数据来自 hasaneyldrm/exercises-dataset。Trainote 未包含 Gym visual 图片或 GIF。")
+        Text(L10n.text("core.data.from.hasaneyldrm.exercises.dataset.trainote.does.not.include.gym.visual.images.o"))
           .font(.footnote)
           .foregroundStyle(.secondary)
       }
     }
-    .navigationTitle("动作详情")
+    .navigationTitle(L10n.text("core.exercise.details"))
     .navigationBarTitleDisplayMode(.inline)
   }
 
@@ -188,5 +183,18 @@ struct ExerciseDetailView: View {
       Text(text)
     }
     .padding(.vertical, 2)
+  }
+}
+
+/// Segmented labels stay readable at accessibility text sizes without replacing view state.
+struct CoreAdaptivePickerStyle: ViewModifier {
+  @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
+  func body(content: Content) -> some View {
+    if dynamicTypeSize.isAccessibilitySize {
+      content.pickerStyle(.menu)
+    } else {
+      content.pickerStyle(.segmented)
+    }
   }
 }

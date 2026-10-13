@@ -44,8 +44,13 @@ final class TrendPresentationTests: XCTestCase {
     for day in -14 ... -1 { model.confirmDiet(on: TrendTestData.date(day)) }
     XCTAssertNotNil(model.result?.proposal)
     XCTAssertNil(model.errorMessage)
-    try capture(model: model, name: "trend-populated", accessibility: false)
-    try capture(model: model, name: "trend-accessibility", accessibility: true)
+    let preference = LanguageSettings.shared.preference
+    defer { LanguageSettings.shared.preference = preference }
+    for language in [AppLanguage.english, .simplifiedChinese] {
+      LanguageSettings.shared.preference = language
+      try capture(model: model, name: "trend-populated-\(language.rawValue)", accessibility: false)
+      try capture(model: model, name: "trend-accessibility-\(language.rawValue)", accessibility: true)
+    }
   }
 
   private func capture(model: TrendViewModel, name: String, accessibility: Bool) throws {

@@ -5,17 +5,17 @@ enum MuscleID: String, Codable, CaseIterable, Identifiable, Sendable {
   var id: String { rawValue }
   var displayName: String {
     switch self {
-    case .chest: "胸部"
-    case .back: "背部"
-    case .shoulders: "肩部"
-    case .biceps: "肱二头肌"
-    case .triceps: "肱三头肌"
-    case .forearms: "前臂"
-    case .core: "核心"
-    case .glutes: "臀部"
-    case .quads: "股四头肌"
-    case .hamstrings: "腘绳肌"
-    case .calves: "小腿"
+    case .chest: L10n.text("domain.chest")
+    case .back: L10n.text("domain.back")
+    case .shoulders: L10n.text("domain.shoulders")
+    case .biceps: L10n.text("domain.biceps")
+    case .triceps: L10n.text("domain.triceps")
+    case .forearms: L10n.text("domain.forearms")
+    case .core: L10n.text("domain.core")
+    case .glutes: L10n.text("domain.glutes")
+    case .quads: L10n.text("domain.quads")
+    case .hamstrings: L10n.text("domain.hamstrings")
+    case .calves: L10n.text("domain.calves")
     }
   }
 }
