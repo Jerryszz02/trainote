@@ -178,6 +178,53 @@ final class DailyUseUpgradeUITests: XCTestCase {
     capture("每周回顾")
   }
 
+  func testTodayNutritionSummaryResetsHistoricalDateWithoutOpeningEditor() {
+    app.tabBars.buttons["饮食"].tap()
+    let datePicker = app.datePickers["nutrition.date"]
+    XCTAssertTrue(datePicker.waitForExistence(timeout: 5))
+    let todayValue = datePicker.value as? String
+    let calendar = Calendar.current
+    let today = Date.now
+    var components = calendar.dateComponents([.year, .month], from: today)
+    components.day = calendar.component(.day, from: today) == 1 ? 2 : 1
+    let historicalDate = calendar.date(from: components)!
+    datePicker.tap()
+    let formatter = DateFormatter()
+    var dayLabels = [String(components.day!)]
+    for locale in [Locale.current, Locale(identifier: "en_US"), Locale(identifier: "zh_CN")] {
+      formatter.locale = locale
+      formatter.dateStyle = .full
+      dayLabels.append(formatter.string(from: historicalDate))
+      for format in ["EEEE, MMMM d", "EEEE, d MMMM", "d MMMM", "M月d日 EEEE"] {
+        formatter.dateFormat = format
+        dayLabels.append(formatter.string(from: historicalDate))
+      }
+    }
+    let day = app.buttons.matching(NSPredicate(format: "label IN %@", dayLabels)).firstMatch
+    XCTAssertTrue(day.waitForExistence(timeout: 3), app.debugDescription)
+    day.tap()
+    app.navigationBars["饮食"].tap()
+    let historicalValue = datePicker.value as? String
+    XCTAssertNotEqual(historicalValue, todayValue, "应先选中另一天，复现饮食日期保留的情况")
+
+    // Ordinary tab navigation should preserve the day the user is reviewing.
+    app.tabBars.buttons["今日"].tap()
+    app.tabBars.buttons["饮食"].tap()
+    XCTAssertEqual(datePicker.value as? String, historicalValue)
+    app.tabBars.buttons["今日"].tap()
+    reveal(app.buttons["today.nutritionSummary"])
+    app.buttons["today.nutritionSummary"].tap()
+    XCTAssertTrue(datePicker.waitForExistence(timeout: 5))
+    XCTAssertEqual(datePicker.value as? String, todayValue)
+    XCTAssertFalse(app.textFields["nutrition.entry.name"].exists)
+    XCTAssertTrue(app.buttons["nutrition.add"].isHittable)
+
+    // The separate quick action must continue opening a new entry editor.
+    app.tabBars.buttons["今日"].tap()
+    app.buttons["today.logFood"].tap()
+    XCTAssertTrue(app.textFields["nutrition.entry.name"].waitForExistence(timeout: 5))
+  }
+
   func testEmptyWorkoutCannotFinishAndFailedGoalSaveIsVisible() {
     app.tabBars.buttons["训练"].tap()
     app.buttons["training.start"].tap()

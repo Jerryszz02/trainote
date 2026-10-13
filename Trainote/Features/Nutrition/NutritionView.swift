@@ -47,6 +47,7 @@ struct NutritionView: View {
   @State private var showEmptyDietConfirmation = false
 
   let addRequest: Int
+  let showTodayRequest: Int
 
   private var dayEntries: [FoodLogEntry] {
     entries.filter { Calendar.current.isDate($0.loggedAt, inSameDayAs: selectedDate) }
@@ -81,6 +82,8 @@ struct NutritionView: View {
           displayedComponents: .date
         )
         .datePickerStyle(.compact)
+        .accessibilityIdentifier("nutrition.date")
+        .accessibilityValue(selectedDayKey)
       }
 
       daySummarySection
@@ -99,6 +102,11 @@ struct NutritionView: View {
       }
     }
     .navigationTitle("饮食")
+    .onChange(of: showTodayRequest, initial: true) { _, newValue in
+      if newValue > 0 {
+        selectedDate = .now
+      }
+    }
     .onChange(of: addRequest, initial: true) { _, newValue in
       if newValue > 0 {
         selectedDate = .now

@@ -26,6 +26,7 @@ struct AppShell: View {
   @State private var selectedTab: AppTab = .today
   @State private var startWorkoutRequested = false
   @State private var logFoodRequest = 0
+  @State private var showTodayNutritionRequest = 0
   @State private var todayPath: [LibrarySection] = []
   @State private var presentedSheet: AppSheet?
   @State private var sheetDismissal: (() -> Void)?
@@ -47,7 +48,10 @@ struct AppShell: View {
             selectedTab = .nutrition
             logFoodRequest += 1
           },
-          onOpenNutrition: { selectedTab = .nutrition },
+          onOpenNutrition: {
+            selectedTab = .nutrition
+            showTodayNutritionRequest += 1
+          },
           onOpenTemplates: {
             todayPath.append(.routines)
           },
@@ -78,7 +82,7 @@ struct AppShell: View {
       .tag(AppTab.training)
 
       NavigationStack {
-        NutritionView(addRequest: logFoodRequest)
+        NutritionView(addRequest: logFoodRequest, showTodayRequest: showTodayNutritionRequest)
       }
       .tabItem { Label("饮食", systemImage: "fork.knife") }
       .tag(AppTab.nutrition)
