@@ -455,7 +455,7 @@ enum UITestTextInput {
       // A second tap on an already focused empty field opens AutoFill's editing menu.
       // Reacquire focus only when scrolling actually moved this form row.
       if didScroll {
-        guard focus(field, in: app) else { return }
+        field.tap()
       }
     }
 
