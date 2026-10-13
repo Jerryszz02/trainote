@@ -153,7 +153,7 @@ struct TrendView: View {
         .chartYScale(domain: weightDomain)
         .frame(height: 200)
         .accessibilityIdentifier("trend.weightChart")
-        Text(L10n.text("health.trendview.dots.are.source.readings.and.the.365667"))
+        Text(L10n.text("interaction.trend.legend"))
           .font(.caption).foregroundStyle(.secondary)
       }
       NavigationLink(L10n.text("health.trendview.weight.records.and.sources.4351f2")) { TrendWeightRecordsView(model: model) }
@@ -176,8 +176,6 @@ struct TrendView: View {
             model.confirmDiet(on: dietDate)
           }
         }.accessibilityIdentifier("trend.confirmDiet")
-        Text(L10n.text("health.trendview.confirm.again.after.editing.food.records.1b445b"))
-          .font(.caption).foregroundStyle(.secondary)
       }
       if let totals = selected?.totals { targetRows(totals, prefix: L10n.text("health.trendview.recorded.d94731")) }
       let nutrition =

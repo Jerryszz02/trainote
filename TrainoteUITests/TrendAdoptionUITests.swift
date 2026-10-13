@@ -144,7 +144,6 @@ final class TrendAdoptionUITests: XCTestCase {
     XCTAssertTrue(pastCount.exists, "今天的确认不应计入截至昨天的 14 天")
     app.tabBars.buttons["饮食"].tap()
     app.buttons["nutrition.add"].tap()
-    app.buttons["nutrition.add.direct"].tap()
     UITestTextInput.replace(app.textFields["nutrition.entry.name"], with: "回归测试食物", in: app)
     app.buttons["nutrition.entry.save"].tap()
     let reconfirm = app.buttons["nutrition.confirmDiet"]

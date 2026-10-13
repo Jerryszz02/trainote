@@ -5,7 +5,6 @@ struct TodayView: View {
   @Environment(\.modelContext) private var modelContext
   @Environment(\.scenePhase) private var scenePhase
   @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-  @AppStorage("onboarding.dismissed") private var onboardingDismissed = false
   @State private var currentDate = Date.now
   @State private var saveError: L10n.Message?
   @Query(sort: \Routine.updatedAt, order: .reverse) private var routines: [Routine]
@@ -23,6 +22,7 @@ struct TodayView: View {
 
   let onStartWorkout: () -> Void
   let onLogFood: () -> Void
+  var onOpenNutrition: () -> Void = {}
   var onOpenTemplates: () -> Void = {}
   var onOpenRecovery: () -> Void = {}
   var onOpenSettings: () -> Void = {}
@@ -44,8 +44,9 @@ struct TodayView: View {
       entries: todayEntries,
       historicalTargets: NutritionGoalHistory.targets(
         on: currentDate, history: goalRevisions.map(\.value),
-        legacyCurrent: NutritionGoalHistory.targets(from: goals.first))
-        .map(TrendNutrition.displayed))
+        legacyCurrent: NutritionGoalHistory.targets(from: goals.first)
+      )
+      .map(TrendNutrition.displayed))
   }
 
   var body: some View {
@@ -53,30 +54,18 @@ struct TodayView: View {
       LazyVStack(alignment: .leading, spacing: 20) {
         header
         quickActions
-        if let recoveryIntegration {
-          TodayRecoveryCard(
-            integration: recoveryIntegration, advice: trainingAdvice,
-            hasRoutines: !routines.isEmpty,
-            onOpenTemplates: onOpenTemplates, onOpenRecovery: onOpenRecovery,
-            onOpenCheckIn: onOpenCheckIn)
-        } else {
-          recommendationCard
+        Text(L10n.text("interaction.today.recorded")).font(.headline)
+        trainingSummary
+        Button(action: onOpenNutrition) {
+          HStack {
+            Label(L10n.text("interaction.today.foodCount", todayEntries.count), systemImage: "fork.knife")
+            Spacer()
+            Image(systemName: "chevron.right").accessibilityHidden(true)
+          }
         }
-        if !onboardingDismissed && workouts.isEmpty && foodEntries.isEmpty { gettingStarted }
+        .accessibilityIdentifier("today.nutritionSummary")
         nutrientGrid
         routineShortcuts
-        trainingSummary
-        weeklyLink
-        if let reportIntegration {
-          NavigationLink {
-            HealthReportsView(integration: reportIntegration)
-          } label: {
-            Label(L10n.text("core.basic.reports.and.history"), systemImage: "text.document")
-              .frame(maxWidth: .infinity, alignment: .leading)
-              .padding().background(.background, in: RoundedRectangle(cornerRadius: 16))
-          }
-          .accessibilityIdentifier("today.analysisReports")
-        }
       }
       .padding()
     }
@@ -112,43 +101,6 @@ struct TodayView: View {
     } message: {
       Text(saveError?.text ?? L10n.text("core.please.try.again"))
     }
-  }
-
-  private var recommendationCard: some View {
-    Button(action: routines.isEmpty ? onOpenTemplates : onOpenRecovery) {
-      HStack(alignment: .top, spacing: 12) {
-        Image(systemName: "lightbulb").font(.title2)
-        VStack(alignment: .leading, spacing: 4) {
-          Text(L10n.text("core.today.s.guidance")).font(.headline)
-          Text(routines.isEmpty ? L10n.text("core.choose.a.routine.and.start.when.it.suits.you") : L10n.text("core.review.today.s.recovery.alongside.your.training.records.and.how.you.feel"))
-            .font(.subheadline).foregroundStyle(.secondary)
-        }
-        Spacer(minLength: 0)
-        Image(systemName: "chevron.right").font(.caption)
-      }
-      .padding().background(.background, in: RoundedRectangle(cornerRadius: 16))
-    }
-    .buttonStyle(.plain)
-    .accessibilityIdentifier("today.recommendation")
-  }
-
-  private var gettingStarted: some View {
-    VStack(alignment: .leading, spacing: 12) {
-      HStack {
-        Text(L10n.text("core.start.with.a.workout.and.a.meal")).font(.headline)
-        Spacer()
-        Button(L10n.text("core.skip")) { onboardingDismissed = true }.font(.subheadline)
-          .accessibilityIdentifier("onboarding.skip")
-      }
-      Text(L10n.text("core.save.exercises.and.foods.you.use.often.for.next.time.set.goals.whenever.you.like"))
-        .font(.subheadline).foregroundStyle(.secondary)
-      Button(L10n.text("core.create.a.routine"), systemImage: "list.bullet.rectangle", action: onOpenTemplates)
-        .accessibilityIdentifier("today.createRoutine")
-      Button(L10n.text("core.log.your.first.meal"), systemImage: "fork.knife", action: onLogFood)
-      Button(L10n.text("core.set.daily.nutrition.goals"), systemImage: "target", action: onOpenSettings)
-    }
-    .padding()
-    .background(Color.accentColor.opacity(0.08), in: RoundedRectangle(cornerRadius: 16))
   }
 
   @ViewBuilder
@@ -192,33 +144,9 @@ struct TodayView: View {
     }
   }
 
-  private var weeklyLink: some View {
-    NavigationLink {
-      WeeklyReportView()
-    } label: {
-      HStack(spacing: 12) {
-        Image(systemName: "chart.xyaxis.line").font(.title2)
-        VStack(alignment: .leading, spacing: 4) {
-          Text(L10n.text("core.weekly.review.and.personal.records")).font(.headline)
-          Text(L10n.text("core.see.changes.in.your.training.and.food.records")).font(.caption).foregroundStyle(.secondary)
-        }
-        Spacer()
-        Image(systemName: "chevron.right").font(.caption)
-      }
-      .padding().background(.background, in: RoundedRectangle(cornerRadius: 16))
-    }
-    .buttonStyle(.plain)
-    .accessibilityIdentifier("today.weeklyReport")
-  }
-
   private var header: some View {
-    VStack(alignment: .leading, spacing: 4) {
-      Text(currentDate.formatted(.dateTime.weekday(.wide).month().day().locale(L10n.locale)))
-        .font(.title2.bold())
-      Text(L10n.text("core.log.every.set.and.every.meal.today"))
-        .font(.subheadline)
-        .foregroundStyle(.secondary)
-    }
+    Text(currentDate.formatted(.dateTime.weekday(.wide).month().day().locale(L10n.locale)))
+      .font(.title2.bold())
   }
 
   private var nutrientGrid: some View {
@@ -246,24 +174,27 @@ struct TodayView: View {
   }
 
   private var quickActions: some View {
-    let layout =
-      dynamicTypeSize.isAccessibilitySize
-      ? AnyLayout(VStackLayout(spacing: 12)) : AnyLayout(HStackLayout(spacing: 12))
-    return layout {
-      QuickActionButton(
-        title: workouts.contains(where: { $0.status == .inProgress }) ? L10n.text("core.continue.workout") : L10n.text("core.start.workout"),
-        subtitle: workouts.contains(where: { $0.status == .inProgress }) ? L10n.text("core.pick.up.where.you.left.off") : L10n.text("core.blank.workout.or.routine"),
-        systemImage: "figure.strengthtraining.traditional",
-        action: onStartWorkout
-      )
+    VStack(alignment: .leading, spacing: 12) {
+      Button(action: onStartWorkout) {
+        Label(
+          workouts.contains(where: { $0.status == .inProgress }) ? L10n.text("core.continue.workout") : L10n.text("core.start.workout"),
+          systemImage: "figure.strengthtraining.traditional"
+        )
+        .font(.headline)
+        .frame(maxWidth: .infinity, minHeight: 44)
+      }
+      .buttonStyle(.borderedProminent)
       .accessibilityIdentifier("today.startWorkout")
-
-      QuickActionButton(
-        title: L10n.text("core.log.food"),
-        subtitle: L10n.text("core.a.meal.or.food"),
-        systemImage: "plus.circle.fill",
-        action: onLogFood
-      )
+      if let active = workouts.first(where: { $0.status == .inProgress }) {
+        Text(L10n.text("interaction.today.progress", active.title, WorkoutInsights.completedSets(in: active)))
+          .font(.subheadline).foregroundStyle(.secondary)
+          .accessibilityIdentifier("today.activeProgress")
+      }
+      Button(action: onLogFood) {
+        Label(L10n.text("core.log.food"), systemImage: "plus.circle")
+          .frame(maxWidth: .infinity, minHeight: 44)
+      }
+      .buttonStyle(.bordered)
       .accessibilityIdentifier("today.logFood")
     }
   }
@@ -274,14 +205,8 @@ struct TodayView: View {
         .font(.headline)
 
       if todayWorkouts.isEmpty {
-        ContentUnavailableView(
-          L10n.text("core.no.workouts.yet"),
-          systemImage: "figure.walk",
-          description: Text(L10n.text("core.start.a.workout.to.see.its.summary.here"))
-        )
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 8)
-        .background(.background, in: RoundedRectangle(cornerRadius: 16))
+        Label(L10n.text("interaction.today.noWorkout"), systemImage: "figure.walk")
+          .foregroundStyle(.secondary)
       } else {
         ForEach(todayWorkouts.prefix(3)) { workout in
           NavigationLink {
@@ -378,29 +303,5 @@ private struct NutrientProgressCard: View {
     }
     return
       L10n.text("core.consumed.no.goal.set.yet" , String(describing: nutrient.title), String(describing: consumed.rounded().formatted(.number.precision(.fractionLength(0)).locale(L10n.locale))), String(describing: nutrient.unit))
-  }
-}
-
-private struct QuickActionButton: View {
-  let title: String
-  let subtitle: String
-  let systemImage: String
-  let action: () -> Void
-
-  var body: some View {
-    Button(action: action) {
-      VStack(alignment: .leading, spacing: 10) {
-        Image(systemName: systemImage)
-          .font(.title2)
-        VStack(alignment: .leading, spacing: 2) {
-          Text(title).font(.headline)
-          Text(subtitle).font(.caption).foregroundStyle(.secondary)
-        }
-      }
-      .frame(maxWidth: .infinity, alignment: .leading)
-      .padding()
-      .background(.background, in: RoundedRectangle(cornerRadius: 16))
-    }
-    .buttonStyle(.plain)
   }
 }

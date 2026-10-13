@@ -38,7 +38,7 @@ struct HealthReportsView: View {
       }
       if !integration.isConfigured {
         Section {
-          Text(L10n.text("health.healthreportsview.basic.reports.are.generated.locally.ai.ffd0d4"))
+          Text(L10n.text("interaction.help.localReport"))
             .font(.footnote).foregroundStyle(.secondary)
             .accessibilityIdentifier("reports.localOnly")
         }
@@ -46,7 +46,7 @@ struct HealthReportsView: View {
       Section {
         NavigationLink(L10n.text("health.healthreportsview.historical.ai.reports.4adc1e")) { HealthReportHistoryView(integration: integration) }
           .accessibilityIdentifier("reports.history")
-        NavigationLink(L10n.text("health.healthreportsview.methods.privacy.and.data.use.7b28ee")) { HealthHelpView() }
+        NavigationLink(L10n.text("health.healthreportsview.methods.privacy.and.data.use.7b28ee")) { HealthHelpView(topic: .ai) }
       }
     }
     .navigationTitle(L10n.text("health.healthreportsview.analysis.reports.84de87"))
@@ -109,8 +109,6 @@ private struct HealthReportEvidenceView: View {
       Section(L10n.text("health.healthreportsview.analysis.at.the.time.6ae3cf")) {
         LabeledContent(
           L10n.text("health.healthreportsview.records.through.dfa634"), value: content.input.asOf.formatted(Date.FormatStyle(date: .abbreviated, time: .shortened).locale(L10n.locale)))
-        Text(L10n.text("health.healthreportsview.values.come.from.local.rules.and.ed2907"))
-          .font(.footnote).foregroundStyle(.secondary)
       }
       Section(L10n.text("health.healthreportsview.facts.and.evidence.8e249b")) {
         ForEach(ReportFactSelection.facts(content.input), id: \.id) { fact in
@@ -140,7 +138,7 @@ private struct HealthReportEvidenceView: View {
           .accessibilityIdentifier("reports.fact.\(fact.metric)")
         }
       }
-      Section { NavigationLink(L10n.text("health.healthreportsview.full.methods.and.data.use.b1ffd1")) { HealthHelpView() } }
+      Section { NavigationLink(L10n.text("health.healthreportsview.full.methods.and.data.use.b1ffd1")) { HealthHelpView(topic: .ai) } }
     }
     .navigationTitle(L10n.text("health.healthreportsview.report.evidence.cf091a"))
     .navigationBarTitleDisplayMode(.inline)

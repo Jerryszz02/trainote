@@ -164,9 +164,8 @@ struct ExerciseDetailView: View {
       }
 
       Section {
-        Text(L10n.text("core.data.from.hasaneyldrm.exercises.dataset.trainote.does.not.include.gym.visual.images.o"))
-          .font(.footnote)
-          .foregroundStyle(.secondary)
+        NavigationLink(L10n.text("interaction.exercise.sources")) { HealthHelpView(topic: .sources) }
+          .accessibilityIdentifier("exercise.sources")
       }
     }
     .navigationTitle(L10n.text("core.exercise.details"))

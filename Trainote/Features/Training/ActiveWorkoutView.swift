@@ -10,119 +10,140 @@ struct ActiveWorkoutView: View {
   @Bindable var workout: Workout
   var isHistoricalEdit = false
   var saveHistory: (() throws -> Void)?
+  @State private var showingDetails = false
   @State private var showingPicker = false
+  @State private var addedExerciseID: UUID?
   @State private var showingDiscard = false
   @State private var message: L10n.Message?
   @AppStorage("training.restSeconds") private var restDuration = 90
 
   var body: some View {
-    List {
-      Section(L10n.text("core.workout.details")) {
-        TextField(L10n.text("core.workout.name"), text: $workout.title).accessibilityIdentifier("workout.title")
-        TextField(L10n.text("core.notes.optional"), text: $workout.notes, axis: .vertical)
-        if isHistoricalEdit {
-          DatePicker(L10n.text("core.start.time"), selection: $workout.startedAt, in: ...Date.now)
-          DatePicker(
-            L10n.text("core.end.time"),
-            selection: Binding(
-              get: { workout.endedAt ?? workout.startedAt }, set: { workout.endedAt = $0 }),
-            in: workout.startedAt...max(workout.startedAt, Date.now))
-        } else {
-          LabeledContent(L10n.text("core.elapsed.time")) {
-            Text(workout.startedAt, style: .timer).monospacedDigit()
-          }
-        }
-      }
-      if !isHistoricalEdit {
-        Section(L10n.text("core.rest.between.sets")) {
-          Picker(L10n.text("core.rest.after.completing.a.set"), selection: $restDuration) {
-            Text(L10n.text("core.60.sec")).tag(60)
-            Text(L10n.text("core.90.sec")).tag(90)
-            Text(L10n.text("core.120.sec")).tag(120)
-          }.modifier(CoreAdaptivePickerStyle())
-          if let end = workout.restEndsAt {
+    ScrollViewReader { scroll in
+      List {
+        if !isHistoricalEdit, let end = workout.restEndsAt {
+          Section {
             TimelineView(.periodic(from: .now, by: 1)) { timeline in
               let remaining = max(Int(end.timeIntervalSince(timeline.date).rounded(.up)), 0)
               HStack {
                 Label(remaining > 0 ? L10n.text("core.resting") : L10n.text("core.rest.finished"), systemImage: "timer")
                 Spacer()
-                Text(L10n.text("core.sec", remaining)).monospacedDigit().accessibilityIdentifier(
-                  "workout.restRemaining")
+                Text(L10n.text("core.sec", remaining)).monospacedDigit()
+                  .accessibilityIdentifier("workout.restRemaining")
               }
             }
-            HStack {
-              Button(L10n.text("core.30.sec")) { workout.restEndsAt = max(end, .now).addingTimeInterval(30) }
-              Spacer()
-              Button(L10n.text("core.end.rest")) { workout.restEndsAt = nil }
+            Button(L10n.text("core.end.rest")) { workout.restEndsAt = nil }
+          }
+        }
+        ForEach(workout.sortedExercises) { exercise in
+          WorkoutExerciseEditor(
+            exercise: exercise, workout: workout, history: history,
+            isDraft: isHistoricalEdit, restDuration: restDuration, reportError: { message = $0 }
+          ) {
+            workout.exercises.removeAll { $0.id == exercise.id }
+            if !isHistoricalEdit { modelContext.delete(exercise) }
+            for (index, value) in workout.sortedExercises.enumerated() { value.orderIndex = index }
+          }
+          .id(exercise.id)
+        }
+        Section {
+          Button(L10n.text("core.add.exercise"), systemImage: "plus.circle.fill") { showingPicker = true }
+            .accessibilityIdentifier("workout.addExercise")
+        }
+        Button { showingDetails.toggle() } label: {
+          Label(L10n.text("recording.workout.settings.notes"), systemImage: showingDetails ? "chevron.down" : "chevron.right")
+            .frame(minHeight: 44)
+        }
+        .accessibilityValue(showingDetails ? L10n.text("recording.expanded") : L10n.text("recording.collapsed"))
+        .accessibilityIdentifier("workout.details")
+        if showingDetails {
+          Section(L10n.text("core.workout.details")) {
+            TextField(L10n.text("core.workout.name"), text: $workout.title).accessibilityIdentifier("workout.title")
+            TextField(L10n.text("core.notes.optional"), text: $workout.notes, axis: .vertical)
+            if isHistoricalEdit {
+              DatePicker(L10n.text("core.start.time"), selection: $workout.startedAt, in: ...Date.now)
+              DatePicker(
+                L10n.text("core.end.time"),
+                selection: Binding(
+                  get: { workout.endedAt ?? workout.startedAt }, set: { workout.endedAt = $0 }),
+                in: workout.startedAt...max(workout.startedAt, Date.now))
+            } else {
+              LabeledContent(L10n.text("core.elapsed.time")) {
+                Text(workout.startedAt, style: .timer).monospacedDigit()
+              }
+            }
+          }
+          if !isHistoricalEdit {
+            Section(L10n.text("core.rest.between.sets")) {
+              Picker(L10n.text("core.rest.after.completing.a.set"), selection: $restDuration) {
+                Text(L10n.text("core.60.sec")).tag(60)
+                Text(L10n.text("core.90.sec")).tag(90)
+                Text(L10n.text("core.120.sec")).tag(120)
+              }.modifier(CoreAdaptivePickerStyle())
+              if let end = workout.restEndsAt {
+                Button(L10n.text("core.30.sec")) { workout.restEndsAt = max(end, .now).addingTimeInterval(30) }
+              }
             }
           }
         }
-      }
-      ForEach(workout.sortedExercises) { exercise in
-        WorkoutExerciseEditor(
-          exercise: exercise, workout: workout, history: history,
-          isDraft: isHistoricalEdit, restDuration: restDuration, reportError: { message = $0 }
-        ) {
-          workout.exercises.removeAll { $0.id == exercise.id }
-          if !isHistoricalEdit { modelContext.delete(exercise) }
-          for (index, value) in workout.sortedExercises.enumerated() { value.orderIndex = index }
+        if !isHistoricalEdit {
+          Section {
+            Button(L10n.text("core.discard.this.workout"), role: .destructive) { showingDiscard = true }
+              .accessibilityIdentifier("workout.discard")
+          }
         }
       }
-      Section {
-        Button(L10n.text("core.add.exercise"), systemImage: "plus.circle.fill") { showingPicker = true }
-          .accessibilityIdentifier("workout.addExercise")
-      }
-      if !isHistoricalEdit {
-        Section {
-          Button(L10n.text("core.discard.this.workout"), role: .destructive) { showingDiscard = true }
-            .accessibilityIdentifier("workout.discard")
+      .localizationTestControls()
+      .navigationTitle(isHistoricalEdit ? L10n.text("core.edit.workout") : L10n.text("core.in.progress"))
+      .navigationBarTitleDisplayMode(.inline)
+      .toolbar {
+        ToolbarItem(placement: .confirmationAction) {
+          Button(isHistoricalEdit ? L10n.text("settings.save") : L10n.text("recording.finish.workout"), action: finish).accessibilityIdentifier(
+            "workout.finish")
+        }
+        if isHistoricalEdit {
+          ToolbarItem(placement: .cancellationAction) {
+            Button(L10n.text("settings.cancel")) { dismiss() }.accessibilityIdentifier("workout.edit.cancel")
+          }
+        }
+        ToolbarItemGroup(placement: .keyboard) {
+          Spacer()
+          Button(L10n.text("core.dismiss.keyboard")) {
+            UIApplication.shared.sendAction(
+              #selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+          }
         }
       }
-    }
-    .localizationTestControls()
-    .navigationTitle(isHistoricalEdit ? L10n.text("core.edit.workout") : L10n.text("core.in.progress"))
-    .navigationBarTitleDisplayMode(.inline)
-    .toolbar {
-      ToolbarItem(placement: .confirmationAction) {
-        Button(isHistoricalEdit ? L10n.text("core.save") : L10n.text("core.done"), action: finish).accessibilityIdentifier(
-          "workout.finish")
-      }
-      if isHistoricalEdit {
-        ToolbarItem(placement: .cancellationAction) {
-          Button(L10n.text("core.cancel")) { dismiss() }.accessibilityIdentifier("workout.edit.cancel")
+      .onChange(of: showingPicker) { wasShowing, isShowing in
+        if wasShowing && !isShowing, let addedExerciseID {
+          scroll.scrollTo(addedExerciseID, anchor: .top)
+          self.addedExerciseID = nil
         }
       }
-      ToolbarItemGroup(placement: .keyboard) {
-        Spacer()
-        Button(L10n.text("core.dismiss.keyboard")) {
-          UIApplication.shared.sendAction(
-            #selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+      .sheet(isPresented: $showingPicker) {
+        ExercisePickerView(title: L10n.text("core.add.workout.exercise")) { item in
+          let exercise = RoutineFactory.workoutExercise(
+            from: item, orderIndex: workout.exercises.count)
+          exercise.workout = workout
+          workout.exercises.append(exercise)
+          addedExerciseID = exercise.id
         }
       }
-    }
-    .sheet(isPresented: $showingPicker) {
-      ExercisePickerView(title: L10n.text("core.add.workout.exercise")) { item in
-        let exercise = RoutineFactory.workoutExercise(
-          from: item, orderIndex: workout.exercises.count)
-        exercise.workout = workout
-        workout.exercises.append(exercise)
+      .confirmationDialog(L10n.text("core.discard.this.workout.143"), isPresented: $showingDiscard, titleVisibility: .visible) {
+        Button(L10n.text("core.discard.and.delete"), role: .destructive, action: discard)
+        Button(L10n.text("core.continue.workout"), role: .cancel) {}
       }
+      .alert(
+        L10n.text("core.check.your.records"), isPresented: Binding(get: { message != nil }, set: { if !$0 { message = nil } })
+      ) {
+        if !isHistoricalEdit { Button(L10n.text("core.retry.saving")) { persist() } }
+        Button(L10n.text("core.ok"), role: .cancel) { message = nil }
+      } message: {
+        Text(message?.text ?? L10n.text("core.please.try.again"))
+      }
+      .onChange(of: editFingerprint) { _, _ in persist() }
+      .onChange(of: scenePhase) { _, phase in if phase != .active { persist() } }
+      .onDisappear { persist() }
     }
-    .confirmationDialog(L10n.text("core.discard.this.workout.143"), isPresented: $showingDiscard, titleVisibility: .visible) {
-      Button(L10n.text("core.discard.and.delete"), role: .destructive, action: discard)
-      Button(L10n.text("core.continue.workout"), role: .cancel) {}
-    }
-    .alert(
-      L10n.text("core.check.your.records"), isPresented: Binding(get: { message != nil }, set: { if !$0 { message = nil } })
-    ) {
-      if !isHistoricalEdit { Button(L10n.text("core.retry.saving")) { persist() } }
-      Button(L10n.text("core.ok"), role: .cancel) { message = nil }
-    } message: {
-      Text(message?.text ?? L10n.text("core.please.try.again"))
-    }
-    .onChange(of: editFingerprint) { _, _ in persist() }
-    .onChange(of: scenePhase) { _, phase in if phase != .active { persist() } }
-    .onDisappear { persist() }
   }
 
   private var editFingerprint: [String] {
@@ -400,6 +421,7 @@ private struct WorkoutExerciseEditor: View {
 
 private struct StrengthSetRow: View {
   @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+  @State private var showOptions = false
   @Bindable var strengthSet: StrengthSet
   let mode: TrackingMode
   let onComplete: () -> Void
@@ -412,66 +434,57 @@ private struct StrengthSetRow: View {
       headerLayout {
         Button(action: onComplete) {
           Label(
-            L10n.text("core.set", strengthSet.orderIndex + 1),
+            L10n.text("recording.set.status", strengthSet.orderIndex + 1, strengthSet.isCompleted ? L10n.text("core.completed") : L10n.text("recording.complete.this.set")),
             systemImage: strengthSet.isCompleted ? "checkmark.circle.fill" : "circle"
           )
           .foregroundStyle(strengthSet.isCompleted ? Color.green : Color.primary)
-          .fixedSize(horizontal: false, vertical: true)
+          .frame(minHeight: 44)
+          .contentShape(Rectangle())
         }
         .buttonStyle(.borderless)
         .accessibilityLabel(
-          L10n.text("core.set.171", strengthSet.orderIndex + 1, String(describing: strengthSet.isCompleted ? L10n.text("core.completed") : L10n.text("core.mark.complete")))
+          L10n.text("core.set.171", strengthSet.orderIndex + 1, strengthSet.isCompleted ? L10n.text("core.completed") : L10n.text("recording.complete.this.set"))
         )
         .accessibilityIdentifier("strengthSet.complete.\(strengthSet.id.uuidString)")
-        if !dynamicTypeSize.isAccessibilitySize { Spacer() }
-        Button(L10n.text("core.delete.set"), systemImage: "trash", role: .destructive, action: onDelete)
-          .labelStyle(.iconOnly).buttonStyle(.borderless)
-      }
-      Picker(L10n.text("core.set.type"), selection: Binding(
-        get: { strengthSet.setRole }, set: { strengthSet.setRole = $0 }
-      )) {
-        Text(L10n.text("core.working.set")).tag(SetRole.working)
-        Text(L10n.text("core.warm.up.set")).tag(SetRole.warmup)
-        if strengthSet.setRole == .unknown { Text(L10n.text("core.unspecified.in.history")).tag(SetRole.unknown) }
-      }
-      .accessibilityIdentifier("strengthSet.role.\(strengthSet.id.uuidString)")
-      if mode == .strength || mode == .repetitions {
-        Picker(L10n.text("core.reps.in.reserve.rir"), selection: $strengthSet.rir) {
-          Text(L10n.text("core.rir.unset")).tag(Int?.none)
-          ForEach(0...5, id: \.self) { value in
-            Text(value == 5 ? "5+" : value.formatted(.number.locale(L10n.locale)))
-              .accessibilityLabel(value == 5 ? L10n.text("core.5.or.more.reps") : L10n.text("core.reps", value))
-              .tag(Optional(value))
-          }
+        Spacer()
+        Button(role: .destructive, action: onDelete) {
+          Image(systemName: "trash").frame(minWidth: 44, minHeight: 44).contentShape(Rectangle())
         }
-        .accessibilityIdentifier("strengthSet.rir.\(strengthSet.id.uuidString)")
-        Text(L10n.text("core.estimate.how.many.more.reps.you.could.have.completed.at.the.end.of.this.set.optional"))
-          .font(.caption).foregroundStyle(.secondary)
+        .accessibilityLabel(L10n.text("core.delete.set")).buttonStyle(.borderless)
       }
       if mode == .strength {
+        Text(L10n.text("settings.weight")).font(.subheadline)
         HStack {
           Button {
             strengthSet.weightKilograms = max(strengthSet.weightKilograms - 2.5, 0)
           } label: {
-            Image(systemName: "minus.circle")
+            Image(systemName: "minus.circle").frame(minWidth: 44, minHeight: 44).contentShape(Rectangle())
           }
-          .accessibilityLabel(L10n.text("core.decrease.weight.by.2.5.kg")).buttonStyle(.borderless)
+          .frame(minWidth: 44, minHeight: 44).accessibilityLabel(L10n.text("core.decrease.weight.by.2.5.kg")).buttonStyle(
+            .borderless)
           StableNumberField(
-            L10n.text("core.weight"), value: $strengthSet.weightKilograms,
+            L10n.text("settings.weight"), value: $strengthSet.weightKilograms,
             format: .number.precision(.fractionLength(0...2)).locale(L10n.locale)
           )
-          .keyboardType(.decimalPad).multilineTextAlignment(.trailing).accessibilityLabel(L10n.text("core.weight"))
+          .keyboardType(.decimalPad).multilineTextAlignment(.trailing).accessibilityLabel(
+            L10n.text("recording.set.weight", strengthSet.orderIndex + 1)
+          )
           .accessibilityIdentifier("strengthSet.weight.\(strengthSet.id.uuidString)")
           Text("kg").foregroundStyle(.secondary)
           Button {
             strengthSet.weightKilograms = min(strengthSet.weightKilograms + 2.5, 10_000)
           } label: {
-            Image(systemName: "plus.circle")
+            Image(systemName: "plus.circle").frame(minWidth: 44, minHeight: 44).contentShape(Rectangle())
           }
-          .accessibilityLabel(L10n.text("core.increase.weight.by.2.5.kg")).buttonStyle(.borderless)
+          .frame(minWidth: 44, minHeight: 44).accessibilityLabel(L10n.text("core.increase.weight.by.2.5.kg")).buttonStyle(
+            .borderless)
         }
       }
-      HStack {
+      let fieldLayout =
+        dynamicTypeSize.isAccessibilitySize
+        ? AnyLayout(VStackLayout(alignment: .leading, spacing: 8))
+        : AnyLayout(HStackLayout())
+      fieldLayout {
         Text(mode == .duration ? L10n.text("core.duration") : L10n.text("core.repetitions"))
         Spacer()
         StableNumberField(
@@ -480,11 +493,44 @@ private struct StrengthSetRow: View {
           format: .number.locale(L10n.locale)
         )
         .keyboardType(.numberPad).multilineTextAlignment(.trailing)
-        .accessibilityLabel(mode == .duration ? L10n.text("core.duration.in.seconds") : L10n.text("core.repetitions"))
+        .accessibilityLabel(
+          L10n.text("recording.set.field", strengthSet.orderIndex + 1, mode == .duration ? L10n.text("core.duration.in.seconds") : L10n.text("core.repetitions"))
+        )
         .accessibilityIdentifier(
           "strengthSet.\(mode == .duration ? "duration" : "repetitions").\(strengthSet.id.uuidString)"
         )
         Text(mode == .duration ? L10n.text("core.sec.187") : L10n.text("core.reps.188")).foregroundStyle(.secondary)
+      }
+      Button { showOptions.toggle() } label: {
+        Label(L10n.text("recording.more.options"), systemImage: showOptions ? "chevron.down" : "chevron.right")
+          .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+          .contentShape(Rectangle())
+      }
+      .buttonStyle(.borderless)
+      .accessibilityValue(showOptions ? L10n.text("recording.expanded") : L10n.text("recording.collapsed"))
+      .accessibilityIdentifier("strengthSet.more.\(strengthSet.id.uuidString)")
+      if showOptions {
+        Picker(
+          L10n.text("core.set.type"),
+          selection: Binding(
+            get: { strengthSet.setRole }, set: { strengthSet.setRole = $0 }
+          )
+        ) {
+          Text(L10n.text("core.working.set")).tag(SetRole.working)
+          Text(L10n.text("core.warm.up.set")).tag(SetRole.warmup)
+          if strengthSet.setRole == .unknown { Text(L10n.text("core.unspecified.in.history")).tag(SetRole.unknown) }
+        }
+        .accessibilityIdentifier("strengthSet.role.\(strengthSet.id.uuidString)")
+        if mode == .strength || mode == .repetitions {
+          Picker(L10n.text("recording.rir.label"), selection: $strengthSet.rir) {
+            Text(L10n.text("core.not.recorded")).tag(Int?.none)
+            ForEach(0...5, id: \.self) { value in
+              Text(value == 5 ? L10n.text("core.5.or.more.reps") : L10n.text("core.reps", value)).tag(Optional(value))
+            }
+          }
+          .accessibilityIdentifier("strengthSet.rir.\(strengthSet.id.uuidString)")
+
+        }
       }
     }.padding(.vertical, 5)
   }
@@ -500,7 +546,7 @@ private struct CardioEntryEditor: View {
     }
     LabeledContent(L10n.text("core.distance.km.optional")) {
       StableNumberField(
-        "0", value: $cardio.distanceKilometers, format: .number.precision(.fractionLength(0...2)).locale(L10n.locale)
+        "0", value: $cardio.distanceKilometers, format: .number.precision(.fractionLength(0...2)).locale(L10n.locale).locale(L10n.locale)
       )
       .keyboardType(.decimalPad).multilineTextAlignment(.trailing).accessibilityLabel(L10n.text("core.distance.in.kilometers"))
       .accessibilityIdentifier("cardio.distance")

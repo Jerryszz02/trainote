@@ -28,7 +28,7 @@ struct RecoveryView: View {
             Button(L10n.text("health.recoveryview.retry.e2d53a")) { reload() }
           } else if let result {
             VStack(alignment: .leading, spacing: 8) {
-              Text(L10n.text("health.recoveryview.recovery.index.0cee65")).font(.title2.bold())
+              Text(L10n.text("interaction.help.recoveryEstimate")).font(.title2.bold())
               Text(L10n.text("health.recoveryview.select.a.muscle.to.review.recent.415cc4")).foregroundStyle(.secondary)
             }
             BodyMapView(presentation: result.bodyMapPresentation(selected: selected)) { muscle in
@@ -41,8 +41,9 @@ struct RecoveryView: View {
             if let muscle = result.muscles.first(where: { $0.muscleID == selected }) {
               RecoveryMuscleDetail(
                 muscle: muscle, result: result, onFeedback: { openCheckIn(muscle.muscleID) },
-                onShowMethods: onShowMethods)
-                .id(detailAnchor(for: muscle.muscleID))
+                onShowMethods: onShowMethods
+              )
+              .id(detailAnchor(for: muscle.muscleID))
             }
             RecoverySystemicCard(result: result)
             if healthReadFailed {
@@ -181,7 +182,10 @@ private struct RecoveryMuscleDetail: View {
       }), let load = fact.value {
         LabeledContent(L10n.text("health.recoveryview.latest.weighted.working.sets.8b9560"), value: load.formatted(.number.precision(.fractionLength(1)).locale(L10n.locale)))
       }
-      ForEach(muscle.influences, id: \.code) { influence in
+      ForEach(
+        muscle.influences.filter { $0.code != "recordedLoad" && $0.code != "calibratedCandidate" },
+        id: \.code
+      ) { influence in
         Text(RecoveryCopy.influence(influence.code)).font(.subheadline).foregroundStyle(.secondary)
       }
       if let coverage = muscle.coverage.first {
@@ -190,7 +194,6 @@ private struct RecoveryMuscleDetail: View {
       }
       Button(L10n.text("health.recoveryview.update.this.muscle.s.check.in.016fd6"), action: onFeedback)
       if let onShowMethods { Button(L10n.text("health.recoveryview.about.the.score.2e7f5a"), action: onShowMethods) }
-      Text(result.calculationVersion).font(.caption2).foregroundStyle(.secondary)
     }
     .padding().background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))
     .accessibilityIdentifier("recovery.detail.\(muscle.muscleID.rawValue)")

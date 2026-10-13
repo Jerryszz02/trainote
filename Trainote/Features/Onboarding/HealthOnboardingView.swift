@@ -59,32 +59,8 @@ struct HealthOnboardingView: View {
 }
 
 struct AIConsentView: View {
-  @Environment(HealthFeatureAccess.self) private var access
-
   var body: some View {
-    List {
-      Section(L10n.text("health.healthonboardingview.optional.third.party.processing.6c71ab")) {
-        Text(
-          L10n.text("health.healthonboardingview.ai.reports.explain.local.calculations.and.651995"))
-        Text(L10n.text("health.healthonboardingview.report.inputs.exclude.names.contact.details.59947b"))
-      }
-      Section(L10n.text("health.healthonboardingview.current.status.045859")) {
-        if access.reports.isConfigured {
-          Text(L10n.text("health.healthonboardingview.read.this.version.s.processing.notice.8aec61"))
-          Button(L10n.text("health.healthonboardingview.agree.to.this.processing.and.enable.4e1fd9")) { Task { await access.enableAI() } }
-            .disabled(access.isBusy || access.aiEnabled)
-            .accessibilityIdentifier("health.aiConsent")
-        } else {
-          Text(access.reports.configurationMessage)
-            .accessibilityIdentifier("health.aiUnavailable")
-          Text(L10n.text("health.healthonboardingview.no.records.are.currently.sent.to.4a7205"))
-        }
-      }
-      Section { NavigationLink(L10n.text("health.healthonboardingview.full.methods.and.privacy.notice.e9f00c")) { HealthHelpView() } }
-    }
-    .navigationTitle(L10n.text("health.healthonboardingview.ai.reports.9885c1"))
-    .navigationBarTitleDisplayMode(.inline)
-    .healthAccessError(access)
+    HealthHelpView(topic: .ai, requestsAIConsent: true)
   }
 }
 

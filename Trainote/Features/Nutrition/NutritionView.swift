@@ -3,7 +3,6 @@ import SwiftUI
 import UIKit
 
 private enum NutritionSheet: Identifiable {
-  case addOptions
   case entry(FoodLogEntry?)
   case recentPicker
   case presetPicker
@@ -12,7 +11,6 @@ private enum NutritionSheet: Identifiable {
 
   var id: String {
     switch self {
-    case .addOptions: "add-options"
     case .entry(let entry): "entry-\(entry?.id.uuidString ?? "new")"
     case .recentPicker: "recent-picker"
     case .presetPicker: "preset-picker"
@@ -22,12 +20,12 @@ private enum NutritionSheet: Identifiable {
   }
 }
 
-/// 数字键盘上的“完成”按钮，Nutrition 与资料库表单共用。
+/// 数字键盘上的“收起键盘”按钮，Nutrition 与资料库表单共用。
 struct NutritionKeyboardDoneToolbar: ToolbarContent {
   var body: some ToolbarContent {
     ToolbarItemGroup(placement: .keyboard) {
       Spacer()
-      Button(L10n.text("core.done")) {
+      Button(L10n.text("core.dismiss.keyboard")) {
         UIApplication.shared.sendAction(
           #selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
       }
@@ -49,6 +47,7 @@ struct NutritionView: View {
   @State private var showEmptyDietConfirmation = false
 
   let addRequest: Int
+  let showTodayRequest: Int
 
   private var dayEntries: [FoodLogEntry] {
     entries.filter { Calendar.current.isDate($0.loggedAt, inSameDayAs: selectedDate) }
@@ -83,6 +82,8 @@ struct NutritionView: View {
           displayedComponents: .date
         )
         .datePickerStyle(.compact)
+        .accessibilityIdentifier("nutrition.date")
+        .accessibilityValue(selectedDayKey)
       }
 
       daySummarySection
@@ -95,23 +96,28 @@ struct NutritionView: View {
         ContentUnavailableView(
           L10n.text("core.no.food.records.on.this.day"),
           systemImage: "fork.knife.circle",
-          description: Text(L10n.text("core.tap.the.plus.button.at.the.top.right.to.log.food.directly.reuse.recent.records.choose"))
+          description: Text(L10n.text("recording.first.meal"))
         )
         .frame(maxWidth: .infinity)
       }
     }
     .localizationTestControls()
-    .navigationTitle(L10n.text("core.nutrition"))
+    .navigationTitle(L10n.text("tab.nutrition"))
+    .onChange(of: showTodayRequest, initial: true) { _, newValue in
+      if newValue > 0 {
+        selectedDate = .now
+      }
+    }
     .onChange(of: addRequest, initial: true) { _, newValue in
       if newValue > 0 {
         selectedDate = .now
-        presentedSheet = .addOptions
+        presentedSheet = .entry(nil)
       }
     }
     .toolbar {
       ToolbarItem(placement: .topBarTrailing) {
         Button {
-          presentedSheet = .addOptions
+          presentedSheet = .entry(nil)
         } label: {
           Label(L10n.text("core.add.food"), systemImage: "plus")
         }
@@ -127,10 +133,8 @@ struct NutritionView: View {
     ) {
       if let sheet = presentedSheet {
         switch sheet {
-        case .addOptions:
-          AddFoodOptionsSheet { presentedSheet = $0 }
         case .entry(let entry):
-          FoodEntryEditor(date: selectedDate, entry: entry)
+          FoodEntryEditor(date: selectedDate, entry: entry, onSaved: { selectedDate = $0 })
         case .recentPicker:
           RecentFoodPickerSheet(selectedDate: selectedDate)
         case .presetPicker:
@@ -182,13 +186,10 @@ struct NutritionView: View {
           .accessibilityIdentifier("nutrition.dietComplete")
       } else {
         Button(L10n.text("core.confirm.food.records.for.this.date.are.complete")) {
-          if dayEntries.isEmpty { showEmptyDietConfirmation = true }
-          else { confirmSelectedDay() }
+          if dayEntries.isEmpty { showEmptyDietConfirmation = true } else { confirmSelectedDay() }
         }
         .disabled(selectedDayKey > AnalysisFingerprint.localDate(.now, timeZone: .current))
         .accessibilityIdentifier("nutrition.confirmDiet")
-        Text(L10n.text("core.confirm.again.after.editing.food.records.trends.include.only.the.14.days.through.yest"))
-          .font(.caption).foregroundStyle(.secondary)
       }
     }
   }
@@ -266,85 +267,16 @@ struct NutritionView: View {
         id: existing?.id ?? UUID(), localDate: selectedDayKey,
         timeZoneIdentifier: zone, confirmedAt: .now, foodLogFingerprint: fingerprint)
       try ManualRecordValidation.validate(value)
-      if let existing { existing.apply(value) }
-      else { modelContext.insert(DietLogCompleteness(value: value)) }
+      if let existing {
+        existing.apply(value)
+      } else {
+        modelContext.insert(DietLogCompleteness(value: value))
+      }
       try modelContext.save()
     } catch {
       modelContext.rollback()
       actionErrorMessage = L10n.Message(resolving: { L10n.text("core.could.not.confirm.complete.food.records.please.try.again") })
     }
-  }
-}
-
-private struct AddFoodOptionsSheet: View {
-  @Environment(\.dismiss) private var dismiss
-
-  let onSelect: (NutritionSheet) -> Void
-
-  var body: some View {
-    NavigationStack {
-      List {
-        Section {
-          optionButton(
-            L10n.text("core.log.directly"), systemImage: "square.and.pencil",
-            detail: L10n.text("core.enter.food.and.nutrition.manually"), accessibilityIdentifier: "nutrition.add.direct"
-          ) { onSelect(.entry(nil)) }
-          optionButton(
-            L10n.text("core.recent.records"), systemImage: "clock.arrow.circlepath",
-            detail: L10n.text("core.choose.a.food.you.ve.logged.and.adjust.the.portion"), accessibilityIdentifier: "nutrition.add.recent"
-          ) { onSelect(.recentPicker) }
-          optionButton(
-            L10n.text("core.favorite.foods"), systemImage: "star.fill",
-            detail: L10n.text("core.quickly.log.a.favorite.food"), accessibilityIdentifier: "nutrition.add.preset"
-          ) { onSelect(.presetPicker) }
-          optionButton(
-            L10n.text("core.saved.meals"), systemImage: "list.bullet.rectangle",
-            detail: L10n.text("core.log.a.full.meal.and.adjust.each.portion"), accessibilityIdentifier: "nutrition.add.meal"
-          ) { onSelect(.mealPicker) }
-          optionButton(
-            L10n.text("core.copy.a.meal"), systemImage: "doc.on.doc",
-            detail: L10n.text("core.copy.a.meal.from.another.date"), accessibilityIdentifier: "nutrition.add.copy"
-          ) { onSelect(.copyPicker) }
-        } footer: {
-          Text(L10n.text("core.every.option.shows.a.nutrition.preview.before.saving"))
-        }
-      }
-      .localizationTestControls()
-    .navigationTitle(L10n.text("core.add.food"))
-      .navigationBarTitleDisplayMode(.inline)
-      .toolbar {
-        ToolbarItem(placement: .cancellationAction) {
-          Button(L10n.text("core.cancel")) { dismiss() }
-            .accessibilityIdentifier("nutrition.add.cancel")
-        }
-      }
-    }
-  }
-
-  private func optionButton(
-    _ title: String,
-    systemImage: String,
-    detail: String,
-    accessibilityIdentifier: String,
-    action: @escaping () -> Void
-  ) -> some View {
-    Button(action: action) {
-      HStack(spacing: 12) {
-        Image(systemName: systemImage)
-          .foregroundStyle(.tint)
-          .frame(width: 24)
-        VStack(alignment: .leading, spacing: 3) {
-          Text(title)
-          Text(detail)
-            .font(.caption)
-            .foregroundStyle(.secondary)
-        }
-      }
-      .frame(maxWidth: .infinity, alignment: .leading)
-      .contentShape(Rectangle())
-    }
-    .buttonStyle(.plain)
-    .accessibilityIdentifier(accessibilityIdentifier)
   }
 }
 
@@ -395,6 +327,14 @@ private struct FoodEntryEditor: View {
   @Environment(\.modelContext) private var modelContext
 
   let entry: FoodLogEntry?
+  let onSaved: (Date) -> Void
+  @State private var initialDraft: FoodNutritionDraft
+  @State private var initialMeal: MealType
+  @State private var initialDate: Date
+  @State private var sourceSheet: NutritionSheet?
+  @State private var sourceSavedDate: Date?
+  @State private var showDiscard = false
+  @State private var editTotals = false
 
   @State private var draft: FoodNutritionDraft
   @State private var mealType: MealType
@@ -402,24 +342,47 @@ private struct FoodEntryEditor: View {
   @State private var saveAsPreset = false
   @State private var errorMessage: L10n.Message?
 
-  init(date: Date, entry: FoodLogEntry?) {
+  init(date: Date, entry: FoodLogEntry?, onSaved: @escaping (Date) -> Void = { _ in }) {
     self.entry = entry
-    if let entry {
-      _draft = State(initialValue: .fromEntry(entry))
-      _mealType = State(initialValue: entry.mealType)
-      _loggedAt = State(initialValue: entry.loggedAt)
-    } else {
-      _draft = State(initialValue: FoodNutritionDraft())
-      _mealType = State(initialValue: MealType.defaultForTime())
-      _loggedAt = State(initialValue: date.withCurrentTime())
-    }
+    self.onSaved = onSaved
+    let seedDraft = entry.map(FoodNutritionDraft.fromEntry) ?? FoodNutritionDraft()
+    let seedMeal = entry?.mealType ?? MealType.defaultForTime()
+    let seedDate = entry?.loggedAt ?? date.withCurrentTime()
+    _initialDraft = State(initialValue: seedDraft)
+    _initialMeal = State(initialValue: seedMeal)
+    _initialDate = State(initialValue: seedDate)
+    _draft = State(initialValue: seedDraft)
+    _mealType = State(initialValue: seedMeal)
+    _loggedAt = State(initialValue: seedDate)
   }
 
   private var isValid: Bool { draft.isValid }
+  private var hasChanges: Bool {
+    draft != initialDraft || mealType != initialMeal || loggedAt != initialDate || saveAsPreset
+  }
 
   var body: some View {
     NavigationStack {
       Form {
+        if entry == nil {
+          Section {
+            Menu(L10n.text("recording.food.sources")) {
+              Button(L10n.text("core.recent.records")) { sourceSheet = .recentPicker }
+                .accessibilityIdentifier("nutrition.add.recent")
+              Button(L10n.text("core.favorite.foods")) { sourceSheet = .presetPicker }
+                .accessibilityIdentifier("nutrition.add.preset")
+              Button(L10n.text("core.saved.meals")) { sourceSheet = .mealPicker }
+                .accessibilityIdentifier("nutrition.add.meal")
+              Button(L10n.text("core.copy.a.meal")) { sourceSheet = .copyPicker }
+                .accessibilityIdentifier("nutrition.add.copy")
+            }
+            .accessibilityIdentifier("nutrition.entry.sources")
+            if sourceSavedDate != nil {
+              Text(L10n.text("recording.food.draft.retained"))
+                .accessibilityIdentifier("nutrition.entry.draftRetained")
+            }
+          }
+        }
         Section(L10n.text("core.food")) {
           TextField(L10n.text("core.name"), text: $draft.name)
             .accessibilityIdentifier("nutrition.entry.name")
@@ -465,31 +428,28 @@ private struct FoodEntryEditor: View {
           perUnitField(L10n.text("core.fat"), nutrient: .fat, unit: "g")
         } header: {
           Text(draft.inputMode.nutrientSectionTitle)
-        } footer: {
-          Text(NutritionMath.calorieCalculationNote)
         }
 
         Section {
           LabeledContent(L10n.text("core.calories"), value: "\(NutritionFormatting.number(draft.totals.calories)) kcal")
             .accessibilityIdentifier("nutrition.entry.total.calories")
-          totalField(L10n.text("core.carbs"), nutrient: .carbohydrates, unit: "g")
-          totalField(L10n.text("core.protein"), nutrient: .protein, unit: "g")
-          totalField(L10n.text("core.fat"), nutrient: .fat, unit: "g")
-          Text(previewText)
-            .font(.footnote)
-            .foregroundStyle(.secondary)
+          if editTotals {
+            totalField(L10n.text("settings.carbs"), nutrient: .carbohydrates, unit: "g")
+            totalField(L10n.text("settings.protein"), nutrient: .protein, unit: "g")
+            totalField(L10n.text("settings.fat"), nutrient: .fat, unit: "g")
+          } else {
+            Text(previewText).monospacedDigit()
+          }
+          Button(editTotals ? L10n.text("recording.hide.totals") : L10n.text("recording.edit.totals")) { editTotals.toggle() }
+            .accessibilityIdentifier("nutrition.entry.editTotals")
         } header: {
-          Text(L10n.text("core.nutrition.totals.for.this.entry.editable"))
-        } footer: {
-          Text(L10n.text("core.changing.the.portion.scales.nutrition.using.the.current.unit.values.after.editing.tot"))
+          Text(L10n.text("recording.entry.totals"))
         }
 
         if entry == nil {
           Section {
             Toggle(L10n.text("core.also.save.as.a.favorite.food"), isOn: $saveAsPreset)
               .accessibilityIdentifier("nutrition.entry.savePreset")
-          } footer: {
-            Text(L10n.text("core.favorite.food.will.be.saved" , String(describing: draft.inputMode == .per100g ? L10n.text("core.per.100.grams") : L10n.text("core.per.serving"))))
           }
         }
       }
@@ -498,7 +458,7 @@ private struct FoodEntryEditor: View {
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
         ToolbarItem(placement: .cancellationAction) {
-          Button(L10n.text("core.cancel")) { dismiss() }
+          Button(L10n.text("settings.cancel")) { if hasChanges { showDiscard = true } else { dismiss() } }
         }
         ToolbarItem(placement: .confirmationAction) {
           Button(L10n.text("core.save"), action: save)
@@ -507,8 +467,33 @@ private struct FoodEntryEditor: View {
         }
         NutritionKeyboardDoneToolbar()
       }
-      .alert(L10n.text("core.save.failed"), isPresented: errorBinding) {
-        Button(L10n.text("core.ok.201"), role: .cancel) { errorMessage = nil }
+      .interactiveDismissDisabled(hasChanges)
+      .alert(L10n.text("recording.discard.food.draft.question"), isPresented: $showDiscard) {
+        Button(L10n.text("recording.discard.draft"), role: .destructive) { dismiss() }
+        Button(L10n.text("core.keep.editing"), role: .cancel) {}
+      }
+      .sheet(
+        item: $sourceSheet,
+        onDismiss: {
+          if let date = sourceSavedDate, !hasChanges {
+            onSaved(date)
+            dismiss()
+          }
+        }
+      ) { source in
+        switch source {
+        case .recentPicker:
+          RecentFoodPickerSheet(selectedDate: loggedAt, onSaved: { sourceSavedDate = $0 })
+        case .presetPicker:
+          FoodPresetLogSheet(selectedDate: loggedAt, onSaved: { sourceSavedDate = $0 })
+        case .mealPicker:
+          MealTemplateLogSheet(selectedDate: loggedAt, onSaved: { sourceSavedDate = $0 })
+        case .copyPicker: CopyMealSheet(selectedDate: loggedAt, onSaved: { sourceSavedDate = $0 })
+        default: EmptyView()
+        }
+      }
+      .alert(L10n.text("settings.saveFailed"), isPresented: errorBinding) {
+        Button(L10n.text("settings.ok"), role: .cancel) { errorMessage = nil }
       } message: {
         Text(errorMessage?.text ?? "")
       }
@@ -585,6 +570,7 @@ private struct FoodEntryEditor: View {
       entry.fat = totals.fat
       do {
         try modelContext.save()
+        onSaved(loggedAt)
         dismiss()
       } catch {
         original.restore(into: entry)
@@ -608,6 +594,7 @@ private struct FoodEntryEditor: View {
       }
       do {
         try modelContext.save()
+        onSaved(loggedAt)
         dismiss()
       } catch {
         modelContext.delete(newEntry)
@@ -721,6 +708,7 @@ private struct FoodPresetLogSheet: View {
   private var presets: [FoodPreset]
 
   let selectedDate: Date
+  var onSaved: (Date) -> Void = { _ in }
 
   @State private var searchText = ""
   @State private var activePreset: FoodPreset?
@@ -755,13 +743,6 @@ private struct FoodPresetLogSheet: View {
             .accessibilityIdentifier("nutrition.preset.reselect")
           }
           FoodPortionFields(draft: $draft, mealType: $mealType, loggedAt: $loggedAt)
-          Section {
-            Text(
-              FoodPortionMath.isPer100g(preset.servingDescription)
-                ? L10n.text("core.this.favorite.food.uses.values.per.100.grams.enter.the.actual.weight.in.grams")
-                : L10n.text("core.enter.the.number.of.servings.nutrition.will.scale.automatically")
-            )
-          }
         } else {
           Section(L10n.text("core.favorite.foods")) {
             if presets.isEmpty {
@@ -802,7 +783,8 @@ private struct FoodPresetLogSheet: View {
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
         ToolbarItem(placement: .cancellationAction) {
-          Button(L10n.text("core.cancel")) { dismiss() }
+          Button(L10n.text("settings.cancel")) { dismiss() }
+            .accessibilityIdentifier("nutrition.source.cancel")
         }
         if let preset = activePreset {
           ToolbarItem(placement: .confirmationAction) {
@@ -841,6 +823,7 @@ private struct FoodPresetLogSheet: View {
     modelContext.insert(entry)
     do {
       try modelContext.save()
+      onSaved(loggedAt)
       dismiss()
     } catch {
       modelContext.delete(entry)
@@ -857,6 +840,7 @@ private struct RecentFoodPickerSheet: View {
   private var entries: [FoodLogEntry]
 
   let selectedDate: Date
+  var onSaved: (Date) -> Void = { _ in }
 
   @State private var searchText = ""
   @State private var activeItem: RecentFoodItem?
@@ -884,9 +868,6 @@ private struct RecentFoodPickerSheet: View {
               .accessibilityIdentifier("nutrition.recent.reselect")
           }
           FoodPortionFields(draft: $draft, mealType: $mealType, loggedAt: $loggedAt)
-          Section {
-            Text(L10n.text("core.saving.creates.a.new.independent.record.the.original.history.will.remain.unchanged"))
-          }
         } else {
           Section(L10n.text("core.recent.records")) {
             if recentItems.isEmpty {
@@ -924,7 +905,8 @@ private struct RecentFoodPickerSheet: View {
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
         ToolbarItem(placement: .cancellationAction) {
-          Button(L10n.text("core.cancel")) { dismiss() }
+          Button(L10n.text("settings.cancel")) { dismiss() }
+            .accessibilityIdentifier("nutrition.source.cancel")
         }
         if let item = activeItem {
           ToolbarItem(placement: .confirmationAction) {
@@ -963,6 +945,7 @@ private struct RecentFoodPickerSheet: View {
     modelContext.insert(entry)
     do {
       try modelContext.save()
+      onSaved(loggedAt)
       dismiss()
     } catch {
       modelContext.delete(entry)
@@ -980,6 +963,7 @@ private struct MealTemplateLogSheet: View {
   private var templates: [MealTemplate]
 
   let selectedDate: Date
+  var onSaved: (Date) -> Void = { _ in }
 
   @State private var activeTemplate: MealTemplate?
   @State private var quantities: [UUID: Double] = [:]
@@ -1075,7 +1059,8 @@ private struct MealTemplateLogSheet: View {
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
         ToolbarItem(placement: .cancellationAction) {
-          Button(L10n.text("core.cancel")) { dismiss() }
+          Button(L10n.text("settings.cancel")) { dismiss() }
+            .accessibilityIdentifier("nutrition.source.cancel")
         }
         NutritionKeyboardDoneToolbar()
       }
@@ -1143,6 +1128,7 @@ private struct MealTemplateLogSheet: View {
     for entry in entries { modelContext.insert(entry) }
     do {
       try modelContext.save()
+      onSaved(loggedAt)
       dismiss()
     } catch {
       for entry in entries { modelContext.delete(entry) }
@@ -1159,6 +1145,7 @@ private struct CopyMealSheet: View {
   private var entries: [FoodLogEntry]
 
   let selectedDate: Date
+  var onSaved: (Date) -> Void = { _ in }
 
   @State private var sourceDate = Calendar.current.date(byAdding: .day, value: -1, to: .now) ?? .now
   @State private var sourceMeal: MealType = .dinner
@@ -1212,13 +1199,10 @@ private struct CopyMealSheet: View {
             LabeledContent(L10n.text("core.number.of.records")) {
               Text(L10n.text("core.entries", sourceEntries.count)).monospacedDigit()
             }
-            previewRow(L10n.text("core.calories.284"), value: sourceTotals.calories, unit: "kcal")
-            previewRow(L10n.text("core.carbs"), value: sourceTotals.carbohydrates, unit: "g")
-            previewRow(L10n.text("core.protein"), value: sourceTotals.protein, unit: "g")
-            previewRow(L10n.text("core.fat"), value: sourceTotals.fat, unit: "g")
-            Text(L10n.text("core.copying.creates.new.records.and.preserves.their.source.information.original.records.r"))
-              .font(.footnote)
-              .foregroundStyle(.secondary)
+            previewRow(L10n.text("settings.calories"), value: sourceTotals.calories, unit: "kcal")
+            previewRow(L10n.text("settings.carbs"), value: sourceTotals.carbohydrates, unit: "g")
+            previewRow(L10n.text("settings.protein"), value: sourceTotals.protein, unit: "g")
+            previewRow(L10n.text("settings.fat"), value: sourceTotals.fat, unit: "g")
           }
         }
 
@@ -1233,7 +1217,8 @@ private struct CopyMealSheet: View {
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
         ToolbarItem(placement: .cancellationAction) {
-          Button(L10n.text("core.cancel")) { dismiss() }
+          Button(L10n.text("settings.cancel")) { dismiss() }
+            .accessibilityIdentifier("nutrition.source.cancel")
         }
       }
       .confirmationDialog(
@@ -1280,6 +1265,7 @@ private struct CopyMealSheet: View {
     for entry in copies { modelContext.insert(entry) }
     do {
       try modelContext.save()
+      onSaved(selectedDate)
       dismiss()
     } catch {
       for entry in copies { modelContext.delete(entry) }

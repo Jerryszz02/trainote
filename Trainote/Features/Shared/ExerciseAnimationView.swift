@@ -13,13 +13,10 @@ struct ExerciseAnimationView: View {
   var body: some View {
     switch media.availability(for: exerciseID) {
     case .notCollected:
-      Text(L10n.text("core.an.animation.is.not.available.for.this.exercise.yet.see.the.instructions.below"))
-        .font(.footnote)
-        .foregroundStyle(.secondary)
-        .accessibilityIdentifier("exerciseAnimation.notCollected")
+      EmptyView()
     case .unavailable:
       unavailableMessage
-    case .available(let entry, let videoURL, let posterURL):
+    case .available(_, let videoURL, let posterURL):
       if playback.hasFailed {
         unavailableMessage
       } else {
@@ -51,9 +48,6 @@ struct ExerciseAnimationView: View {
           .clipShape(RoundedRectangle(cornerRadius: 12))
           Text(L10n.text("core.exercise.animation.chest.and.triceps"))
             .font(.caption.weight(.medium))
-          Text(entry.attribution)
-            .font(.caption2)
-            .foregroundStyle(.secondary)
         }
         .onAppear {
           playback.prepare(url: videoURL, autoplay: !reduceMotion && scenePhase == .active)

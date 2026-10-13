@@ -58,9 +58,12 @@ final class RecoveryRIRUITests: XCTestCase {
       // A full swipe can jump over this button on the compact screen at Accessibility XXXL.
       for _ in 0..<12 where !detailAction.isHittable {
         let targetIsAbove = detailAction.frame.midY < app.frame.midY
-        let start = app.coordinate(withNormalizedOffset: .init(dx: 0.5, dy: targetIsAbove ? 0.35 : 0.65))
-        let end = app.coordinate(withNormalizedOffset: .init(dx: 0.5, dy: targetIsAbove ? 0.65 : 0.35))
-        start.press(forDuration: 0.1, thenDragTo: end, withVelocity: .slow, thenHoldForDuration: 0.1)
+        let start = app.coordinate(
+          withNormalizedOffset: .init(dx: 0.5, dy: targetIsAbove ? 0.35 : 0.65))
+        let end = app.coordinate(
+          withNormalizedOffset: .init(dx: 0.5, dy: targetIsAbove ? 0.65 : 0.35))
+        start.press(
+          forDuration: 0.1, thenDragTo: end, withVelocity: .slow, thenHoldForDuration: 0.1)
       }
       XCTAssertTrue(detailAction.isHittable, app.debugDescription)
     }
@@ -191,6 +194,7 @@ final class RecoveryRIRUITests: XCTestCase {
         app.swipeUp()
       }
     }
+    control("strengthSet.more.").tap()
     let role = control("strengthSet.role.")
     XCTAssertTrue(role.waitForExistence(timeout: 3))
     XCTAssertTrue(role.label.contains("工作组"))
@@ -210,11 +214,15 @@ final class RecoveryRIRUITests: XCTestCase {
     XCTAssertTrue(row.waitForExistence(timeout: 3))
     row.tap()
     app.buttons["training.edit"].tap()
+    reveal(control("strengthSet.more."))
+    control("strengthSet.more.").tap()
     reveal(rir)
     XCTAssertTrue(rir.label.contains("1 次"))
     XCTAssertTrue(role.label.contains("热身组"))
     app.buttons["workout.edit.cancel"].tap()
     app.buttons["training.repeat"].tap()
+    reveal(control("strengthSet.more."))
+    control("strengthSet.more.").tap()
     reveal(rir)
     XCTAssertTrue(rir.label.contains("未记录"))
     XCTAssertTrue(role.label.contains("热身组"))

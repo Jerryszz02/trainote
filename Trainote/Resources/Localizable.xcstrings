@@ -21271,6 +21271,474 @@
         }
       }
     },
+    "interaction.exercise.sources": {
+      "comment": "interaction.exercise.sources",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Exercise and demo sources and licenses"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "动作与演示来源许可"
+          }
+        }
+      }
+    },
+    "interaction.help.aiDisableHelp": {
+      "comment": "interaction.help.aiDisableHelp",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Turning AI off stops future sends and retries. Canceling a request does not automatically delete data already sent to the provider."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "关闭后停止后续发送与重试；已发送的数据不会因取消请求而自动从第三方删除。"
+          }
+        }
+      }
+    },
+    "interaction.help.aiHelp": {
+      "comment": "interaction.help.aiHelp",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AI consent is independent of the health connection. When enabled, necessary workout, food, weight, and health trend summaries are sent through a proxy to DeepSeek. AI cannot change targets or workout history."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AI 同意与健康连接独立。启用后，必要的训练、饮食、体重和健康趋势汇总会通过代理交由 DeepSeek 处理。AI 不能修改目标或训练历史。"
+          }
+        }
+      }
+    },
+    "interaction.help.completeHelp": {
+      "comment": "interaction.help.completeHelp",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Missing nutrition is different from actual zero intake. Editing a record invalidates the confirmation that the selected day’s food log is complete. Trends include only complete days through yesterday."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "没有填写营养与真实零摄入不同。确认所选日期饮食完整后，编辑记录会使确认失效；趋势统计只计截至昨天的完整日。"
+          }
+        }
+      }
+    },
+    "interaction.help.contents": {
+      "comment": "interaction.help.contents",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Contents"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "目录"
+          }
+        }
+      }
+    },
+    "interaction.help.healthPermissions": {
+      "comment": "interaction.help.healthPermissions",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Health permissions and data"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "健康权限与数据说明"
+          }
+        }
+      }
+    },
+    "interaction.help.licenseUnavailable": {
+      "comment": "interaction.help.licenseUnavailable",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The license document could not be read."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "许可文件暂时无法读取。"
+          }
+        }
+      }
+    },
+    "interaction.help.localReport": {
+      "comment": "interaction.help.localReport",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Local report"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "本地报告"
+          }
+        }
+      }
+    },
+    "interaction.help.nutrition": {
+      "comment": "interaction.help.nutrition",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nutrition calculations and complete records"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "饮食计算与完整记录"
+          }
+        }
+      }
+    },
+    "interaction.help.portionHelp": {
+      "comment": "interaction.help.portionHelp",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "For servings, enter nutrition per serving and the number of servings. For per-100-g records, enter nutrition per 100 g and the actual grams. Changing the portion scales the current unit nutrition. After correcting totals, later portion changes use the corrected density. Favorites save the current unit nutrition."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "按份记录时填写每份营养与份数；按每 100 克记录时填写每 100 克营养与实际克数。修改份量按当前单位营养缩放；修改总量后再改份量，按修正后的密度计算。常用食物保存当前单位营养。"
+          }
+        }
+      }
+    },
+    "interaction.help.quickStart": {
+      "comment": "interaction.help.quickStart",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quick start and terminology"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "快速开始与术语"
+          }
+        }
+      }
+    },
+    "interaction.help.recordHelp": {
+      "comment": "interaction.help.recordHelp",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "After adding an exercise, enter weight, reps, or duration and tap “Complete set” to record the set. “Finish workout” ends the session. Going back or switching tabs preserves the workout in progress."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "添加动作后填写重量、次数或时长，点“完成本组”记录这一组；“结束训练”结束整场。返回和切换 Tab 会保留进行中训练。"
+          }
+        }
+      }
+    },
+    "interaction.help.recoveryEstimate": {
+      "comment": "interaction.help.recoveryEstimate",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recovery estimate"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "恢复估计"
+          }
+        }
+      }
+    },
+    "interaction.help.reuseHelp": {
+      "comment": "interaction.help.reuseHelp",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You can also use recent entries, favorite foods, fixed meals, or copy a meal. Reuse creates independent records and leaves the original history unchanged. Canceling source selection returns to your original draft."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "直接记录以外，还可使用最近、常用食物、固定餐或复制一餐。复用会生成独立记录，原历史不变；取消来源选择会回到原草稿。"
+          }
+        }
+      }
+    },
+    "interaction.help.rirHelp": {
+      "comment": "interaction.help.rirHelp",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RIR is the estimated number of reps you could still perform at the end of a set. It is optional; leaving it blank does not mean zero. Working sets contribute to load analysis; warm-up sets do not."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RIR 是这一组结束时估计还能完成的次数，可以不填；未填不等于 0。工作组用于分析负荷，热身组不计入。"
+          }
+        }
+      }
+    },
+    "interaction.help.sources": {
+      "comment": "interaction.help.sources",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sources and licenses"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "来源与许可"
+          }
+        }
+      }
+    },
+    "interaction.help.startHelp": {
+      "comment": "interaction.help.startHelp",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "On Today, tap “Start workout”, then “Start directly”. No routine, body profile, or health permission is required. If a workout is already in progress, tap “Continue workout” to return to it."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "今日点“开始训练”后选“直接开始”，不需要模板、身体资料或健康权限。已有进行中训练时，点“继续训练”回到原记录。"
+          }
+        }
+      }
+    },
+    "interaction.help.title": {
+      "comment": "interaction.help.title",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Help and information"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "帮助与说明"
+          }
+        }
+      }
+    },
+    "interaction.help.version": {
+      "comment": "interaction.help.version",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trainote version"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trainote 版本"
+          }
+        }
+      }
+    },
+    "interaction.shell.reportHistory": {
+      "comment": "interaction.shell.reportHistory",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reports and history"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "报告与历史"
+          }
+        }
+      }
+    },
+    "interaction.shell.reportsMenu": {
+      "comment": "interaction.shell.reportsMenu",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reviews and reports"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "回顾与报告"
+          }
+        }
+      }
+    },
+    "interaction.today.foodCount": {
+      "comment": "interaction.today.foodCount",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nutrition · %lld entries"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "饮食 · %lld 条记录"
+          }
+        }
+      }
+    },
+    "interaction.today.noWorkout": {
+      "comment": "interaction.today.noWorkout",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No workouts recorded yet"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "尚未记录训练"
+          }
+        }
+      }
+    },
+    "interaction.today.progress": {
+      "comment": "interaction.today.progress",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ · %lld sets completed"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ · 已完成 %lld 组"
+          }
+        }
+      }
+    },
+    "interaction.today.recorded": {
+      "comment": "interaction.today.recorded",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recorded today"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "今天已记录"
+          }
+        }
+      }
+    },
+    "interaction.trend.legend": {
+      "comment": "interaction.trend.legend",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dots: source readings · Line: smoothed trend"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "圆点：原始记录 · 曲线：平滑趋势"
+          }
+        }
+      }
+    },
     "language.system": {
       "comment": "language system",
       "extractionState": "manual",
@@ -21303,6 +21771,366 @@
           "stringUnit": {
             "state": "translated",
             "value": "语言"
+          }
+        }
+      }
+    },
+    "recording.collapsed": {
+      "comment": "Interaction and recording screen text",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Collapsed"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已收起"
+          }
+        }
+      }
+    },
+    "recording.complete.this.set": {
+      "comment": "recording.complete.this.set",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Complete this set"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "完成本组"
+          }
+        }
+      }
+    },
+    "recording.discard.draft": {
+      "comment": "Interaction and recording screen text",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Discard draft"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "放弃草稿"
+          }
+        }
+      }
+    },
+    "recording.discard.food.draft.question": {
+      "comment": "Interaction and recording screen text",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Discard your unsaved food draft?"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "放弃未保存的饮食草稿？"
+          }
+        }
+      }
+    },
+    "recording.edit.totals": {
+      "comment": "Interaction and recording screen text",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Edit totals"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "修改总量"
+          }
+        }
+      }
+    },
+    "recording.entry.totals": {
+      "comment": "Interaction and recording screen text",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nutrition totals for this entry"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "本条记录营养总量"
+          }
+        }
+      }
+    },
+    "recording.expanded": {
+      "comment": "Interaction and recording screen text",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Expanded"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已展开"
+          }
+        }
+      }
+    },
+    "recording.finish.workout": {
+      "comment": "Interaction and recording screen text",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Finish workout"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "结束训练"
+          }
+        }
+      }
+    },
+    "recording.first.meal": {
+      "comment": "Interaction and recording screen text",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Record your first meal today."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "记录今天的第一餐。"
+          }
+        }
+      }
+    },
+    "recording.first.workout": {
+      "comment": "Interaction and recording screen text",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start recording your first workout."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "开始记录你的第一场训练。"
+          }
+        }
+      }
+    },
+    "recording.food.draft.retained": {
+      "comment": "Interaction and recording screen text",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reused food records are saved. Your current draft is preserved."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "复用记录已保存，当前草稿仍保留。"
+          }
+        }
+      }
+    },
+    "recording.food.sources": {
+      "comment": "Interaction and recording screen text",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recent / Favorites / Meals / Copy"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "最近 / 常用 / 固定餐 / 复制"
+          }
+        }
+      }
+    },
+    "recording.hide.totals": {
+      "comment": "Interaction and recording screen text",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hide totals"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "收起总量"
+          }
+        }
+      }
+    },
+    "recording.more.options": {
+      "comment": "Interaction and recording screen text",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "More options"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "更多选项"
+          }
+        }
+      }
+    },
+    "recording.rir.label": {
+      "comment": "Interaction and recording screen text",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reps in reserve (RIR)"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "还能做几次（RIR）"
+          }
+        }
+      }
+    },
+    "recording.set.field": {
+      "comment": "Accessible repetitions or duration input label",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Set %lld, %@"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "第 %lld 组，%@"
+          }
+        }
+      }
+    },
+    "recording.set.status": {
+      "comment": "Set number with completion status",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Set %lld · %@"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "第 %lld 组 · %@"
+          }
+        }
+      }
+    },
+    "recording.set.weight": {
+      "comment": "Accessible weight input label",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Set %lld, weight, kilograms"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "第 %lld 组，重量，公斤"
+          }
+        }
+      }
+    },
+    "recording.start.directly": {
+      "comment": "Interaction and recording screen text",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start directly"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "直接开始"
+          }
+        }
+      }
+    },
+    "recording.workout.settings.notes": {
+      "comment": "Interaction and recording screen text",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Workout settings and notes"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "训练设置与备注"
           }
         }
       }

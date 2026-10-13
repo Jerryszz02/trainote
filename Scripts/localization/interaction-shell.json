@@ -1,0 +1,34 @@
+{
+  "interaction.shell.reportsMenu": {
+    "zh-Hans": "回顾与报告",
+    "en": "Reviews and reports"
+  },
+  "interaction.shell.reportHistory": {
+    "zh-Hans": "报告与历史",
+    "en": "Reports and history"
+  },
+  "interaction.today.recorded": {
+    "zh-Hans": "今天已记录",
+    "en": "Recorded today"
+  },
+  "interaction.today.foodCount": {
+    "zh-Hans": "饮食 · %lld 条记录",
+    "en": "Nutrition · %lld entries"
+  },
+  "interaction.today.progress": {
+    "zh-Hans": "%@ · 已完成 %lld 组",
+    "en": "%@ · %lld sets completed"
+  },
+  "interaction.today.noWorkout": {
+    "zh-Hans": "尚未记录训练",
+    "en": "No workouts recorded yet"
+  },
+  "interaction.exercise.sources": {
+    "zh-Hans": "动作与演示来源许可",
+    "en": "Exercise and demo sources and licenses"
+  },
+  "interaction.trend.legend": {
+    "zh-Hans": "圆点：原始记录 · 曲线：平滑趋势",
+    "en": "Dots: source readings · Line: smoothed trend"
+  }
+}

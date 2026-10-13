@@ -53,9 +53,13 @@ struct TrainingView: View {
           ContentUnavailableView(
             L10n.text("core.no.completed.workouts.yet"),
             systemImage: "figure.strengthtraining.traditional",
-            description: Text(L10n.text("core.tap.the.plus.button.at.the.top.right.to.start.your.first.workout"))
+            description: Text(L10n.text("recording.first.workout"))
           )
           .frame(maxWidth: .infinity)
+          if activeWorkout == nil {
+            Button(L10n.text("core.start.workout")) { presentedSheet = .start }
+              .accessibilityIdentifier("training.emptyStart")
+          }
         } else {
           ForEach(completedWorkouts) { workout in
             NavigationLink {
@@ -151,16 +155,13 @@ private struct StartWorkoutSheet: View {
           Button {
             start(from: nil)
           } label: {
-            Label(L10n.text("core.blank.workout"), systemImage: "square.and.pencil")
+            Label(L10n.text("recording.start.directly"), systemImage: "square.and.pencil")
           }
           .accessibilityIdentifier("training.startBlank")
         }
 
-        Section(L10n.text("core.my.routines")) {
-          if routines.isEmpty {
-            Text(L10n.text("core.no.routines.yet.create.one.in.the.library"))
-              .foregroundStyle(.secondary)
-          } else {
+        if !routines.isEmpty {
+          Section(L10n.text("core.my.routines")) {
             ForEach(routines) { routine in
               Button {
                 start(from: routine)

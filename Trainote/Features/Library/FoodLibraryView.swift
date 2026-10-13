@@ -274,8 +274,6 @@ private struct FoodPresetEditor: View {
           field(L10n.text("core.fat"), identifier: "脂肪", value: $fat, unit: "g")
         } header: {
           Text(inputMode.nutrientSectionTitle)
-        } footer: {
-          Text(NutritionMath.calorieCalculationNote)
         }
       }
       .navigationTitle(preset == nil ? L10n.text("core.new.favorite.food") : L10n.text("core.edit.favorite.food"))

@@ -49,6 +49,11 @@ final class TrainoteUITests: XCTestCase {
     screenshot.name = "俯卧撑离线动态演示"
     screenshot.lifetime = .keepAlways
     add(screenshot)
+    reveal(app.buttons["exercise.sources"])
+    app.buttons["exercise.sources"].tap()
+    XCTAssertTrue(app.navigationBars["帮助与说明"].waitForExistence(timeout: 3))
+    app.navigationBars.buttons.element(boundBy: 0).tap()
+    XCTAssertTrue(app.navigationBars["动作详情"].waitForExistence(timeout: 3))
     app.navigationBars.buttons.element(boundBy: 0).tap()
     XCTAssertTrue(toggle.waitForNonExistence(timeout: 5))
     XCTAssertTrue(app.navigationBars["动作详情"].waitForNonExistence(timeout: 3))
@@ -75,10 +80,10 @@ final class TrainoteUITests: XCTestCase {
     replaceText(in: app.searchFields.firstMatch, with: "3/4 sit-up")
     app.searchFields.firstMatch.typeText("\n")
     app.buttons["exerciseLibrary.item.0001"].tap()
-    XCTAssertTrue(app.staticTexts["exerciseAnimation.notCollected"].waitForExistence(timeout: 3))
+    XCTAssertFalse(app.staticTexts["exerciseAnimation.notCollected"].exists)
     XCTAssertFalse(app.buttons["exerciseAnimation.toggle"].exists)
     XCTAssertTrue(app.staticTexts["分类"].exists)
-    app.swipeUp()
+    for _ in 0..<4 where !app.staticTexts["动作说明"].exists { app.swipeUp() }
     XCTAssertTrue(app.staticTexts["动作说明"].exists)
   }
 
@@ -204,6 +209,7 @@ final class TrainoteUITests: XCTestCase {
     app.buttons["nutrition.entry.save"].tap()
 
     app.buttons["nutrition.add"].tap()
+    app.buttons["nutrition.entry.sources"].tap()
     app.buttons["nutrition.add.preset"].tap()
     app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH 'foodPreset.log.'"))
       .firstMatch.tap()
@@ -217,6 +223,22 @@ final class TrainoteUITests: XCTestCase {
       predicate: NSPredicate { _, _ in rows.count == 2 }, object: nil)
     XCTAssertEqual(XCTWaiter.wait(for: [updated], timeout: 5), .completed)
     XCTAssertEqual(rows.count, 2)
+
+    app.buttons["nutrition.add"].tap()
+    replaceText(in: app.textFields["nutrition.entry.name"], with: "保留的草稿")
+    app.buttons["nutrition.entry.sources"].tap()
+    app.buttons["nutrition.add.preset"].tap()
+    app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH 'foodPreset.log.'"))
+      .firstMatch.tap()
+    reveal(app.buttons["nutrition.preset.log"])
+    app.buttons["nutrition.preset.log"].tap()
+    XCTAssertTrue(app.staticTexts["nutrition.entry.draftRetained"].waitForExistence(timeout: 3))
+    XCTAssertEqual(app.textFields["nutrition.entry.name"].value as? String, "保留的草稿")
+    app.navigationBars.buttons["取消"].tap()
+    app.alerts.buttons["放弃草稿"].tap()
+    for _ in 0..<4 where rows.count < 3 { app.swipeUp() }
+    XCTAssertEqual(rows.count, 3)
+    XCTAssertFalse(app.buttons.matching(NSPredicate(format: "label CONTAINS '保留的草稿'")).firstMatch.exists)
   }
 
   func testPersistentDataSurvivesRelaunch() {
@@ -255,9 +277,8 @@ final class TrainoteUITests: XCTestCase {
     reveal(app.buttons["Trainote 与数据来源"])
     app.buttons["Trainote 与数据来源"].tap()
 
-    XCTAssertTrue(app.navigationBars["关于"].waitForExistence(timeout: 3))
-    XCTAssertTrue(app.descendants(matching: .any)["about.privacy"].exists)
-    XCTAssertTrue(app.descendants(matching: .any)["about.support"].exists)
+    XCTAssertTrue(app.navigationBars["帮助与说明"].waitForExistence(timeout: 3))
+    XCTAssertTrue(app.buttons["help.license.THIRD_PARTY_NOTICES"].exists)
   }
 
   private func startBlankWorkout() {
@@ -269,7 +290,6 @@ final class TrainoteUITests: XCTestCase {
   private func openDirectFoodEditor() {
     app.tabBars.buttons["饮食"].tap()
     app.buttons["nutrition.add"].tap()
-    app.buttons["nutrition.add.direct"].tap()
     XCTAssertTrue(app.buttons["nutrition.entry.save"].waitForExistence(timeout: 3))
   }
 

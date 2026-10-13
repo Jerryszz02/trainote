@@ -39,26 +39,82 @@ final class LocalizationUITests: XCTestCase {
     XCTAssertTrue(app.tabBars.buttons["Today"].waitForExistence(timeout: 5))
   }
 
+  func testEnglishRecordingEntrancesReportsAndHelp() {
+    launch(resetLanguage: true)
+    let start = app.buttons["today.startWorkout"]
+    XCTAssertTrue(start.waitForExistence(timeout: 5))
+    XCTAssertEqual(start.label, "Start workout")
+    XCTAssertEqual(app.buttons["today.logFood"].label, "Log food")
+    XCTAssertTrue(app.staticTexts["Recorded today"].exists)
+    let summary = app.buttons["today.nutritionSummary"]
+    reveal(summary)
+    XCTAssertEqual(summary.label, "Nutrition · 0 entries")
+    summary.tap()
+    XCTAssertTrue(app.navigationBars["Nutrition"].waitForExistence(timeout: 5))
+    XCTAssertFalse(app.textFields["nutrition.entry.name"].exists)
+
+    app.tabBars.buttons["Today"].tap()
+    app.buttons["today.logFood"].tap()
+    XCTAssertTrue(app.textFields["nutrition.entry.name"].waitForExistence(timeout: 5))
+    XCTAssertTrue(app.buttons["nutrition.entry.sources"].label.contains("Recent"))
+    app.navigationBars.buttons["Cancel"].tap()
+    XCTAssertTrue(app.navigationBars["Nutrition"].waitForExistence(timeout: 5))
+
+    app.tabBars.buttons["Today"].tap()
+    app.buttons["today.startWorkout"].tap()
+    XCTAssertTrue(app.buttons["training.startBlank"].waitForExistence(timeout: 5))
+    XCTAssertTrue(app.navigationBars["Start workout"].exists)
+    app.navigationBars.buttons["Cancel"].tap()
+    app.tabBars.buttons["Trends"].tap()
+    let reports = app.buttons["trends.reports"]
+    XCTAssertTrue(reports.waitForExistence(timeout: 5))
+    XCTAssertEqual(reports.label, "Reviews and reports")
+    reports.tap()
+    XCTAssertEqual(app.buttons["today.weeklyReport"].label, "Weekly review and personal records")
+    XCTAssertEqual(app.buttons["today.analysisReports"].label, "Reports and history")
+    app.buttons["today.weeklyReport"].tap()
+    XCTAssertTrue(app.navigationBars["Weekly review"].waitForExistence(timeout: 5))
+
+    app.tabBars.buttons["Today"].tap()
+    app.buttons["today.settings"].tap()
+    app.buttons["settings.healthHelp"].tap()
+    XCTAssertTrue(app.navigationBars["Help and information"].waitForExistence(timeout: 5))
+    XCTAssertEqual(app.buttons["help.topic.quickStart"].label, "Quick start and terminology")
+    app.buttons["help.topic.quickStart"].tap()
+    XCTAssertTrue(app.staticTexts.matching(
+      NSPredicate(format: "label CONTAINS %@", "No routine, body profile, or health permission is required.")
+    ).firstMatch.waitForExistence(timeout: 5))
+    app.buttons["help.contents"].tap()
+    app.buttons["help.topic.nutrition"].tap()
+    XCTAssertTrue(app.staticTexts.matching(
+      NSPredicate(format: "label CONTAINS %@", "Canceling source selection returns to your original draft.")
+    ).firstMatch.waitForExistence(timeout: 5))
+    capture("English recording routes, reports and help")
+  }
+
   func testActiveWorkoutKeepsDraftFocusCompletedSetAndRestDuringSwitch() {
     launch(resetLanguage: true, controls: true)
     startStrengthWorkout()
+    reveal(app.buttons["workout.details"])
+    app.buttons["workout.details"].tap()
     let title = app.textFields["workout.title"]
     replace(title, with: "Workout draft 原文")
     dismissKeyboard()
     let weight = app.textFields.matching(
       NSPredicate(format: "identifier BEGINSWITH 'strengthSet.weight.'")
     ).firstMatch
+    revealAbove(weight)
     replace(weight, with: "12.5")
     dismissKeyboard()
     let completion = app.buttons.matching(
       NSPredicate(format: "identifier BEGINSWITH 'strengthSet.complete.'")
     ).firstMatch
-    reveal(completion)
+    revealAbove(completion)
     let completionID = completion.identifier
     completion.tap()
     let rest = app.staticTexts["workout.restRemaining"]
+    revealAbove(rest)
     XCTAssertTrue(rest.waitForExistence(timeout: 5))
-    for _ in 0..<8 where !title.isHittable { app.swipeDown() }
     reveal(title)
     title.tap()
     XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 5))
@@ -66,12 +122,15 @@ final class LocalizationUITests: XCTestCase {
     XCTAssertTrue(app.navigationBars["进行中"].waitForExistence(timeout: 5))
     XCTAssertEqual(title.value as? String, "Workout draft 原文")
     XCTAssertTrue(app.keyboards.firstMatch.exists, "Switch must preserve the current text responder")
-    XCTAssertTrue(rest.exists)
     switchLanguage("en")
     XCTAssertTrue(app.navigationBars["In progress"].waitForExistence(timeout: 5))
     XCTAssertEqual(title.value as? String, "Workout draft 原文")
     XCTAssertTrue(app.keyboards.firstMatch.exists)
     dismissKeyboard()
+    // Settings and title are below the exercise. Return to the timer only after
+    // checking focus in both languages, so scrolling cannot dismiss that focus.
+    revealAbove(rest)
+    XCTAssertTrue(rest.exists)
     reveal(weight)
     XCTAssertEqual(weight.value as? String, "12.5")
     let sameCompletion = app.buttons[completionID]
@@ -132,8 +191,8 @@ final class LocalizationUITests: XCTestCase {
     launch(resetLanguage: true, controls: true, region: region)
     app.tabBars.buttons["Nutrition"].tap()
     app.buttons["nutrition.add"].tap()
-    app.buttons["nutrition.add.direct"].tap()
     let name = app.textFields["nutrition.entry.name"]
+    XCTAssertTrue(name.waitForExistence(timeout: 5))
     replace(name, with: "Meal draft 原文")
     dismissKeyboard()
     let serving = app.textFields["nutrition.entry.serving"]
@@ -174,6 +233,11 @@ final class LocalizationUITests: XCTestCase {
     ).firstMatch
     reveal(complete)
     XCTAssertTrue(complete.isHittable)
+    let more = app.buttons.matching(
+      NSPredicate(format: "identifier BEGINSWITH 'strengthSet.more.'")
+    ).firstMatch
+    reveal(more)
+    more.tap()
     reveal(rir)
     XCTAssertTrue(rir.isHittable)
     capture("English accessibility workout controls")
@@ -225,6 +289,16 @@ final class LocalizationUITests: XCTestCase {
     for _ in 0..<10 where !element.exists || !element.isHittable {
       if element.exists && element.frame.midY < app.frame.midY { app.swipeDown() }
       else { app.swipeUp() }
+    }
+    XCTAssertTrue(element.waitForExistence(timeout: 5))
+    XCTAssertTrue(element.isHittable)
+  }
+
+  private func revealAbove(_ element: XCUIElement) {
+    // List removes offscreen rows from accessibility. Their missing frames cannot
+    // tell reveal() that the exercise and rest timer are above the settings section.
+    for _ in 0..<10 where !element.exists || !element.isHittable {
+      app.swipeDown()
     }
     XCTAssertTrue(element.waitForExistence(timeout: 5))
     XCTAssertTrue(element.isHittable)

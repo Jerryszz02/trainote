@@ -26,6 +26,7 @@ struct AppShell: View {
   @State private var selectedTab: AppTab = .today
   @State private var startWorkoutRequested = false
   @State private var logFoodRequest = 0
+  @State private var showTodayNutritionRequest = 0
   @State private var todayPath: [LibrarySection] = []
   @State private var presentedSheet: AppSheet?
   @State private var sheetDismissal: (() -> Void)?
@@ -46,6 +47,10 @@ struct AppShell: View {
           onLogFood: {
             selectedTab = .nutrition
             logFoodRequest += 1
+          },
+          onOpenNutrition: {
+            selectedTab = .nutrition
+            showTodayNutritionRequest += 1
           },
           onOpenTemplates: {
             todayPath.append(.routines)
@@ -77,13 +82,26 @@ struct AppShell: View {
       .tag(AppTab.training)
 
       NavigationStack {
-        NutritionView(addRequest: logFoodRequest)
+        NutritionView(addRequest: logFoodRequest, showTodayRequest: showTodayNutritionRequest)
       }
       .tabItem { Label(L10n.text("tab.nutrition"), systemImage: "fork.knife") }
       .tag(AppTab.nutrition)
 
       NavigationStack {
         analysisDestinations.trends()
+          .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+              Menu(L10n.text("interaction.shell.reportsMenu"), systemImage: "doc.text") {
+                NavigationLink(L10n.text("core.weekly.review.and.personal.records")) { WeeklyReportView() }
+                  .accessibilityIdentifier("today.weeklyReport")
+                if let reportIntegration {
+                  NavigationLink(L10n.text("interaction.shell.reportHistory")) { HealthReportsView(integration: reportIntegration) }
+                    .accessibilityIdentifier("today.analysisReports")
+                }
+              }
+              .accessibilityIdentifier("trends.reports")
+            }
+          }
       }
       .tabItem { Label(L10n.text("tab.trends"), systemImage: "chart.xyaxis.line") }
       .tag(AppTab.trends)
@@ -112,7 +130,7 @@ struct AppShell: View {
           return
         }
       #endif
-      if !healthOnboardingCompleted { presentedSheet = .healthOnboarding }
+      // Health and AI setup is optional and accessed from Settings.
     }
     // Keep modal content outside the tab navigation stacks' presentation environment.
     .sheet(item: $presentedSheet, onDismiss: finishSheet) { sheet in

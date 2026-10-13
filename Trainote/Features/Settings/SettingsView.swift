@@ -17,6 +17,10 @@ struct SettingsView: View {
   var body: some View {
     NavigationStack {
       Form {
+        Section {
+          NavigationLink(L10n.text("interaction.help.title")) { HealthHelpView() }
+            .accessibilityIdentifier("settings.healthHelp")
+        }
         Section(L10n.text("language.title")) {
           Picker(L10n.text("language.title"), selection: Binding(
             get: { LanguageSettings.shared.preference },
@@ -45,8 +49,7 @@ struct SettingsView: View {
           if let detail = healthAccess.healthConnectionDetail {
             Text(detail).font(.footnote).foregroundStyle(.secondary)
           }
-          Text(L10n.text("settings.healthPermissions"))
-            .font(.footnote).foregroundStyle(.secondary)
+          NavigationLink(L10n.text("interaction.help.healthPermissions")) { HealthHelpView(topic: .health) }
             .accessibilityIdentifier("settings.healthPermissionHelp")
           Button(healthAccess.healthConnected ? L10n.text("settings.refreshHealth") : L10n.text("settings.connectHealth")) {
             Task { await healthAccess.connectHealth() }
@@ -69,8 +72,6 @@ struct SettingsView: View {
           Button(L10n.text("settings.deleteAI"), role: .destructive) { showReportDeletion = true }
             .accessibilityIdentifier("settings.deleteAIReports")
             .disabled(healthAccess.isBusy)
-          NavigationLink(L10n.text("settings.methods")) { HealthHelpView() }
-            .accessibilityIdentifier("settings.healthHelp")
           if let message = healthAccess.statusMessage {
             Text(message).font(.footnote).foregroundStyle(.secondary)
               .accessibilityIdentifier("settings.healthStatus")
@@ -82,8 +83,6 @@ struct SettingsView: View {
             .accessibilityIdentifier("backup.export")
           Button(L10n.text("settings.restoreBackup")) { showImporter = true }
             .accessibilityIdentifier("backup.import")
-          Text(L10n.text("settings.backupHelp"))
-            .font(.footnote).foregroundStyle(.secondary)
         }
 
         Section(L10n.text("settings.about")) {
@@ -217,11 +216,6 @@ struct NutritionGoalEditor: View {
         nutrientField(L10n.text("settings.fat"), value: $editing.targets.fat, unit: "g", identifier: "goal.脂肪")
       }
 
-      Section {
-        Text(L10n.text("settings.goalHelp"))
-          .font(.footnote)
-          .foregroundStyle(.secondary)
-      }
     }
     .navigationTitle(L10n.text("settings.goals"))
     .navigationBarTitleDisplayMode(.inline)
@@ -302,66 +296,13 @@ struct NutritionGoalEditor: View {
 }
 
 struct AboutView: View {
-  @Environment(ExerciseCatalog.self) private var catalog
-
-  private var versionText: String {
-    let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
-    let build = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String
-    return [version, build.map { "(\($0))" }].compactMap { $0 }.joined(separator: " ")
-  }
-
-  var body: some View {
-    List {
-      Section("Trainote") {
-        LabeledContent(L10n.text("settings.version"), value: versionText)
-        Text(L10n.text("settings.aboutPrivacy"))
-      }
-
-      Section(L10n.text("settings.privacySupport")) {
-        NavigationLink(L10n.text("settings.privacy")) { PrivacyView() }
-          .accessibilityIdentifier("about.privacy")
-        NavigationLink(L10n.text("settings.support")) { SupportView() }
-          .accessibilityIdentifier("about.support")
-      }
-
-      Section(L10n.text("settings.exerciseData")) {
-        LabeledContent(L10n.text("settings.exerciseCount"), value: "\(catalog.items.count)")
-        if let source = catalog.source {
-          LabeledContent(L10n.text("settings.datasetCommit"), value: String(source.commit.prefix(8)))
-          Text(source.license)
-            .font(.footnote)
-          if let url = URL(string: source.repository) {
-            Link(L10n.text("settings.datasetRepository"), destination: url)
-          }
-        }
-        Text(L10n.text("settings.datasetLicense"))
-          .font(.footnote)
-          .foregroundStyle(.secondary)
-      }
-    }
-    .navigationTitle(L10n.text("settings.about"))
-    .navigationBarTitleDisplayMode(.inline)
-  }
+  var body: some View { HealthHelpView(topic: .sources) }
 }
 
 struct PrivacyView: View {
-  var body: some View {
-    HealthHelpView()
-  }
+  var body: some View { HealthHelpView(topic: .health) }
 }
 
 struct SupportView: View {
-  private let issuesURL = URL(string: "https://github.com/Jerryszz02/trainote/issues")!
-  var body: some View {
-    List {
-      Section(L10n.text("settings.healthAnalysis")) {
-        NavigationLink(L10n.text("settings.healthHelp")) { HealthHelpView() }
-      }
-      Section(L10n.text("settings.backup")) {
-        Text(
-          L10n.text("settings.restoreInstructions"))
-      }
-      Section(L10n.text("settings.feedback")) { Link(L10n.text("settings.githubIssue"), destination: issuesURL) }
-    }.navigationTitle(L10n.text("settings.support")).navigationBarTitleDisplayMode(.inline)
-  }
+  var body: some View { HealthHelpView(topic: .contact) }
 }

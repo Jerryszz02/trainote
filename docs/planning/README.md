@@ -6,7 +6,7 @@ Trainote 是一款以本地记录为基础的 iPhone 健身与饮食 App，记�
 
 **计划阶段历史核查（2026-10-12，Europe/London）：** fetch 后 canonical `main` 与 `origin/main` 均为 `c970330a33208b9f7862ae6e960d5f5b98a17a1f`，代码诊断以此为基线。用户确认 Xcode 直装；连线后读取到 iPhone 17 Pro Max、iOS 26.6.2、Trainote 1.1（Build 2），但安装包的源码提交和 Debug/Release 仍待确认。Instruments 将设备列为离线，短时附加采样超时，没有有效性能 trace。详见 [真机性能计划](device-performance-plan.md)。
 
-计划阶段仅新增三份计划。2026-10-12 用户已批准三计划并授权独立实现；2026-10-13 用户授权检查后合并 PR #16–#18；性能 PR #16 已合并，本工作树正在整合双语改动，尚未安装或发布。当前 main 已包含开发签名准入与营养/视觉资源改动；完整 AI 接通仍见 [接通计划](ai-report-enablement-plan.md)，本轮未验证真实服务。旧文档内的构建/测试数量是对应日期和提交的历史证据，不代表本次性能或产品验收。
+计划阶段仅新增三份计划。2026-10-12 用户已批准三计划并授权独立实现；2026-10-13 用户授权检查后合并 PR #16–#18；性能 PR #16 已合并，本工作树正在整合性能、双语与交互改动，尚未安装或发布。当前 main 已包含开发签名准入与营养/视觉资源改动；完整 AI 接通仍见 [接通计划](ai-report-enablement-plan.md)，本轮未验证真实服务。旧文档内的构建/测试数量是对应日期和提交的历史证据，不代表本次性能或产品验收。
 
 **历史记录：2026-10-03 13:56:54（Asia/Shanghai）** A–F 功能代码合入 main `06b2560` 并完成当时的仓库工程验收。F 提供五 Tab、趋势/恢复分析、训练建议、历史营养目标及本地报告入口；当时默认无远程 AI transport。规划 PR #3、A 的 #4、B 的 #6、C 的 #8、D 的 #5/#10、E 的 #7、F 的 #9 均已合并；详见 [交付快照](health-analysis-delivery.md)。历史实施对话使用 max；该记录不代表真实服务、真机兼容或发布验收。
 
@@ -14,7 +14,7 @@ Trainote 是一款以本地记录为基础的 iPhone 健身与饮食 App，记�
 
 - 更新时间：2026-10-13（Europe/London）
 - 请求：三份计划已获批准并分支实施；本工作树负责中英双语实现与验证。
-- 工作模式：已获授权并行实现；本分支仅负责多语言实现与验证，其他两条线保持独立。
+- 工作模式：已获授权并行实现；本次整合按性能、双语、交互顺序检查和合并。
 - canonical 项目根目录：`/Users/jerryszz/Desktop/Projects/trainote`
 - 计划阶段证据：Git refs/工作树、App 启动与导航、动作库/搜索、编辑保存、分析仓库/刷新、图片视频/3D 生命周期、设置/说明/报告文案、现有测试源文件、动作双语字段完整性，以及 devicectl 的设备/安装包/进程读取。计划阶段未运行应用测试或构建；本分支的 Simulator 构建与测试结果见 [双语实施记录](localization-plan.md#11-本分支实施与验证2026-10-13)。未修改真机数据。
 - 历史工作树位置（不代表当前仍保留）：F 为 `/Users/jerryszz/.codex/worktrees/392a/trainote`；2026-10-03 文档收尾为 `/Users/jerryszz/.codex/worktrees/health-docs-closeout/trainote`。
@@ -22,7 +22,7 @@ Trainote 是一款以本地记录为基础的 iPhone 健身与饮食 App，记�
 - F 历史实施检查证据：Git 状态与工作树、根 README、`project.yml`、已提交 Xcode 工程、AppShell/TrainoteApp、训练与营养模型、动作目录服务、备份服务、资料库/首页/设置页面、现有测试及 CI 配置；2026-10-03 状态收尾另核对 PR 合并 API、Git tree 和原始 CI 产物。原始论文与研究仓库见证据矩阵。
 - F 已执行 Simulator 构建及单元/UI 测试；逐项结果在 [交接](../health-integration-handoff.md)。签名、真机和发布状态未验证，旧 1.1 记录仍为历史证据。
 
-本文档区分本次静态检查与历史运行结果；未找到证据的发布信息继续标记为 `待确认`。
+本文档区分交互实施证据、计划阶段静态检查与历史运行结果；未找到证据的发布信息继续标记为 `待确认`。
 
 1.1 新增功能与可靠性规则以 [日常使用升级计划](daily-use-upgrade.md) 为准；下列文档保留基础架构约定。
 
@@ -53,7 +53,7 @@ F 实施记录（2026-10-03）：B/C/E 已实际连接，训练建议会复核�
 | --- | --- |
 | [device-performance-plan.md](device-performance-plan.md) | 后台动作索引及定向回归已验证；真机基线与性能验收仍待完成 |
 | [localization-plan.md](localization-plan.md) | 已实现、本地自动验证通过：完整中英双语、语言设置、报告/动作呈现与兼容验收 |
-| [first-use-interaction-plan.md](first-use-interaction-plan.md) | 新增、计划中：三条主流程、导航取舍、界面层级与通用说明集中收纳 |
+| [first-use-interaction-plan.md](first-use-interaction-plan.md) | 已实现方案 A，独立 Simulator 定向验证通过；入口迁移、测试证据与集成/回滚边界 |
 | [ai-report-enablement-plan.md](ai-report-enablement-plan.md) | 真实接通计划及已授权开发签名准入的实施/验证记录，其余部署与接入仍待执行 |
 | [health-analysis-plan.md](health-analysis-plan.md) | 新增：已批准的产品流程、算法候选、数据/API 契约、隐私、迁移和验收 |
 | [health-analysis-evidence.md](health-analysis-evidence.md) | 新增：14 项营养/恢复来源、健康 AI 研究资产与推论边界 |
