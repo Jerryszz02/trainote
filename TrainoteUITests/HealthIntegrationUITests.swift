@@ -121,6 +121,8 @@ final class HealthIntegrationUITests: XCTestCase {
       start.press(forDuration: 0.05, thenDragTo: end)
     }
     let status = app.staticTexts["settings.healthStatus"]
+    // Form creates offscreen rows lazily; the language section can put the result below the fold.
+    reveal(status)
     let result = XCTNSPredicateExpectation(
       predicate: NSPredicate { _, _ in
         status.exists || self.app.alerts["操作未完成"].exists
