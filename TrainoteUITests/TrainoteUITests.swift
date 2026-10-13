@@ -319,8 +319,10 @@ enum UITestTextInput {
   }
 
   private static func inputViewport(for field: XCUIElement, in app: XCUIApplication) -> CGRect {
-    let screen = app.frame
-    let isSearch = field.elementType == .searchField
+    inputViewport(isSearch: field.elementType == .searchField, screen: app.frame, in: app)
+  }
+
+  private static func inputViewport(isSearch: Bool, screen: CGRect, in app: XCUIApplication) -> CGRect {
     var viewport = screen.insetBy(dx: 8, dy: 8)
     if !isSearch, app.navigationBars.firstMatch.exists {
       viewport.origin.y = max(viewport.minY, app.navigationBars.firstMatch.frame.maxY)
@@ -338,23 +340,36 @@ enum UITestTextInput {
   }
 
   private static func focus(_ field: XCUIElement, in app: XCUIApplication) -> Bool {
+    // Keep XCTest's normal path intact. Geometry polling is only an AX fallback.
+    if field.isHittable {
+      field.tap()
+      return true
+    }
+    let screen = app.frame
+    let isSearch = field.elementType == .searchField
+    var viewport = inputViewport(isSearch: isSearch, screen: screen, in: app)
     // Scroll only an offscreen form row. AX hittability can remain false for a fully
     // visible SwiftUI input; blindly swiping in that case moves the correct target away.
     for _ in 0..<4 {
       let frame = field.frame
-      let viewport = inputViewport(for: field, in: app)
-      guard !frame.isEmpty, field.elementType != .searchField else { break }
+      guard !frame.isEmpty, !isSearch else { break }
       if frame.maxY > viewport.maxY { app.swipeUp() }
       else if frame.minY < viewport.minY { app.swipeDown() }
       else { break }
+      viewport = inputViewport(isSearch: isSearch, screen: screen, in: app)
+      if field.isHittable {
+        field.tap()
+        return true
+      }
     }
-    var previousFrame: CGRect?
+    var previousFrame: CGRect? = field.frame
     var stableSince = Date()
     let visible = XCTNSPredicateExpectation(
       predicate: NSPredicate { _, _ in
-        guard field.exists, field.isEnabled else { return false }
+        // AX queries can be slow on CI. Poll only the target frame, using the
+        // viewport snapshot above, so two observations fit the existing timeout.
         let frame = field.frame
-        guard !frame.isEmpty, inputViewport(for: field, in: app).contains(frame) else {
+        guard !frame.isEmpty, viewport.contains(frame) else {
           previousFrame = nil
           return false
         }
@@ -370,18 +385,21 @@ enum UITestTextInput {
       XCTFail("Input field must be fully visible and stationary: \(field.identifier), \(field.frame)")
       return false
     }
+    let currentScreen = app.frame
+    let currentViewport = inputViewport(isSearch: isSearch, screen: currentScreen, in: app)
+    let frame = field.frame
+    guard field.isEnabled, frame == previousFrame, currentViewport.contains(frame) else {
+      recordDiagnostics("Input moved before focus", field: field, in: app)
+      XCTFail("Input field moved before focus: \(field.identifier)")
+      return false
+    }
     if field.isHittable {
       field.tap()
     } else {
       // Use only the observed, fully visible frame. Keyboard appearance and exact
       // read-back below still prove that this specific input acquired the responder.
-      let frame = field.frame
-      guard frame == previousFrame, inputViewport(for: field, in: app).contains(frame) else {
-        XCTFail("Input field moved before focus: \(field.identifier)")
-        return false
-      }
       app.coordinate(withNormalizedOffset: .zero)
-        .withOffset(CGVector(dx: frame.midX - app.frame.minX, dy: frame.midY - app.frame.minY)).tap()
+        .withOffset(CGVector(dx: frame.midX - currentScreen.minX, dy: frame.midY - currentScreen.minY)).tap()
     }
     return true
   }
