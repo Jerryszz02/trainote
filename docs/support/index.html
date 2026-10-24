@@ -3,43 +3,71 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Trainote 帮助与反馈</title>
+    <title>Trainote 帮助与反馈 · Help and Support</title>
     <style>
       body { max-width: 720px; margin: 0 auto; padding: 40px 20px 64px; color: #172033; background: #fff; font: 17px/1.7 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
       h1, h2 { line-height: 1.25; }
       h1 { margin-bottom: 8px; }
       h2 { margin-top: 32px; font-size: 1.25rem; }
+      article + article { border-top: 1px solid #dce2ea; margin-top: 48px; padding-top: 24px; }
       .meta { color: #667085; }
-      a { color: #315ee7; }
+      a { color: #315ee7; overflow-wrap: anywhere; }
+      a:focus-visible { outline: 3px solid #315ee7; outline-offset: 3px; }
     </style>
   </head>
   <body>
-    <h1>Trainote 帮助与反馈</h1>
-    <p class="meta">健康分析版本草稿 · 需要 iOS 17 或更高版本</p>
-
-    <h2>数据保存在哪里？</h2>
-    <p>所有训练和饮食记录都保存在当前设备。Trainote 没有账号和云同步功能。</p>
-
-    <h2>如何删除数据？</h2>
-    <p>单条记录可以在对应列表中编辑或删除。若要删除全部本地数据，可以卸载应用。</p>
-
-    <h2>更换手机后能自动恢复吗？</h2>
-    <p>Trainote 不提供自己的同步服务。你可以在设置中导出 JSON 备份，在新设备中选择“恢复本地备份”。恢复前会显示记录数量；已有相同 ID 的记录会跳过，不会删除当前数据。也可以继续使用 iPhone 系统备份与迁移功能。</p>
-
-    <h2>备份文件安全吗？</h2>
-    <p>备份可能包含个人训练、饮食和手动健康记录。请只保存到你信任的位置并避免公开分享。Trainote 不会自动上传备份。</p>
-
-    <h2>资料库和设置在哪里？</h2>
-    <p>底部为今日、训练、饮食、趋势、恢复。完整资料库从今日的书本入口打开；今日“管理模板”直达模板区，训练页可进入动作/模板，饮食页可进入常用食物/固定餐。今日齿轮继续提供手动目标和备份。</p>
-    <h2>可以不连接健康或 AI 吗？</h2>
-    <p>可以。首启选择“暂时仅本地使用”即可继续记录。健康连接和 AI 同意分别选择。当前 AI 尚未开放，仍可使用本地记录，不会预先代你同意。</p>
-    <h2>如何断开和撤回？</h2>
-    <p>设置中的“断开并删除健康导入数据”清除缓存、锚点及依赖报告，保留手动记录。关闭 AI 停止后续请求并撤回服务器同意；失败需重试。单独删除报告不会删除训练或饮食。</p>
-    <h2>v2 备份包含什么？</h2>
-    <p>包含手动健康资料、目标历史和原有记录，支持导入 v1 / v2。健康缓存、授权、设备凭据和派生报告不导出，恢复后重新选择连接。旧 App 不保证能读 v2。</p>
-    <h2>反馈问题</h2>
-    <p>请在 <a href="https://github.com/Jerryszz02/trainote/issues">GitHub Issues</a> 提交问题。为了保护隐私，请不要附上真实训练、饮食、健康信息或其他敏感内容。</p>
-
-    <p><a href="../privacy/">查看隐私政策</a></p>
+    <nav aria-label="语言 / Language"><a href="#zh" lang="zh-CN">简体中文</a> · <a href="#en" lang="en">English</a></nav>
+    <main>
+      <article id="zh" lang="zh-CN">
+        <h1>Trainote 帮助与反馈</h1>
+        <p class="meta">现状草稿 · 2026 年 10 月 24 日 · 当前 App 需要 iOS 17 或更高版本</p>
+        <h2>Trainote 目前可以做什么？</h2>
+        <p>记录训练和饮食、保存模板与常用食物、设置营养目标、查看趋势和恢复参考，并导出或恢复本地备份。界面支持简体中文和 English，可在设置中选择语言。基本功能离线可用，不要求注册账号。</p>
+        <h2>资料库和设置在哪里？</h2>
+        <p>底部导航为今日、训练、饮食、趋势、恢复。今日页的书本入口打开完整资料库，齿轮入口打开设置；训练页可进入动作和模板，饮食页可进入常用食物和固定餐。</p>
+        <h2>数据保存在哪里？更换手机怎么处理？</h2>
+        <p>记录保存在当前设备，Trainote 没有自己的云同步服务。换机或删除 App 前，请在设置中导出 JSON 备份，并确认文件保存在你可以访问的位置。在新设备选择恢复备份即可添加记录；相同 ID 的记录会跳过，不覆盖或删除已有记录。</p>
+        <p>当前导出 v2，支持恢复 v1 和 v2。导出的文件包含手动记录和目标历史，不包含 Apple 健康缓存、授权、设备凭据或派生报告。恢复后如需连接 Apple 健康，需要重新授权。设备的系统备份与迁移由 iOS 和你的设置决定。</p>
+        <h2>可以不连接 Apple 健康吗？</h2>
+        <p>可以。选择暂时仅本地使用即可继续记录。Apple 健康为可选只读连接，也可以只共享部分类型。没有样本不一定意味着拒绝了权限；请检查是否有相应记录和共享设置。</p>
+        <h2>现在有 AI 报告吗？“采用建议”会做什么？</h2>
+        <p>当前提供本地规则报告，生成式 AI 尚未启用。报告会整理记录与可选建议；它不是已接通的云端 AI，也不是已经安装在 App 内的小模型。</p>
+        <p>阅读报告不会自动改变目标或开始训练。营养建议由你点击“采用建议”后应用；训练建议由你选择方案并确认开始后创建训练。不需要工作人员逐份审核报告。</p>
+        <h2>如何断开健康连接或删除记录？</h2>
+        <p>在设置中选择“断开并删除健康导入数据”，会停止同步、清除导入缓存和依赖报告，保留手动记录，不删除 Apple 健康中的原始数据。仅在系统中撤销权限不会立即清除已有缓存。</p>
+        <p>手动记录可在对应列表中删除，已有报告历史可单独删除。删除 App 会移除本机应用数据；“卸载 App”可能保留文稿与数据。导出的备份和系统备份需要分别管理。请先备份希望保留的记录。</p>
+        <h2>遇到问题，怎样反馈？</h2>
+        <p>请通过 <a href="https://github.com/Jerryszz02/trainote/issues">Trainote GitHub Issues</a> 提交问题，需要登录 GitHub。可以描述操作步骤、预期结果、实际结果，以及 App 版本和 iOS 版本；如附截图，请先遮盖个人信息。</p>
+        <p>这个渠道是公开的。请不要上传真实健康记录、完整备份、密码或其他凭据。反馈会用于排查你提交的问题；当前没有承诺固定回复时限。</p>
+        <h2>这些建议适合所有人吗？</h2>
+        <p>Trainote 是记录与日常健身参考工具，不提供医疗诊断或治疗。现有营养和恢复建议针对健康成人日常健身，不能据此推定适合儿童或特殊健康需求。记录不足时可能显示未知；恢复指标不是恢复百分比或损伤概率。</p>
+        <p><a href="../privacy/#zh">查看隐私政策</a> · <a href="#en" lang="en">Read in English</a></p>
+      </article>
+      <article id="en" lang="en">
+        <h1>Trainote Help and Support</h1>
+        <p class="meta">Current-version draft · October 24, 2026 · The current app requires iOS 17 or later</p>
+        <h2>What can Trainote do today?</h2>
+        <p>Record workouts and meals, save templates and favorite foods, set nutrition targets, review trends and recovery information, and export or restore local backups. The interface supports Simplified Chinese and English; choose a language in Settings. Basic features work offline without an account.</p>
+        <h2>Where are the library and settings?</h2>
+        <p>The tabs are Today, Training, Nutrition, Trends and Recovery. Open the full library using the book button on Today, or Settings using the gear button. Training links to exercises and templates; Nutrition links to favorite foods and saved meals.</p>
+        <h2>Where are my records? How do I move to another phone?</h2>
+        <p>Records are stored on your current device. Trainote does not operate its own cloud-sync service. Before changing phones or deleting the app, export a JSON backup from Settings and check that you can access the saved file. Restore it on the new device to add records. Matching IDs are skipped; existing records are not overwritten or deleted.</p>
+        <p>The app exports v2 and can restore v1 or v2. Exports contain manual records and target history, not Apple Health caches, authorizations, device credentials or derived reports. Reconnect to Apple Health after restoring if desired. System backups and device migration depend on iOS and your settings.</p>
+        <h2>Can I use Trainote without connecting Apple Health?</h2>
+        <p>Yes. Choose local-only use and continue recording. Apple Health is an optional, read-only connection, and you can share only selected types. Missing samples do not necessarily mean permission was denied; check whether the relevant records exist and review your sharing settings.</p>
+        <h2>Are AI reports available? What does adopting a suggestion do?</h2>
+        <p>The current version offers local rule-based reports. Generative AI is not enabled. Reports organize records and available suggestions; they are not produced by a connected cloud AI service or an on-device language model.</p>
+        <p>Reading a report does not change a target or start a workout. A nutrition suggestion is applied when you choose to adopt it. A training suggestion creates a workout after you select the plan and confirm the start. Reports do not require individual review by a staff member.</p>
+        <h2>How do I disconnect Health or delete records?</h2>
+        <p>In Settings, choose the option to disconnect and delete imported health data. This stops syncing, clears imported caches and dependent reports, and preserves manual records. It does not delete the original data in Apple Health. Revoking permission only in system settings does not immediately erase existing caches.</p>
+        <p>Delete manual records in their respective lists, or delete existing report history separately. Deleting the app removes its local data; offloading the app may retain documents and data. Exported files and system backups must be managed separately. Back up records you want to keep first.</p>
+        <h2>How can I report a problem?</h2>
+        <p>Use <a href="https://github.com/Jerryszz02/trainote/issues">Trainote GitHub Issues</a>; a GitHub account is required. Include the steps, expected result, actual result, app version and iOS version. Redact personal information from any screenshots.</p>
+        <p>This is a public channel. Do not upload personal health records, a complete backup, passwords or other credentials. Your feedback will be used to investigate the issue you submit. There is currently no guaranteed response time.</p>
+        <h2>Are the suggestions suitable for everyone?</h2>
+        <p>Trainote is a recording and everyday fitness reference tool, not a medical diagnosis or treatment service. Its current nutrition and recovery suggestions concern everyday fitness for healthy adults and should not be assumed suitable for children or people with special health needs. Limited records may produce an unknown result. Recovery indicators are not a percentage recovered or an injury probability.</p>
+        <p><a href="../privacy/#en">Read the privacy policy</a> · <a href="#zh" lang="zh-CN">阅读简体中文</a></p>
+      </article>
+    </main>
   </body>
 </html>
