@@ -35,6 +35,7 @@ struct AppShell: View {
   var recoveryIntegration: HealthRecoveryIntegration? = nil
   var trainingAdvice: TrainingAdviceController? = nil
   var reportIntegration: HealthReportIntegration? = nil
+  var processingAllowed: () -> Bool = { true }
 
   var body: some View {
     TabView(selection: $selectedTab) {
@@ -155,6 +156,7 @@ struct AppShell: View {
   private func finishSheet() {
     let completion = sheetDismissal
     sheetDismissal = nil
+    guard processingAllowed() else { return }
     completion?()
   }
 }

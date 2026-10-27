@@ -1,0 +1,650 @@
+{
+  "platform": "macOS-26.5.1-arm64-arm-64bit",
+  "productionPrompt": "on-device-selection-v1",
+  "factBudget": 20,
+  "retryFactBudget": 12,
+  "trendOptionalPrefixes": [
+    "weight.",
+    "diet.",
+    "energy.",
+    "recommendation.goal."
+  ],
+  "results": [
+    {
+      "model": "q4",
+      "case": "stress-0",
+      "category": "stress",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 2684,
+          "facts": 16,
+          "actions": 3,
+          "promptTokens": 885,
+          "processWallSeconds": 1.110418667,
+          "status": "generated",
+          "seconds": 0.7338549999985844
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 2684,
+      "facts": 16,
+      "actions": 3,
+      "promptTokens": 885,
+      "status": "generated",
+      "output": {
+        "factIDs": [
+          "f0",
+          "f2",
+          "f6"
+        ],
+        "actionIDs": [
+          "a0",
+          "a1",
+          "a2"
+        ]
+      },
+      "seconds": 0.7338549999985844,
+      "selectedMetrics": [
+        "recommendation.selectedPlan",
+        "recommendation.trainingDaysPerWeek",
+        "recommendation.systemic.ready"
+      ],
+      "scopeWarnings": [],
+      "selectedActions": [
+        "swapTrainingDay",
+        "swapTrainingDay",
+        "swapTrainingDay"
+      ],
+      "retried": false
+    },
+    {
+      "model": "q4",
+      "case": "stress-1",
+      "category": "stress",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 2946,
+          "facts": 18,
+          "actions": 3,
+          "promptTokens": 995,
+          "processWallSeconds": 0.7639879999999999,
+          "status": "generated",
+          "seconds": 0.7452374582644552
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 2946,
+      "facts": 18,
+      "actions": 3,
+      "promptTokens": 995,
+      "status": "generated",
+      "output": {
+        "factIDs": [
+          "f0",
+          "f2",
+          "f6"
+        ],
+        "actionIDs": [
+          "a0",
+          "a1",
+          "a2"
+        ]
+      },
+      "seconds": 0.7452374582644552,
+      "selectedMetrics": [
+        "recommendation.selectedPlan",
+        "recommendation.trainingDaysPerWeek",
+        "recommendation.systemic.ready"
+      ],
+      "scopeWarnings": [],
+      "selectedActions": [
+        "swapTrainingDay",
+        "swapTrainingDay",
+        "swapTrainingDay"
+      ],
+      "retried": false
+    },
+    {
+      "model": "q4",
+      "case": "stress-2",
+      "category": "stress",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 3060,
+          "facts": 19,
+          "actions": 3,
+          "promptTokens": 1034,
+          "processWallSeconds": 0.723263625,
+          "status": "generated",
+          "seconds": 0.7065916665596887
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 3060,
+      "facts": 19,
+      "actions": 3,
+      "promptTokens": 1034,
+      "status": "generated",
+      "output": {
+        "factIDs": [
+          "f0",
+          "f2",
+          "f3"
+        ],
+        "actionIDs": [
+          "a0",
+          "a1",
+          "a2"
+        ]
+      },
+      "seconds": 0.7065916665596887,
+      "selectedMetrics": [
+        "recommendation.selectedPlan",
+        "recommendation.trainingDaysPerWeek",
+        "recommendation.availableToday"
+      ],
+      "scopeWarnings": [],
+      "selectedActions": [
+        "swapTrainingDay",
+        "swapTrainingDay",
+        "swapTrainingDay"
+      ],
+      "retried": false
+    },
+    {
+      "model": "q4",
+      "case": "stress-3",
+      "category": "stress",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 3946,
+          "facts": 20,
+          "actions": 3,
+          "promptTokens": 1894,
+          "processWallSeconds": 0.13130241700000012,
+          "status": "contextBudgetRejected",
+          "error": "RuntimeSmoke: inputTooLong",
+          "runtimeExit": 1
+        },
+        {
+          "maximumFacts": 12,
+          "promptBytes": 2754,
+          "facts": 12,
+          "actions": 3,
+          "promptTokens": 1246,
+          "processWallSeconds": 0.7172954589999998,
+          "status": "generated",
+          "seconds": 0.7013944999780506
+        }
+      ],
+      "maximumFacts": 12,
+      "promptBytes": 2754,
+      "facts": 12,
+      "actions": 3,
+      "promptTokens": 1246,
+      "status": "generated",
+      "output": {
+        "factIDs": [
+          "f0",
+          "f1",
+          "f2"
+        ],
+        "actionIDs": [
+          "a0",
+          "a1",
+          "a2"
+        ]
+      },
+      "seconds": 0.7013944999780506,
+      "selectedMetrics": [
+        "recommendation.alternative.12345678-1234-1234-1234-000000000000.quads",
+        "recommendation.alternative.12345678-1234-1234-1234-000000000001.quads",
+        "recommendation.alternative.12345678-1234-1234-1234-000000000002.quads"
+      ],
+      "scopeWarnings": [],
+      "selectedActions": [
+        "swapTrainingDay",
+        "swapTrainingDay",
+        "swapTrainingDay"
+      ],
+      "retried": true
+    },
+    {
+      "model": "q4",
+      "case": "stress-4",
+      "category": "stress",
+      "valid": false,
+      "requiredFactsSelected": false,
+      "requiredActionsSelected": false,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 5227,
+          "facts": 20,
+          "actions": 6,
+          "promptTokens": 2339,
+          "processWallSeconds": 0.14177899999999966,
+          "status": "contextBudgetRejected",
+          "error": "RuntimeSmoke: inputTooLong",
+          "runtimeExit": 1
+        },
+        {
+          "maximumFacts": 12,
+          "status": "inputBudgetRejected",
+          "mandatoryFacts": 20
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 5227,
+      "facts": 20,
+      "actions": 6,
+      "promptTokens": 2339,
+      "status": "contextBudgetFallback",
+      "reason": "required candidate evidence does not fit fact budget",
+      "retried": true
+    },
+    {
+      "model": "q4",
+      "case": "stress-5",
+      "category": "stress",
+      "valid": false,
+      "requiredFactsSelected": false,
+      "requiredActionsSelected": false,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 6183,
+          "facts": 20,
+          "actions": 12,
+          "promptTokens": 2839,
+          "processWallSeconds": 0.15457220800000027,
+          "status": "contextBudgetRejected",
+          "error": "RuntimeSmoke: inputTooLong",
+          "runtimeExit": 1
+        },
+        {
+          "maximumFacts": 12,
+          "status": "inputBudgetRejected",
+          "mandatoryFacts": 20
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 6183,
+      "facts": 20,
+      "actions": 12,
+      "promptTokens": 2839,
+      "status": "contextBudgetFallback",
+      "reason": "required candidate evidence does not fit fact budget",
+      "retried": true
+    },
+    {
+      "model": "q4",
+      "case": "stress-6",
+      "category": "stress",
+      "valid": false,
+      "requiredFactsSelected": false,
+      "requiredActionsSelected": false,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "status": "inputBudgetRejected",
+          "mandatoryFacts": 21
+        }
+      ],
+      "status": "inputBudgetFallback",
+      "reason": "required candidate evidence does not fit fact budget",
+      "retried": false
+    },
+    {
+      "model": "q4",
+      "case": "stress-7",
+      "category": "stress",
+      "valid": false,
+      "requiredFactsSelected": false,
+      "requiredActionsSelected": false,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "status": "inputBudgetRejected",
+          "mandatoryFacts": 24
+        }
+      ],
+      "status": "inputBudgetFallback",
+      "reason": "required candidate evidence does not fit fact budget",
+      "retried": false
+    },
+    {
+      "model": "q8",
+      "case": "stress-0",
+      "category": "stress",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 2684,
+          "facts": 16,
+          "actions": 3,
+          "promptTokens": 885,
+          "processWallSeconds": 0.6333636250000003,
+          "status": "generated",
+          "seconds": 0.6161514582345262
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 2684,
+      "facts": 16,
+      "actions": 3,
+      "promptTokens": 885,
+      "status": "generated",
+      "output": {
+        "factIDs": [
+          "f0",
+          "f2",
+          "f15"
+        ],
+        "actionIDs": [
+          "a0",
+          "a1",
+          "a2"
+        ]
+      },
+      "seconds": 0.6161514582345262,
+      "selectedMetrics": [
+        "recommendation.selectedPlan",
+        "recommendation.trainingDaysPerWeek",
+        "recommendation.readiness.quads"
+      ],
+      "scopeWarnings": [],
+      "selectedActions": [
+        "swapTrainingDay",
+        "swapTrainingDay",
+        "swapTrainingDay"
+      ],
+      "retried": false
+    },
+    {
+      "model": "q8",
+      "case": "stress-1",
+      "category": "stress",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 2946,
+          "facts": 18,
+          "actions": 3,
+          "promptTokens": 995,
+          "processWallSeconds": 0.6074042500000001,
+          "status": "generated",
+          "seconds": 0.5903123749885708
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 2946,
+      "facts": 18,
+      "actions": 3,
+      "promptTokens": 995,
+      "status": "generated",
+      "output": {
+        "factIDs": [
+          "f0",
+          "f2",
+          "f6"
+        ],
+        "actionIDs": [
+          "a0",
+          "a1",
+          "a2"
+        ]
+      },
+      "seconds": 0.5903123749885708,
+      "selectedMetrics": [
+        "recommendation.selectedPlan",
+        "recommendation.trainingDaysPerWeek",
+        "recommendation.systemic.ready"
+      ],
+      "scopeWarnings": [],
+      "selectedActions": [
+        "swapTrainingDay",
+        "swapTrainingDay",
+        "swapTrainingDay"
+      ],
+      "retried": false
+    },
+    {
+      "model": "q8",
+      "case": "stress-2",
+      "category": "stress",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 3060,
+          "facts": 19,
+          "actions": 3,
+          "promptTokens": 1034,
+          "processWallSeconds": 0.6523394580000001,
+          "status": "generated",
+          "seconds": 0.63181529159192
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 3060,
+      "facts": 19,
+      "actions": 3,
+      "promptTokens": 1034,
+      "status": "generated",
+      "output": {
+        "factIDs": [
+          "f0",
+          "f2",
+          "f18"
+        ],
+        "actionIDs": [
+          "a0",
+          "a1",
+          "a2"
+        ]
+      },
+      "seconds": 0.63181529159192,
+      "selectedMetrics": [
+        "recommendation.selectedPlan",
+        "recommendation.trainingDaysPerWeek",
+        "recommendation.recentWorkingSets"
+      ],
+      "scopeWarnings": [],
+      "selectedActions": [
+        "swapTrainingDay",
+        "swapTrainingDay",
+        "swapTrainingDay"
+      ],
+      "retried": false
+    },
+    {
+      "model": "q8",
+      "case": "stress-3",
+      "category": "stress",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 3946,
+          "facts": 20,
+          "actions": 3,
+          "promptTokens": 1894,
+          "processWallSeconds": 0.16329408300000026,
+          "status": "contextBudgetRejected",
+          "error": "RuntimeSmoke: inputTooLong",
+          "runtimeExit": 1
+        },
+        {
+          "maximumFacts": 12,
+          "promptBytes": 2754,
+          "facts": 12,
+          "actions": 3,
+          "promptTokens": 1246,
+          "processWallSeconds": 0.6312718340000014,
+          "status": "generated",
+          "seconds": 0.6166632500244305
+        }
+      ],
+      "maximumFacts": 12,
+      "promptBytes": 2754,
+      "facts": 12,
+      "actions": 3,
+      "promptTokens": 1246,
+      "status": "generated",
+      "output": {
+        "factIDs": [
+          "f0",
+          "f1",
+          "f2"
+        ],
+        "actionIDs": [
+          "a0",
+          "a1"
+        ]
+      },
+      "seconds": 0.6166632500244305,
+      "selectedMetrics": [
+        "recommendation.alternative.12345678-1234-1234-1234-000000000000.quads",
+        "recommendation.alternative.12345678-1234-1234-1234-000000000001.quads",
+        "recommendation.alternative.12345678-1234-1234-1234-000000000002.quads"
+      ],
+      "scopeWarnings": [],
+      "selectedActions": [
+        "swapTrainingDay",
+        "swapTrainingDay"
+      ],
+      "retried": true
+    },
+    {
+      "model": "q8",
+      "case": "stress-4",
+      "category": "stress",
+      "valid": false,
+      "requiredFactsSelected": false,
+      "requiredActionsSelected": false,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 5227,
+          "facts": 20,
+          "actions": 6,
+          "promptTokens": 2339,
+          "processWallSeconds": 0.17360612500000094,
+          "status": "contextBudgetRejected",
+          "error": "RuntimeSmoke: inputTooLong",
+          "runtimeExit": 1
+        },
+        {
+          "maximumFacts": 12,
+          "status": "inputBudgetRejected",
+          "mandatoryFacts": 20
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 5227,
+      "facts": 20,
+      "actions": 6,
+      "promptTokens": 2339,
+      "status": "contextBudgetFallback",
+      "reason": "required candidate evidence does not fit fact budget",
+      "retried": true
+    },
+    {
+      "model": "q8",
+      "case": "stress-5",
+      "category": "stress",
+      "valid": false,
+      "requiredFactsSelected": false,
+      "requiredActionsSelected": false,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 6183,
+          "facts": 20,
+          "actions": 12,
+          "promptTokens": 2839,
+          "processWallSeconds": 0.14778599999999997,
+          "status": "contextBudgetRejected",
+          "error": "RuntimeSmoke: inputTooLong",
+          "runtimeExit": 1
+        },
+        {
+          "maximumFacts": 12,
+          "status": "inputBudgetRejected",
+          "mandatoryFacts": 20
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 6183,
+      "facts": 20,
+      "actions": 12,
+      "promptTokens": 2839,
+      "status": "contextBudgetFallback",
+      "reason": "required candidate evidence does not fit fact budget",
+      "retried": true
+    },
+    {
+      "model": "q8",
+      "case": "stress-6",
+      "category": "stress",
+      "valid": false,
+      "requiredFactsSelected": false,
+      "requiredActionsSelected": false,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "status": "inputBudgetRejected",
+          "mandatoryFacts": 21
+        }
+      ],
+      "status": "inputBudgetFallback",
+      "reason": "required candidate evidence does not fit fact budget",
+      "retried": false
+    },
+    {
+      "model": "q8",
+      "case": "stress-7",
+      "category": "stress",
+      "valid": false,
+      "requiredFactsSelected": false,
+      "requiredActionsSelected": false,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "status": "inputBudgetRejected",
+          "mandatoryFacts": 24
+        }
+      ],
+      "status": "inputBudgetFallback",
+      "reason": "required candidate evidence does not fit fact budget",
+      "retried": false
+    }
+  ]
+}

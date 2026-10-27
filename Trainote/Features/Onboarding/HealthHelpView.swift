@@ -15,7 +15,7 @@ struct HealthHelpView: View {
       case .recovery: L10n.text("health.healthhelpview.how.the.recovery.index.works.1b0803")
       case .calibration: L10n.text("health.healthhelpview.personal.calibration.and.reset.c88df2")
       case .health: L10n.text("health.healthhelpview.data.and.apple.health.20baa0")
-      case .ai: L10n.text("health.healthhelpview.ai.and.deepseek.a6db6a")
+      case .ai: L10n.text("notice.aiHelpTitle")
       case .storage: L10n.text("health.healthhelpview.storage.withdrawal.and.deletion.f403ec")
       case .backup: L10n.text("health.healthhelpview.backups.v1.v2.582936")
       case .sources: L10n.text("interaction.help.sources")
@@ -33,6 +33,7 @@ struct HealthHelpView: View {
     ("THIRD_PARTY_NOTICES", "md"), ("ANATOMY-PROVENANCE", "md"),
     ("ANATOMY-LICENSE", "txt"), ("EXERCISE-MEDIA-PROVENANCE", "md"),
     ("EXERCISE-MEDIA-LICENSE", "txt"), ("PROVENANCE", "md"), ("LICENSE", "txt"),
+    ("MODEL-PROVENANCE", "md"), ("QWEN-LICENSE", "txt"), ("LLAMA-LICENSE", "txt"),
   ].map { name, ext in
     let text = Bundle.main.url(forResource: name, withExtension: ext)
       .flatMap { try? String(contentsOf: $0, encoding: .utf8) }
@@ -115,34 +116,35 @@ struct HealthHelpView: View {
           Text(
             L10n.text("health.healthhelpview.sync.runs.on.foreground.refresh.and.735b9a"))
         }.id(Topic.health)
-        Section(L10n.text("health.healthhelpview.ai.and.deepseek.a6db6a")) {
+        Section(access.reports.isConfigured
+          ? L10n.text("health.healthhelpview.ai.and.deepseek.a6db6a")
+          : L10n.text("notice.aiHelpTitle")) {
           Text(L10n.text("health.healthhelpview.basic.reports.organize.current.trends.recovery.38a6a9"))
-          Text(L10n.text("interaction.help.aiHelp"))
-          if requestsAIConsent {
-            if access.reports.isConfigured {
+          if access.reports.isConfigured {
+            // A separately configured remote deployment keeps its specific disclosure/consent.
+            Text(L10n.text("interaction.help.aiHelp"))
+            Text(L10n.text("health.healthhelpview.when.enabled.reports.send.only.necessary.42d36d"))
+            Text(L10n.text("health.healthhelpview.the.provider.api.s.retention.reuse.b014f7"))
+            if requestsAIConsent {
               Text(L10n.text("interaction.help.aiDisableHelp"))
-            } else {
-              Text(access.reports.configurationMessage).accessibilityIdentifier(
-                "health.aiUnavailable")
-              Text(L10n.text("health.healthonboardingview.no.records.are.currently.sent.to.4a7205"))
+              Button(L10n.text("health.healthonboardingview.agree.to.this.processing.and.enable.4e1fd9")) { Task { await access.enableAI() } }
+                .disabled(access.isBusy || access.aiEnabled)
+                .accessibilityIdentifier("health.aiConsent")
             }
-          }
-          Text(
-            L10n.text("health.healthhelpview.when.enabled.reports.send.only.necessary.42d36d")
-          )
-          Text(L10n.text("health.healthhelpview.the.provider.api.s.retention.reuse.b014f7"))
-          if requestsAIConsent && access.reports.isConfigured {
-            Button(L10n.text("health.healthonboardingview.agree.to.this.processing.and.enable.4e1fd9")) { Task { await access.enableAI() } }
-              .disabled(access.isBusy || access.aiEnabled)
-              .accessibilityIdentifier("health.aiConsent")
+          } else {
+            Text(L10n.text("notice.reports.body"))
+              .accessibilityIdentifier("help.localAI")
+            Text(L10n.text("notice.aiHelp"))
           }
         }.id(Topic.ai)
         Section(L10n.text("health.healthhelpview.storage.withdrawal.and.deletion.f403ec")) {
           Text(L10n.text("health.healthhelpview.manual.records.stay.on.this.device.769a6c"))
           Text(L10n.text("health.healthhelpview.disconnecting.health.stops.sync.clears.imported.00d82a"))
-          Text(
-            L10n.text("health.healthhelpview.turning.off.ai.cancels.future.requests.5907d2")
-          )
+          if access.reports.isConfigured {
+            Text(L10n.text("health.healthhelpview.turning.off.ai.cancels.future.requests.5907d2"))
+          } else {
+            Text(L10n.text("notice.control.body"))
+          }
         }.id(Topic.storage)
         Section(L10n.text("health.healthhelpview.backups.v1.v2.582936")) {
           Text(
@@ -172,6 +174,7 @@ struct HealthHelpView: View {
           }
         }.id(Topic.sources)
         Section(L10n.text("health.healthhelpview.help.and.contact.7cca8d")) {
+          Link(L10n.text("notice.supportEmail"), destination: URL(string: "mailto:shen20060206@163.com")!)
           Text(L10n.text("health.healthhelpview.report.problems.on.the.project.s.5556e5"))
           Link(
             L10n.text("health.healthhelpview.contact.the.maintainer.on.github.d4bfc8"),

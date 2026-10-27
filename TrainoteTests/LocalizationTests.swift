@@ -82,12 +82,17 @@ final class LocalizationTests: XCTestCase {
     XCTAssertEqual(L10n.text("core.reps", 1), "1 rep")
     XCTAssertEqual(L10n.text("core.reps", 2), "2 reps")
     XCTAssertEqual(L10n.text("core.sets", 0), "0 sets")
+    XCTAssertEqual(L10n.text("interaction.today.progress", 0, "Session"), "Session · 0 sets completed")
+    XCTAssertEqual(L10n.text("interaction.today.progress", 1, "Session"), "Session · 1 set completed")
+    XCTAssertEqual(L10n.text("interaction.today.progress", 2, "Session"), "Session · 2 sets completed")
+    XCTAssertEqual(L10n.text("core.primary.muscle.group"), "Main assisting muscle group")
     XCTAssertEqual(L10n.text("missing.localization.test.key"), "missing.localization.test.key")
     let openMessage = L10n.Message("language.system")
     LanguageSettings.shared.preference = .simplifiedChinese
     XCTAssertEqual(L10n.text("language.system"), "跟随系统")
     XCTAssertEqual(openMessage.text, "跟随系统")
     XCTAssertEqual(L10n.text("core.reps", 1), "1 次")
+    XCTAssertEqual(L10n.text("interaction.today.progress", 1, "训练"), "训练 · 已完成 1 组")
     XCTAssertEqual(L10n.text("core.reps", 2), "2 次")
     XCTAssertEqual(L10n.render("language.system", arguments: [], language: .english), "System Default")
   }

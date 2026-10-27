@@ -1,4 +1,14 @@
-# AI report consumer handoff (E → F)
+# AI report integration
+
+## Current on-device path (2026-10-27)
+
+`HealthReportIntegration` supplies `BundledLlamaRuntime` to `AIReportAssembly` with `proxy: nil`. Construction does not load the model. `refreshOnDevice` returns rules or a matching cache; only `generateOnDevice` starts inference. `OnDeviceReportRequest` projects scope-relevant facts and every approved candidate reason into short aliases, constrains JSON with GBNF, and validates the result again in Swift. It caps the input at 20 facts and retries once at 12 after a token overflow; mandatory reasons are never truncated. Unsupported inputs, cancellation, timeout and resource pressure preserve rules.
+
+The default model is the bundled Qwen3-0.6B Q4_K_M with pinned llama.cpp. Model/prompt identities namespace cache entries; stored historical remote reports retain their original source. Local AI preference, first-use acknowledgment and Health consent are independent. Closing local AI cancels generation and current cache display; read-only history can be deleted separately. Input/selection changes, backgrounding, page exit and consent withdrawal invalidate pending work. No model download, network transport, provider key or cloud consent is needed for this path.
+
+Preparation is documented in [Models/README](../../../Models/README.md), with [implementation evidence](../../../docs/app-store/on-device-implementation.md). The remaining sections preserve the original remote-service contract and its historical evidence; their remote consent, App Attest and deployment gates apply only if that separate transport is configured.
+
+## Historical remote consumer handoff (E → F)
 
 Built on released `main` commit `c4e805dc718242f04d6889005fa519fb7f79ae91`, including the health foundation and B's trend analysis, incorporated by ordinary merges. PR #7 targets `main`; its unique changes are the report client/card, server, related tests/fixtures/docs, mechanical XcodeGen registration and independent server CI. Shared schemas, calculators, HealthKit reader, global navigation, UI test helpers, `project.yml` and existing iOS CI match that baseline. Default assembly is local-only; no production endpoint, credential, entitlement, real health upload or deployment was added.
 

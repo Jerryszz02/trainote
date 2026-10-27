@@ -94,6 +94,26 @@ final class WorkoutInsightsTests: XCTestCase {
     XCTAssertEqual(modes["0685"], .cardio)
   }
 
+  func testPersonalRecordNamesUseCurrentLanguageWithoutChangingSnapshotsOrMetrics() {
+    let previous = LanguageSettings.shared.preference
+    defer { LanguageSettings.shared.preference = previous }
+    let baseline = workout(weight: 60, reps: 8, at: Date(timeIntervalSince1970: 100))
+    let current = workout(weight: 65, reps: 8, at: Date(timeIntervalSince1970: 200))
+    LanguageSettings.shared.preference = .english
+    let english = WorkoutInsights.personalRecords(for: current, history: [baseline, current])
+    XCTAssertEqual(Set(english.map(\.exerciseName)), ["bench press"])
+    LanguageSettings.shared.preference = .simplifiedChinese
+    let chinese = WorkoutInsights.personalRecords(for: current, history: [baseline, current])
+    XCTAssertEqual(Set(chinese.map(\.exerciseName)), ["卧推"])
+    XCTAssertEqual(english.map(\.value), chinese.map(\.value))
+    XCTAssertEqual(english.map(\.previousValue), chinese.map(\.previousValue))
+    XCTAssertEqual(english.map(\.id), chinese.map(\.id))
+    current.exercises[0].nameZhSnapshot = ""
+    XCTAssertEqual(WorkoutInsights.personalRecords(for: current, history: [baseline, current]).first?.exerciseName,
+                   "bench press", "A missing translation uses the preserved nonempty snapshot")
+    XCTAssertEqual(current.exercises[0].nameEnSnapshot, "bench press")
+  }
+
   private func workout(weight: Double, reps: Int, at: Date) -> Workout {
     let workout = Workout(
       title: "力量训练", startedAt: at, endedAt: at.addingTimeInterval(100), status: .completed)

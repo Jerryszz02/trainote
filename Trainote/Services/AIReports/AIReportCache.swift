@@ -26,10 +26,16 @@ final class AIReportCache: HealthDerivedDataInvalidating {
     } else { state = .init() }
     if !allowHealthHistory { try deleteHealthDependentData() }
   }
-  static func key(_ input: ReportInput) throws -> String {
-    let projection = try ReportWireInput(input)
-    let data = try AIReportPolicy.encoder().encode(projection)
-    return AIReportPolicy.digest(data + Data(AIReportPolicy.promptVersion.utf8))
+  static func key(_ input: ReportInput, model: String = AIReportPolicy.model,
+    promptVersion: String = AIReportPolicy.promptVersion) throws -> String {
+    let data: Data
+    if model == OnDeviceReportPolicy.model {
+      try ReportWireInput.validateLocal(input)
+      data = try AIReportPolicy.encoder().encode(input)
+    } else {
+      data = try AIReportPolicy.encoder().encode(ReportWireInput(input))
+    }
+    return AIReportPolicy.digest(data + Data("|\(model)|\(promptVersion)".utf8))
   }
   func current(_ input: ReportInput, now: Date) throws -> AIReportContent? {
     guard let content = state.reports[try Self.key(input)] else { return nil }
@@ -37,10 +43,19 @@ final class AIReportCache: HealthDerivedDataInvalidating {
     guard (try? ReportResultValidator.validate(content.report, input: input, now: now)) != nil else { return nil }
     return content
   }
+  func currentOnDevice(_ input: ReportInput, now: Date) throws -> AIReportContent? {
+    guard let content = state.reports[try Self.key(input, model: OnDeviceReportPolicy.model,
+      promptVersion: OnDeviceReportPolicy.promptVersion)],
+      (try? ReportResultValidator.validateOnDevice(content.report, input: input, now: now)) != nil
+    else { return nil }
+    return content
+  }
   func save(_ content: AIReportContent) throws {
     guard !content.report.isLocalFallback else { return }
     var next = state
-    next.reports[try Self.key(content.input)] = content
+    try ReportResultValidator.validateStored(content.report, input: content.input, now: content.report.generatedAt)
+    next.reports[try Self.key(content.input, model: content.report.model,
+      promptVersion: content.report.promptVersion)] = content
     let sorted = next.reports.sorted { $0.value.report.generatedAt > $1.value.report.generatedAt }.prefix(20)
     next.reports = Dictionary(uniqueKeysWithValues: sorted.map { ($0.key, $0.value) })
     try writer(AIReportPolicy.encoder().encode(next), url)
@@ -49,7 +64,7 @@ final class AIReportCache: HealthDerivedDataInvalidating {
   func history() -> [AIReportContent] {
     state.reports.values.filter {
       // History may be expired; validate at generation time before exposing persisted text.
-      (try? ReportResultValidator.validate($0.report, input: $0.input, now: $0.report.generatedAt)) != nil
+      (try? ReportResultValidator.validateStored($0.report, input: $0.input, now: $0.report.generatedAt)) != nil
     }.sorted { $0.report.generatedAt > $1.report.generatedAt }
   }
   func deleteHealthDependentData() throws {
@@ -59,5 +74,11 @@ final class AIReportCache: HealthDerivedDataInvalidating {
   func deleteAll() throws {
     state = .init() // Fail closed in memory, even when disk deletion must be retried.
     try writer(AIReportPolicy.encoder().encode(state), url)
+  }
+  func delete(reportID: String) throws {
+    var next = state
+    next.reports = next.reports.filter { $0.value.id != reportID }
+    try writer(AIReportPolicy.encoder().encode(next), url)
+    state = next
   }
 }

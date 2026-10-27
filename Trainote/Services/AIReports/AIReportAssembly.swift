@@ -6,6 +6,7 @@ enum AIReportAssembly {
     trend: any TrendCalculating, recovery: any RecoveryCalculating,
     recommendations: any RecommendationProviding,
     proxy: ReportProxyConfiguration? = nil,
+    onDeviceRuntime: (any OnDeviceModelRuntime)? = nil,
     directory: URL = LocalHealthStorage.directory.appendingPathComponent("AIReports", isDirectory: true)
   ) throws -> AIReportService {
     guard let consent = foundation.consent, let health = foundation.healthData else { throw AIReportFailure.unavailable }
@@ -19,6 +20,7 @@ enum AIReportAssembly {
         credentials: KeychainReportCredentials(proxyHost: proxy.baseURL.host!),
         attestor: AppleReportDeviceAttestor(), http: ReportProxyHTTP())
     } else { transport = nil }
-    return AIReportService(builder: builder, consent: consent, healthData: health, cache: cache, transport: transport)
+    return AIReportService(builder: builder, consent: consent, healthData: health, cache: cache,
+      transport: transport, onDeviceGenerator: onDeviceRuntime.map { OnDeviceReportGenerator(runtime: $0) })
   }
 }

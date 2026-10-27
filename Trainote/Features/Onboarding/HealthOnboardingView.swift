@@ -33,7 +33,7 @@ struct HealthOnboardingView: View {
           }
           .accessibilityIdentifier("health.aiInfo")
           if !access.reports.isConfigured {
-            Text(access.reports.configurationMessage).font(.footnote).foregroundStyle(.secondary)
+            Text(L10n.text("notice.aiHelp")).font(.footnote).foregroundStyle(.secondary)
           }
         }
         Section {

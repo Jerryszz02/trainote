@@ -90,7 +90,7 @@ enum WorkoutInsights {
       guard !sets.isEmpty else { continue }
       var result =
         results[exercise.sourceExerciseID]
-        ?? WeightedResult(name: exercise.nameZhSnapshot, weight: 0, volume: 0)
+        ?? WeightedResult(name: exercise.displayName, weight: 0, volume: 0)
       result.weight = max(result.weight, sets.map(\.weightKilograms).max() ?? 0)
       result.volume += sets.reduce(0) { $0 + $1.weightKilograms * Double($1.repetitions) }
       results[exercise.sourceExerciseID] = result

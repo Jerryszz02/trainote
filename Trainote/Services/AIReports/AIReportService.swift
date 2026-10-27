@@ -35,6 +35,7 @@ final class AIReportService: HealthDerivedDataInvalidating {
   private let consent: LocalConsentStore
   private let cache: AIReportCache
   private let transport: (any AIReportTransport)?
+  private let onDeviceGenerator: (any ReportGenerating)?
   private let clock: () -> Date
   private var generation = UUID()
   private var handlers: [UUID] = []
@@ -43,14 +44,17 @@ final class AIReportService: HealthDerivedDataInvalidating {
   private(set) var failure: AIReportFailure?
   var isGenerating: Bool { active != nil }
   var isRemoteAvailable: Bool { transport != nil }
+  var isOnDeviceAvailable: Bool { onDeviceGenerator != nil }
   var revocationPending: Bool { transport?.revocationPending ?? false }
 
   init(builder: ReportSnapshotBuilder, consent: LocalConsentStore, healthData: HealthDataService?,
-    cache: AIReportCache, transport: (any AIReportTransport)? = nil, clock: @escaping () -> Date = { .now }) {
+    cache: AIReportCache, transport: (any AIReportTransport)? = nil,
+    onDeviceGenerator: (any ReportGenerating)? = nil, clock: @escaping () -> Date = { .now }) {
     self.builder = builder
     self.consent = consent
     self.cache = cache
     self.transport = transport
+    self.onDeviceGenerator = onDeviceGenerator
     self.clock = clock
     // Register actual persistent AND in-memory stores. Explicit disconnect invokes both.
     healthData?.addDerivedDataInvalidator(cache)
@@ -73,6 +77,58 @@ final class AIReportService: HealthDerivedDataInvalidating {
     if record?.isGranted != true || record?.version != LocalConsentStore.aiConsentVersion {
       do { try transport?.cancelAndMarkRevocation() } catch { failure = .storage }
     }
+  }
+
+  /// Navigation/foreground refresh only reads an exact matching cache or computes a rule report.
+  /// It cannot invoke either transport or the model runtime.
+  @discardableResult
+  func refreshOnDevice(_ input: ReportInput, allowAI: Bool) -> AIReportContent {
+    cancelActive()
+    failure = nil
+    let safe = safeLocalInput(input, type: input.reportType, asOf: input.asOf)
+    let cached = allowAI ? try? cache.currentOnDevice(safe, now: clock()) : nil
+    let content = cached ?? localContent(safe)
+    latest = content
+    return content
+  }
+
+  /// Only an explicit UI action enters this path. Local inference never grants cloud consent.
+  func generateOnDevice(_ input: ReportInput,
+    validateCurrent: @escaping @MainActor () throws -> Void) async -> AIReportContent {
+    let fallback = safeLocalInput(input, type: input.reportType, asOf: input.asOf)
+    guard let onDeviceGenerator, active == nil, !Task.isCancelled else { return localContent(fallback) }
+    let capturedGeneration = generation, requestID = UUID()
+    let task = Task { @MainActor [self] in
+      do {
+        try validateCurrent()
+        let result = try await onDeviceGenerator.generate(input)
+        try Task.checkCancellation()
+        guard generation == capturedGeneration else { throw AIReportFailure.cancelled }
+        try validateCurrent()
+        try ReportResultValidator.validateOnDevice(result, input: input, now: clock())
+        let content = AIReportContent(report: result, input: input, dependsOnHealth: Self.dependsOnHealth(input))
+        try cache.save(content)
+        failure = nil
+        return content
+      } catch {
+        if generation == capturedGeneration {
+          failure = error as? AIReportFailure ?? (Task.isCancelled ? .cancelled : .unavailable)
+        }
+        return localContent(generation == capturedGeneration ? fallback
+          : safeLocalInput(nil, type: input.reportType, asOf: input.asOf))
+      }
+    }
+    active = ("on-device|" + input.inputFingerprint, requestID, task)
+    let content = await withTaskCancellationHandler { await task.value } onCancel: { task.cancel() }
+    if active?.id == requestID { active = nil }
+    if generation == capturedGeneration { latest = content }
+    return content
+  }
+
+  func clearCurrent() { cancelActive(); latest = nil }
+  func deleteReport(id: String) throws {
+    if latest?.id == id { clearCurrent() }
+    try cache.delete(reportID: id)
   }
 
   /// localInput is only for immediate offline fallback. It is NEVER sent to the proxy.

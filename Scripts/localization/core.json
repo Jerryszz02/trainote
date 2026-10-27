@@ -1825,7 +1825,7 @@
     "comment": "Application-owned core screen text"
   },
   "core.primary.muscle.group": {
-    "en": "Primary muscle group",
+    "en": "Main assisting muscle group",
     "zh-Hans": "主要协同肌群",
     "comment": "Application-owned core screen text"
   },

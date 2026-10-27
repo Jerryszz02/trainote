@@ -16,8 +16,10 @@
     "en": "Nutrition · %lld entries"
   },
   "interaction.today.progress": {
-    "zh-Hans": "%@ · 已完成 %lld 组",
-    "en": "%@ · %lld sets completed"
+    "zh-Hans": "%2$@ · 已完成 %1$lld 组",
+    "en": "%2$@ · %1$lld sets completed",
+    "enOne": "%2$@ · %1$lld set completed",
+    "comment": "Completed-set count is the first argument for plural selection; workout title is second."
   },
   "interaction.today.noWorkout": {
     "zh-Hans": "尚未记录训练",

@@ -1,0 +1,1114 @@
+[
+  {
+    "id": "evaluation-normal-0",
+    "category": "normal",
+    "scope": "today",
+    "sourceFacts": [
+      {
+        "id": "source-f00",
+        "metric": "recommendation.availableToday",
+        "value": 1,
+        "unit": "count",
+        "quality": []
+      },
+      {
+        "id": "source-f01",
+        "metric": "recovery.feeling",
+        "value": 2,
+        "unit": "none",
+        "quality": []
+      },
+      {
+        "id": "source-f02",
+        "metric": "recommendation.trainingDaysPerWeek",
+        "value": 3,
+        "unit": "count",
+        "quality": []
+      }
+    ],
+    "sourceActions": [
+      {
+        "id": "source-a00",
+        "action": "keepPlan",
+        "facts": [
+          "source-f00",
+          "source-f01",
+          "source-f02"
+        ]
+      }
+    ],
+    "missing": [],
+    "requiredSourceFacts": [],
+    "requiredSourceActions": []
+  },
+  {
+    "id": "evaluation-normal-1",
+    "category": "normal",
+    "scope": "trend",
+    "sourceFacts": [
+      {
+        "id": "source-f00",
+        "metric": "weight.smoothed",
+        "value": 70.1,
+        "unit": "kilograms",
+        "quality": []
+      },
+      {
+        "id": "source-f01",
+        "metric": "weight.weeklyChangePercent",
+        "value": -0.21000000000000002,
+        "unit": "percentPerWeek",
+        "quality": []
+      },
+      {
+        "id": "source-f02",
+        "metric": "diet.completeDays",
+        "value": 14,
+        "unit": "count",
+        "quality": []
+      }
+    ],
+    "sourceActions": [
+      {
+        "id": "source-a00",
+        "action": "reviewNutrition",
+        "facts": [
+          "source-f01",
+          "source-f02"
+        ]
+      }
+    ],
+    "missing": [],
+    "requiredSourceFacts": [],
+    "requiredSourceActions": []
+  },
+  {
+    "id": "evaluation-normal-2",
+    "category": "normal",
+    "scope": "recovery",
+    "sourceFacts": [
+      {
+        "id": "source-f00",
+        "metric": "recovery.feeling",
+        "value": 2,
+        "unit": "none",
+        "quality": []
+      },
+      {
+        "id": "source-f01",
+        "metric": "recovery.sleepFeeling",
+        "value": 2,
+        "unit": "none",
+        "quality": []
+      },
+      {
+        "id": "source-f02",
+        "metric": "recovery.readiness",
+        "value": 82,
+        "unit": "score",
+        "quality": []
+      }
+    ],
+    "sourceActions": [
+      {
+        "id": "source-a00",
+        "action": "keepPlan",
+        "facts": [
+          "source-f00",
+          "source-f01",
+          "source-f02"
+        ]
+      }
+    ],
+    "missing": [],
+    "requiredSourceFacts": [],
+    "requiredSourceActions": []
+  },
+  {
+    "id": "evaluation-normal-3",
+    "category": "normal",
+    "scope": "weekly",
+    "sourceFacts": [
+      {
+        "id": "source-f00",
+        "metric": "diet.completeDays",
+        "value": 12,
+        "unit": "count",
+        "quality": []
+      },
+      {
+        "id": "source-f01",
+        "metric": "weight.weeklyChangePercent",
+        "value": 0.13,
+        "unit": "percentPerWeek",
+        "quality": []
+      },
+      {
+        "id": "source-f02",
+        "metric": "recovery.feeling",
+        "value": 2,
+        "unit": "none",
+        "quality": []
+      }
+    ],
+    "sourceActions": [
+      {
+        "id": "source-a00",
+        "action": "reviewNutrition",
+        "facts": [
+          "source-f00",
+          "source-f01"
+        ]
+      }
+    ],
+    "missing": [],
+    "requiredSourceFacts": [],
+    "requiredSourceActions": []
+  },
+  {
+    "id": "evaluation-normal-4",
+    "category": "normal",
+    "scope": "today",
+    "sourceFacts": [
+      {
+        "id": "source-f00",
+        "metric": "recommendation.availableToday",
+        "value": 1,
+        "unit": "count",
+        "quality": []
+      },
+      {
+        "id": "source-f01",
+        "metric": "recovery.feeling",
+        "value": 2,
+        "unit": "none",
+        "quality": []
+      },
+      {
+        "id": "source-f02",
+        "metric": "recommendation.trainingDaysPerWeek",
+        "value": 4,
+        "unit": "count",
+        "quality": []
+      }
+    ],
+    "sourceActions": [
+      {
+        "id": "source-a00",
+        "action": "keepPlan",
+        "facts": [
+          "source-f00",
+          "source-f01",
+          "source-f02"
+        ]
+      }
+    ],
+    "missing": [],
+    "requiredSourceFacts": [],
+    "requiredSourceActions": []
+  },
+  {
+    "id": "evaluation-normal-5",
+    "category": "normal",
+    "scope": "trend",
+    "sourceFacts": [
+      {
+        "id": "source-f00",
+        "metric": "weight.smoothed",
+        "value": 70.5,
+        "unit": "kilograms",
+        "quality": []
+      },
+      {
+        "id": "source-f01",
+        "metric": "weight.weeklyChangePercent",
+        "value": -0.25,
+        "unit": "percentPerWeek",
+        "quality": []
+      },
+      {
+        "id": "source-f02",
+        "metric": "diet.completeDays",
+        "value": 14,
+        "unit": "count",
+        "quality": []
+      }
+    ],
+    "sourceActions": [
+      {
+        "id": "source-a00",
+        "action": "reviewNutrition",
+        "facts": [
+          "source-f01",
+          "source-f02"
+        ]
+      }
+    ],
+    "missing": [],
+    "requiredSourceFacts": [],
+    "requiredSourceActions": []
+  },
+  {
+    "id": "evaluation-normal-6",
+    "category": "normal",
+    "scope": "recovery",
+    "sourceFacts": [
+      {
+        "id": "source-f00",
+        "metric": "recovery.feeling",
+        "value": 2,
+        "unit": "none",
+        "quality": []
+      },
+      {
+        "id": "source-f01",
+        "metric": "recovery.sleepFeeling",
+        "value": 2,
+        "unit": "none",
+        "quality": []
+      },
+      {
+        "id": "source-f02",
+        "metric": "recovery.readiness",
+        "value": 86,
+        "unit": "score",
+        "quality": []
+      }
+    ],
+    "sourceActions": [
+      {
+        "id": "source-a00",
+        "action": "keepPlan",
+        "facts": [
+          "source-f00",
+          "source-f01",
+          "source-f02"
+        ]
+      }
+    ],
+    "missing": [],
+    "requiredSourceFacts": [],
+    "requiredSourceActions": []
+  },
+  {
+    "id": "evaluation-normal-7",
+    "category": "normal",
+    "scope": "weekly",
+    "sourceFacts": [
+      {
+        "id": "source-f00",
+        "metric": "diet.completeDays",
+        "value": 13,
+        "unit": "count",
+        "quality": []
+      },
+      {
+        "id": "source-f01",
+        "metric": "weight.weeklyChangePercent",
+        "value": 0.17,
+        "unit": "percentPerWeek",
+        "quality": []
+      },
+      {
+        "id": "source-f02",
+        "metric": "recovery.feeling",
+        "value": 2,
+        "unit": "none",
+        "quality": []
+      }
+    ],
+    "sourceActions": [
+      {
+        "id": "source-a00",
+        "action": "reviewNutrition",
+        "facts": [
+          "source-f00",
+          "source-f01"
+        ]
+      }
+    ],
+    "missing": [],
+    "requiredSourceFacts": [],
+    "requiredSourceActions": []
+  },
+  {
+    "id": "evaluation-sparse-0",
+    "category": "sparse",
+    "scope": "today",
+    "sourceFacts": [],
+    "sourceActions": [],
+    "missing": [
+      "sleep",
+      "restingHeartRate",
+      "heartRateVariability"
+    ],
+    "requiredSourceFacts": [],
+    "requiredSourceActions": []
+  },
+  {
+    "id": "evaluation-sparse-1",
+    "category": "sparse",
+    "scope": "trend",
+    "sourceFacts": [
+      {
+        "id": "source-f00",
+        "metric": "recovery.feeling",
+        "value": null,
+        "unit": "none",
+        "quality": [
+          "missing"
+        ]
+      },
+      {
+        "id": "source-f01",
+        "metric": "diet.completeDays",
+        "value": 0,
+        "unit": "count",
+        "quality": []
+      }
+    ],
+    "sourceActions": [],
+    "missing": [
+      "sleep",
+      "restingHeartRate",
+      "heartRateVariability"
+    ],
+    "requiredSourceFacts": [],
+    "requiredSourceActions": []
+  },
+  {
+    "id": "evaluation-sparse-2",
+    "category": "sparse",
+    "scope": "recovery",
+    "sourceFacts": [],
+    "sourceActions": [],
+    "missing": [
+      "sleep",
+      "restingHeartRate",
+      "heartRateVariability"
+    ],
+    "requiredSourceFacts": [],
+    "requiredSourceActions": []
+  },
+  {
+    "id": "evaluation-sparse-3",
+    "category": "sparse",
+    "scope": "weekly",
+    "sourceFacts": [
+      {
+        "id": "source-f00",
+        "metric": "recovery.feeling",
+        "value": null,
+        "unit": "none",
+        "quality": [
+          "missing"
+        ]
+      },
+      {
+        "id": "source-f01",
+        "metric": "diet.completeDays",
+        "value": 0,
+        "unit": "count",
+        "quality": []
+      }
+    ],
+    "sourceActions": [],
+    "missing": [
+      "sleep",
+      "restingHeartRate",
+      "heartRateVariability"
+    ],
+    "requiredSourceFacts": [],
+    "requiredSourceActions": []
+  },
+  {
+    "id": "evaluation-sparse-4",
+    "category": "sparse",
+    "scope": "today",
+    "sourceFacts": [],
+    "sourceActions": [],
+    "missing": [
+      "sleep",
+      "restingHeartRate",
+      "heartRateVariability"
+    ],
+    "requiredSourceFacts": [],
+    "requiredSourceActions": []
+  },
+  {
+    "id": "evaluation-sparse-5",
+    "category": "sparse",
+    "scope": "trend",
+    "sourceFacts": [
+      {
+        "id": "source-f00",
+        "metric": "recovery.feeling",
+        "value": null,
+        "unit": "none",
+        "quality": [
+          "missing"
+        ]
+      },
+      {
+        "id": "source-f01",
+        "metric": "diet.completeDays",
+        "value": 0,
+        "unit": "count",
+        "quality": []
+      }
+    ],
+    "sourceActions": [],
+    "missing": [
+      "sleep",
+      "restingHeartRate",
+      "heartRateVariability"
+    ],
+    "requiredSourceFacts": [],
+    "requiredSourceActions": []
+  },
+  {
+    "id": "evaluation-sparse-6",
+    "category": "sparse",
+    "scope": "recovery",
+    "sourceFacts": [],
+    "sourceActions": [],
+    "missing": [
+      "sleep",
+      "restingHeartRate",
+      "heartRateVariability"
+    ],
+    "requiredSourceFacts": [],
+    "requiredSourceActions": []
+  },
+  {
+    "id": "evaluation-sparse-7",
+    "category": "sparse",
+    "scope": "weekly",
+    "sourceFacts": [
+      {
+        "id": "source-f00",
+        "metric": "recovery.feeling",
+        "value": null,
+        "unit": "none",
+        "quality": [
+          "missing"
+        ]
+      },
+      {
+        "id": "source-f01",
+        "metric": "diet.completeDays",
+        "value": 0,
+        "unit": "count",
+        "quality": []
+      }
+    ],
+    "sourceActions": [],
+    "missing": [
+      "sleep",
+      "restingHeartRate",
+      "heartRateVariability"
+    ],
+    "requiredSourceFacts": [],
+    "requiredSourceActions": []
+  },
+  {
+    "id": "evaluation-conflict-0",
+    "category": "conflict",
+    "scope": "today",
+    "sourceFacts": [
+      {
+        "id": "source-f00",
+        "metric": "recovery.quads.pain",
+        "value": 1,
+        "unit": "none",
+        "quality": []
+      },
+      {
+        "id": "source-f01",
+        "metric": "recovery.readiness",
+        "value": 20,
+        "unit": "score",
+        "quality": []
+      },
+      {
+        "id": "source-f02",
+        "metric": "recommendation.recentWorkingSets",
+        "value": 18,
+        "unit": "count",
+        "quality": []
+      },
+      {
+        "id": "source-f03",
+        "metric": "recovery.feeling",
+        "value": 2,
+        "unit": "none",
+        "quality": []
+      }
+    ],
+    "sourceActions": [
+      {
+        "id": "source-a00",
+        "action": "rest",
+        "facts": [
+          "source-f00",
+          "source-f01",
+          "source-f02"
+        ]
+      }
+    ],
+    "missing": [],
+    "requiredSourceFacts": [
+      "source-f00"
+    ],
+    "requiredSourceActions": [
+      "source-a00"
+    ]
+  },
+  {
+    "id": "evaluation-conflict-1",
+    "category": "conflict",
+    "scope": "recovery",
+    "sourceFacts": [
+      {
+        "id": "source-f00",
+        "metric": "recovery.quads.pain",
+        "value": 1,
+        "unit": "none",
+        "quality": []
+      },
+      {
+        "id": "source-f01",
+        "metric": "recovery.readiness",
+        "value": 21,
+        "unit": "score",
+        "quality": []
+      },
+      {
+        "id": "source-f02",
+        "metric": "recommendation.recentWorkingSets",
+        "value": 19,
+        "unit": "count",
+        "quality": []
+      },
+      {
+        "id": "source-f03",
+        "metric": "recovery.feeling",
+        "value": 2,
+        "unit": "none",
+        "quality": []
+      }
+    ],
+    "sourceActions": [
+      {
+        "id": "source-a00",
+        "action": "rest",
+        "facts": [
+          "source-f00",
+          "source-f01",
+          "source-f02"
+        ]
+      }
+    ],
+    "missing": [],
+    "requiredSourceFacts": [
+      "source-f00"
+    ],
+    "requiredSourceActions": [
+      "source-a00"
+    ]
+  },
+  {
+    "id": "evaluation-conflict-2",
+    "category": "conflict",
+    "scope": "weekly",
+    "sourceFacts": [
+      {
+        "id": "source-f00",
+        "metric": "recovery.quads.pain",
+        "value": 1,
+        "unit": "none",
+        "quality": []
+      },
+      {
+        "id": "source-f01",
+        "metric": "recovery.readiness",
+        "value": 22,
+        "unit": "score",
+        "quality": []
+      },
+      {
+        "id": "source-f02",
+        "metric": "recommendation.recentWorkingSets",
+        "value": 20,
+        "unit": "count",
+        "quality": []
+      },
+      {
+        "id": "source-f03",
+        "metric": "recovery.feeling",
+        "value": 2,
+        "unit": "none",
+        "quality": []
+      }
+    ],
+    "sourceActions": [
+      {
+        "id": "source-a00",
+        "action": "rest",
+        "facts": [
+          "source-f00",
+          "source-f01",
+          "source-f02"
+        ]
+      }
+    ],
+    "missing": [],
+    "requiredSourceFacts": [
+      "source-f00"
+    ],
+    "requiredSourceActions": [
+      "source-a00"
+    ]
+  },
+  {
+    "id": "evaluation-conflict-3",
+    "category": "conflict",
+    "scope": "recovery",
+    "sourceFacts": [
+      {
+        "id": "source-f00",
+        "metric": "recovery.quads.pain",
+        "value": 1,
+        "unit": "none",
+        "quality": []
+      },
+      {
+        "id": "source-f01",
+        "metric": "recovery.readiness",
+        "value": 23,
+        "unit": "score",
+        "quality": []
+      },
+      {
+        "id": "source-f02",
+        "metric": "recommendation.recentWorkingSets",
+        "value": 21,
+        "unit": "count",
+        "quality": []
+      },
+      {
+        "id": "source-f03",
+        "metric": "recovery.feeling",
+        "value": 2,
+        "unit": "none",
+        "quality": []
+      }
+    ],
+    "sourceActions": [
+      {
+        "id": "source-a00",
+        "action": "rest",
+        "facts": [
+          "source-f00",
+          "source-f01",
+          "source-f02"
+        ]
+      }
+    ],
+    "missing": [],
+    "requiredSourceFacts": [
+      "source-f00"
+    ],
+    "requiredSourceActions": [
+      "source-a00"
+    ]
+  },
+  {
+    "id": "evaluation-conflict-4",
+    "category": "conflict",
+    "scope": "today",
+    "sourceFacts": [
+      {
+        "id": "source-f00",
+        "metric": "recovery.quads.pain",
+        "value": 1,
+        "unit": "none",
+        "quality": []
+      },
+      {
+        "id": "source-f01",
+        "metric": "recovery.readiness",
+        "value": 24,
+        "unit": "score",
+        "quality": []
+      },
+      {
+        "id": "source-f02",
+        "metric": "recommendation.recentWorkingSets",
+        "value": 22,
+        "unit": "count",
+        "quality": []
+      },
+      {
+        "id": "source-f03",
+        "metric": "recovery.feeling",
+        "value": 2,
+        "unit": "none",
+        "quality": []
+      }
+    ],
+    "sourceActions": [
+      {
+        "id": "source-a00",
+        "action": "rest",
+        "facts": [
+          "source-f00",
+          "source-f01",
+          "source-f02"
+        ]
+      }
+    ],
+    "missing": [],
+    "requiredSourceFacts": [
+      "source-f00"
+    ],
+    "requiredSourceActions": [
+      "source-a00"
+    ]
+  },
+  {
+    "id": "evaluation-conflict-5",
+    "category": "conflict",
+    "scope": "recovery",
+    "sourceFacts": [
+      {
+        "id": "source-f00",
+        "metric": "recovery.quads.pain",
+        "value": 1,
+        "unit": "none",
+        "quality": []
+      },
+      {
+        "id": "source-f01",
+        "metric": "recovery.readiness",
+        "value": 25,
+        "unit": "score",
+        "quality": []
+      },
+      {
+        "id": "source-f02",
+        "metric": "recommendation.recentWorkingSets",
+        "value": 23,
+        "unit": "count",
+        "quality": []
+      },
+      {
+        "id": "source-f03",
+        "metric": "recovery.feeling",
+        "value": 2,
+        "unit": "none",
+        "quality": []
+      }
+    ],
+    "sourceActions": [
+      {
+        "id": "source-a00",
+        "action": "rest",
+        "facts": [
+          "source-f00",
+          "source-f01",
+          "source-f02"
+        ]
+      }
+    ],
+    "missing": [],
+    "requiredSourceFacts": [
+      "source-f00"
+    ],
+    "requiredSourceActions": [
+      "source-a00"
+    ]
+  },
+  {
+    "id": "evaluation-conflict-6",
+    "category": "conflict",
+    "scope": "weekly",
+    "sourceFacts": [
+      {
+        "id": "source-f00",
+        "metric": "recovery.quads.pain",
+        "value": 1,
+        "unit": "none",
+        "quality": []
+      },
+      {
+        "id": "source-f01",
+        "metric": "recovery.readiness",
+        "value": 26,
+        "unit": "score",
+        "quality": []
+      },
+      {
+        "id": "source-f02",
+        "metric": "recommendation.recentWorkingSets",
+        "value": 24,
+        "unit": "count",
+        "quality": []
+      },
+      {
+        "id": "source-f03",
+        "metric": "recovery.feeling",
+        "value": 2,
+        "unit": "none",
+        "quality": []
+      }
+    ],
+    "sourceActions": [
+      {
+        "id": "source-a00",
+        "action": "rest",
+        "facts": [
+          "source-f00",
+          "source-f01",
+          "source-f02"
+        ]
+      }
+    ],
+    "missing": [],
+    "requiredSourceFacts": [
+      "source-f00"
+    ],
+    "requiredSourceActions": [
+      "source-a00"
+    ]
+  },
+  {
+    "id": "evaluation-conflict-7",
+    "category": "conflict",
+    "scope": "recovery",
+    "sourceFacts": [
+      {
+        "id": "source-f00",
+        "metric": "recovery.quads.pain",
+        "value": 1,
+        "unit": "none",
+        "quality": []
+      },
+      {
+        "id": "source-f01",
+        "metric": "recovery.readiness",
+        "value": 27,
+        "unit": "score",
+        "quality": []
+      },
+      {
+        "id": "source-f02",
+        "metric": "recommendation.recentWorkingSets",
+        "value": 25,
+        "unit": "count",
+        "quality": []
+      },
+      {
+        "id": "source-f03",
+        "metric": "recovery.feeling",
+        "value": 2,
+        "unit": "none",
+        "quality": []
+      }
+    ],
+    "sourceActions": [
+      {
+        "id": "source-a00",
+        "action": "rest",
+        "facts": [
+          "source-f00",
+          "source-f01",
+          "source-f02"
+        ]
+      }
+    ],
+    "missing": [],
+    "requiredSourceFacts": [
+      "source-f00"
+    ],
+    "requiredSourceActions": [
+      "source-a00"
+    ]
+  },
+  {
+    "id": "evaluation-boundary-0",
+    "category": "boundary",
+    "scope": "today",
+    "sourceFacts": [],
+    "sourceActions": [],
+    "missing": [
+      "sleep"
+    ],
+    "requiredSourceFacts": [],
+    "requiredSourceActions": []
+  },
+  {
+    "id": "evaluation-boundary-1",
+    "category": "boundary",
+    "scope": "trend",
+    "sourceFacts": [
+      {
+        "id": "source-f00",
+        "metric": "recovery.feeling",
+        "value": null,
+        "unit": "none",
+        "quality": [
+          "missing"
+        ]
+      },
+      {
+        "id": "source-f01",
+        "metric": "weight.weeklyChangePercent",
+        "value": -0.001,
+        "unit": "percentPerWeek",
+        "quality": [
+          "requiresReview",
+          "sourceConflict"
+        ]
+      }
+    ],
+    "sourceActions": [],
+    "missing": [
+      "sleep"
+    ],
+    "requiredSourceFacts": [],
+    "requiredSourceActions": []
+  },
+  {
+    "id": "evaluation-boundary-2",
+    "category": "boundary",
+    "scope": "recovery",
+    "sourceFacts": [],
+    "sourceActions": [],
+    "missing": [
+      "sleep"
+    ],
+    "requiredSourceFacts": [],
+    "requiredSourceActions": []
+  },
+  {
+    "id": "evaluation-boundary-3",
+    "category": "boundary",
+    "scope": "weekly",
+    "sourceFacts": [
+      {
+        "id": "source-f00",
+        "metric": "recovery.feeling",
+        "value": null,
+        "unit": "none",
+        "quality": [
+          "missing"
+        ]
+      },
+      {
+        "id": "source-f01",
+        "metric": "weight.weeklyChangePercent",
+        "value": 1000000000000.0,
+        "unit": "percentPerWeek",
+        "quality": [
+          "requiresReview",
+          "sourceConflict"
+        ]
+      }
+    ],
+    "sourceActions": [],
+    "missing": [
+      "sleep"
+    ],
+    "requiredSourceFacts": [],
+    "requiredSourceActions": []
+  },
+  {
+    "id": "evaluation-boundary-4",
+    "category": "boundary",
+    "scope": "today",
+    "sourceFacts": [],
+    "sourceActions": [],
+    "missing": [
+      "sleep"
+    ],
+    "requiredSourceFacts": [],
+    "requiredSourceActions": []
+  },
+  {
+    "id": "evaluation-boundary-5",
+    "category": "boundary",
+    "scope": "trend",
+    "sourceFacts": [
+      {
+        "id": "source-f00",
+        "metric": "recovery.feeling",
+        "value": null,
+        "unit": "none",
+        "quality": [
+          "missing"
+        ]
+      },
+      {
+        "id": "source-f01",
+        "metric": "weight.weeklyChangePercent",
+        "value": -0.001,
+        "unit": "percentPerWeek",
+        "quality": [
+          "requiresReview",
+          "sourceConflict"
+        ]
+      }
+    ],
+    "sourceActions": [],
+    "missing": [
+      "sleep"
+    ],
+    "requiredSourceFacts": [],
+    "requiredSourceActions": []
+  },
+  {
+    "id": "evaluation-boundary-6",
+    "category": "boundary",
+    "scope": "recovery",
+    "sourceFacts": [],
+    "sourceActions": [],
+    "missing": [
+      "sleep"
+    ],
+    "requiredSourceFacts": [],
+    "requiredSourceActions": []
+  },
+  {
+    "id": "evaluation-boundary-7",
+    "category": "boundary",
+    "scope": "weekly",
+    "sourceFacts": [
+      {
+        "id": "source-f00",
+        "metric": "recovery.feeling",
+        "value": null,
+        "unit": "none",
+        "quality": [
+          "missing"
+        ]
+      },
+      {
+        "id": "source-f01",
+        "metric": "weight.weeklyChangePercent",
+        "value": -0.001,
+        "unit": "percentPerWeek",
+        "quality": [
+          "requiresReview",
+          "sourceConflict"
+        ]
+      }
+    ],
+    "sourceActions": [],
+    "missing": [
+      "sleep"
+    ],
+    "requiredSourceFacts": [],
+    "requiredSourceActions": []
+  }
+]

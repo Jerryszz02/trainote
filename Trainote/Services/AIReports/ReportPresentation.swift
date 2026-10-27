@@ -4,7 +4,9 @@ import Foundation
 enum ReportPresentation {
   static func supports(_ report: ReportResult) -> Bool {
     report.schemaVersion == AnalysisContract.schemaVersion
-      && (report.promptVersion == AIReportPolicy.promptVersion || report.promptVersion == "fixture-v1")
+      && (report.promptVersion == AIReportPolicy.promptVersion
+        || (report.model == OnDeviceReportPolicy.model && report.promptVersion == OnDeviceReportPolicy.promptVersion)
+        || report.promptVersion == "fixture-v1")
   }
 
   static func summary(_ report: ReportResult) -> String {

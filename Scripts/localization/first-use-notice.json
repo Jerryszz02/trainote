@@ -1,0 +1,122 @@
+{
+  "notice.title": {
+    "en": "Privacy and use notice",
+    "zh-Hans": "隐私与使用须知"
+  },
+  "notice.agree": {
+    "en": "Agree and continue",
+    "zh-Hans": "同意并继续"
+  },
+  "notice.notNow": {
+    "en": "Not now",
+    "zh-Hans": "暂不同意"
+  },
+  "notice.restricted": {
+    "en": "Until you agree, recording, Health sync and new analysis are paused. Your existing data is preserved. You can read this notice again, export records, or delete local data below.",
+    "zh-Hans": "同意前暂停记录、健康同步和新分析。已有数据会保留，你可以重新阅读须知、导出记录或在下方删除本机数据。"
+  },
+  "notice.version": {
+    "en": "Notice version: %@",
+    "zh-Hans": "须知版本：%@"
+  },
+  "notice.saveError": {
+    "en": "The change could not be saved. Processing remains paused if acknowledgment was not saved. Please try again.",
+    "zh-Hans": "变更未能保存。若须知确认未保存，处理会继续暂停。请重试。"
+  },
+  "notice.view": {
+    "en": "Read privacy and use notice",
+    "zh-Hans": "查看隐私与使用须知"
+  },
+  "notice.withdraw": {
+    "en": "Withdraw notice acknowledgment",
+    "zh-Hans": "撤回须知确认"
+  },
+  "notice.withdrawHelp": {
+    "en": "This pauses recording, Health sync and analysis. It preserves your records, Health settings and on-device AI preference. You can export or delete data from the restricted page.",
+    "zh-Hans": "撤回会暂停记录、健康同步和分析，保留已有记录、健康设置及本机 AI 偏好。你仍可在受限页导出或删除数据。"
+  },
+  "notice.ai": {
+    "en": "Allow on-device AI reports",
+    "zh-Hans": "允许本机 AI 报告"
+  },
+  "notice.aiHelp": {
+    "en": "Generation starts only when you choose it. Turning this off cancels generation and shows rule reports. Saved AI reports remain available only when you open history and can be deleted. This does not authorize cloud AI or Apple Health.",
+    "zh-Hans": "仅在主动生成时运行。关闭会取消生成并显示规则报告；保存的 AI 报告仍可主动打开历史查看或删除。此开关不授权云端 AI 或 Apple 健康。"
+  },
+  "notice.deleteAll": {
+    "en": "Delete all records on this device",
+    "zh-Hans": "删除本机全部记录"
+  },
+  "notice.deleteAllHelp": {
+    "en": "This permanently removes manual records, goals, templates, imported Health cache and report history from Trainote. It does not delete original Apple Health data, exported copies or system backups. Export first if you need a copy.",
+    "zh-Hans": "这将永久删除 Trainote 内的手动记录、目标、模板、健康导入缓存和报告历史，不删除 Apple 健康原始数据、已导出副本或系统备份。如需保留，请先导出。"
+  },
+  "notice.deleted": {
+    "en": "Local data deleted.",
+    "zh-Hans": "本机数据已删除。"
+  },
+  "notice.deleteFailed": {
+    "en": "Deletion did not finish. Please retry. Some data may already have been removed.",
+    "zh-Hans": "删除未完成，请重试。部分数据可能已移除。"
+  },
+  "notice.summary": {
+    "en": "Welcome to Trainote. Your records stay on your device. Apple Health is optional. On-device AI runs only when you choose to generate a report and does not send records to a model provider. Reports are everyday fitness information and may miss relevant details. Read the full policy and use instructions below before continuing.",
+    "zh-Hans": "欢迎使用 Trainote。记录保存在设备上，Apple 健康为可选连接。本机 AI 仅在主动生成报告时运行，不把记录发送给模型供应商。报告提供日常健身参考，可能遗漏重点。继续前请阅读下方完整政策与使用说明。"
+  },
+  "notice.records.title": {
+    "en": "Records and system backups",
+    "zh-Hans": "记录与系统备份"
+  },
+  "notice.records.body": {
+    "en": "Workouts, meals, templates, nutrition goals, body information, weight and check-ins you enter are stored on your device. No account is required. Trainote has no advertising, tracking, third-party analytics or developer cloud-sync service and does not sell your records. Device migration and system backups depend on your iOS and Apple Account settings; the developer cannot access them.",
+    "zh-Hans": "你填写的训练、饮食、模板、营养目标、身体资料、体重和体感保存在设备上，无须账号。Trainote 没有广告、追踪、第三方分析或开发者云同步服务，不出售记录。设备迁移与系统备份取决于 iOS 和 Apple Account 设置，开发者无法访问这些备份。"
+  },
+  "notice.health.title": {
+    "en": "Optional Apple Health",
+    "zh-Hans": "可选 Apple 健康"
+  },
+  "notice.health.body": {
+    "en": "Only choosing Connect Health opens the separate system read-permission request. You may share weight, sleep, resting heart rate, HRV SDNN, steps, active energy and workouts for local trend and recovery analysis, or decline and use manual records. Trainote does not write to Apple Health. A completed request does not prove read access or available samples. Imported samples and read progress are excluded from system and JSON backups. Each sync removes samples older than 90 days; without sync they can remain until the next sync or deletion. Sync depends on foreground activity and system notifications and is not continuously live.",
+    "zh-Hans": "仅主动连接健康时才会单独申请系统读取权限。你可以提供体重、睡眠、静息心率、HRV SDNN、步数、活动能量和训练用于本机趋势与恢复分析，也可拒绝并只用手动记录。Trainote 不写入 Apple 健康。请求完成不代表已获读取权限或有样本。导入样本和读取进度不进入系统或 JSON 备份。每次同步移除超过 90 天的样本；未同步时可能保留至下次同步或删除。同步依赖前台活动与系统通知，不保证持续实时。"
+  },
+  "notice.reports.title": {
+    "en": "Rules and on-device AI",
+    "zh-Hans": "规则与本机 AI"
+  },
+  "notice.reports.body": {
+    "en": "Rules calculate facts and permitted suggestions locally. Only an explicit generation action loads the bundled model to select from those facts and suggestions. Records are not sent to an AI provider. Invalid output, cancellation or unavailable resources fall back to rules. AI can omit relevant details; check original records. Reading or generating a report never changes goals or starts a workout: adopting a suggestion and confirming a workout are separate actions. Settings has an independent AI switch. Turning it off cancels generation and shows rules; historical AI reports are read-only when opened and may be deleted. This notice does not authorize cloud AI. Any future third-party sharing requires a new explanation of data, purpose and recipient and applicable consent.",
+    "zh-Hans": "规则在本机计算事实及允许的建议。仅主动生成时加载内置模型，从这些事实和建议中选择，不向 AI 供应商发送记录。输出无效、取消或资源不可用时回退规则。AI 可能遗漏重点，请核对原始记录。阅读或生成报告不会修改目标或开始训练，采用建议与确认训练是独立动作。设置有独立 AI 开关；关闭会取消生成并显示规则，历史 AI 报告仅在主动打开时只读查看，可删除。本须知不授权云端 AI。未来如向第三方分享，须重新说明数据、用途、接收方并取得相应同意。"
+  },
+  "notice.control.title": {
+    "en": "Acknowledgment, withdrawal and deletion",
+    "zh-Hans": "确认、撤回与删除"
+  },
+  "notice.control.body": {
+    "en": "Agreeing saves this notice version and time locally, excluded from backups. It does not grant Health permission, start AI or adopt advice. Settings lets you read and withdraw acknowledgment. Withdrawal pauses new recording, sync and analysis while preserving records and separate preferences. The restricted page allows export, deletion of local records and disconnection with Health-cache deletion. Disconnecting stops sync and removes imported samples, progress and dependent reports; manual records and original Apple Health data remain. System permission changes alone do not erase cached data. Delete report history separately in Settings. Deleting the app (rather than offloading it) removes local app data. Exported copies and system backups must be managed where stored. A report validity period is not a deletion deadline. Confirmation is an acknowledgment of this processing, not a waiver of developer responsibility.",
+    "zh-Hans": "同意会在本机保存须知版本与时间并排除备份，不授予健康权限、不启动 AI、不采用建议。设置中可查看及撤回确认。撤回暂停新记录、同步和分析，保留记录和独立偏好；受限页仍可导出、删除本机记录或断开健康并清除缓存。断开会停止同步、移除导入样本、进度及依赖报告，保留手动记录与 Apple 健康原始数据。仅在系统修改权限不会清除缓存。设置可单独删除报告历史。删除 App 而非卸载保留数据会移除本机 App 数据；导出副本及系统备份须在其保存位置管理。报告有效期不是删除期限。点击确认是知悉当前处理方式，不代表免除开发者责任。"
+  },
+  "notice.backup.title": {
+    "en": "Exports, restore and external links",
+    "zh-Hans": "导出、恢复与外链"
+  },
+  "notice.backup.body": {
+    "en": "JSON v2 backup includes manual records, templates, goals and revision history; v1 and v2 restore adds missing IDs without overwriting existing records. It excludes Health imports, read progress, Health/cloud consent, notice acknowledgment, AI preference, credentials and derived reports. A new device requires acknowledgment again. You choose the export destination; iCloud Drive or other storage then handles that copy. Trainote does not automatically upload it. Keep backups private. Opening a resource or support link visits that service under its own policy. GitHub Issues feedback can be public; share only redacted reproduction information, never health records, full backups, passwords or credentials. Support: shen20060206@163.com or https://github.com/Jerryszz02/trainote/issues.",
+    "zh-Hans": "v2 JSON 备份包含手动记录、模板、目标及变更历史；恢复支持 v1/v2，仅添加缺少的 ID，不覆盖已有记录。备份不含健康导入、读取进度、健康/云端同意、须知确认、AI 偏好、凭据或派生报告，新设备须重新确认。导出位置由你选择，iCloud Drive 等服务随后处理该副本；Trainote 不自动上传，请私密保管。主动打开资源或支持链接会访问相应服务并适用对方政策。GitHub Issues 反馈可能公开，请只提供脱敏复现信息，不提交健康记录、完整备份、密码或凭据。支持邮箱：shen20060206@163.com；问题反馈：https://github.com/Jerryszz02/trainote/issues。"
+  },
+  "notice.use.title": {
+    "en": "Use and suitability",
+    "zh-Hans": "使用与适用范围"
+  },
+  "notice.use.body": {
+    "en": "Start a workout from Today or Training, add exercises and complete sets; return to an unfinished workout later. Log meals using per-serving or per-100-g nutrition and actual portions. Unknown data is not zero. Review original records and completeness before using trends or recovery indicators. General nutrition and recovery suggestions concern everyday fitness for healthy adults; do not assume suitability for children, pregnancy, illness or special health needs. Reports and recovery indicators are not medical measurements, diagnosis or treatment. Seek qualified care for symptoms or medical decisions. You control whether to adopt suggestions; changes to targets and starting workouts require their own confirmation.",
+    "zh-Hans": "从今日或训练开始训练，添加动作并完成组；未结束训练可稍后继续。饮食按每份或每 100 克营养与实际份量记录。未知数据不等于零，使用趋势或恢复指标前请核对原始记录与完整度。通用营养与恢复建议适用于健康成人日常健身，不应推定适合儿童、孕期、疾病或特殊健康需求。报告和恢复指标不是医学检测、诊断或治疗；出现症状或需要医疗决策时请寻求专业帮助。是否采用建议由你决定，修改目标和开始训练需各自确认。"
+  },
+  "notice.aiHelpTitle": {
+    "en": "AI reports",
+    "zh-Hans": "AI 报告"
+  },
+  "notice.supportEmail": {
+    "en": "Email support: shen20060206@163.com",
+    "zh-Hans": "支持邮箱：shen20060206@163.com"
+  }
+}

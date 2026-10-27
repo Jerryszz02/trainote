@@ -1,0 +1,50 @@
+{
+  "localAI.report.generate": {
+    "en": "Generate on-device AI report",
+    "zh-Hans": "生成本机 AI 报告"
+  },
+  "localAI.report.generating": {
+    "en": "Loading and generating on this device…",
+    "zh-Hans": "正在本机加载并生成…"
+  },
+  "localAI.report.cancel": {
+    "en": "Cancel generation",
+    "zh-Hans": "取消生成"
+  },
+  "localAI.report.dismiss": {
+    "en": "OK",
+    "zh-Hans": "好"
+  },
+  "localAI.report.explanation": {
+    "en": "Only this button runs the model. Your records stay on your device.",
+    "zh-Hans": "仅点击生成时运行模型，记录留在你的设备上。"
+  },
+  "localAI.report.disabled": {
+    "en": "On-device AI is off. You can enable it in Settings; rule reports remain available.",
+    "zh-Hans": "本机 AI 已关闭，可在设置中开启；规则报告仍可使用。"
+  },
+  "localAI.report.fallback": {
+    "en": "The on-device report could not be completed. A rule report is shown; you can try again.",
+    "zh-Hans": "本机报告未能完成，已展示规则报告，你可以稍后重试。"
+  },
+  "localAI.report.title": {
+    "en": "On-device AI report",
+    "zh-Hans": "本机 AI 报告"
+  },
+  "localAI.report.source": {
+    "en": "Selected on this device by Qwen3 0.6B · Values and advice verified by local rules",
+    "zh-Hans": "Qwen3 0.6B 在本机挑选 · 数值与建议由本地规则校验"
+  },
+  "localAI.history.delete": {
+    "en": "Delete this report",
+    "zh-Hans": "删除这份报告"
+  },
+  "localAI.history.deleteConfirm": {
+    "en": "Delete this saved report? Your original records will remain.",
+    "zh-Hans": "删除这份历史报告？原始记录将保留。"
+  },
+  "localAI.history.deleteFailed": {
+    "en": "Report deletion failed. Please try again.",
+    "zh-Hans": "报告删除失败，请重试。"
+  }
+}

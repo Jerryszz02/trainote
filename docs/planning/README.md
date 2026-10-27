@@ -1,10 +1,10 @@
 # Trainote 规划索引
 
-## 当前首发规划（2026-10-26）
+## 当前首发实施（2026-10-27）
 
-用户已确认仅美区、简体中文与 English、免费、面向普通用户公开下载，AI 继续从记录中挑选重点事实和候选建议。10 月 26 日确认先试内置 0.6B，质量不足再评估 1B，并要求首次打开显示隐私/使用须知，主动同意后进入。本轮细化计划，完整首发验收标准后续再定；模型与须知均未实现，云端不是默认前提。
+用户已确认仅美区、简体中文与 English、免费、面向普通用户公开下载，AI 继续从记录中挑选重点事实和候选建议。10 月 26 日授权实施注册付费会员前的全部工作：先试内置 0.6B，质量不足再评估 1B，加入首次隐私/使用须知、主动生成与独立开关，并准备发布资料。当前独立工作树已完成本机模型和须知接入、本地回归、无签名 Release 归档及 28 张中英双尺寸截图；PR CI、真机及发布者资料验收仍待完成。具体结果与边界见 [实施记录](../app-store/on-device-implementation.md)；云端不是默认前提。
 
-先读 [端侧报告与首次使用须知详细计划](on-device-ai-and-first-use-plan.md)，包含试验顺序、代码接入、首次须知流程和会员后续步骤。[美区首发计划与端侧 AI 调研](../app-store/us-launch-plan.md)继续维护整体范围、资料准备和最小维护方案；[发布清单](../app-store/release-checklist.md)保留历史证据与提交事项。本次 fetch 确认 canonical `main` 与 `origin/main` 均为 `3167b11900c660e0306fb73a4afa88039b5153fd`；继续在 `agent/trainote-us-launch-plan` / [PR #20](https://github.com/Jerryszz02/trainote/pull/20) 更新，尚未合入或发布。
+先读 [端侧报告与首次使用须知详细计划](on-device-ai-and-first-use-plan.md)，包含试验顺序、代码接入、首次须知流程和会员后续步骤。[美区首发计划与端侧 AI 调研](../app-store/us-launch-plan.md)继续维护整体范围、资料准备和最小维护方案；[发布清单](../app-store/release-checklist.md)保留历史证据与提交事项。本次 fetch 确认计划 PR #20 已合并，canonical `main` 与 `origin/main` 为 `2970459`，新实施分支为 `agent/trainote-local-ai`。应用未发布；中英隐私/支持静态页已公开并验证，手机当前不可连接，真机性能待验。
 
 ## 项目是什么
 
@@ -18,13 +18,12 @@ Trainote 是一款以本地记录为基础的 iPhone 健身与饮食 App，记�
 
 ## 文档信息
 
-- 更新时间：2026-10-26（Europe/London）
-- 请求：细化先 0.6B 后按需 1B 的本机报告方案、首次须知同意入口；核对注册后没有付款入口的后续步骤。
-- 工作模式：调研与文档；核对远端默认分支、当前代码、模型/引擎官方资料、Apple 会员流程和用户当前注册页面，未操作手机或真实模型。
+- 更新时间：2026-10-27（Europe/London）
+- 请求：按已批准详细计划完成注册付费会员前的开发和材料；账号付款、TestFlight 与 App Store 提交后续处理。
+- 工作模式：独立实施分支；真实合成模型评估、产品接入、首次须知、测试与商店准备。
 - canonical 项目根目录：`/Users/jerryszz/Desktop/Projects/trainote`
-- 本次证据：启动/AppShell、启动与前台任务、独立 Health/AI consent、报告 transport/校验器/缓存和模型身份、备份边界；Qwen/Gemma、llama.cpp 与 Apple 会员/权限资料。须知门控和本机 runtime 均为拟议类型；代码事实与方案分开列在详细计划。本次不运行产品测试。
-- 当前核查：PR #20 仍打开，旧 head `a48f1e4` 的 [iOS CI](https://github.com/Jerryszz02/trainote/actions/runs/40126256303) 已通过；不是新须知或端侧模型的验证。用户已注册账号，但网页注册返回通用错误、账号页转至登录，付费会员状态待核实。
-- 本轮文档验证：规划索引/本地链接审计、Markdown diff 检查和跨文档状态核对；执行结果记录在本次 PR。本轮未修改两份现状 HTML，沿用 10 月 24 日的页面检查证据。
+- 当前基线：计划 PR #20 已合并 `2970459`；实现、当前测试与公开页面状态以 [实施记录](../app-store/on-device-implementation.md) 为准。配对手机不可连接，未进行真机性能或用户数据操作。
+- 当前选型：Qwen3-0.6B Q4_K_M + llama.cpp b11912；0.6B/Q8 对照、范围修复与压力回退证据见 [模型评估](../app-store/on-device-model-evaluation.md)。未启用1B或远端服务。
 - 计划阶段证据：Git refs/工作树、App 启动与导航、动作库/搜索、编辑保存、分析仓库/刷新、图片视频/3D 生命周期、设置/说明/报告文案、现有测试源文件、动作双语字段完整性，以及 devicectl 的设备/安装包/进程读取。计划阶段未运行应用测试或构建；初次双语分支的 Simulator 构建与测试结果见 [双语实施记录](localization-plan.md#11-本分支实施与验证2026-10-13)。未修改真机数据。
 - 历史工作树位置（不代表当前仍保留）：F 为 `/Users/jerryszz/.codex/worktrees/392a/trainote`；2026-10-03 文档收尾为 `/Users/jerryszz/.codex/worktrees/health-docs-closeout/trainote`。
 - 固定交付证据：F 最终 head `f24b903236bb067ac02d3192c64db50df69815c4` 的 [完整 CI 37098998968](https://github.com/Jerryszz02/trainote/actions/runs/37098998968) 于 13:46:36（Asia/Shanghai）通过 299/299（268 单元、31 UI，0 失败/跳过/预期失败）。PR #9 于 13:56:54 squash 为正式 main `06b25608da2dfed720698f91106f90c429070aea`；两者 tree 均为 `6c1a7ef258d9512b80f2613585cd9bee25e32e7c`。初始 `967fa5351838240b2bb6ca0c5cb8e777530e54c4`、依赖同步、历史失败及修复固定点见交付快照和交接。
@@ -60,7 +59,7 @@ F 实施记录（2026-10-03）：B/C/E 已实际连接，训练建议会复核�
 
 | 文档 | 用途 |
 | --- | --- |
-| [on-device-ai-and-first-use-plan.md](on-device-ai-and-first-use-plan.md) | 当前详细方案：0.6B / 必要时 1B、运行库与报告接入、首次须知、试验/测试与会员步骤；待审阅，未实施 |
+| [on-device-ai-and-first-use-plan.md](on-device-ai-and-first-use-plan.md) | 当前详细方案：0.6B / 必要时 1B、运行库与报告接入、首次须知、试验/测试与会员步骤；代码已实现，真机与发布边界见实施记录 |
 | [美区首发计划](../app-store/us-launch-plan.md) | 整体范围：已确认首发条件、模型调研、文案/商店准备、后续维护 |
 | [device-performance-plan.md](device-performance-plan.md) | 后台动作索引及定向回归已验证；真机基线与性能验收仍待完成 |
 | [localization-plan.md](localization-plan.md) | 已实现、本地自动验证通过：完整中英双语、语言设置、报告/动作呈现与兼容验收 |
@@ -88,7 +87,7 @@ F 实施记录（2026-10-03）：B/C/E 已实际连接，训练建议会复核�
 ## 配套文档与历史证据
 
 - [App Store 发布清单](../app-store/release-checklist.md)维护发布准备；发布前仍需核对实际权限和网络配置，当前不代表已获发布批准。
-- [隐私政策](../privacy/index.html)与[帮助支持](../support/index.html)本次已按当前无生成式 AI 的构建起草中英文内容，尚未公开部署；模型接入后再核对实际披露。
+- [隐私政策](../privacy/index.html)与[帮助支持](../support/index.html)已按当前随包本机 AI 候选构建更新中英文内容，并加入经确认的支持邮箱；公开地址核验单列在实施记录。
 - [1.1 测试计划](test-plan.md)中的带日期执行表是历史记录；当前测试结果应取对应 PR head 的 CI 和本地运行产物。
 - 新功能的工程验证、算法有效性、真实 AI 服务和发布条件分别见健康分析提案，不借用旧测试数量证明新功能。
 
@@ -110,9 +109,9 @@ F 实施记录（2026-10-03）：B/C/E 已实际连接，训练建议会复核�
 
 ## 当前约束与待确认
 
-- 三份体验实现 PR 已合并；本次细化首发模型与须知计划，按本轮详细方案审阅后再实施，不把文档交付当作 App 发布。
+- 三份历史体验 PR 已合并；本次已按用户批准计划实现本机报告与须知，工程交付与 App Store 发布分别记录。
 - 当前待确认：设备当前签名/可启动状态、Instruments 采样连通性、同设备同数据的 Release 性能证据；独立新用户验证、VoiceOver 与英文/大字号完整矩阵；四 Tab 是否值得采用，以及是否另行需要 kg/lb 单位切换。10 月 15 日安装记录已确认源码为 `64af1f2`，不能据此补出缺失的性能对比。
-- 首发待定：实际量化/引擎版本、兼容设备及是否需要 1B、账号主体与付费会员状态、普通用户分发与成人建议适用范围的衔接、是否补充支持邮箱。0.6B 优先顺序与首次须知同意入口已确认。完整验收标准后续再定；本轮未部署或外发健康数据。人体图/3D/媒体的实际包与真机表现仍需分别核查。
+- 本次已固定 Qwen3-0.6B Q4_K_M / llama.cpp b11912，已确认公开邮箱并发布中英隐私/支持页。待定项为兼容机型和真机性能、账号主体与会员状态、成人建议适用范围及完整首发验收；未外发健康数据。人体图/3D/媒体的真机表现继续分别核查。
 - 当前代码配置 Swift 5.9 language mode、最低 iOS 17；F 在 Xcode 26.6 / Swift 6.3.3 / iOS 26.5 及匹配 CI 的 iOS 26.4.1 独立 Simulator 验证，详细结果见交接。
 - A–F 的 `06b2560` 合并与 `f24b903` CI、2026-10-10 的开发签名准入合成测试/无签名构建均为历史记录。提案诊断基线为 `c970330…`，本性能实现以已合并计划的 `8b38059` 为起点；安装包即使版本号相同，也不能推定对应这一提交。后续改动须验证各自当前 head。
 - 临时 Bundle ID 为 `com.jerryszz.trainote`，正式分发前需要与 Apple Developer 账号中的标识一致。

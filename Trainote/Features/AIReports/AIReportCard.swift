@@ -11,13 +11,18 @@ struct AIReportCard: View {
   var body: some View {
     VStack(alignment: .leading, spacing: 12) {
       HStack {
-        Label(content.report.isLocalFallback ? L10n.text("health.aireportcard.basic.report.9a5716") : L10n.text("health.aireportcard.ai.reports.9885c1"), systemImage: "text.document")
+        Label(sourceLabel, systemImage: "text.document")
           .font(.headline)
         Spacer()
         if isHistory { Text(L10n.text("health.aireportcard.history.19e0e3")).font(.caption).foregroundStyle(.secondary) }
         else if content.isExpired(at: now) { Text(L10n.text("health.aireportcard.needs.update.30e81c")).font(.caption).foregroundStyle(.secondary) }
       }
       Text(ReportPresentation.summary(content.report))
+      if content.report.model == OnDeviceReportPolicy.model {
+        Text(L10n.text("localAI.report.source"))
+          .font(.caption).foregroundStyle(.secondary)
+          .accessibilityIdentifier("reports.source.onDevice")
+      }
       ForEach(Array(content.report.observations.enumerated()), id: \.offset) { _, observation in
         VStack(alignment: .leading, spacing: 4) {
           if let fact = content.input.facts.first(where: { observation.evidenceIDs.contains($0.id) }) {
@@ -39,5 +44,11 @@ struct AIReportCard: View {
     .padding()
     .background(.background.secondary, in: RoundedRectangle(cornerRadius: 16))
     .accessibilityElement(children: .contain)
+  }
+
+  private var sourceLabel: String {
+    if content.report.isLocalFallback { return L10n.text("health.aireportcard.basic.report.9a5716") }
+    if content.report.model == OnDeviceReportPolicy.model { return L10n.text("localAI.report.title") }
+    return L10n.text("health.aireportcard.ai.reports.9885c1")
   }
 }

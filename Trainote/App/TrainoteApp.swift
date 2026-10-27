@@ -6,6 +6,7 @@ import SwiftUI
 @MainActor
 struct TrainoteApp: App {
   @State private var catalog: ExerciseCatalog
+  @State private var firstUseNotice: FirstUseNoticeStore
   @State private var healthFoundation: HealthFoundation?
   @State private var healthAccess: HealthFeatureAccess?
   @State private var recoveryIntegration: HealthRecoveryIntegration?
@@ -17,7 +18,28 @@ struct TrainoteApp: App {
 
   init() {
     _catalog = State(initialValue: ExerciseCatalog())
-    let inMemory = ProcessInfo.processInfo.arguments.contains("-ui-testing")
+    #if DEBUG
+      let inMemory = ProcessInfo.processInfo.arguments.contains("-ui-testing")
+    #else
+      let inMemory = false
+    #endif
+    #if DEBUG
+      let noticeTestID = ProcessInfo.processInfo.environment["TRAINOTE_UI_NOTICE_ID"]
+        .flatMap(UUID.init(uuidString:)) ?? UUID()
+    #else
+      let noticeTestID = UUID()
+    #endif
+    let noticeDirectory = inMemory
+      ? FileManager.default.temporaryDirectory.appendingPathComponent("notice-test-\(noticeTestID.uuidString)")
+      : URL.applicationSupportDirectory.appendingPathComponent("FirstUseNotice", isDirectory: true)
+    let notice = FirstUseNoticeStore(directory: noticeDirectory)
+    #if DEBUG
+      // Existing UI suites exercise business flows; dedicated first-use tests opt in.
+      if inMemory && !ProcessInfo.processInfo.arguments.contains("-ui-testing-first-use") {
+        try? notice.accept()
+      }
+    #endif
+    _firstUseNotice = State(initialValue: notice)
     containerResult = Result {
       #if DEBUG
         if ProcessInfo.processInfo.arguments.contains("-ui-testing-readonly") {
@@ -32,6 +54,7 @@ struct TrainoteApp: App {
       #endif
       let container = try PersistenceController.makeContainer(inMemory: inMemory)
       #if DEBUG
+        if inMemory && StorePreviewData.enabled { try StorePreviewData.seed(container) }
         if inMemory && ProcessInfo.processInfo.arguments.contains("-ui-testing-legacy-goal") {
           // An upgraded 1.0 goal has no revision history until the user adopts or edits it.
           container.mainContext.insert(
@@ -65,6 +88,9 @@ struct TrainoteApp: App {
       let reports = HealthReportIntegration(
         foundation: foundation, trend: trend.calculator, recovery: recovery.service,
         advice: advice, directory: directory.appendingPathComponent("AIReports", isDirectory: true))
+      foundation.healthData?.setProcessingAllowed(notice.accepted)
+      reports.setProcessingAllowed(notice.accepted)
+      reports.setOnDeviceAIEnabled(notice.localAIEnabled)
       _recoveryIntegration = State(initialValue: recovery)
       _trendIntegration = State(initialValue: trend)
       _trainingAdvice = State(initialValue: advice)
@@ -89,36 +115,51 @@ struct TrainoteApp: App {
           if let healthFoundation, let healthAccess, let recoveryIntegration, let trendIntegration,
             let trainingAdvice, let reportIntegration
           {
-            AppShell(
-              analysisDestinations: .verifiedModules(
-                trend: trendIntegration, recovery: recoveryIntegration, advice: trainingAdvice),
-              recoveryIntegration: recoveryIntegration, trainingAdvice: trainingAdvice,
-              reportIntegration: reportIntegration
-            )
+            Group {
+              if firstUseNotice.accepted {
+                AppShell(
+                  analysisDestinations: .verifiedModules(
+                    trend: trendIntegration, recovery: recoveryIntegration, advice: trainingAdvice),
+                  recoveryIntegration: recoveryIntegration, trainingAdvice: trainingAdvice,
+                  reportIntegration: reportIntegration,
+                  processingAllowed: { firstUseNotice.accepted }
+                )
+              } else {
+                FirstUseNoticeView()
+              }
+            }
             .environment(catalog)
+            .environment(firstUseNotice)
             .environment(healthFoundation)
             .environment(healthAccess)
             .modelContainer(container)
             .task { await catalog.load() }
-            .task {
+            .task(id: firstUseNotice.accepted) {
+              updateProcessingGate(foundation: healthFoundation, reports: reportIntegration)
+              // Previously requested withdrawal/deletion may finish while business UI is gated.
               await healthAccess.resumePendingRevocation()
-              await healthFoundation.resume()
-              recoveryIntegration.reloadToday()
-              trendIntegration.refreshAfterHealthSync()
-              trainingAdvice.refresh()
-              await reportIntegration.refreshLocalAfterHealthSync()
+              guard firstUseNotice.accepted, !Task.isCancelled else { return }
+              await resume(foundation: healthFoundation, recovery: recoveryIntegration,
+                           trend: trendIntegration, advice: trainingAdvice, reports: reportIntegration)
+            }
+            .onChange(of: firstUseNotice.localAIEnabled) { _, enabled in
+              reportIntegration.setOnDeviceAIEnabled(enabled)
+            }
+            .onChange(of: firstUseNotice.accepted) { _, _ in
+              updateProcessingGate(foundation: healthFoundation, reports: reportIntegration)
             }
             .onChange(of: scenePhase) { _, phase in
               if phase == .active {
                 LanguageSettings.shared.refreshSystem()
+                updateProcessingGate(foundation: healthFoundation, reports: reportIntegration)
                 Task {
                   await healthAccess.resumePendingRevocation()
-                  await healthFoundation.resume()
-                  recoveryIntegration.reloadToday()
-                  trendIntegration.refreshAfterHealthSync()
-                  trainingAdvice.refresh()
-                  await reportIntegration.refreshLocalAfterHealthSync()
+                  guard firstUseNotice.accepted else { return }
+                  await resume(foundation: healthFoundation, recovery: recoveryIntegration,
+                               trend: trendIntegration, advice: trainingAdvice, reports: reportIntegration)
                 }
+              } else {
+                reportIntegration.cancelPendingRequests()
               }
             }
           }
@@ -127,8 +168,30 @@ struct TrainoteApp: App {
         }
       }
       .environment(\.locale, L10n.locale)
+      #if DEBUG
+        .modifier(StorePreviewLayout())
+      #endif
     }
   }
+
+  private func updateProcessingGate(foundation: HealthFoundation, reports: HealthReportIntegration) {
+    foundation.healthData?.setProcessingAllowed(firstUseNotice.accepted)
+    reports.setProcessingAllowed(firstUseNotice.accepted)
+    reports.setOnDeviceAIEnabled(firstUseNotice.localAIEnabled)
+  }
+
+  private func resume(foundation: HealthFoundation, recovery: HealthRecoveryIntegration,
+                      trend: HealthTrendIntegration, advice: TrainingAdviceController,
+                      reports: HealthReportIntegration) async {
+    guard firstUseNotice.accepted else { return }
+    await foundation.resume()
+    guard firstUseNotice.accepted, !Task.isCancelled else { return }
+    recovery.reloadToday()
+    trend.refreshAfterHealthSync()
+    advice.refresh()
+    await reports.refreshLocalAfterHealthSync()
+  }
+
 }
 
 enum PersistenceController {
