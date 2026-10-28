@@ -36,16 +36,16 @@ final class HealthIntegrationUITests: XCTestCase {
     app.launch()
   }
 
-  func testLocalOnlyOnboardingAndUnconfiguredAIDoNotBlockRecording() {
+  func testLocalOnboardingAndOnDeviceAIHelpDoNotBlockRecording() {
     app.terminate()
     app.launchArguments += ["-health-onboarding"]
     app.launch()
     XCTAssertTrue(app.buttons["health.localOnly"].waitForExistence(timeout: 5))
     capture("分项数据引导")
     app.buttons["health.aiInfo"].tap()
-    XCTAssertTrue(app.staticTexts["health.aiUnavailable"].waitForExistence(timeout: 3))
+    XCTAssertTrue(app.staticTexts["help.localAI"].waitForExistence(timeout: 3))
     XCTAssertFalse(app.buttons["health.aiConsent"].exists)
-    capture("AI未配置说明")
+    capture("本机 AI 与独立偏好说明")
     app.navigationBars.buttons.element(boundBy: 0).tap()
     app.buttons["health.localOnly"].tap()
     XCTAssertTrue(app.tabBars.buttons["今日"].waitForExistence(timeout: 3))

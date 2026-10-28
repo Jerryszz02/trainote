@@ -1,0 +1,152 @@
+{
+  "schemaVersion": 1,
+  "captureDate": "2026-10-27",
+  "device": "iPhone 17 Pro Max",
+  "simulatorUDID": "051CAEC0-A1D5-4842-A123-5C609D050710",
+  "platform": "iOS Simulator",
+  "osVersion": "26.5",
+  "osBuild": "23F77",
+  "pixelSize": [
+    1320,
+    2868
+  ],
+  "appVersion": "1.1",
+  "appBuild": "2",
+  "configuration": "Debug; in-memory synthetic fixtures; sample-data label visible",
+  "baseCommit": "2970459226e88332328503f11ce811697e0d4c46",
+  "implementationBranch": "agent/trainote-local-ai",
+  "sourceSnapshotSHA256": "9b8aa6ff86cc1b2504bd91a349f4bbe3ed5669b621ed68cbd64383926fe41dfb",
+  "sourceSnapshotAlgorithm": "SHA256 of sorted path:SHA256 newline records for every Trainote/ file, project.yml, Models/manifest.json, Packages/TrainoteLlama/Package.swift and Scripts/on-device-ai/bundle-model.py",
+  "sourceSnapshotFileCount": 140,
+  "executableSHA256": "605fe8b895fe9be233988dde353a9e32bac7aae03362018d91468c0ddb211c63",
+  "modelSHA256": "53752fac90c59e3d8de573f3b2dd33046abdfa0254db275d0f51ffc248997734",
+  "modelBytes": 484220256,
+  "captureMethod": "XCUIScreen.main.screenshot() attachments exported unchanged with xcresulttool",
+  "testResultBundle": ".local-ai-cache/store-reviewed.xcresult",
+  "testResult": "13 localization/insight unit tests and 6 screenshot scenarios passed on this device, 0 failures or skips",
+  "aiEvidence": "06-on-device-ai requires actual bundled runtime output and reports.source.onDevice; no mock report",
+  "limitations": [
+    "Simulator captures do not establish iPhone performance or memory.",
+    "These candidate-build images must be rechecked against the build submitted to App Store Connect."
+  ],
+  "files": [
+    {
+      "path": "en-US/01-today.png",
+      "locale": "en-US",
+      "sha256": "d3096e760408302f38867f1c5e49a2c0d8daf28d248337a876f820f058f05282",
+      "bytes": 340248,
+      "capturedAtUTC": "2026-10-27T00:33:53.490000+00:00",
+      "test": "StoreScreenshotUITests/testEnglishCoreScreenshots()"
+    },
+    {
+      "path": "en-US/02-active-workout.png",
+      "locale": "en-US",
+      "sha256": "9dfd32808c256ca1aa0e60103b40633d0c23ade65a3e1e15f0a03594dcd5504f",
+      "bytes": 368572,
+      "capturedAtUTC": "2026-10-27T00:33:57.708000+00:00",
+      "test": "StoreScreenshotUITests/testEnglishCoreScreenshots()"
+    },
+    {
+      "path": "en-US/03-exercise-details.png",
+      "locale": "en-US",
+      "sha256": "1894b81df78b3d484a201531ac2016cd79ad01cbcdcd9b9c264581fee53a5cf5",
+      "bytes": 393107,
+      "capturedAtUTC": "2026-10-27T00:34:09.592000+00:00",
+      "test": "StoreScreenshotUITests/testEnglishCoreScreenshots()"
+    },
+    {
+      "path": "en-US/04-nutrition.png",
+      "locale": "en-US",
+      "sha256": "b911293d2204b0746cde342a32b3bac443c694c9a12a6f8d61703a94b58c8da5",
+      "bytes": 326750,
+      "capturedAtUTC": "2026-10-27T00:34:17.070000+00:00",
+      "test": "StoreScreenshotUITests/testEnglishCoreScreenshots()"
+    },
+    {
+      "path": "en-US/05-weekly-review.png",
+      "locale": "en-US",
+      "sha256": "088c8fe7a44abd6a5ef7bb17515d5792898090f22475d6bf725eca5d6e5e70ab",
+      "bytes": 372190,
+      "capturedAtUTC": "2026-10-27T00:34:22.512000+00:00",
+      "test": "StoreScreenshotUITests/testEnglishCoreScreenshots()"
+    },
+    {
+      "path": "en-US/06-on-device-ai.png",
+      "locale": "en-US",
+      "sha256": "1e235675173d107f5d4be4c33fe1081d0e5bf9f00df6e3b2a92863cff1289fc2",
+      "bytes": 369414,
+      "capturedAtUTC": "2026-10-27T00:35:06.193000+00:00",
+      "test": "StoreScreenshotUITests/testEnglishOnDeviceAI()"
+    },
+    {
+      "path": "en-US/07-first-use-notice.png",
+      "locale": "en-US",
+      "sha256": "f55a923497f456e7437902df524049f7d7ecb8a97dac04fd162528ff038aa259",
+      "bytes": 524548,
+      "capturedAtUTC": "2026-10-27T00:34:28.061000+00:00",
+      "test": "StoreScreenshotUITests/testEnglishFirstUseNotice()"
+    },
+    {
+      "path": "zh-Hans/01-today.png",
+      "locale": "zh-Hans",
+      "sha256": "24293897ddfc0272f5445f8a47903f15adcf57223a4b87127058f2dee9680959",
+      "bytes": 328550,
+      "capturedAtUTC": "2026-10-27T00:32:35.377000+00:00",
+      "test": "StoreScreenshotUITests/testChineseCoreScreenshots()"
+    },
+    {
+      "path": "zh-Hans/02-active-workout.png",
+      "locale": "zh-Hans",
+      "sha256": "7cfe1a05896d0bc3dad18be1f4d32f4201990731465dfa13d43833f94631fb71",
+      "bytes": 350381,
+      "capturedAtUTC": "2026-10-27T00:32:39.393000+00:00",
+      "test": "StoreScreenshotUITests/testChineseCoreScreenshots()"
+    },
+    {
+      "path": "zh-Hans/03-exercise-details.png",
+      "locale": "zh-Hans",
+      "sha256": "a1c66a385fd96bf5e5a4f93ddd566cca6df381e66765acc9f6bc04806ffe22e1",
+      "bytes": 379830,
+      "capturedAtUTC": "2026-10-27T00:32:51.362000+00:00",
+      "test": "StoreScreenshotUITests/testChineseCoreScreenshots()"
+    },
+    {
+      "path": "zh-Hans/04-nutrition.png",
+      "locale": "zh-Hans",
+      "sha256": "02a881b538f038898bdfba46d20597d987c21e17bbfa3a3308bd252a877fc407",
+      "bytes": 347397,
+      "capturedAtUTC": "2026-10-27T00:32:58.999000+00:00",
+      "test": "StoreScreenshotUITests/testChineseCoreScreenshots()"
+    },
+    {
+      "path": "zh-Hans/05-weekly-review.png",
+      "locale": "zh-Hans",
+      "sha256": "a659007180280401ea2626496a70c01c8092e00ee17164ca43294c20bb58d7f9",
+      "bytes": 366359,
+      "capturedAtUTC": "2026-10-27T00:33:04.555000+00:00",
+      "test": "StoreScreenshotUITests/testChineseCoreScreenshots()"
+    },
+    {
+      "path": "zh-Hans/06-on-device-ai.png",
+      "locale": "zh-Hans",
+      "sha256": "10717a5cc99ce82199638a8de20cd9f9634c5002071e47952d56c9fe487ebac2",
+      "bytes": 384941,
+      "capturedAtUTC": "2026-10-27T00:33:47.664000+00:00",
+      "test": "StoreScreenshotUITests/testChineseOnDeviceAI()"
+    },
+    {
+      "path": "zh-Hans/07-first-use-notice.png",
+      "locale": "zh-Hans",
+      "sha256": "7231e5fea07b9149133f1d694d1928d006a2c82813ee97c9af00b9afae7c3f6d",
+      "bytes": 735069,
+      "capturedAtUTC": "2026-10-27T00:33:10.147000+00:00",
+      "test": "StoreScreenshotUITests/testChineseFirstUseNotice()"
+    }
+  ],
+  "visualReview": {
+    "date": "2026-10-27",
+    "method": "Codex inspected all 14 original images with view_image after final recapture",
+    "result": "No unexpected navigation overlap or copy truncation; English PR names, singular/plural wording and assisting-muscle label corrected; real model source visible",
+    "publisherFinalSelectionConfirmed": false
+  }
+}

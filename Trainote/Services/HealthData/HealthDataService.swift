@@ -13,6 +13,7 @@ final class HealthDataService: HealthDataProviding {
   private var syncTasks: [HealthDataType: Task<Void, Error>] = [:]
   private var pendingTypes = Set<HealthDataType>()
   private var invalidators: [any HealthDerivedDataInvalidating] = []
+  private var processingAllowed = true
   private(set) var lastFailure: AnalysisFailure?
   var isSyncing: Bool { !syncTasks.isEmpty }
 
@@ -32,33 +33,44 @@ final class HealthDataService: HealthDataProviding {
     invalidators.append(invalidator)
   }
   func requestReadAuthorization() async throws {
+    guard processingAllowed else { throw AnalysisFailure.cancelled }
     let requestEpoch = epoch
     try await client.requestAuthorization()
-    guard epoch == requestEpoch else { throw AnalysisFailure.cancelled }
+    guard processingAllowed, epoch == requestEpoch else { throw AnalysisFailure.cancelled }
     try consent.grant(.healthData, version: LocalConsentStore.healthConsentVersion, at: clock())
     try await startObserving()
     try await refresh()
   }
   func startObserving() async throws {
     _ = try healthLease()
+    let requestEpoch = epoch
     do {
       try await client.observe { [weak self] type, completion in
         Task { @MainActor in
           defer { completion() }
-          guard let self else { return }
+          guard let self, self.processingAllowed else { return }
           do { try await self.refresh(type) } catch { self.lastFailure = .readFailed }
         }
       }
+      guard processingAllowed, epoch == requestEpoch else {
+        client.stopObserving()
+        throw AnalysisFailure.cancelled
+      }
     } catch {
+      guard processingAllowed, epoch == requestEpoch else { throw AnalysisFailure.cancelled }
       // Foreground refresh still works if background delivery is unavailable.
       lastFailure = .unavailable
     }
   }
   func refresh() async throws {
     _ = try healthLease()
+    let requestEpoch = epoch
     var failed = false
     for type in HealthDataType.allCases {
+      try Task.checkCancellation()
+      guard processingAllowed, epoch == requestEpoch else { throw AnalysisFailure.cancelled }
       do { try await refresh(type) } catch { failed = true }
+      guard processingAllowed, epoch == requestEpoch else { throw AnalysisFailure.cancelled }
     }
     if failed {
       lastFailure = .readFailed
@@ -84,7 +96,7 @@ final class HealthDataService: HealthDataProviding {
             since: cache.state.syncStart)
           try Task.checkCancellation()
           try consent.validate(lease)
-          guard epoch == currentEpoch else { throw AnalysisFailure.cancelled }
+          guard processingAllowed, epoch == currentEpoch else { throw AnalysisFailure.cancelled }
           try cache.commit(batch)
         } catch {
           if epoch == currentEpoch { try? cache.markFailure(type, at: clock()) }
@@ -96,13 +108,15 @@ final class HealthDataService: HealthDataProviding {
     try await task.value
   }
   func localSnapshot(window: AnalysisWindow) throws -> HealthDataSnapshot {
-    guard consent.record(for: .healthData)?.isGranted == true else {
+    guard processingAllowed, consent.record(for: .healthData)?.isGranted == true else {
       return .disconnected(window: window, asOf: clock())
     }
     return cache.snapshot(window: window, at: clock())
   }
   func freshSnapshot(window: AnalysisWindow, timeZone: TimeZone) async throws -> HealthDataSnapshot
   {
+    guard processingAllowed else { throw AnalysisFailure.cancelled }
+    let requestEpoch = epoch
     guard window.start < window.end else { throw AnalysisFailure.invalidInput }
     guard consent.record(for: .healthData)?.isGranted == true else {
       return .disconnected(window: window, asOf: clock())
@@ -115,11 +129,13 @@ final class HealthDataService: HealthDataProviding {
     for type in HealthDataType.allCases {
       do {
         let current = try await client.samples(type: type, window: window)
+        guard processingAllowed, epoch == requestEpoch else { throw AnalysisFailure.cancelled }
         try consent.validate(lease)
         if type == .steps || type == .activeEnergy {
           var facts = try await client.activityFacts(
             type: type, window: window, timeZone: timeZone,
             preferredSources: preferred)
+          guard processingAllowed, epoch == requestEpoch else { throw AnalysisFailure.cancelled }
           try consent.validate(lease)
           for index in facts.indices {
             let sources = Set(facts[index].sources.map(\.identifier))
@@ -136,11 +152,13 @@ final class HealthDataService: HealthDataProviding {
             type: type, state: current.isEmpty ? .noSamples : .samplesAvailable, queriedAt: clock())
         )
       } catch {
+        guard processingAllowed, epoch == requestEpoch else { throw AnalysisFailure.cancelled }
         try consent.validate(lease)
         statuses.append(.init(type: type, state: .failed, queriedAt: clock(), failure: .readFailed))
       }
     }
     try consent.validate(lease)
+    guard processingAllowed, epoch == requestEpoch else { throw AnalysisFailure.cancelled }
     return .init(
       window: window, fetchedAt: clock(), isFresh: true,
       samples: samples.sorted { $0.id.uuidString < $1.id.uuidString },
@@ -159,8 +177,14 @@ final class HealthDataService: HealthDataProviding {
     if let failure { throw failure }
   }
   private func healthLease() throws -> ConsentLease {
+    guard processingAllowed else { throw AnalysisFailure.cancelled }
     guard client.isAvailable else { throw AnalysisFailure.unavailable }
     return try consent.lease(for: .healthData, version: LocalConsentStore.healthConsentVersion)
+  }
+  func setProcessingAllowed(_ allowed: Bool) {
+    guard processingAllowed != allowed else { return }
+    processingAllowed = allowed
+    if !allowed { stop() }
   }
   private func stop() {
     epoch = UUID()

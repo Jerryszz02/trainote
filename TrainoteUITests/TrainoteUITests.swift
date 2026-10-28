@@ -246,6 +246,10 @@ final class TrainoteUITests: XCTestCase {
     app = XCUIApplication()
     app.launchArguments = ["-AppleLanguages", "(zh-Hans)", "-AppleLocale", "zh_CN", "-appearance.language", "zh-Hans", "-ui-testing-persistent"]
     app.launch()
+    // Persistent launches use the real notice store, including its first-launch gate.
+    let agree = app.buttons["notice.agree"]
+    if agree.waitForExistence(timeout: 3) { agree.tap() }
+    XCTAssertTrue(app.tabBars.buttons["饮食"].waitForExistence(timeout: 5))
     let uniqueName = "重启记录-\(UUID().uuidString.prefix(8))"
 
     openDirectFoodEditor()
@@ -253,6 +257,8 @@ final class TrainoteUITests: XCTestCase {
     app.buttons["nutrition.entry.save"].tap()
     app.terminate()
     app.launch()
+    XCTAssertTrue(app.tabBars.buttons["饮食"].waitForExistence(timeout: 5))
+    XCTAssertFalse(app.buttons["notice.agree"].exists)
     app.tabBars.buttons["饮食"].tap()
 
     XCTAssertTrue(
@@ -471,17 +477,25 @@ enum UITestTextInput {
       let menuSelectAll = app.menuItems.matching(
         NSPredicate(format: "label IN {'Select All', '全选'}")
       ).firstMatch
+      let selection: XCUIElement
       if selectAll.waitForExistence(timeout: 2) {
-        selectAll.tap()
+        selection = selectAll
       } else if menuSelectAll.waitForExistence(timeout: 2) {
-        menuSelectAll.tap()
+        selection = menuSelectAll
       } else {
         XCTFail("Select All is unavailable for nonempty field: \(field.identifier)")
         return
       }
+      selection.tap()
+      guard selection.waitForNonExistence(timeout: 5) else {
+        XCTFail("Select All did not finish for field: \(field.identifier)")
+        return
+      }
     }
 
-    field.typeText(value)
+    // Preserve the selection by typing into the current responder. The exact
+    // target field is still checked below after input has settled.
+    app.typeText(value)
     if field.elementType == .searchField {
       // A searchable sheet can replace its AX search element while filtering. Query the
       // complete value afresh instead of polling a snapshot captured midway through typing.

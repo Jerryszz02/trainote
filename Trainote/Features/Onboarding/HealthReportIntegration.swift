@@ -1,6 +1,7 @@
 import Foundation
 import Observation
 import SwiftData
+import UIKit
 
 /// ReportSnapshotBuilder calls this synchronously on its main actor, after its fresh read.
 /// Keeping the bridge alive does not freeze the selected template at app startup.
@@ -44,11 +45,20 @@ final class HealthReportIntegration: AIReportLifecycle {
   private var generation = UUID()
   private var historyRevision = 0
   private var lastRequestedType: ReportType?
+  private var lastInput: ReportInput?
+  private var lastInputTimeZone: TimeZone = .current
+  private var evaluationTime: Date?
+  private(set) var processingAllowed = true
+  private(set) var onDeviceAIEnabled = true
+  var isGenerating: Bool { service?.isGenerating == true }
+  var canGenerateOnDevice: Bool { processingAllowed && onDeviceAIEnabled && service?.isOnDeviceAvailable == true }
   @ObservationIgnored private var saveObserver: NSObjectProtocol?
+  @ObservationIgnored private var resourceObservers: [NSObjectProtocol] = []
 
   init(
     foundation: HealthFoundation, trend: any TrendCalculating, recovery: RecoveryService?,
-    advice: TrainingAdviceController, directory: URL
+    advice: TrainingAdviceController, directory: URL,
+    onDeviceRuntime: (any OnDeviceModelRuntime)? = BundledLlamaRuntime()
   ) {
     self.foundation = foundation
     self.trend = trend
@@ -59,7 +69,7 @@ final class HealthReportIntegration: AIReportLifecycle {
         service = try AIReportAssembly.make(
           foundation: foundation, trend: trend, recovery: recovery,
           recommendations: CurrentTrainingReportRecommendations(controller: advice),
-          proxy: nil, directory: directory)
+          proxy: nil, onDeviceRuntime: onDeviceRuntime, directory: directory)
       } catch { service = nil }
     } else {
       service = nil
@@ -70,10 +80,27 @@ final class HealthReportIntegration: AIReportLifecycle {
       MainActor.assumeIsolated { self?.cancelPendingRequests() }
     }
     advice.onSelectionChange = { [weak self] in self?.cancelPendingRequests() }
+    for notification in [UIApplication.didReceiveMemoryWarningNotification,
+                         ProcessInfo.thermalStateDidChangeNotification] {
+      resourceObservers.append(NotificationCenter.default.addObserver(
+        forName: notification, object: nil, queue: .main
+      ) { [weak self] notice in
+        MainActor.assumeIsolated {
+          guard let self, self.isGenerating else { return }
+          if notice.name == UIApplication.didReceiveMemoryWarningNotification
+            || ProcessInfo.processInfo.thermalState == .serious
+            || ProcessInfo.processInfo.thermalState == .critical {
+            self.cancelGeneration()
+            self.errorMessage = "localAI.report.fallback"
+          }
+        }
+      })
+    }
   }
 
   deinit {
     if let saveObserver { NotificationCenter.default.removeObserver(saveObserver) }
+    resourceObservers.forEach { NotificationCenter.default.removeObserver($0) }
   }
 
   var isConfigured: Bool { service?.isRemoteAvailable == true }
@@ -94,7 +121,22 @@ final class HealthReportIntegration: AIReportLifecycle {
   }
 
   /// A new explicit refresh fixes one evaluation time; SwiftUI recomputation never changes it.
-  func refresh(type: ReportType, asOf: Date = .now, timeZone: TimeZone = .current) async {
+  func refresh(type: ReportType, asOf: Date? = nil, timeZone: TimeZone = .current) async {
+    await prepare(type: type, asOf: asOf, timeZone: timeZone, generate: false)
+  }
+
+  func generateOnDevice(type: ReportType, asOf: Date? = nil, timeZone: TimeZone = .current) async {
+    guard canGenerateOnDevice, !isGenerating else { return }
+    await prepare(type: type, asOf: asOf, timeZone: timeZone, generate: true)
+  }
+
+  private func prepare(type: ReportType, asOf requestedTime: Date?, timeZone: TimeZone, generate: Bool) async {
+    guard processingAllowed else { return }
+    let now = Date.now
+    let asOf = requestedTime ?? evaluationTime.flatMap {
+      now.timeIntervalSince($0) >= 0 && now.timeIntervalSince($0) < 300 ? $0 : nil
+    } ?? now
+    evaluationTime = asOf
     lastRequestedType = type
     if isRefreshing { service?.cancelActive() }
     isRefreshing = true
@@ -112,9 +154,20 @@ final class HealthReportIntegration: AIReportLifecycle {
         start: asOf.addingTimeInterval(-Double(RecoveryParameters.inputDays) * 86_400), end: asOf)
       let localInput = try localReportInput(
         type: type, window: window, asOf: asOf, timeZone: timeZone)
+      lastInput = localInput
+      lastInputTimeZone = timeZone
       if let service {
-        _ = await service.report(
-          type: type, window: window, asOf: asOf, timeZone: timeZone, localInput: localInput)
+        service.refreshOnDevice(localInput, allowAI: onDeviceAIEnabled)
+        if generate {
+          _ = await service.generateOnDevice(localInput) { [weak self] in
+            guard let self, self.processingAllowed, self.onDeviceAIEnabled,
+              self.generation == request, selection == (try? self.selectionIdentity())
+            else { throw AIReportFailure.cancelled }
+            let current = try self.localReportInput(type: type, window: window, asOf: asOf, timeZone: timeZone)
+            guard current == localInput else { throw AIReportFailure.stale }
+          }
+          if service.failure != nil { errorMessage = "localAI.report.fallback" }
+        }
       } else {
         fallback = AIReportContent(
           report: LocalReportGenerator().make(localInput), input: localInput,
@@ -142,8 +195,39 @@ final class HealthReportIntegration: AIReportLifecycle {
   /// Refresh an already requested basic report after foreground health synchronization.
   /// A configured remote service still requires the report page's explicit request path.
   func refreshLocalAfterHealthSync() async {
+    guard processingAllowed else { return }
+    evaluationTime = nil
     guard let lastRequestedType else { return }
-    if isConfigured { cancelPendingRequests() } else { await refresh(type: lastRequestedType) }
+    await refresh(type: lastRequestedType)
+  }
+
+  func setProcessingAllowed(_ allowed: Bool) {
+    guard processingAllowed != allowed else { return }
+    processingAllowed = allowed
+    if !allowed { cancelPendingRequests(); service?.clearCurrent(); lastInput = nil }
+  }
+
+  func setOnDeviceAIEnabled(_ enabled: Bool) {
+    guard onDeviceAIEnabled != enabled else { return }
+    onDeviceAIEnabled = enabled
+    cancelGeneration()
+  }
+
+  func cancelGeneration() {
+    let input = lastInput
+    let timeZone = lastInputTimeZone
+    let previousEvaluation = evaluationTime
+    cancelPendingRequests()
+    if processingAllowed, let input {
+      let window = AnalysisWindow(start: input.asOf.addingTimeInterval(-Double(RecoveryParameters.inputDays) * 86_400), end: input.asOf)
+      if let current = try? localReportInput(type: input.reportType, window: window,
+        asOf: input.asOf, timeZone: timeZone), current == input {
+        lastInput = input
+        evaluationTime = previousEvaluation
+        service?.refreshOnDevice(input, allowAI: false)
+        displayedSelection = try? selectionIdentity()
+      }
+    }
   }
 
   /// Local fallback uses current repository/calculators and is never handed to a transport.
@@ -217,6 +301,8 @@ final class HealthReportIntegration: AIReportLifecycle {
     service?.cancelActive()
     displayedSelection = nil
     fallback = nil
+    evaluationTime = nil
+    lastInput = nil
   }
   func revokeServerConsent() async throws { try await resumePendingRevocation() }
   func closeAI(at date: Date, consent: LocalConsentStore?) async throws {
@@ -236,13 +322,13 @@ final class HealthReportIntegration: AIReportLifecycle {
     guard let service else { throw AnalysisFailure.storageFailed }
     try service.deleteAIReports()
   }
+  func deleteReport(id: String) throws {
+    guard let service else { throw AnalysisFailure.storageFailed }
+    try service.deleteReport(id: id)
+    historyRevision += 1
+  }
   func deleteHealthDependentData() throws {
-    generation = UUID()
-    isRefreshing = false
-    if fallback?.dependsOnHealth == true {
-      fallback = nil
-      displayedSelection = nil
-    }
+    cancelPendingRequests()
     historyRevision += 1
   }
 }

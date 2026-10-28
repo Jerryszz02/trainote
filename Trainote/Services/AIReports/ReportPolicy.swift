@@ -441,9 +441,31 @@ enum ReportResultValidator {
     return result
   }
   static func validate(_ result: ReportResult, input: ReportInput, now: Date) throws {
+    try validate(result, input: input, now: now, model: AIReportPolicy.model,
+      promptVersion: AIReportPolicy.promptVersion)
+  }
+  static func validateOnDevice(_ result: ReportResult, input: ReportInput, now: Date) throws {
+    try validate(result, input: input, now: now, model: OnDeviceReportPolicy.model,
+      promptVersion: OnDeviceReportPolicy.promptVersion)
+    let request = try OnDeviceReportRequest(input)
+    let factIDs = Set(request.facts.map(\.id)), actionIDs = Set(request.candidates.map(\.actionID))
+    guard result.observations.allSatisfy({ $0.evidenceIDs.allSatisfy(factIDs.contains) }),
+      result.recommendations.allSatisfy({ actionIDs.contains($0.actionID) })
+    else { throw AIReportFailure.invalidResponse }
+  }
+  /// Persisted history accepts only the two known, separately validated report identities.
+  static func validateStored(_ result: ReportResult, input: ReportInput, now: Date) throws {
+    if result.model == OnDeviceReportPolicy.model {
+      try validateOnDevice(result, input: input, now: now)
+    } else {
+      try validate(result, input: input, now: now)
+    }
+  }
+  private static func validate(_ result: ReportResult, input: ReportInput, now: Date,
+    model: String, promptVersion: String) throws {
     guard result.schemaVersion == 1, !result.isLocalFallback,
       UUID(uuidString: result.reportID) != nil, result.inputFingerprint == input.inputFingerprint,
-      result.model == AIReportPolicy.model, result.promptVersion == AIReportPolicy.promptVersion,
+      result.model == model, result.promptVersion == promptVersion,
       result.summary == ReportText.summary(input), result.observations.count <= 3,
       result.recommendations.count <= 3, result.generatedAt <= now.addingTimeInterval(60),
       result.generatedAt >= now.addingTimeInterval(-AIReportPolicy.maximumInputAge),

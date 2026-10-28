@@ -17,8 +17,12 @@ final class FakeHealthQueryClient: HealthQueryClient {
   var suspendedType: HealthDataType?
   var suspended: CheckedContinuation<Void, Never>?
   var onSamples: (() throws -> Void)?
+  var onAuthorization: (() -> Void)?
 
-  func requestAuthorization() async throws { requested = true }
+  func requestAuthorization() async throws {
+    requested = true
+    onAuthorization?()
+  }
   func changes(type: HealthDataType, anchor: Data?, since: Date) async throws -> HealthAnchorBatch {
     receivedAnchors.append(anchor)
     onChangeRequest?()
@@ -179,4 +183,80 @@ final class HealthSyncTests: XCTestCase {
     XCTAssertTrue(client.stopped)
     XCTAssertFalse(consent.record(for: .healthData)!.isGranted)
   }
+  func testNoticeGateBlocksHealthOperationsWithoutRevokingExistingConsent() async throws {
+    let client = FakeHealthQueryClient()
+    let cache = try HealthCacheStore(
+      url: directory.appendingPathComponent("cache.json"), syncStart: AnalysisFixtures.window.start)
+    let consent = try LocalConsentStore(url: directory.appendingPathComponent("consent.json"))
+    try consent.grant(.healthData, version: LocalConsentStore.healthConsentVersion, at: AnalysisFixtures.asOf)
+    let service = HealthDataService(client: client, cache: cache, consent: consent)
+    service.setProcessingAllowed(false)
+    do { try await service.requestReadAuthorization(); XCTFail("Gated authorization") } catch {}
+    do { try await service.startObserving(); XCTFail("Gated observer") } catch {}
+    do { try await service.refresh(); XCTFail("Gated refresh") } catch {}
+    do { _ = try await service.freshSnapshot(window: AnalysisFixtures.window); XCTFail("Gated snapshot") } catch {}
+    XCTAssertFalse(client.requested)
+    XCTAssertNil(client.onObserve)
+    XCTAssertTrue(client.receivedAnchors.isEmpty)
+    XCTAssertTrue(consent.record(for: .healthData)?.isGranted == true)
+    XCTAssertNil(consent.record(for: .aiReports))
+    XCTAssertTrue(try service.localSnapshot(window: AnalysisFixtures.window).statuses.allSatisfy { $0.state == .disconnected })
+    service.setProcessingAllowed(true)
+    XCTAssertNil(client.onObserve, "Reaccepting does not itself start Health requests")
+    try await service.startObserving()
+    XCTAssertNotNil(client.onObserve)
+  }
+
+  func testNoticeWithdrawalDiscardsSuspendedHealthQueryAndRetainsExistingCache() async throws {
+    let client = FakeHealthQueryClient()
+    client.suspendedType = .bodyMass
+    let cache = try HealthCacheStore(
+      url: directory.appendingPathComponent("cache.json"), syncStart: AnalysisFixtures.window.start)
+    let sample = AnalysisFixtures.health(.complete).samples[0]
+    try cache.commit(.init(type: .bodyMass, added: [sample], deletedIDs: [], newAnchor: Data([1]), queriedAt: AnalysisFixtures.asOf))
+    let before = cache.state
+    client.batches[.bodyMass] = .init(type: .bodyMass, added: [], deletedIDs: [sample.id], newAnchor: Data([2]), queriedAt: AnalysisFixtures.asOf)
+    let consent = try LocalConsentStore(url: directory.appendingPathComponent("consent.json"))
+    try consent.grant(.healthData, version: LocalConsentStore.healthConsentVersion, at: AnalysisFixtures.asOf)
+    let service = HealthDataService(client: client, cache: cache, consent: consent)
+    let started = expectation(description: "Health query suspended before withdrawal")
+    client.onChangeRequest = { started.fulfill() }
+    let task = Task { try await service.refresh() }
+    await fulfillment(of: [started], timeout: 2)
+    client.onChangeRequest = nil
+    service.setProcessingAllowed(false)
+    // Reacceptance must not make a query from the previous acknowledgment current again.
+    service.setProcessingAllowed(true)
+    client.suspended?.resume()
+    do { try await task.value; XCTFail("Old epoch must be cancelled") } catch {}
+    XCTAssertEqual(cache.state, before)
+    XCTAssertTrue(client.stopped)
+    XCTAssertTrue(consent.record(for: .healthData)?.isGranted == true)
+  }
+
+  func testNoticeWithdrawalDuringAuthorizationDoesNotGrantConsent() async throws {
+    let client = FakeHealthQueryClient()
+    let cache = try HealthCacheStore(
+      url: directory.appendingPathComponent("cache.json"), syncStart: AnalysisFixtures.window.start)
+    let consent = try LocalConsentStore(url: directory.appendingPathComponent("consent.json"))
+    let service = HealthDataService(client: client, cache: cache, consent: consent)
+    client.onAuthorization = { service.setProcessingAllowed(false) }
+    do { try await service.requestReadAuthorization(); XCTFail("Withdrawal during authorization") } catch {}
+    XCTAssertNil(consent.record(for: .healthData))
+    XCTAssertNil(client.onObserve)
+  }
+
+  func testNoticeWithdrawalDuringFreshSnapshotDoesNotReturnHealthSamples() async throws {
+    let client = FakeHealthQueryClient()
+    client.samplesByType[.bodyMass] = [AnalysisFixtures.health(.complete).samples[0]]
+    let cache = try HealthCacheStore(
+      url: directory.appendingPathComponent("cache.json"), syncStart: AnalysisFixtures.window.start)
+    let consent = try LocalConsentStore(url: directory.appendingPathComponent("consent.json"))
+    try consent.grant(.healthData, version: LocalConsentStore.healthConsentVersion, at: AnalysisFixtures.asOf)
+    let service = HealthDataService(client: client, cache: cache, consent: consent)
+    client.onSamples = { service.setProcessingAllowed(false) }
+    do { _ = try await service.freshSnapshot(window: AnalysisFixtures.window); XCTFail("No snapshot after withdrawal") } catch {}
+    XCTAssertTrue(consent.record(for: .healthData)?.isGranted == true)
+  }
+
 }

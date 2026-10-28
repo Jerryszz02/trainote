@@ -20,60 +20,66 @@
     <main>
       <article id="zh" lang="zh-CN">
         <h1>Trainote 隐私政策</h1>
-        <p class="meta">现状草稿 · 更新于 2026 年 10 月 24 日</p>
-        <p>本说明适用于当前提供本地记录和规则报告、尚未启用生成式 AI 的 Trainote 版本。正式发布前将根据实际版本核对并更新。</p>
+        <p class="meta">发布候选草稿 · 更新于 2026 年 10 月 27 日</p>
+        <p>本说明适用于本轮提供本地记录、规则报告和内置本机 AI 报告的 Trainote 发布候选。尚未公开发布；正式提交前需与最终构建和真机结果核对。</p>
         <p>Trainote 是一款训练与饮食记录应用。基本记录和备份不要求注册账号或连接 Apple 健康。当前版本没有广告、第三方分析或追踪功能，不将训练、饮食或健康记录发送给开发者的服务器或 AI 供应商，也不出售这些记录。</p>
         <h2>保存在设备上的记录</h2>
         <p>训练、饮食、模板、营养目标，以及你主动填写的身体资料、体重和体感保存在当前设备。Trainote 不提供自己的账号或云同步服务。手动记录会保留至你删除相关记录或删除 App 数据；设备迁移和系统备份取决于你的 iOS 与 Apple 账户设置，开发者不能访问这些备份。</p>
+        <h2>首次须知与独立控制</h2>
+        <p>首次打开先阅读须知并选择“同意并继续”或“暂不同意”。接受只在本机保存须知版本和确认时间，不授权 Apple 健康、不自动运行 AI。确认记录与本机 AI 偏好单独保存，排除备份，不随业务 JSON 导出或恢复；新设备需重新确认。</p>
+        <p>设置中可查看完整须知、关闭本机 AI，或撤回须知确认。撤回会停止新同步、生成与分析并返回受限页面；你仍可导出已有记录、删除数据、清除健康导入或重新确认。它不自动删除数据、关闭 AI 偏好或撤销 iOS 健康权限。实质处理方式变化时需确认新版本。</p>
         <h2>可选的 Apple 健康连接</h2>
         <p>只有你主动连接后，Trainote 才请求读取你选择共享的体重、睡眠、静息心率、心率变异性（HRV SDNN）、步数、活动能量和训练数据，用于本机趋势与恢复分析。你可以只共享部分类型，或不连接。Trainote 不向 Apple 健康写入数据。</p>
         <p>导入样本与读取进度单独存储，并排除在系统备份和 Trainote 导出的备份之外。每次同步时会清理超过 90 天的导入样本；应用长期未同步时，旧缓存可能保留至下一次同步或你主动清除。同步依赖前台操作和系统通知，不保证持续实时。</p>
         <h2>报告与 AI</h2>
-        <p>当前报告由设备上的规则整理已有记录，不使用生成式 AI 模型，也不把记录提交给 DeepSeek 或其他 AI 供应商。正在研究的本机模型不属于当前已提供的功能。</p>
-        <p>若以后引入模型或改变数据处理方式，我们会更新对应说明；涉及向第三方发送个人数据时，会先说明发送内容、用途和接收方，并取得相应同意。当前说明不承诺尚未接通的供应商如何保留或使用数据。</p>
+        <p>报告页先展示本机规则报告或与当前记录匹配的有效缓存。只有你点击“生成本机 AI 报告”才运行随 App 提供的 Qwen3-0.6B 模型和 llama.cpp 引擎，不需要下载模型，不把记录发送给 DeepSeek、Qwen 或其他模型供应商。普通刷新、切换日期和进入前台不会自动运行模型。</p>
+        <p>模型仅从代码计算的事实和允许的候选建议中选择，最终文案由本机模板呈现；不读取完整健康样本、自由备注或对话，也不会自动修改目标或开始训练。输出经过校验，无效、取消或资源不足时显示规则报告。AI 可能遗漏重点，请核对原始记录。模型和提示随 App 更新，不在线静默更换。若未来向第三方发送个人数据，会先说明内容、用途和接收方并取得相应同意。</p>
         <h2>断开、删除与报告历史</h2>
         <p>在 App 中选择“断开并删除健康导入数据”，会停止健康同步，清除导入缓存、读取进度及依赖这些数据的报告，保留手动记录，不改动 Apple 健康里的原始数据。</p>
         <p>在系统设置里撤销健康权限不等于立即清除 Trainote 已保存的缓存。如需清除，请同时使用 App 内的断开并删除功能。</p>
-        <p>如果设备上已有 AI 报告历史，可以在 App 内单独删除。报告历史不进入系统备份或导出的 JSON；报告的可用时间不等于自动删除时间。当前版本关闭 AI 不会联系任何 AI 服务。</p>
+        <p>如果设备上已有 AI 报告历史，可以在 App 内单独删除。报告历史不进入系统备份或导出的 JSON；报告的可用时间不等于自动删除时间。关闭“允许本机 AI 报告”会取消生成并切回规则结果；不会删除既有历史或联系 AI 服务。只有主动打开的历史入口仍可只读查看旧报告，历史可单独删除。</p>
         <p>手动记录可在对应页面编辑或删除。删除 App（不是仅“卸载 App”以保留文稿与数据）会移除本机应用数据；已经导出的副本和系统备份仍需在其保存位置管理。</p>
         <h2>你主动导出的备份</h2>
-        <p>备份包含训练、饮食、模板、手动身体资料、体重、体感和目标历史等记录。它不包含 Apple 健康导入缓存、读取进度、健康或 AI 同意、设备凭据及派生报告。恢复备份不会恢复健康授权。</p>
+        <p>备份包含训练、饮食、模板、手动身体资料、体重、体感和目标历史等记录。它不包含 Apple 健康导入缓存、读取进度、健康或 AI 同意、首次须知确认、本机 AI 偏好、设备凭据及派生报告。恢复备份不会恢复健康授权。</p>
         <p>你通过系统文件选择器决定保存位置；选择 iCloud Drive 或其他云盘时，文件由你选择的服务处理。Trainote 不会自动上传备份。备份可能含健康信息，请妥善保管，不要公开分享。</p>
         <p>当前导出 v2 JSON，支持恢复 v1 和 v2。恢复添加缺少的记录并跳过相同 ID，不覆盖或删除现有记录。旧版本 App 不保证能够读取新格式。</p>
         <h2>外部网站与反馈</h2>
-        <p>你主动打开支持或资源链接时，会访问相应外部网站；对方按其政策处理访问和你提交的信息。若通过 GitHub Issues 反馈，内容可能公开显示。请只提供复现问题所需的脱敏信息，不要提交真实健康记录、完整备份、密码或其他凭据。</p>
+        <p>你主动打开支持或资源链接时，会访问相应外部网站；对方按其政策处理访问和你提交的信息。若通过 GitHub Issues 反馈，内容可能公开显示；也可主动发送邮件至 <a href="mailto:shen20060206@163.com">shen20060206@163.com</a>，其中的发件地址和内容由邮件服务与收件邮箱服务处理，用于处理你提出的问题。请只提供复现问题所需的脱敏信息，不要提交真实健康记录、完整备份、密码或其他凭据。</p>
         <h2>适用范围与联系</h2>
         <p>Trainote 提供记录和日常健身参考，不提供医疗诊断或治疗。通用营养和恢复建议的当前适用范围是健康成人日常健身，不应据此推定适合儿童或有特殊健康需求的人群。恢复指标不是医学检测结果。</p>
-        <p>有关使用、隐私或删除的问题，请查看<a href="../support/#zh">帮助与反馈</a>。现有联系入口为 <a href="https://github.com/Jerryszz02/trainote/issues">Trainote GitHub Issues</a>。</p>
+        <p>有关使用、隐私或删除的问题，请查看<a href="../support/#zh">帮助与反馈</a>。可发送邮件至 <a href="mailto:shen20060206@163.com">shen20060206@163.com</a>，或使用公开的 <a href="https://github.com/Jerryszz02/trainote/issues">Trainote GitHub Issues</a>。</p>
         <p><a href="#en" lang="en">Read in English</a></p>
       </article>
       <article id="en" lang="en">
         <h1>Trainote Privacy Policy</h1>
-        <p class="meta">Current-version draft · Updated October 24, 2026</p>
-        <p>This notice describes the current version of Trainote, which provides local records and rule-based reports and does not yet use generative AI. It will be checked and updated against the version submitted for release.</p>
+        <p class="meta">Release-candidate draft · Updated October 27, 2026</p>
+        <p>This notice describes the Trainote release candidate with local records, rule-based reports and bundled on-device AI reports. It is not yet publicly released; the final package and device behavior must be checked before submission.</p>
         <p>Trainote records workouts and meals. Basic recording and backup do not require an account or an Apple Health connection. The current version has no advertising, third-party analytics or tracking. It does not send workout, meal or health records to a developer-operated server or an AI provider, or sell those records.</p>
         <h2>Records on your device</h2>
         <p>Workouts, meals, templates, nutrition targets and the body information, weight and check-ins you choose to enter are stored on your device. Trainote does not operate an account or cloud-sync service. Manual records remain until you delete them or remove the app's data. Device migration and system backups depend on your iOS and Apple Account settings; the developer cannot access those backups.</p>
+        <h2>First-use notice and separate controls</h2>
+        <p>On first launch, read the notice and choose Agree and Continue or Not Now. Acceptance stores the notice version and time locally; it does not authorize Apple Health or start AI inference. Acknowledgment and the AI preference are stored separately, excluded from backups and business JSON export/restore; a new device requires acknowledgment again.</p>
+        <p>Settings lets you review the full notice, turn off on-device AI or withdraw acknowledgment. Withdrawal stops new sync, generation and analysis and returns to a restricted view. You can still export existing records, delete data, clear Health imports or accept again. It does not automatically delete records, change the AI preference or revoke iOS Health permission. Material changes to processing require a new notice version.</p>
         <h2>Optional Apple Health connection</h2>
         <p>Trainote requests read access only after you choose to connect. You can share selected types: weight, sleep, resting heart rate, heart rate variability (HRV SDNN), steps, active energy and workouts. These are used for on-device trend and recovery analysis. You can share only some types or decline the connection. Trainote does not write data to Apple Health.</p>
         <p>Imported samples and read progress are stored separately and excluded from system backups and Trainote's exported backups. Each sync removes imported samples older than 90 days. If the app does not sync for an extended period, older cached samples may remain until the next sync or until you clear them. Sync depends on foreground activity and system notifications and is not guaranteed to be continuously live.</p>
         <h2>Reports and AI</h2>
-        <p>Current reports organize existing records using rules on your device. They do not use a generative AI model or submit records to DeepSeek or another AI provider. The on-device model being researched is not an available feature of this version.</p>
-        <p>If a model or a different data-processing method is introduced, we will update the relevant notice. Before sharing personal data with a third party, we will explain the data, purpose and recipient and obtain the applicable consent. This notice makes no claims about retention or reuse by a provider that has not been connected.</p>
+        <p>Reports first show rules or a valid cache matching the current records. Only choosing Generate on-device AI report runs the Qwen3-0.6B model with llama.cpp bundled in the app. No model download is needed, and records are not sent to DeepSeek, Qwen or another model provider. Ordinary refresh, date changes and foregrounding do not start inference.</p>
+        <p>The model selects facts and allowed suggestions calculated by code; local templates produce the final wording. It does not read complete Health samples, free-text notes or conversations, or automatically change targets or start workouts. Output is validated. Cancellation, invalid output or insufficient resources falls back to rules. AI may miss relevant details; check the original records. Models and prompts update with the app, not silently online. Future transmission of personal data to a third party requires updated information about content, purposes and recipients and the relevant consent.</p>
         <h2>Disconnecting, deletion and report history</h2>
         <p>The in-app option to disconnect and delete imported health data stops syncing and removes imported samples, read progress and reports that depend on them. It preserves manual records and does not change the original data in Apple Health.</p>
         <p>Revoking Health permission in system settings does not immediately erase Trainote's existing cache. Use the in-app disconnect-and-delete option to clear it.</p>
-        <p>If your device contains AI report history, you can delete it separately in the app. Report history is excluded from system backups and exported JSON. A report's validity period is not an automatic deletion deadline. In the current version, turning off AI does not contact an AI service.</p>
+        <p>If your device contains AI report history, you can delete it separately in the app. Report history is excluded from system backups and exported JSON. A report's validity period is not an automatic deletion deadline. Turning off Allow on-device AI reports cancels generation and returns to rules without deleting history or contacting AI services. Existing AI history remains read-only when explicitly opened and can be deleted separately.</p>
         <p>You can edit or delete manual records in their respective screens. Deleting the app, rather than offloading it while retaining documents and data, removes its local data. Exported copies and system backups must still be managed where they are stored.</p>
         <h2>Backups you export</h2>
-        <p>Backups include workouts, meals, templates, manually entered body information, weight, check-ins and target history. They exclude imported Apple Health data, read progress, Health or AI consent, device credentials and derived reports. Restoring a backup does not restore Health authorization.</p>
+        <p>Backups include workouts, meals, templates, manually entered body information, weight, check-ins and target history. They exclude imported Apple Health data, read progress, Health or AI consent, first-use acknowledgment, the on-device AI preference, device credentials and derived reports. Restoring a backup does not restore Health authorization.</p>
         <p>You choose a destination using the system file picker. If you choose iCloud Drive or another cloud-storage service, that service handles the file. Trainote does not automatically upload backups. Backup files may contain health information; keep them private and secure.</p>
         <p>The app currently exports v2 JSON and can restore v1 or v2. Restore adds missing records and skips matching IDs without overwriting or deleting existing records. An older app version may not read a newer format.</p>
         <h2>External websites and feedback</h2>
-        <p>When you choose to open a support or resource link, you visit an external website. That service handles visits and information you submit under its own policies. Feedback posted to GitHub Issues may be public. Share only redacted information needed to reproduce a problem, never personal health records, a complete backup, passwords or other credentials.</p>
+        <p>When you choose to open a support or resource link, you visit an external website. That service handles visits and information you submit under its own policies. Feedback posted to GitHub Issues may be public. You may instead email <a href="mailto:shen20060206@163.com">shen20060206@163.com</a>; the sender address and content are processed by the email services and receiving mailbox service to address your request. Share only redacted information needed to reproduce a problem, never personal health records, a complete backup, passwords or other credentials.</p>
         <h2>Scope and contact</h2>
         <p>Trainote provides records and everyday fitness information, not medical diagnosis or treatment. Its general nutrition and recovery suggestions currently concern everyday fitness for healthy adults; they should not be assumed suitable for children or people with special health needs. Recovery indicators are not medical measurements.</p>
-        <p>For use, privacy or deletion questions, visit <a href="../support/#en">Help and Support</a>. The current contact channel is <a href="https://github.com/Jerryszz02/trainote/issues">Trainote GitHub Issues</a>.</p>
+        <p>For use, privacy or deletion questions, visit <a href="../support/#en">Help and Support</a>. Email <a href="mailto:shen20060206@163.com">shen20060206@163.com</a>, or use public <a href="https://github.com/Jerryszz02/trainote/issues">Trainote GitHub Issues</a>.</p>
         <p><a href="#zh" lang="zh-CN">阅读简体中文</a></p>
       </article>
     </main>

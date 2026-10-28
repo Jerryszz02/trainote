@@ -186,7 +186,7 @@ struct TodayView: View {
       .buttonStyle(.borderedProminent)
       .accessibilityIdentifier("today.startWorkout")
       if let active = workouts.first(where: { $0.status == .inProgress }) {
-        Text(L10n.text("interaction.today.progress", active.title, WorkoutInsights.completedSets(in: active)))
+        Text(L10n.text("interaction.today.progress", WorkoutInsights.completedSets(in: active), active.title))
           .font(.subheadline).foregroundStyle(.secondary)
           .accessibilityIdentifier("today.activeProgress")
       }

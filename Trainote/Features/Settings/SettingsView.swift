@@ -5,6 +5,8 @@ struct SettingsView: View {
   @Environment(\.dismiss) private var dismiss
   @Environment(\.modelContext) private var modelContext
   @Environment(HealthFeatureAccess.self) private var healthAccess
+  @Environment(HealthFoundation.self) private var foundation
+  @Environment(FirstUseNoticeStore.self) private var firstUseNotice
   @State private var exportDocument: BackupDocument?
   @State private var showExporter = false
   @State private var showImporter = false
@@ -13,6 +15,8 @@ struct SettingsView: View {
   @State private var showRestoreConfirmation = false
   @State private var showHealthDeletion = false
   @State private var showReportDeletion = false
+  @State private var showNoticeWithdrawal = false
+  @State private var noticeSaveError = false
 
   var body: some View {
     NavigationStack {
@@ -31,6 +35,27 @@ struct SettingsView: View {
             }
           }
           .accessibilityIdentifier("settings.language")
+        }
+
+        Section(L10n.text("notice.title")) {
+          NavigationLink(L10n.text("notice.view")) { FirstUseNoticeView(readOnly: true) }
+            .accessibilityIdentifier("settings.notice")
+          LabeledContent(L10n.text("notice.title"), value: FirstUseNoticeStore.currentVersion)
+          Toggle(L10n.text("notice.ai"), isOn: Binding(
+            get: { firstUseNotice.localAIEnabled },
+            set: { enabled in
+              if !enabled { healthAccess.reports.cancelPendingRequests() }
+              do { try firstUseNotice.setLocalAIEnabled(enabled) }
+              catch { noticeSaveError = true }
+            }
+          ))
+          .accessibilityIdentifier("settings.localAI")
+          Text(L10n.text("notice.aiHelp")).font(.footnote).foregroundStyle(.secondary)
+          if firstUseNotice.storageFailed {
+            Text(L10n.text("notice.saveError")).font(.footnote).foregroundStyle(.secondary)
+          }
+          Button(L10n.text("notice.withdraw"), role: .destructive) { showNoticeWithdrawal = true }
+            .accessibilityIdentifier("settings.withdrawNotice")
         }
 
         Section(L10n.text("settings.nutrition")) {
@@ -61,8 +86,11 @@ struct SettingsView: View {
           }
           .accessibilityIdentifier("settings.disconnectHealth")
           .disabled(healthAccess.isBusy)
-          NavigationLink(L10n.text("settings.aiReports")) { AIConsentView() }
-            .accessibilityIdentifier("settings.aiReports")
+          NavigationLink(L10n.text("settings.aiReports")) {
+            if healthAccess.reports.isConfigured { AIConsentView() }
+            else { HealthHelpView(topic: .ai) }
+          }
+          .accessibilityIdentifier("settings.aiReports")
           if healthAccess.consent?.record(for: .aiReports)?.isGranted == true
             || healthAccess.aiRevocationNeedsRetry || healthAccess.reports.serverRevocationPending {
             Button(L10n.text("settings.revokeAI")) { Task { await healthAccess.revokeAI() } }
@@ -145,6 +173,18 @@ struct SettingsView: View {
         Button(L10n.text("settings.deleteReports"), role: .destructive) { healthAccess.deleteReports() }
         Button(L10n.text("settings.cancel"), role: .cancel) {}
       } message: { Text(L10n.text("settings.deleteHelp")) }
+      .confirmationDialog(L10n.text("notice.withdraw"), isPresented: $showNoticeWithdrawal, titleVisibility: .visible) {
+        Button(L10n.text("notice.withdraw"), role: .destructive) {
+          healthAccess.reports.cancelPendingRequests()
+          foundation.healthData?.setProcessingAllowed(false)
+          do { try firstUseNotice.withdraw() }
+          catch { noticeSaveError = true }
+        }
+        Button(L10n.text("settings.cancel"), role: .cancel) {}
+      } message: { Text(L10n.text("notice.withdrawHelp")) }
+      .alert(L10n.text("settings.saveFailed"), isPresented: $noticeSaveError) {
+        Button(L10n.text("settings.ok"), role: .cancel) {}
+      } message: { Text(L10n.text("notice.saveError")) }
       .healthAccessError(healthAccess)
     }
   }

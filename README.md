@@ -2,7 +2,7 @@
 
 Trainote 是一个支持简体中文与 English、默认跟随系统语言、离线可用的 iPhone 健身与饮食记录 App。它使用 SwiftUI 和 SwiftData，支持四种训练记录方式、训练模板、常用食物、固定餐、每日营养目标、周报与个人纪录。Apple 健康连接单独选择，原有记录不需要健康权限。
 
-默认分支已集成五个 Tab、趋势与恢复分析、训练建议、本地基础报告及撤回机制；远程 AI 报告仍未接通。首次使用入口与集中“帮助与说明”页面已实现。具体接口与历史验证见 [集成交接](docs/health-integration-handoff.md)，本周交付与待验边界见 [规划索引](docs/planning/README.md)。
+本分支在已有五个 Tab、趋势与恢复分析和训练建议之上，接入随 App 打包的 Qwen3-0.6B 本机报告及版本化首次使用须知。用户主动生成时，模型只挑选代码批准的事实和建议；失败显示规则报告。具体实现与验证边界见 [端侧实施记录](docs/app-store/on-device-implementation.md)，历史接口见 [集成交接](docs/health-integration-handoff.md)。
 
 ## 当前能力
 
@@ -17,7 +17,9 @@ Trainote 是一个支持简体中文与 English、默认跟随系统语言、离
 - 手动记录保存在本机，无账号、广告或遥测。
 - 今日、训练、饮食、趋势、恢复五个入口；完整资料库可从今日以及训练/饮食进入，设置仍从今日齿轮打开。
 - 健康数据连接后只读导入；可明确断开并清除导入缓存及依赖报告，保留手动记录。
-- 无真实代理配置时 AI 入口说明开放条件，不保存预先同意、不向 DeepSeek 发送健康记录。
+- 首次同意须知后进入 App；可暂不同意或撤回，并保留导出和删除入口。Health 授权、本机 AI 开关及历史云端同意分别管理。
+- 本机 AI 只在主动生成时运行；切换报告、普通刷新及回前台只读取规则/匹配缓存。关闭、取消、记录变化或内存/温度压力会停止生成，过时结果不写回。
+- 当前无远端代理、运行时模型下载或模型 API 请求；模型来源和许可随包提供，旧云端接口保留为备选。
 
 ## 开发环境
 
@@ -27,7 +29,7 @@ Trainote 是一个支持简体中文与 English、默认跟随系统语言、离
 - 最低支持 iOS 17；当前已安装 iOS 26.5 Simulator runtime
 - Python 3.9+，用于重建动作目录及审计默认记录方式
 
-项目没有第三方 Swift Package。`Trainote.xcodeproj` 由仓库根目录的 `project.yml` 生成并提交；普通开发不需要重新生成。
+项目使用本地 Swift Package `Packages/TrainoteLlama`，其固定版本 llama.cpp XCFramework 需要先准备。权重和引擎二进制受 Git 忽略，来源、校验值及脚本见 [Models/README](Models/README.md)。`Trainote.xcodeproj` 由 `project.yml` 生成并提交；修改文件清单时使用 XcodeGen 重新生成。
 
 ## 开始开发
 
@@ -44,8 +46,14 @@ Trainote 是一个支持简体中文与 English、默认跟随系统语言、离
    sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
    ```
 
-2. 打开 `Trainote.xcodeproj`，选择 `Trainote` Scheme 和任意 iOS 17+ iPhone Simulator；当前机器可使用 iOS 26.5 的 `iPhone 17`。
-3. 运行 App 或测试。
+2. 准备引擎及模型（首次会下载固定版本的构建输入）：
+
+   ```sh
+   python3 Scripts/on-device-ai/prepare.py
+   ```
+
+   仅运行规则/mock 测试可改用 `--engine-only`，不会下载模型权重。Debug 缺模型时允许规则模式，已有权重必须通过校验；Release 缺模型或 SHA 不符会构建失败。
+3. 打开 `Trainote.xcodeproj`，选择 `Trainote` Scheme 和可用的 iOS 17+ iPhone Simulator，运行 App 或测试。
 
 命令行构建：
 
@@ -60,10 +68,13 @@ xcodebuild -project Trainote.xcodeproj -scheme Trainote \
 ```sh
 xcodebuild -project Trainote.xcodeproj -scheme Trainote \
   -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5' \
+  -skip-testing:TrainoteUITests/StoreScreenshotUITests \
   test
 ```
 
 ## 验证状态
+
+2026-10-27 本机 AI、首次须知和商店准备的本次验证见 [实施记录](docs/app-store/on-device-implementation.md) 与 [模型评估](docs/app-store/on-device-model-evaluation.md)。下列均为历史结果；本轮未连接用户 iPhone，不能用 Mac/Simulator 数据推定真机速度或内存。
 
 2026-10-18 文档核查：PR [#14](https://github.com/Jerryszz02/trainote/pull/14)、[#16](https://github.com/Jerryszz02/trainote/pull/16)、[#17](https://github.com/Jerryszz02/trainote/pull/17)、[#18](https://github.com/Jerryszz02/trainote/pull/18) 已合入默认分支；当前功能基线为 `64af1f2`。#18 的 [iOS CI](https://github.com/Jerryszz02/trainote/actions/runs/38418266749) 成功，10 月 13 日交付记录为 308 项单元测试、52 项 UI 测试、零失败；本次仅运行文档检查，未重跑 App 测试。
 
@@ -78,7 +89,7 @@ xcodebuild -project Trainote.xcodeproj -scheme Trainote \
 
 ## App Store 准备
 
-App Icon、隐私政策、支持页、简体中文商店元数据、审核说明和截图规划已在本地准备。发布资料索引见 [App Store 发布清单](docs/app-store/release-checklist.md)。
+App Icon、中英隐私/支持页、双语商店元数据、审核说明、隐私问卷和截图工具已准备；公开联系邮箱经用户确认。发布资料、实际截图和未验事项见 [App Store 发布清单](docs/app-store/release-checklist.md)。付费会员、签名上传、TestFlight 和正式提交仍由后续发布流程处理。
 
 ## 动作目录
 

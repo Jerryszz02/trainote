@@ -19,6 +19,20 @@ struct HealthReportsView: View {
         Button(L10n.text("health.healthreportsview.refresh.report.ec87f6")) { Task { await integration.refresh(type: type) } }
           .disabled(integration.isRefreshing)
           .accessibilityIdentifier("reports.refresh")
+        if integration.isGenerating {
+          ProgressView(L10n.text("localAI.report.generating"))
+            .accessibilityIdentifier("reports.generating")
+          Button(L10n.text("localAI.report.cancel")) { integration.cancelGeneration() }
+            .accessibilityIdentifier("reports.cancel")
+        } else {
+          Button(L10n.text("localAI.report.generate")) {
+            Task { await integration.generateOnDevice(type: type) }
+          }
+          .disabled(!integration.canGenerateOnDevice || integration.isRefreshing)
+          .accessibilityIdentifier("reports.generate")
+        }
+        Text(L10n.text(integration.onDeviceAIEnabled ? "localAI.report.explanation" : "localAI.report.disabled"))
+          .font(.footnote).foregroundStyle(.secondary)
       }
       if let content = integration.content, content.input.reportType == type {
         Section {
@@ -36,7 +50,7 @@ struct HealthReportsView: View {
             .foregroundStyle(.secondary)
         }
       }
-      if !integration.isConfigured {
+      if !integration.canGenerateOnDevice {
         Section {
           Text(L10n.text("interaction.help.localReport"))
             .font(.footnote).foregroundStyle(.secondary)
@@ -53,6 +67,7 @@ struct HealthReportsView: View {
     .navigationBarTitleDisplayMode(.inline)
     .task(id: type) { await integration.refresh(type: type) }
     .refreshable { await integration.refresh(type: type) }
+    .onDisappear { integration.cancelGeneration() }
     .onChange(of: scenePhase) { _, phase in
       if phase == .active { Task { await integration.refresh(type: type) } }
     }
@@ -71,6 +86,8 @@ private struct HealthReportHistoryView: View {
   let integration: HealthReportIntegration
   @State private var selectedReport: AIReportContent?
   @State private var showDetails = false
+  @State private var deleting: AIReportContent?
+  @State private var deleteFailed = false
 
   var body: some View {
     List {
@@ -87,11 +104,25 @@ private struct HealthReportHistoryView: View {
             selectedReport = content
             showDetails = true
           }
+          Button(L10n.text("localAI.history.delete"), role: .destructive) { deleting = content }
+            .accessibilityIdentifier("reports.history.delete")
         }
       }
     }
     .navigationTitle(L10n.text("health.healthreportsview.historical.ai.reports.4adc1e"))
     .navigationBarTitleDisplayMode(.inline)
+    .confirmationDialog(L10n.text("localAI.history.deleteConfirm"), isPresented: Binding(
+      get: { deleting != nil }, set: { if !$0 { deleting = nil } }
+    ), titleVisibility: .visible) {
+      Button(L10n.text("localAI.history.delete"), role: .destructive) {
+        guard let deleting else { return }
+        do { try integration.deleteReport(id: deleting.id) } catch { deleteFailed = true }
+        self.deleting = nil
+      }
+    }
+    .alert(L10n.text("localAI.history.deleteFailed"), isPresented: $deleteFailed) {
+      Button(L10n.text("localAI.report.dismiss"), role: .cancel) { }
+    }
     .navigationDestination(isPresented: $showDetails) {
       if let selectedReport, integration.history.contains(where: { $0.id == selectedReport.id }) {
         HealthReportEvidenceView(content: selectedReport)

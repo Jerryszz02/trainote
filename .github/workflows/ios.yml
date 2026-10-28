@@ -15,12 +15,16 @@ jobs:
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
+      - name: Prepare pinned on-device engine (no model weights)
+        run: python3 Scripts/on-device-ai/prepare.py --engine-only
       - name: Check exercise recording modes
         run: python3 Scripts/audit_tracking_modes.py
       - name: Check localization catalog
         run: |
           python3 -m unittest discover -s Scripts/localization -p 'test_*.py'
           python3 Scripts/localization/build_catalog.py --check
+      - name: Check store materials
+        run: python3 Scripts/verify_store_materials.py --screenshots docs/app-store/screenshots
       - name: Select an available iPhone simulator
         run: |
           xcodebuild -version
@@ -41,6 +45,7 @@ jobs:
           xcodebuild -project Trainote.xcodeproj -scheme Trainote \
             -destination "platform=iOS Simulator,id=$TRAINOTE_SIMULATOR" \
             -resultBundlePath TestResults.xcresult \
+            -skip-testing:TrainoteUITests/StoreScreenshotUITests \
             -testLanguage zh-Hans -testRegion CN \
             CODE_SIGNING_ALLOWED=NO test
       - name: Upload test evidence

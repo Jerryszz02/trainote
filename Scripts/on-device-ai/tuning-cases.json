@@ -1,0 +1,280 @@
+[
+  {
+    "id": "tuning-normal-0",
+    "category": "normal",
+    "scope": "today",
+    "sourceFacts": [
+      {
+        "id": "source-f00",
+        "metric": "recommendation.availableToday",
+        "value": 1,
+        "unit": "count",
+        "quality": []
+      },
+      {
+        "id": "source-f01",
+        "metric": "recovery.feeling",
+        "value": 2,
+        "unit": "none",
+        "quality": []
+      },
+      {
+        "id": "source-f02",
+        "metric": "recommendation.trainingDaysPerWeek",
+        "value": 3,
+        "unit": "count",
+        "quality": []
+      }
+    ],
+    "sourceActions": [
+      {
+        "id": "source-a00",
+        "action": "keepPlan",
+        "facts": [
+          "source-f00",
+          "source-f01",
+          "source-f02"
+        ]
+      }
+    ],
+    "missing": [],
+    "requiredSourceFacts": [],
+    "requiredSourceActions": []
+  },
+  {
+    "id": "tuning-normal-1",
+    "category": "normal",
+    "scope": "trend",
+    "sourceFacts": [
+      {
+        "id": "source-f00",
+        "metric": "weight.smoothed",
+        "value": 72.2,
+        "unit": "kilograms",
+        "quality": []
+      },
+      {
+        "id": "source-f01",
+        "metric": "weight.weeklyChangePercent",
+        "value": -0.42000000000000004,
+        "unit": "percentPerWeek",
+        "quality": []
+      },
+      {
+        "id": "source-f02",
+        "metric": "diet.completeDays",
+        "value": 14,
+        "unit": "count",
+        "quality": []
+      }
+    ],
+    "sourceActions": [
+      {
+        "id": "source-a00",
+        "action": "reviewNutrition",
+        "facts": [
+          "source-f01",
+          "source-f02"
+        ]
+      }
+    ],
+    "missing": [],
+    "requiredSourceFacts": [],
+    "requiredSourceActions": []
+  },
+  {
+    "id": "tuning-sparse-0",
+    "category": "sparse",
+    "scope": "today",
+    "sourceFacts": [],
+    "sourceActions": [],
+    "missing": [
+      "sleep",
+      "restingHeartRate",
+      "heartRateVariability"
+    ],
+    "requiredSourceFacts": [],
+    "requiredSourceActions": []
+  },
+  {
+    "id": "tuning-sparse-1",
+    "category": "sparse",
+    "scope": "trend",
+    "sourceFacts": [
+      {
+        "id": "source-f00",
+        "metric": "recovery.feeling",
+        "value": null,
+        "unit": "none",
+        "quality": [
+          "missing"
+        ]
+      },
+      {
+        "id": "source-f01",
+        "metric": "diet.completeDays",
+        "value": 0,
+        "unit": "count",
+        "quality": []
+      }
+    ],
+    "sourceActions": [],
+    "missing": [
+      "sleep",
+      "restingHeartRate",
+      "heartRateVariability"
+    ],
+    "requiredSourceFacts": [],
+    "requiredSourceActions": []
+  },
+  {
+    "id": "tuning-conflict-0",
+    "category": "conflict",
+    "scope": "today",
+    "sourceFacts": [
+      {
+        "id": "source-f00",
+        "metric": "recovery.quads.pain",
+        "value": 1,
+        "unit": "none",
+        "quality": []
+      },
+      {
+        "id": "source-f01",
+        "metric": "recovery.readiness",
+        "value": 25,
+        "unit": "score",
+        "quality": []
+      },
+      {
+        "id": "source-f02",
+        "metric": "recommendation.recentWorkingSets",
+        "value": 39,
+        "unit": "count",
+        "quality": []
+      },
+      {
+        "id": "source-f03",
+        "metric": "recovery.feeling",
+        "value": 2,
+        "unit": "none",
+        "quality": []
+      }
+    ],
+    "sourceActions": [
+      {
+        "id": "source-a00",
+        "action": "rest",
+        "facts": [
+          "source-f00",
+          "source-f01",
+          "source-f02"
+        ]
+      }
+    ],
+    "missing": [],
+    "requiredSourceFacts": [
+      "source-f00"
+    ],
+    "requiredSourceActions": [
+      "source-a00"
+    ]
+  },
+  {
+    "id": "tuning-conflict-1",
+    "category": "conflict",
+    "scope": "recovery",
+    "sourceFacts": [
+      {
+        "id": "source-f00",
+        "metric": "recovery.quads.pain",
+        "value": 1,
+        "unit": "none",
+        "quality": []
+      },
+      {
+        "id": "source-f01",
+        "metric": "recovery.readiness",
+        "value": 26,
+        "unit": "score",
+        "quality": []
+      },
+      {
+        "id": "source-f02",
+        "metric": "recommendation.recentWorkingSets",
+        "value": 40,
+        "unit": "count",
+        "quality": []
+      },
+      {
+        "id": "source-f03",
+        "metric": "recovery.feeling",
+        "value": 2,
+        "unit": "none",
+        "quality": []
+      }
+    ],
+    "sourceActions": [
+      {
+        "id": "source-a00",
+        "action": "rest",
+        "facts": [
+          "source-f00",
+          "source-f01",
+          "source-f02"
+        ]
+      }
+    ],
+    "missing": [],
+    "requiredSourceFacts": [
+      "source-f00"
+    ],
+    "requiredSourceActions": [
+      "source-a00"
+    ]
+  },
+  {
+    "id": "tuning-boundary-0",
+    "category": "boundary",
+    "scope": "today",
+    "sourceFacts": [],
+    "sourceActions": [],
+    "missing": [
+      "sleep"
+    ],
+    "requiredSourceFacts": [],
+    "requiredSourceActions": []
+  },
+  {
+    "id": "tuning-boundary-1",
+    "category": "boundary",
+    "scope": "trend",
+    "sourceFacts": [
+      {
+        "id": "source-f00",
+        "metric": "recovery.feeling",
+        "value": null,
+        "unit": "none",
+        "quality": [
+          "missing"
+        ]
+      },
+      {
+        "id": "source-f01",
+        "metric": "weight.weeklyChangePercent",
+        "value": -0.001,
+        "unit": "percentPerWeek",
+        "quality": [
+          "requiresReview",
+          "sourceConflict"
+        ]
+      }
+    ],
+    "sourceActions": [],
+    "missing": [
+      "sleep"
+    ],
+    "requiredSourceFacts": [],
+    "requiredSourceActions": []
+  }
+]

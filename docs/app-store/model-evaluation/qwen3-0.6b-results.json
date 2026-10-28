@@ -1,0 +1,2698 @@
+{
+  "platform": "macOS-26.5.1-arm64-arm-64bit",
+  "productionPrompt": "on-device-selection-v1",
+  "factBudget": 20,
+  "retryFactBudget": 12,
+  "trendOptionalPrefixes": [
+    "weight.",
+    "diet.",
+    "energy.",
+    "recommendation.goal."
+  ],
+  "results": [
+    {
+      "model": "q4",
+      "case": "evaluation-normal-0",
+      "category": "normal",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 964,
+          "facts": 3,
+          "actions": 1,
+          "promptTokens": 223,
+          "processWallSeconds": 1.591561875,
+          "status": "generated",
+          "seconds": 0.43610229168552905
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 964,
+      "facts": 3,
+      "actions": 1,
+      "promptTokens": 223,
+      "status": "generated",
+      "output": {
+        "factIDs": [
+          "f0",
+          "f1",
+          "f2"
+        ],
+        "actionIDs": [
+          "a0"
+        ]
+      },
+      "seconds": 0.43610229168552905,
+      "selectedMetrics": [
+        "recommendation.availableToday",
+        "recovery.feeling",
+        "recommendation.trainingDaysPerWeek"
+      ],
+      "scopeWarnings": [],
+      "selectedActions": [
+        "keepPlan"
+      ],
+      "retried": false
+    },
+    {
+      "model": "q4",
+      "case": "evaluation-normal-1",
+      "category": "normal",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 982,
+          "facts": 3,
+          "actions": 1,
+          "promptTokens": 245,
+          "processWallSeconds": 0.4092770830000001,
+          "status": "generated",
+          "seconds": 0.3900475000264123
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 982,
+      "facts": 3,
+      "actions": 1,
+      "promptTokens": 245,
+      "status": "generated",
+      "output": {
+        "factIDs": [
+          "f0",
+          "f1"
+        ],
+        "actionIDs": [
+          "a0"
+        ]
+      },
+      "seconds": 0.3900475000264123,
+      "selectedMetrics": [
+        "weight.weeklyChangePercent",
+        "diet.completeDays"
+      ],
+      "scopeWarnings": [],
+      "selectedActions": [
+        "reviewNutrition"
+      ],
+      "retried": false
+    },
+    {
+      "model": "q4",
+      "case": "evaluation-normal-2",
+      "category": "normal",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 943,
+          "facts": 3,
+          "actions": 1,
+          "promptTokens": 224,
+          "processWallSeconds": 0.4626293330000002,
+          "status": "generated",
+          "seconds": 0.4463777499040589
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 943,
+      "facts": 3,
+      "actions": 1,
+      "promptTokens": 224,
+      "status": "generated",
+      "output": {
+        "factIDs": [
+          "f0",
+          "f1",
+          "f2"
+        ],
+        "actionIDs": [
+          "a0"
+        ]
+      },
+      "seconds": 0.4463777499040589,
+      "selectedMetrics": [
+        "recovery.feeling",
+        "recovery.sleepFeeling",
+        "recovery.readiness"
+      ],
+      "scopeWarnings": [],
+      "selectedActions": [
+        "keepPlan"
+      ],
+      "retried": false
+    },
+    {
+      "model": "q4",
+      "case": "evaluation-normal-3",
+      "category": "normal",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 960,
+          "facts": 3,
+          "actions": 1,
+          "promptTokens": 225,
+          "processWallSeconds": 0.4042285830000001,
+          "status": "generated",
+          "seconds": 0.3878042916767299
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 960,
+      "facts": 3,
+      "actions": 1,
+      "promptTokens": 225,
+      "status": "generated",
+      "output": {
+        "factIDs": [
+          "f0",
+          "f1"
+        ],
+        "actionIDs": [
+          "a0"
+        ]
+      },
+      "seconds": 0.3878042916767299,
+      "selectedMetrics": [
+        "diet.completeDays",
+        "weight.weeklyChangePercent"
+      ],
+      "scopeWarnings": [],
+      "selectedActions": [
+        "reviewNutrition"
+      ],
+      "retried": false
+    },
+    {
+      "model": "q4",
+      "case": "evaluation-normal-4",
+      "category": "normal",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 964,
+          "facts": 3,
+          "actions": 1,
+          "promptTokens": 223,
+          "processWallSeconds": 0.44129945899999967,
+          "status": "generated",
+          "seconds": 0.4267962083686143
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 964,
+      "facts": 3,
+      "actions": 1,
+      "promptTokens": 223,
+      "status": "generated",
+      "output": {
+        "factIDs": [
+          "f0",
+          "f1",
+          "f2"
+        ],
+        "actionIDs": [
+          "a0"
+        ]
+      },
+      "seconds": 0.4267962083686143,
+      "selectedMetrics": [
+        "recommendation.availableToday",
+        "recovery.feeling",
+        "recommendation.trainingDaysPerWeek"
+      ],
+      "scopeWarnings": [],
+      "selectedActions": [
+        "keepPlan"
+      ],
+      "retried": false
+    },
+    {
+      "model": "q4",
+      "case": "evaluation-normal-5",
+      "category": "normal",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 967,
+          "facts": 3,
+          "actions": 1,
+          "promptTokens": 230,
+          "processWallSeconds": 0.4106324169999995,
+          "status": "generated",
+          "seconds": 0.39379941660445184
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 967,
+      "facts": 3,
+      "actions": 1,
+      "promptTokens": 230,
+      "status": "generated",
+      "output": {
+        "factIDs": [
+          "f0",
+          "f1"
+        ],
+        "actionIDs": [
+          "a0"
+        ]
+      },
+      "seconds": 0.39379941660445184,
+      "selectedMetrics": [
+        "weight.weeklyChangePercent",
+        "diet.completeDays"
+      ],
+      "scopeWarnings": [],
+      "selectedActions": [
+        "reviewNutrition"
+      ],
+      "retried": false
+    },
+    {
+      "model": "q4",
+      "case": "evaluation-normal-6",
+      "category": "normal",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 943,
+          "facts": 3,
+          "actions": 1,
+          "promptTokens": 224,
+          "processWallSeconds": 0.4601662090000005,
+          "status": "generated",
+          "seconds": 0.43827120831701905
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 943,
+      "facts": 3,
+      "actions": 1,
+      "promptTokens": 224,
+      "status": "generated",
+      "output": {
+        "factIDs": [
+          "f0",
+          "f1",
+          "f2"
+        ],
+        "actionIDs": [
+          "a0"
+        ]
+      },
+      "seconds": 0.43827120831701905,
+      "selectedMetrics": [
+        "recovery.feeling",
+        "recovery.sleepFeeling",
+        "recovery.readiness"
+      ],
+      "scopeWarnings": [],
+      "selectedActions": [
+        "keepPlan"
+      ],
+      "retried": false
+    },
+    {
+      "model": "q4",
+      "case": "evaluation-normal-7",
+      "category": "normal",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 960,
+          "facts": 3,
+          "actions": 1,
+          "promptTokens": 225,
+          "processWallSeconds": 0.4431019169999999,
+          "status": "generated",
+          "seconds": 0.41977070830762386
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 960,
+      "facts": 3,
+      "actions": 1,
+      "promptTokens": 225,
+      "status": "generated",
+      "output": {
+        "factIDs": [
+          "f0",
+          "f1"
+        ],
+        "actionIDs": [
+          "a0"
+        ]
+      },
+      "seconds": 0.41977070830762386,
+      "selectedMetrics": [
+        "diet.completeDays",
+        "weight.weeklyChangePercent"
+      ],
+      "scopeWarnings": [],
+      "selectedActions": [
+        "reviewNutrition"
+      ],
+      "retried": false
+    },
+    {
+      "model": "q4",
+      "case": "evaluation-sparse-0",
+      "category": "sparse",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 694,
+          "facts": 0,
+          "actions": 0,
+          "promptTokens": 142,
+          "processWallSeconds": 0.35105279199999995,
+          "status": "generated",
+          "seconds": 0.33201429166365415
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 694,
+      "facts": 0,
+      "actions": 0,
+      "promptTokens": 142,
+      "status": "generated",
+      "output": {
+        "factIDs": [],
+        "actionIDs": []
+      },
+      "seconds": 0.33201429166365415,
+      "selectedMetrics": [],
+      "scopeWarnings": [],
+      "selectedActions": [],
+      "retried": false
+    },
+    {
+      "model": "q4",
+      "case": "evaluation-sparse-1",
+      "category": "sparse",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 772,
+          "facts": 1,
+          "actions": 0,
+          "promptTokens": 165,
+          "processWallSeconds": 0.3352040829999998,
+          "status": "generated",
+          "seconds": 0.3211694583296776
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 772,
+      "facts": 1,
+      "actions": 0,
+      "promptTokens": 165,
+      "status": "generated",
+      "output": {
+        "factIDs": [
+          "f0"
+        ],
+        "actionIDs": []
+      },
+      "seconds": 0.3211694583296776,
+      "selectedMetrics": [
+        "diet.completeDays"
+      ],
+      "scopeWarnings": [],
+      "selectedActions": [],
+      "retried": false
+    },
+    {
+      "model": "q4",
+      "case": "evaluation-sparse-2",
+      "category": "sparse",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 697,
+          "facts": 0,
+          "actions": 0,
+          "promptTokens": 143,
+          "processWallSeconds": 0.3813372090000007,
+          "status": "generated",
+          "seconds": 0.3622982499655336
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 697,
+      "facts": 0,
+      "actions": 0,
+      "promptTokens": 143,
+      "status": "generated",
+      "output": {
+        "factIDs": [],
+        "actionIDs": []
+      },
+      "seconds": 0.3622982499655336,
+      "selectedMetrics": [],
+      "scopeWarnings": [],
+      "selectedActions": [],
+      "retried": false
+    },
+    {
+      "model": "q4",
+      "case": "evaluation-sparse-3",
+      "category": "sparse",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 862,
+          "facts": 2,
+          "actions": 0,
+          "promptTokens": 188,
+          "processWallSeconds": 0.3877212090000004,
+          "status": "generated",
+          "seconds": 0.3671104166423902
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 862,
+      "facts": 2,
+      "actions": 0,
+      "promptTokens": 188,
+      "status": "generated",
+      "output": {
+        "factIDs": [
+          "f0",
+          "f1"
+        ],
+        "actionIDs": []
+      },
+      "seconds": 0.3671104166423902,
+      "selectedMetrics": [
+        "diet.completeDays",
+        "recovery.feeling"
+      ],
+      "scopeWarnings": [],
+      "selectedActions": [],
+      "retried": false
+    },
+    {
+      "model": "q4",
+      "case": "evaluation-sparse-4",
+      "category": "sparse",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 694,
+          "facts": 0,
+          "actions": 0,
+          "promptTokens": 142,
+          "processWallSeconds": 0.34844975000000034,
+          "status": "generated",
+          "seconds": 0.3297836249694228
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 694,
+      "facts": 0,
+      "actions": 0,
+      "promptTokens": 142,
+      "status": "generated",
+      "output": {
+        "factIDs": [],
+        "actionIDs": []
+      },
+      "seconds": 0.3297836249694228,
+      "selectedMetrics": [],
+      "scopeWarnings": [],
+      "selectedActions": [],
+      "retried": false
+    },
+    {
+      "model": "q4",
+      "case": "evaluation-sparse-5",
+      "category": "sparse",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 772,
+          "facts": 1,
+          "actions": 0,
+          "promptTokens": 165,
+          "processWallSeconds": 0.41075654199999967,
+          "status": "generated",
+          "seconds": 0.3938070416916162
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 772,
+      "facts": 1,
+      "actions": 0,
+      "promptTokens": 165,
+      "status": "generated",
+      "output": {
+        "factIDs": [
+          "f0"
+        ],
+        "actionIDs": []
+      },
+      "seconds": 0.3938070416916162,
+      "selectedMetrics": [
+        "diet.completeDays"
+      ],
+      "scopeWarnings": [],
+      "selectedActions": [],
+      "retried": false
+    },
+    {
+      "model": "q4",
+      "case": "evaluation-sparse-6",
+      "category": "sparse",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 697,
+          "facts": 0,
+          "actions": 0,
+          "promptTokens": 143,
+          "processWallSeconds": 0.3973097910000014,
+          "status": "generated",
+          "seconds": 0.37961920839734375
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 697,
+      "facts": 0,
+      "actions": 0,
+      "promptTokens": 143,
+      "status": "generated",
+      "output": {
+        "factIDs": [],
+        "actionIDs": []
+      },
+      "seconds": 0.37961920839734375,
+      "selectedMetrics": [],
+      "scopeWarnings": [],
+      "selectedActions": [],
+      "retried": false
+    },
+    {
+      "model": "q4",
+      "case": "evaluation-sparse-7",
+      "category": "sparse",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 862,
+          "facts": 2,
+          "actions": 0,
+          "promptTokens": 188,
+          "processWallSeconds": 0.38301641600000025,
+          "status": "generated",
+          "seconds": 0.36540745839010924
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 862,
+      "facts": 2,
+      "actions": 0,
+      "promptTokens": 188,
+      "status": "generated",
+      "output": {
+        "factIDs": [
+          "f0",
+          "f1"
+        ],
+        "actionIDs": []
+      },
+      "seconds": 0.36540745839010924,
+      "selectedMetrics": [
+        "diet.completeDays",
+        "recovery.feeling"
+      ],
+      "scopeWarnings": [],
+      "selectedActions": [],
+      "retried": false
+    },
+    {
+      "model": "q4",
+      "case": "evaluation-conflict-0",
+      "category": "conflict",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 1029,
+          "facts": 4,
+          "actions": 1,
+          "promptTokens": 249,
+          "processWallSeconds": 0.45407750000000036,
+          "status": "generated",
+          "seconds": 0.4348277917597443
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 1029,
+      "facts": 4,
+      "actions": 1,
+      "promptTokens": 249,
+      "status": "generated",
+      "output": {
+        "factIDs": [
+          "f0",
+          "f1",
+          "f2"
+        ],
+        "actionIDs": [
+          "a0"
+        ]
+      },
+      "seconds": 0.4348277917597443,
+      "selectedMetrics": [
+        "recovery.quads.pain",
+        "recovery.readiness",
+        "recommendation.recentWorkingSets"
+      ],
+      "scopeWarnings": [],
+      "selectedActions": [
+        "rest"
+      ],
+      "retried": false
+    },
+    {
+      "model": "q4",
+      "case": "evaluation-conflict-1",
+      "category": "conflict",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 1032,
+          "facts": 4,
+          "actions": 1,
+          "promptTokens": 250,
+          "processWallSeconds": 0.4734115420000009,
+          "status": "generated",
+          "seconds": 0.4568393749650568
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 1032,
+      "facts": 4,
+      "actions": 1,
+      "promptTokens": 250,
+      "status": "generated",
+      "output": {
+        "factIDs": [
+          "f0",
+          "f1",
+          "f2"
+        ],
+        "actionIDs": [
+          "a0"
+        ]
+      },
+      "seconds": 0.4568393749650568,
+      "selectedMetrics": [
+        "recovery.quads.pain",
+        "recovery.readiness",
+        "recommendation.recentWorkingSets"
+      ],
+      "scopeWarnings": [],
+      "selectedActions": [
+        "rest"
+      ],
+      "retried": false
+    },
+    {
+      "model": "q4",
+      "case": "evaluation-conflict-2",
+      "category": "conflict",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 1030,
+          "facts": 4,
+          "actions": 1,
+          "promptTokens": 249,
+          "processWallSeconds": 0.49282108399999913,
+          "status": "generated",
+          "seconds": 0.471254333271645
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 1030,
+      "facts": 4,
+      "actions": 1,
+      "promptTokens": 249,
+      "status": "generated",
+      "output": {
+        "factIDs": [
+          "f0",
+          "f1",
+          "f2"
+        ],
+        "actionIDs": [
+          "a0"
+        ]
+      },
+      "seconds": 0.471254333271645,
+      "selectedMetrics": [
+        "recovery.quads.pain",
+        "recovery.readiness",
+        "recommendation.recentWorkingSets"
+      ],
+      "scopeWarnings": [],
+      "selectedActions": [
+        "rest"
+      ],
+      "retried": false
+    },
+    {
+      "model": "q4",
+      "case": "evaluation-conflict-3",
+      "category": "conflict",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 1032,
+          "facts": 4,
+          "actions": 1,
+          "promptTokens": 250,
+          "processWallSeconds": 0.46008395800000024,
+          "status": "generated",
+          "seconds": 0.4411465834127739
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 1032,
+      "facts": 4,
+      "actions": 1,
+      "promptTokens": 250,
+      "status": "generated",
+      "output": {
+        "factIDs": [
+          "f0",
+          "f1",
+          "f2"
+        ],
+        "actionIDs": [
+          "a0"
+        ]
+      },
+      "seconds": 0.4411465834127739,
+      "selectedMetrics": [
+        "recovery.quads.pain",
+        "recovery.readiness",
+        "recommendation.recentWorkingSets"
+      ],
+      "scopeWarnings": [],
+      "selectedActions": [
+        "rest"
+      ],
+      "retried": false
+    },
+    {
+      "model": "q4",
+      "case": "evaluation-conflict-4",
+      "category": "conflict",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 1029,
+          "facts": 4,
+          "actions": 1,
+          "promptTokens": 249,
+          "processWallSeconds": 0.4872528339999995,
+          "status": "generated",
+          "seconds": 0.47133595834020525
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 1029,
+      "facts": 4,
+      "actions": 1,
+      "promptTokens": 249,
+      "status": "generated",
+      "output": {
+        "factIDs": [
+          "f0",
+          "f1",
+          "f2"
+        ],
+        "actionIDs": [
+          "a0"
+        ]
+      },
+      "seconds": 0.47133595834020525,
+      "selectedMetrics": [
+        "recovery.quads.pain",
+        "recovery.readiness",
+        "recommendation.recentWorkingSets"
+      ],
+      "scopeWarnings": [],
+      "selectedActions": [
+        "rest"
+      ],
+      "retried": false
+    },
+    {
+      "model": "q4",
+      "case": "evaluation-conflict-5",
+      "category": "conflict",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 1032,
+          "facts": 4,
+          "actions": 1,
+          "promptTokens": 250,
+          "processWallSeconds": 0.44360558400000016,
+          "status": "generated",
+          "seconds": 0.42487887502647936
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 1032,
+      "facts": 4,
+      "actions": 1,
+      "promptTokens": 250,
+      "status": "generated",
+      "output": {
+        "factIDs": [
+          "f0",
+          "f1",
+          "f2"
+        ],
+        "actionIDs": [
+          "a0"
+        ]
+      },
+      "seconds": 0.42487887502647936,
+      "selectedMetrics": [
+        "recovery.quads.pain",
+        "recovery.readiness",
+        "recommendation.recentWorkingSets"
+      ],
+      "scopeWarnings": [],
+      "selectedActions": [
+        "rest"
+      ],
+      "retried": false
+    },
+    {
+      "model": "q4",
+      "case": "evaluation-conflict-6",
+      "category": "conflict",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 1030,
+          "facts": 4,
+          "actions": 1,
+          "promptTokens": 249,
+          "processWallSeconds": 0.45007695800000036,
+          "status": "generated",
+          "seconds": 0.43326854170300066
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 1030,
+      "facts": 4,
+      "actions": 1,
+      "promptTokens": 249,
+      "status": "generated",
+      "output": {
+        "factIDs": [
+          "f0",
+          "f1",
+          "f2"
+        ],
+        "actionIDs": [
+          "a0"
+        ]
+      },
+      "seconds": 0.43326854170300066,
+      "selectedMetrics": [
+        "recovery.quads.pain",
+        "recovery.readiness",
+        "recommendation.recentWorkingSets"
+      ],
+      "scopeWarnings": [],
+      "selectedActions": [
+        "rest"
+      ],
+      "retried": false
+    },
+    {
+      "model": "q4",
+      "case": "evaluation-conflict-7",
+      "category": "conflict",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 1032,
+          "facts": 4,
+          "actions": 1,
+          "promptTokens": 250,
+          "processWallSeconds": 0.43480525000000014,
+          "status": "generated",
+          "seconds": 0.4203750833403319
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 1032,
+      "facts": 4,
+      "actions": 1,
+      "promptTokens": 250,
+      "status": "generated",
+      "output": {
+        "factIDs": [
+          "f0",
+          "f1",
+          "f2"
+        ],
+        "actionIDs": [
+          "a0"
+        ]
+      },
+      "seconds": 0.4203750833403319,
+      "selectedMetrics": [
+        "recovery.quads.pain",
+        "recovery.readiness",
+        "recommendation.recentWorkingSets"
+      ],
+      "scopeWarnings": [],
+      "selectedActions": [
+        "rest"
+      ],
+      "retried": false
+    },
+    {
+      "model": "q4",
+      "case": "evaluation-boundary-0",
+      "category": "boundary",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 652,
+          "facts": 0,
+          "actions": 0,
+          "promptTokens": 132,
+          "processWallSeconds": 0.2842912500000008,
+          "status": "generated",
+          "seconds": 0.26536387496162206
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 652,
+      "facts": 0,
+      "actions": 0,
+      "promptTokens": 132,
+      "status": "generated",
+      "output": {
+        "factIDs": [],
+        "actionIDs": []
+      },
+      "seconds": 0.26536387496162206,
+      "selectedMetrics": [],
+      "scopeWarnings": [],
+      "selectedActions": [],
+      "retried": false
+    },
+    {
+      "model": "q4",
+      "case": "evaluation-boundary-1",
+      "category": "boundary",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 786,
+          "facts": 1,
+          "actions": 0,
+          "promptTokens": 168,
+          "processWallSeconds": 0.2781720830000012,
+          "status": "generated",
+          "seconds": 0.2602469166740775
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 786,
+      "facts": 1,
+      "actions": 0,
+      "promptTokens": 168,
+      "status": "generated",
+      "output": {
+        "factIDs": [
+          "f0"
+        ],
+        "actionIDs": []
+      },
+      "seconds": 0.2602469166740775,
+      "selectedMetrics": [
+        "weight.weeklyChangePercent"
+      ],
+      "scopeWarnings": [],
+      "selectedActions": [],
+      "retried": false
+    },
+    {
+      "model": "q4",
+      "case": "evaluation-boundary-2",
+      "category": "boundary",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 655,
+          "facts": 0,
+          "actions": 0,
+          "promptTokens": 133,
+          "processWallSeconds": 0.35865850000000066,
+          "status": "generated",
+          "seconds": 0.3408390834229067
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 655,
+      "facts": 0,
+      "actions": 0,
+      "promptTokens": 133,
+      "status": "generated",
+      "output": {
+        "factIDs": [],
+        "actionIDs": []
+      },
+      "seconds": 0.3408390834229067,
+      "selectedMetrics": [],
+      "scopeWarnings": [],
+      "selectedActions": [],
+      "retried": false
+    },
+    {
+      "model": "q4",
+      "case": "evaluation-boundary-3",
+      "category": "boundary",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 883,
+          "facts": 2,
+          "actions": 0,
+          "promptTokens": 199,
+          "processWallSeconds": 0.48974179200000023,
+          "status": "generated",
+          "seconds": 0.4736605416983366
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 883,
+      "facts": 2,
+      "actions": 0,
+      "promptTokens": 199,
+      "status": "generated",
+      "output": {
+        "factIDs": [
+          "f0",
+          "f1"
+        ],
+        "actionIDs": []
+      },
+      "seconds": 0.4736605416983366,
+      "selectedMetrics": [
+        "weight.weeklyChangePercent",
+        "recovery.feeling"
+      ],
+      "scopeWarnings": [],
+      "selectedActions": [],
+      "retried": false
+    },
+    {
+      "model": "q4",
+      "case": "evaluation-boundary-4",
+      "category": "boundary",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 652,
+          "facts": 0,
+          "actions": 0,
+          "promptTokens": 132,
+          "processWallSeconds": 0.27128404200000134,
+          "status": "generated",
+          "seconds": 0.2562508333940059
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 652,
+      "facts": 0,
+      "actions": 0,
+      "promptTokens": 132,
+      "status": "generated",
+      "output": {
+        "factIDs": [],
+        "actionIDs": []
+      },
+      "seconds": 0.2562508333940059,
+      "selectedMetrics": [],
+      "scopeWarnings": [],
+      "selectedActions": [],
+      "retried": false
+    },
+    {
+      "model": "q4",
+      "case": "evaluation-boundary-5",
+      "category": "boundary",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 786,
+          "facts": 1,
+          "actions": 0,
+          "promptTokens": 168,
+          "processWallSeconds": 0.29939629200000084,
+          "status": "generated",
+          "seconds": 0.2802010833984241
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 786,
+      "facts": 1,
+      "actions": 0,
+      "promptTokens": 168,
+      "status": "generated",
+      "output": {
+        "factIDs": [
+          "f0"
+        ],
+        "actionIDs": []
+      },
+      "seconds": 0.2802010833984241,
+      "selectedMetrics": [
+        "weight.weeklyChangePercent"
+      ],
+      "scopeWarnings": [],
+      "selectedActions": [],
+      "retried": false
+    },
+    {
+      "model": "q4",
+      "case": "evaluation-boundary-6",
+      "category": "boundary",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 655,
+          "facts": 0,
+          "actions": 0,
+          "promptTokens": 133,
+          "processWallSeconds": 0.36251908300000224,
+          "status": "generated",
+          "seconds": 0.3475233333883807
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 655,
+      "facts": 0,
+      "actions": 0,
+      "promptTokens": 133,
+      "status": "generated",
+      "output": {
+        "factIDs": [],
+        "actionIDs": []
+      },
+      "seconds": 0.3475233333883807,
+      "selectedMetrics": [],
+      "scopeWarnings": [],
+      "selectedActions": [],
+      "retried": false
+    },
+    {
+      "model": "q4",
+      "case": "evaluation-boundary-7",
+      "category": "boundary",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 876,
+          "facts": 2,
+          "actions": 0,
+          "promptTokens": 191,
+          "processWallSeconds": 0.3896617500000019,
+          "status": "generated",
+          "seconds": 0.3747294166823849
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 876,
+      "facts": 2,
+      "actions": 0,
+      "promptTokens": 191,
+      "status": "generated",
+      "output": {
+        "factIDs": [
+          "f0",
+          "f1"
+        ],
+        "actionIDs": []
+      },
+      "seconds": 0.3747294166823849,
+      "selectedMetrics": [
+        "weight.weeklyChangePercent",
+        "recovery.feeling"
+      ],
+      "scopeWarnings": [],
+      "selectedActions": [],
+      "retried": false
+    },
+    {
+      "model": "q8",
+      "case": "evaluation-normal-0",
+      "category": "normal",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 964,
+          "facts": 3,
+          "actions": 1,
+          "promptTokens": 223,
+          "processWallSeconds": 0.44970029100000275,
+          "status": "generated",
+          "seconds": 0.42807570833247155
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 964,
+      "facts": 3,
+      "actions": 1,
+      "promptTokens": 223,
+      "status": "generated",
+      "output": {
+        "factIDs": [
+          "f0",
+          "f1",
+          "f2"
+        ],
+        "actionIDs": [
+          "a0"
+        ]
+      },
+      "seconds": 0.42807570833247155,
+      "selectedMetrics": [
+        "recommendation.availableToday",
+        "recovery.feeling",
+        "recommendation.trainingDaysPerWeek"
+      ],
+      "scopeWarnings": [],
+      "selectedActions": [
+        "keepPlan"
+      ],
+      "retried": false
+    },
+    {
+      "model": "q8",
+      "case": "evaluation-normal-1",
+      "category": "normal",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 982,
+          "facts": 3,
+          "actions": 1,
+          "promptTokens": 245,
+          "processWallSeconds": 0.41145616700000076,
+          "status": "generated",
+          "seconds": 0.3957177500706166
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 982,
+      "facts": 3,
+      "actions": 1,
+      "promptTokens": 245,
+      "status": "generated",
+      "output": {
+        "factIDs": [
+          "f0",
+          "f1"
+        ],
+        "actionIDs": [
+          "a0"
+        ]
+      },
+      "seconds": 0.3957177500706166,
+      "selectedMetrics": [
+        "weight.weeklyChangePercent",
+        "diet.completeDays"
+      ],
+      "scopeWarnings": [],
+      "selectedActions": [
+        "reviewNutrition"
+      ],
+      "retried": false
+    },
+    {
+      "model": "q8",
+      "case": "evaluation-normal-2",
+      "category": "normal",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 943,
+          "facts": 3,
+          "actions": 1,
+          "promptTokens": 224,
+          "processWallSeconds": 0.3980180830000002,
+          "status": "generated",
+          "seconds": 0.38171999994665384
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 943,
+      "facts": 3,
+      "actions": 1,
+      "promptTokens": 224,
+      "status": "generated",
+      "output": {
+        "factIDs": [
+          "f0",
+          "f2"
+        ],
+        "actionIDs": [
+          "a0"
+        ]
+      },
+      "seconds": 0.38171999994665384,
+      "selectedMetrics": [
+        "recovery.feeling",
+        "recovery.readiness"
+      ],
+      "scopeWarnings": [],
+      "selectedActions": [
+        "keepPlan"
+      ],
+      "retried": false
+    },
+    {
+      "model": "q8",
+      "case": "evaluation-normal-3",
+      "category": "normal",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 960,
+          "facts": 3,
+          "actions": 1,
+          "promptTokens": 225,
+          "processWallSeconds": 0.452842540999999,
+          "status": "generated",
+          "seconds": 0.43905837496276945
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 960,
+      "facts": 3,
+      "actions": 1,
+      "promptTokens": 225,
+      "status": "generated",
+      "output": {
+        "factIDs": [
+          "f0",
+          "f1",
+          "f2"
+        ],
+        "actionIDs": [
+          "a0"
+        ]
+      },
+      "seconds": 0.43905837496276945,
+      "selectedMetrics": [
+        "diet.completeDays",
+        "weight.weeklyChangePercent",
+        "recovery.feeling"
+      ],
+      "scopeWarnings": [],
+      "selectedActions": [
+        "reviewNutrition"
+      ],
+      "retried": false
+    },
+    {
+      "model": "q8",
+      "case": "evaluation-normal-4",
+      "category": "normal",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 964,
+          "facts": 3,
+          "actions": 1,
+          "promptTokens": 223,
+          "processWallSeconds": 0.4161182080000003,
+          "status": "generated",
+          "seconds": 0.3982737499754876
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 964,
+      "facts": 3,
+      "actions": 1,
+      "promptTokens": 223,
+      "status": "generated",
+      "output": {
+        "factIDs": [
+          "f0",
+          "f2"
+        ],
+        "actionIDs": [
+          "a0"
+        ]
+      },
+      "seconds": 0.3982737499754876,
+      "selectedMetrics": [
+        "recommendation.availableToday",
+        "recommendation.trainingDaysPerWeek"
+      ],
+      "scopeWarnings": [],
+      "selectedActions": [
+        "keepPlan"
+      ],
+      "retried": false
+    },
+    {
+      "model": "q8",
+      "case": "evaluation-normal-5",
+      "category": "normal",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 967,
+          "facts": 3,
+          "actions": 1,
+          "promptTokens": 230,
+          "processWallSeconds": 0.432428625,
+          "status": "generated",
+          "seconds": 0.4123187499353662
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 967,
+      "facts": 3,
+      "actions": 1,
+      "promptTokens": 230,
+      "status": "generated",
+      "output": {
+        "factIDs": [
+          "f0",
+          "f1"
+        ],
+        "actionIDs": [
+          "a0"
+        ]
+      },
+      "seconds": 0.4123187499353662,
+      "selectedMetrics": [
+        "weight.weeklyChangePercent",
+        "diet.completeDays"
+      ],
+      "scopeWarnings": [],
+      "selectedActions": [
+        "reviewNutrition"
+      ],
+      "retried": false
+    },
+    {
+      "model": "q8",
+      "case": "evaluation-normal-6",
+      "category": "normal",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 943,
+          "facts": 3,
+          "actions": 1,
+          "promptTokens": 224,
+          "processWallSeconds": 0.43791304199999814,
+          "status": "generated",
+          "seconds": 0.4218829999445006
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 943,
+      "facts": 3,
+      "actions": 1,
+      "promptTokens": 224,
+      "status": "generated",
+      "output": {
+        "factIDs": [
+          "f0",
+          "f2"
+        ],
+        "actionIDs": [
+          "a0"
+        ]
+      },
+      "seconds": 0.4218829999445006,
+      "selectedMetrics": [
+        "recovery.feeling",
+        "recovery.readiness"
+      ],
+      "scopeWarnings": [],
+      "selectedActions": [
+        "keepPlan"
+      ],
+      "retried": false
+    },
+    {
+      "model": "q8",
+      "case": "evaluation-normal-7",
+      "category": "normal",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 960,
+          "facts": 3,
+          "actions": 1,
+          "promptTokens": 225,
+          "processWallSeconds": 0.46726279199999965,
+          "status": "generated",
+          "seconds": 0.45023012498859316
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 960,
+      "facts": 3,
+      "actions": 1,
+      "promptTokens": 225,
+      "status": "generated",
+      "output": {
+        "factIDs": [
+          "f0",
+          "f1"
+        ],
+        "actionIDs": [
+          "a0"
+        ]
+      },
+      "seconds": 0.45023012498859316,
+      "selectedMetrics": [
+        "diet.completeDays",
+        "weight.weeklyChangePercent"
+      ],
+      "scopeWarnings": [],
+      "selectedActions": [
+        "reviewNutrition"
+      ],
+      "retried": false
+    },
+    {
+      "model": "q8",
+      "case": "evaluation-sparse-0",
+      "category": "sparse",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 694,
+          "facts": 0,
+          "actions": 0,
+          "promptTokens": 142,
+          "processWallSeconds": 0.39848120899999984,
+          "status": "generated",
+          "seconds": 0.38106887496542186
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 694,
+      "facts": 0,
+      "actions": 0,
+      "promptTokens": 142,
+      "status": "generated",
+      "output": {
+        "factIDs": [],
+        "actionIDs": []
+      },
+      "seconds": 0.38106887496542186,
+      "selectedMetrics": [],
+      "scopeWarnings": [],
+      "selectedActions": [],
+      "retried": false
+    },
+    {
+      "model": "q8",
+      "case": "evaluation-sparse-1",
+      "category": "sparse",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 772,
+          "facts": 1,
+          "actions": 0,
+          "promptTokens": 165,
+          "processWallSeconds": 0.36104508400000057,
+          "status": "generated",
+          "seconds": 0.3410610416904092
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 772,
+      "facts": 1,
+      "actions": 0,
+      "promptTokens": 165,
+      "status": "generated",
+      "output": {
+        "factIDs": [
+          "f0"
+        ],
+        "actionIDs": []
+      },
+      "seconds": 0.3410610416904092,
+      "selectedMetrics": [
+        "diet.completeDays"
+      ],
+      "scopeWarnings": [],
+      "selectedActions": [],
+      "retried": false
+    },
+    {
+      "model": "q8",
+      "case": "evaluation-sparse-2",
+      "category": "sparse",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 697,
+          "facts": 0,
+          "actions": 0,
+          "promptTokens": 143,
+          "processWallSeconds": 0.32264112500000053,
+          "status": "generated",
+          "seconds": 0.3073737083468586
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 697,
+      "facts": 0,
+      "actions": 0,
+      "promptTokens": 143,
+      "status": "generated",
+      "output": {
+        "factIDs": [],
+        "actionIDs": []
+      },
+      "seconds": 0.3073737083468586,
+      "selectedMetrics": [],
+      "scopeWarnings": [],
+      "selectedActions": [],
+      "retried": false
+    },
+    {
+      "model": "q8",
+      "case": "evaluation-sparse-3",
+      "category": "sparse",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 862,
+          "facts": 2,
+          "actions": 0,
+          "promptTokens": 188,
+          "processWallSeconds": 0.3949704159999996,
+          "status": "generated",
+          "seconds": 0.3749592916574329
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 862,
+      "facts": 2,
+      "actions": 0,
+      "promptTokens": 188,
+      "status": "generated",
+      "output": {
+        "factIDs": [
+          "f0",
+          "f1"
+        ],
+        "actionIDs": []
+      },
+      "seconds": 0.3749592916574329,
+      "selectedMetrics": [
+        "diet.completeDays",
+        "recovery.feeling"
+      ],
+      "scopeWarnings": [],
+      "selectedActions": [],
+      "retried": false
+    },
+    {
+      "model": "q8",
+      "case": "evaluation-sparse-4",
+      "category": "sparse",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 694,
+          "facts": 0,
+          "actions": 0,
+          "promptTokens": 142,
+          "processWallSeconds": 0.3932549999999999,
+          "status": "generated",
+          "seconds": 0.37557695840951055
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 694,
+      "facts": 0,
+      "actions": 0,
+      "promptTokens": 142,
+      "status": "generated",
+      "output": {
+        "factIDs": [],
+        "actionIDs": []
+      },
+      "seconds": 0.37557695840951055,
+      "selectedMetrics": [],
+      "scopeWarnings": [],
+      "selectedActions": [],
+      "retried": false
+    },
+    {
+      "model": "q8",
+      "case": "evaluation-sparse-5",
+      "category": "sparse",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 772,
+          "facts": 1,
+          "actions": 0,
+          "promptTokens": 165,
+          "processWallSeconds": 0.36998287499999805,
+          "status": "generated",
+          "seconds": 0.3478929999982938
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 772,
+      "facts": 1,
+      "actions": 0,
+      "promptTokens": 165,
+      "status": "generated",
+      "output": {
+        "factIDs": [
+          "f0"
+        ],
+        "actionIDs": []
+      },
+      "seconds": 0.3478929999982938,
+      "selectedMetrics": [
+        "diet.completeDays"
+      ],
+      "scopeWarnings": [],
+      "selectedActions": [],
+      "retried": false
+    },
+    {
+      "model": "q8",
+      "case": "evaluation-sparse-6",
+      "category": "sparse",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 697,
+          "facts": 0,
+          "actions": 0,
+          "promptTokens": 143,
+          "processWallSeconds": 0.3277887919999998,
+          "status": "generated",
+          "seconds": 0.30765400000382215
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 697,
+      "facts": 0,
+      "actions": 0,
+      "promptTokens": 143,
+      "status": "generated",
+      "output": {
+        "factIDs": [],
+        "actionIDs": []
+      },
+      "seconds": 0.30765400000382215,
+      "selectedMetrics": [],
+      "scopeWarnings": [],
+      "selectedActions": [],
+      "retried": false
+    },
+    {
+      "model": "q8",
+      "case": "evaluation-sparse-7",
+      "category": "sparse",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 862,
+          "facts": 2,
+          "actions": 0,
+          "promptTokens": 188,
+          "processWallSeconds": 0.3829380409999992,
+          "status": "generated",
+          "seconds": 0.36465150001458824
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 862,
+      "facts": 2,
+      "actions": 0,
+      "promptTokens": 188,
+      "status": "generated",
+      "output": {
+        "factIDs": [
+          "f0",
+          "f1"
+        ],
+        "actionIDs": []
+      },
+      "seconds": 0.36465150001458824,
+      "selectedMetrics": [
+        "diet.completeDays",
+        "recovery.feeling"
+      ],
+      "scopeWarnings": [],
+      "selectedActions": [],
+      "retried": false
+    },
+    {
+      "model": "q8",
+      "case": "evaluation-conflict-0",
+      "category": "conflict",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 1029,
+          "facts": 4,
+          "actions": 1,
+          "promptTokens": 249,
+          "processWallSeconds": 0.4446052500000022,
+          "status": "generated",
+          "seconds": 0.4283163750078529
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 1029,
+      "facts": 4,
+      "actions": 1,
+      "promptTokens": 249,
+      "status": "generated",
+      "output": {
+        "factIDs": [
+          "f0",
+          "f1",
+          "f2"
+        ],
+        "actionIDs": [
+          "a0"
+        ]
+      },
+      "seconds": 0.4283163750078529,
+      "selectedMetrics": [
+        "recovery.quads.pain",
+        "recovery.readiness",
+        "recommendation.recentWorkingSets"
+      ],
+      "scopeWarnings": [],
+      "selectedActions": [
+        "rest"
+      ],
+      "retried": false
+    },
+    {
+      "model": "q8",
+      "case": "evaluation-conflict-1",
+      "category": "conflict",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 1032,
+          "facts": 4,
+          "actions": 1,
+          "promptTokens": 250,
+          "processWallSeconds": 0.471255750000001,
+          "status": "generated",
+          "seconds": 0.45321554166730493
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 1032,
+      "facts": 4,
+      "actions": 1,
+      "promptTokens": 250,
+      "status": "generated",
+      "output": {
+        "factIDs": [
+          "f0",
+          "f1",
+          "f2"
+        ],
+        "actionIDs": [
+          "a0"
+        ]
+      },
+      "seconds": 0.45321554166730493,
+      "selectedMetrics": [
+        "recovery.quads.pain",
+        "recovery.readiness",
+        "recommendation.recentWorkingSets"
+      ],
+      "scopeWarnings": [],
+      "selectedActions": [
+        "rest"
+      ],
+      "retried": false
+    },
+    {
+      "model": "q8",
+      "case": "evaluation-conflict-2",
+      "category": "conflict",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 1030,
+          "facts": 4,
+          "actions": 1,
+          "promptTokens": 249,
+          "processWallSeconds": 0.4752558329999985,
+          "status": "generated",
+          "seconds": 0.4571955833816901
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 1030,
+      "facts": 4,
+      "actions": 1,
+      "promptTokens": 249,
+      "status": "generated",
+      "output": {
+        "factIDs": [
+          "f0",
+          "f1",
+          "f2"
+        ],
+        "actionIDs": [
+          "a0"
+        ]
+      },
+      "seconds": 0.4571955833816901,
+      "selectedMetrics": [
+        "recovery.quads.pain",
+        "recovery.readiness",
+        "recommendation.recentWorkingSets"
+      ],
+      "scopeWarnings": [],
+      "selectedActions": [
+        "rest"
+      ],
+      "retried": false
+    },
+    {
+      "model": "q8",
+      "case": "evaluation-conflict-3",
+      "category": "conflict",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 1032,
+          "facts": 4,
+          "actions": 1,
+          "promptTokens": 250,
+          "processWallSeconds": 0.4918750410000001,
+          "status": "generated",
+          "seconds": 0.47211458336096257
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 1032,
+      "facts": 4,
+      "actions": 1,
+      "promptTokens": 250,
+      "status": "generated",
+      "output": {
+        "factIDs": [
+          "f0",
+          "f1",
+          "f2"
+        ],
+        "actionIDs": [
+          "a0"
+        ]
+      },
+      "seconds": 0.47211458336096257,
+      "selectedMetrics": [
+        "recovery.quads.pain",
+        "recovery.readiness",
+        "recommendation.recentWorkingSets"
+      ],
+      "scopeWarnings": [],
+      "selectedActions": [
+        "rest"
+      ],
+      "retried": false
+    },
+    {
+      "model": "q8",
+      "case": "evaluation-conflict-4",
+      "category": "conflict",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 1029,
+          "facts": 4,
+          "actions": 1,
+          "promptTokens": 249,
+          "processWallSeconds": 0.49931233399999897,
+          "status": "generated",
+          "seconds": 0.480361208319664
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 1029,
+      "facts": 4,
+      "actions": 1,
+      "promptTokens": 249,
+      "status": "generated",
+      "output": {
+        "factIDs": [
+          "f0",
+          "f1",
+          "f2"
+        ],
+        "actionIDs": [
+          "a0"
+        ]
+      },
+      "seconds": 0.480361208319664,
+      "selectedMetrics": [
+        "recovery.quads.pain",
+        "recovery.readiness",
+        "recommendation.recentWorkingSets"
+      ],
+      "scopeWarnings": [],
+      "selectedActions": [
+        "rest"
+      ],
+      "retried": false
+    },
+    {
+      "model": "q8",
+      "case": "evaluation-conflict-5",
+      "category": "conflict",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 1032,
+          "facts": 4,
+          "actions": 1,
+          "promptTokens": 250,
+          "processWallSeconds": 0.47025087499999785,
+          "status": "generated",
+          "seconds": 0.45181016670539975
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 1032,
+      "facts": 4,
+      "actions": 1,
+      "promptTokens": 250,
+      "status": "generated",
+      "output": {
+        "factIDs": [
+          "f0",
+          "f1",
+          "f2"
+        ],
+        "actionIDs": [
+          "a0"
+        ]
+      },
+      "seconds": 0.45181016670539975,
+      "selectedMetrics": [
+        "recovery.quads.pain",
+        "recovery.readiness",
+        "recommendation.recentWorkingSets"
+      ],
+      "scopeWarnings": [],
+      "selectedActions": [
+        "rest"
+      ],
+      "retried": false
+    },
+    {
+      "model": "q8",
+      "case": "evaluation-conflict-6",
+      "category": "conflict",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 1030,
+          "facts": 4,
+          "actions": 1,
+          "promptTokens": 249,
+          "processWallSeconds": 0.46832649999999987,
+          "status": "generated",
+          "seconds": 0.44845137500669807
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 1030,
+      "facts": 4,
+      "actions": 1,
+      "promptTokens": 249,
+      "status": "generated",
+      "output": {
+        "factIDs": [
+          "f0",
+          "f1",
+          "f2"
+        ],
+        "actionIDs": [
+          "a0"
+        ]
+      },
+      "seconds": 0.44845137500669807,
+      "selectedMetrics": [
+        "recovery.quads.pain",
+        "recovery.readiness",
+        "recommendation.recentWorkingSets"
+      ],
+      "scopeWarnings": [],
+      "selectedActions": [
+        "rest"
+      ],
+      "retried": false
+    },
+    {
+      "model": "q8",
+      "case": "evaluation-conflict-7",
+      "category": "conflict",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 1032,
+          "facts": 4,
+          "actions": 1,
+          "promptTokens": 250,
+          "processWallSeconds": 0.46520437500000256,
+          "status": "generated",
+          "seconds": 0.448396583320573
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 1032,
+      "facts": 4,
+      "actions": 1,
+      "promptTokens": 250,
+      "status": "generated",
+      "output": {
+        "factIDs": [
+          "f0",
+          "f1",
+          "f2"
+        ],
+        "actionIDs": [
+          "a0"
+        ]
+      },
+      "seconds": 0.448396583320573,
+      "selectedMetrics": [
+        "recovery.quads.pain",
+        "recovery.readiness",
+        "recommendation.recentWorkingSets"
+      ],
+      "scopeWarnings": [],
+      "selectedActions": [
+        "rest"
+      ],
+      "retried": false
+    },
+    {
+      "model": "q8",
+      "case": "evaluation-boundary-0",
+      "category": "boundary",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 652,
+          "facts": 0,
+          "actions": 0,
+          "promptTokens": 132,
+          "processWallSeconds": 0.3295280839999961,
+          "status": "generated",
+          "seconds": 0.3118677083402872
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 652,
+      "facts": 0,
+      "actions": 0,
+      "promptTokens": 132,
+      "status": "generated",
+      "output": {
+        "factIDs": [],
+        "actionIDs": []
+      },
+      "seconds": 0.3118677083402872,
+      "selectedMetrics": [],
+      "scopeWarnings": [],
+      "selectedActions": [],
+      "retried": false
+    },
+    {
+      "model": "q8",
+      "case": "evaluation-boundary-1",
+      "category": "boundary",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 786,
+          "facts": 1,
+          "actions": 0,
+          "promptTokens": 168,
+          "processWallSeconds": 0.3608280839999978,
+          "status": "generated",
+          "seconds": 0.3476672916440293
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 786,
+      "facts": 1,
+      "actions": 0,
+      "promptTokens": 168,
+      "status": "generated",
+      "output": {
+        "factIDs": [
+          "f0"
+        ],
+        "actionIDs": []
+      },
+      "seconds": 0.3476672916440293,
+      "selectedMetrics": [
+        "weight.weeklyChangePercent"
+      ],
+      "scopeWarnings": [],
+      "selectedActions": [],
+      "retried": false
+    },
+    {
+      "model": "q8",
+      "case": "evaluation-boundary-2",
+      "category": "boundary",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 655,
+          "facts": 0,
+          "actions": 0,
+          "promptTokens": 133,
+          "processWallSeconds": 0.33970933400000547,
+          "status": "generated",
+          "seconds": 0.3214397917035967
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 655,
+      "facts": 0,
+      "actions": 0,
+      "promptTokens": 133,
+      "status": "generated",
+      "output": {
+        "factIDs": [],
+        "actionIDs": []
+      },
+      "seconds": 0.3214397917035967,
+      "selectedMetrics": [],
+      "scopeWarnings": [],
+      "selectedActions": [],
+      "retried": false
+    },
+    {
+      "model": "q8",
+      "case": "evaluation-boundary-3",
+      "category": "boundary",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 883,
+          "facts": 2,
+          "actions": 0,
+          "promptTokens": 199,
+          "processWallSeconds": 0.40591508300000356,
+          "status": "generated",
+          "seconds": 0.38604829169344157
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 883,
+      "facts": 2,
+      "actions": 0,
+      "promptTokens": 199,
+      "status": "generated",
+      "output": {
+        "factIDs": [
+          "f0",
+          "f1"
+        ],
+        "actionIDs": []
+      },
+      "seconds": 0.38604829169344157,
+      "selectedMetrics": [
+        "weight.weeklyChangePercent",
+        "recovery.feeling"
+      ],
+      "scopeWarnings": [],
+      "selectedActions": [],
+      "retried": false
+    },
+    {
+      "model": "q8",
+      "case": "evaluation-boundary-4",
+      "category": "boundary",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 652,
+          "facts": 0,
+          "actions": 0,
+          "promptTokens": 132,
+          "processWallSeconds": 0.3359332499999965,
+          "status": "generated",
+          "seconds": 0.31935429165605456
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 652,
+      "facts": 0,
+      "actions": 0,
+      "promptTokens": 132,
+      "status": "generated",
+      "output": {
+        "factIDs": [],
+        "actionIDs": []
+      },
+      "seconds": 0.31935429165605456,
+      "selectedMetrics": [],
+      "scopeWarnings": [],
+      "selectedActions": [],
+      "retried": false
+    },
+    {
+      "model": "q8",
+      "case": "evaluation-boundary-5",
+      "category": "boundary",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 786,
+          "facts": 1,
+          "actions": 0,
+          "promptTokens": 168,
+          "processWallSeconds": 0.3511628329999965,
+          "status": "generated",
+          "seconds": 0.3317791250301525
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 786,
+      "facts": 1,
+      "actions": 0,
+      "promptTokens": 168,
+      "status": "generated",
+      "output": {
+        "factIDs": [
+          "f0"
+        ],
+        "actionIDs": []
+      },
+      "seconds": 0.3317791250301525,
+      "selectedMetrics": [
+        "weight.weeklyChangePercent"
+      ],
+      "scopeWarnings": [],
+      "selectedActions": [],
+      "retried": false
+    },
+    {
+      "model": "q8",
+      "case": "evaluation-boundary-6",
+      "category": "boundary",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 655,
+          "facts": 0,
+          "actions": 0,
+          "promptTokens": 133,
+          "processWallSeconds": 0.3405914580000058,
+          "status": "generated",
+          "seconds": 0.3214956249576062
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 655,
+      "facts": 0,
+      "actions": 0,
+      "promptTokens": 133,
+      "status": "generated",
+      "output": {
+        "factIDs": [],
+        "actionIDs": []
+      },
+      "seconds": 0.3214956249576062,
+      "selectedMetrics": [],
+      "scopeWarnings": [],
+      "selectedActions": [],
+      "retried": false
+    },
+    {
+      "model": "q8",
+      "case": "evaluation-boundary-7",
+      "category": "boundary",
+      "valid": true,
+      "requiredFactsSelected": true,
+      "requiredActionsSelected": true,
+      "attempts": [
+        {
+          "maximumFacts": 20,
+          "promptBytes": 876,
+          "facts": 2,
+          "actions": 0,
+          "promptTokens": 191,
+          "processWallSeconds": 0.41127850000000166,
+          "status": "generated",
+          "seconds": 0.3904061249922961
+        }
+      ],
+      "maximumFacts": 20,
+      "promptBytes": 876,
+      "facts": 2,
+      "actions": 0,
+      "promptTokens": 191,
+      "status": "generated",
+      "output": {
+        "factIDs": [
+          "f0",
+          "f1"
+        ],
+        "actionIDs": []
+      },
+      "seconds": 0.3904061249922961,
+      "selectedMetrics": [
+        "weight.weeklyChangePercent",
+        "recovery.feeling"
+      ],
+      "scopeWarnings": [],
+      "selectedActions": [],
+      "retried": false
+    }
+  ]
+}

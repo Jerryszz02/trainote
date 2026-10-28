@@ -1,0 +1,2365 @@
+[
+  {
+    "id": "stress-0",
+    "category": "stress",
+    "scope": "today",
+    "sourceFacts": [
+      {
+        "id": "source-f00",
+        "metric": "recommendation.selectedPlan",
+        "value": 1,
+        "unit": "count",
+        "quality": []
+      },
+      {
+        "id": "source-f01",
+        "metric": "recommendation.goal.maintain",
+        "value": 1,
+        "unit": "count",
+        "quality": []
+      },
+      {
+        "id": "source-f02",
+        "metric": "recommendation.trainingDaysPerWeek",
+        "value": 3,
+        "unit": "count",
+        "quality": []
+      },
+      {
+        "id": "source-f03",
+        "metric": "recommendation.availableToday",
+        "value": 1,
+        "unit": "count",
+        "quality": []
+      },
+      {
+        "id": "source-f04",
+        "metric": "recommendation.feeling.tired",
+        "value": 0,
+        "unit": "count",
+        "quality": []
+      },
+      {
+        "id": "source-f05",
+        "metric": "recommendation.painOrLimitation",
+        "value": 0,
+        "unit": "count",
+        "quality": []
+      },
+      {
+        "id": "source-f06",
+        "metric": "recommendation.systemic.ready",
+        "value": 1,
+        "unit": "count",
+        "quality": []
+      },
+      {
+        "id": "source-f07",
+        "metric": "recommendation.readiness.chest",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": []
+      },
+      {
+        "id": "source-f08",
+        "metric": "recommendation.readiness.back",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": []
+      },
+      {
+        "id": "source-f09",
+        "metric": "recommendation.readiness.shoulders",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": []
+      },
+      {
+        "id": "source-f10",
+        "metric": "recommendation.readiness.biceps",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": []
+      },
+      {
+        "id": "source-f11",
+        "metric": "recommendation.readiness.triceps",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": []
+      },
+      {
+        "id": "source-f12",
+        "metric": "recommendation.readiness.forearms",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": []
+      },
+      {
+        "id": "source-f13",
+        "metric": "recommendation.readiness.core",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": []
+      },
+      {
+        "id": "source-f14",
+        "metric": "recommendation.readiness.glutes",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": []
+      },
+      {
+        "id": "source-f15",
+        "metric": "recommendation.readiness.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": []
+      }
+    ],
+    "sourceActions": [
+      {
+        "id": "source-a00",
+        "action": "swapTrainingDay",
+        "facts": [
+          "source-f00",
+          "source-f01",
+          "source-f02",
+          "source-f03",
+          "source-f04",
+          "source-f05",
+          "source-f06",
+          "source-f07",
+          "source-f08",
+          "source-f09",
+          "source-f10",
+          "source-f11",
+          "source-f12",
+          "source-f13",
+          "source-f14",
+          "source-f15"
+        ]
+      },
+      {
+        "id": "source-a01",
+        "action": "swapTrainingDay",
+        "facts": [
+          "source-f00",
+          "source-f01",
+          "source-f02",
+          "source-f03",
+          "source-f04",
+          "source-f05",
+          "source-f06",
+          "source-f07",
+          "source-f08",
+          "source-f09",
+          "source-f10",
+          "source-f11",
+          "source-f12",
+          "source-f13",
+          "source-f14",
+          "source-f15"
+        ]
+      },
+      {
+        "id": "source-a02",
+        "action": "swapTrainingDay",
+        "facts": [
+          "source-f00",
+          "source-f01",
+          "source-f02",
+          "source-f03",
+          "source-f04",
+          "source-f05",
+          "source-f06",
+          "source-f07",
+          "source-f08",
+          "source-f09",
+          "source-f10",
+          "source-f11",
+          "source-f12",
+          "source-f13",
+          "source-f14",
+          "source-f15"
+        ]
+      }
+    ],
+    "missing": [],
+    "requiredSourceFacts": [],
+    "requiredSourceActions": []
+  },
+  {
+    "id": "stress-1",
+    "category": "stress",
+    "scope": "today",
+    "sourceFacts": [
+      {
+        "id": "source-f00",
+        "metric": "recommendation.selectedPlan",
+        "value": 1,
+        "unit": "count",
+        "quality": []
+      },
+      {
+        "id": "source-f01",
+        "metric": "recommendation.goal.maintain",
+        "value": 1,
+        "unit": "count",
+        "quality": []
+      },
+      {
+        "id": "source-f02",
+        "metric": "recommendation.trainingDaysPerWeek",
+        "value": 3,
+        "unit": "count",
+        "quality": []
+      },
+      {
+        "id": "source-f03",
+        "metric": "recommendation.availableToday",
+        "value": 1,
+        "unit": "count",
+        "quality": []
+      },
+      {
+        "id": "source-f04",
+        "metric": "recommendation.feeling.tired",
+        "value": 0,
+        "unit": "count",
+        "quality": []
+      },
+      {
+        "id": "source-f05",
+        "metric": "recommendation.painOrLimitation",
+        "value": 0,
+        "unit": "count",
+        "quality": []
+      },
+      {
+        "id": "source-f06",
+        "metric": "recommendation.systemic.ready",
+        "value": 1,
+        "unit": "count",
+        "quality": []
+      },
+      {
+        "id": "source-f07",
+        "metric": "recommendation.readiness.chest",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": []
+      },
+      {
+        "id": "source-f08",
+        "metric": "recommendation.readiness.back",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": []
+      },
+      {
+        "id": "source-f09",
+        "metric": "recommendation.readiness.shoulders",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": []
+      },
+      {
+        "id": "source-f10",
+        "metric": "recommendation.readiness.biceps",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": []
+      },
+      {
+        "id": "source-f11",
+        "metric": "recommendation.readiness.triceps",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": []
+      },
+      {
+        "id": "source-f12",
+        "metric": "recommendation.readiness.forearms",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": []
+      },
+      {
+        "id": "source-f13",
+        "metric": "recommendation.readiness.core",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": []
+      },
+      {
+        "id": "source-f14",
+        "metric": "recommendation.readiness.glutes",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": []
+      },
+      {
+        "id": "source-f15",
+        "metric": "recommendation.readiness.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": []
+      },
+      {
+        "id": "source-f16",
+        "metric": "recommendation.readiness.hamstrings",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": []
+      },
+      {
+        "id": "source-f17",
+        "metric": "recommendation.readiness.calves",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": []
+      }
+    ],
+    "sourceActions": [
+      {
+        "id": "source-a00",
+        "action": "swapTrainingDay",
+        "facts": [
+          "source-f00",
+          "source-f01",
+          "source-f02",
+          "source-f03",
+          "source-f04",
+          "source-f05",
+          "source-f06",
+          "source-f07",
+          "source-f08",
+          "source-f09",
+          "source-f10",
+          "source-f11",
+          "source-f12",
+          "source-f13",
+          "source-f14",
+          "source-f15",
+          "source-f16",
+          "source-f17"
+        ]
+      },
+      {
+        "id": "source-a01",
+        "action": "swapTrainingDay",
+        "facts": [
+          "source-f00",
+          "source-f01",
+          "source-f02",
+          "source-f03",
+          "source-f04",
+          "source-f05",
+          "source-f06",
+          "source-f07",
+          "source-f08",
+          "source-f09",
+          "source-f10",
+          "source-f11",
+          "source-f12",
+          "source-f13",
+          "source-f14",
+          "source-f15",
+          "source-f16",
+          "source-f17"
+        ]
+      },
+      {
+        "id": "source-a02",
+        "action": "swapTrainingDay",
+        "facts": [
+          "source-f00",
+          "source-f01",
+          "source-f02",
+          "source-f03",
+          "source-f04",
+          "source-f05",
+          "source-f06",
+          "source-f07",
+          "source-f08",
+          "source-f09",
+          "source-f10",
+          "source-f11",
+          "source-f12",
+          "source-f13",
+          "source-f14",
+          "source-f15",
+          "source-f16",
+          "source-f17"
+        ]
+      }
+    ],
+    "missing": [],
+    "requiredSourceFacts": [],
+    "requiredSourceActions": []
+  },
+  {
+    "id": "stress-2",
+    "category": "stress",
+    "scope": "today",
+    "sourceFacts": [
+      {
+        "id": "source-f00",
+        "metric": "recommendation.selectedPlan",
+        "value": 1,
+        "unit": "count",
+        "quality": []
+      },
+      {
+        "id": "source-f01",
+        "metric": "recommendation.goal.maintain",
+        "value": 1,
+        "unit": "count",
+        "quality": []
+      },
+      {
+        "id": "source-f02",
+        "metric": "recommendation.trainingDaysPerWeek",
+        "value": 3,
+        "unit": "count",
+        "quality": []
+      },
+      {
+        "id": "source-f03",
+        "metric": "recommendation.availableToday",
+        "value": 1,
+        "unit": "count",
+        "quality": []
+      },
+      {
+        "id": "source-f04",
+        "metric": "recommendation.feeling.tired",
+        "value": 0,
+        "unit": "count",
+        "quality": []
+      },
+      {
+        "id": "source-f05",
+        "metric": "recommendation.painOrLimitation",
+        "value": 0,
+        "unit": "count",
+        "quality": []
+      },
+      {
+        "id": "source-f06",
+        "metric": "recommendation.systemic.ready",
+        "value": 1,
+        "unit": "count",
+        "quality": []
+      },
+      {
+        "id": "source-f07",
+        "metric": "recommendation.readiness.chest",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": []
+      },
+      {
+        "id": "source-f08",
+        "metric": "recommendation.readiness.back",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": []
+      },
+      {
+        "id": "source-f09",
+        "metric": "recommendation.readiness.shoulders",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": []
+      },
+      {
+        "id": "source-f10",
+        "metric": "recommendation.readiness.biceps",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": []
+      },
+      {
+        "id": "source-f11",
+        "metric": "recommendation.readiness.triceps",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": []
+      },
+      {
+        "id": "source-f12",
+        "metric": "recommendation.readiness.forearms",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": []
+      },
+      {
+        "id": "source-f13",
+        "metric": "recommendation.readiness.core",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": []
+      },
+      {
+        "id": "source-f14",
+        "metric": "recommendation.readiness.glutes",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": []
+      },
+      {
+        "id": "source-f15",
+        "metric": "recommendation.readiness.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": []
+      },
+      {
+        "id": "source-f16",
+        "metric": "recommendation.readiness.hamstrings",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": []
+      },
+      {
+        "id": "source-f17",
+        "metric": "recommendation.readiness.calves",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": []
+      },
+      {
+        "id": "source-f18",
+        "metric": "recommendation.recentWorkingSets",
+        "value": 24,
+        "unit": "count",
+        "quality": []
+      }
+    ],
+    "sourceActions": [
+      {
+        "id": "source-a00",
+        "action": "swapTrainingDay",
+        "facts": [
+          "source-f00",
+          "source-f01",
+          "source-f02",
+          "source-f03",
+          "source-f04",
+          "source-f05",
+          "source-f06",
+          "source-f07",
+          "source-f08",
+          "source-f09",
+          "source-f10",
+          "source-f11",
+          "source-f12",
+          "source-f13",
+          "source-f14",
+          "source-f15",
+          "source-f16",
+          "source-f17",
+          "source-f18"
+        ]
+      },
+      {
+        "id": "source-a01",
+        "action": "swapTrainingDay",
+        "facts": [
+          "source-f00",
+          "source-f01",
+          "source-f02",
+          "source-f03",
+          "source-f04",
+          "source-f05",
+          "source-f06",
+          "source-f07",
+          "source-f08",
+          "source-f09",
+          "source-f10",
+          "source-f11",
+          "source-f12",
+          "source-f13",
+          "source-f14",
+          "source-f15",
+          "source-f16",
+          "source-f17",
+          "source-f18"
+        ]
+      },
+      {
+        "id": "source-a02",
+        "action": "swapTrainingDay",
+        "facts": [
+          "source-f00",
+          "source-f01",
+          "source-f02",
+          "source-f03",
+          "source-f04",
+          "source-f05",
+          "source-f06",
+          "source-f07",
+          "source-f08",
+          "source-f09",
+          "source-f10",
+          "source-f11",
+          "source-f12",
+          "source-f13",
+          "source-f14",
+          "source-f15",
+          "source-f16",
+          "source-f17",
+          "source-f18"
+        ]
+      }
+    ],
+    "missing": [],
+    "requiredSourceFacts": [],
+    "requiredSourceActions": []
+  },
+  {
+    "id": "stress-3",
+    "category": "stress",
+    "scope": "today",
+    "sourceFacts": [
+      {
+        "id": "source-f00",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000000.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": []
+      },
+      {
+        "id": "source-f01",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000001.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": []
+      },
+      {
+        "id": "source-f02",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000002.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": []
+      },
+      {
+        "id": "source-f03",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000003.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": []
+      },
+      {
+        "id": "source-f04",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000004.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": []
+      },
+      {
+        "id": "source-f05",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000005.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": []
+      },
+      {
+        "id": "source-f06",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000006.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": []
+      },
+      {
+        "id": "source-f07",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000007.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": []
+      },
+      {
+        "id": "source-f08",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000008.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": []
+      },
+      {
+        "id": "source-f09",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000009.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": []
+      },
+      {
+        "id": "source-f10",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000010.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": []
+      },
+      {
+        "id": "source-f11",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000011.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": []
+      },
+      {
+        "id": "source-f12",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000012.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": []
+      },
+      {
+        "id": "source-f13",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000013.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": []
+      },
+      {
+        "id": "source-f14",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000014.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": []
+      },
+      {
+        "id": "source-f15",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000015.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": []
+      },
+      {
+        "id": "source-f16",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000016.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": []
+      },
+      {
+        "id": "source-f17",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000017.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": []
+      },
+      {
+        "id": "source-f18",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000018.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": []
+      },
+      {
+        "id": "source-f19",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000019.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": []
+      }
+    ],
+    "sourceActions": [
+      {
+        "id": "source-a00",
+        "action": "swapTrainingDay",
+        "facts": [
+          "source-f00",
+          "source-f01",
+          "source-f02",
+          "source-f03",
+          "source-f04",
+          "source-f05",
+          "source-f06",
+          "source-f07",
+          "source-f08",
+          "source-f09",
+          "source-f10",
+          "source-f11"
+        ]
+      },
+      {
+        "id": "source-a01",
+        "action": "swapTrainingDay",
+        "facts": [
+          "source-f00",
+          "source-f01",
+          "source-f02",
+          "source-f03",
+          "source-f04",
+          "source-f05",
+          "source-f06",
+          "source-f07",
+          "source-f08",
+          "source-f09",
+          "source-f10",
+          "source-f11"
+        ]
+      },
+      {
+        "id": "source-a02",
+        "action": "swapTrainingDay",
+        "facts": [
+          "source-f00",
+          "source-f01",
+          "source-f02",
+          "source-f03",
+          "source-f04",
+          "source-f05",
+          "source-f06",
+          "source-f07",
+          "source-f08",
+          "source-f09",
+          "source-f10",
+          "source-f11"
+        ]
+      }
+    ],
+    "missing": [],
+    "requiredSourceFacts": [],
+    "requiredSourceActions": []
+  },
+  {
+    "id": "stress-4",
+    "category": "stress",
+    "scope": "today",
+    "sourceFacts": [
+      {
+        "id": "source-f00",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000000.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f01",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000001.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f02",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000002.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f03",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000003.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f04",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000004.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f05",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000005.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f06",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000006.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f07",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000007.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f08",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000008.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f09",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000009.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f10",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000010.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f11",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000011.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f12",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000012.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f13",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000013.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f14",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000014.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f15",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000015.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f16",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000016.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f17",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000017.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f18",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000018.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f19",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000019.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      }
+    ],
+    "sourceActions": [
+      {
+        "id": "source-a00",
+        "action": "swapTrainingDay",
+        "facts": [
+          "source-f00",
+          "source-f01",
+          "source-f02",
+          "source-f03",
+          "source-f04",
+          "source-f05",
+          "source-f06",
+          "source-f07",
+          "source-f08",
+          "source-f09",
+          "source-f10",
+          "source-f11",
+          "source-f12",
+          "source-f13",
+          "source-f14",
+          "source-f15",
+          "source-f16",
+          "source-f17",
+          "source-f18",
+          "source-f19"
+        ]
+      },
+      {
+        "id": "source-a01",
+        "action": "swapTrainingDay",
+        "facts": [
+          "source-f00",
+          "source-f01",
+          "source-f02",
+          "source-f03",
+          "source-f04",
+          "source-f05",
+          "source-f06",
+          "source-f07",
+          "source-f08",
+          "source-f09",
+          "source-f10",
+          "source-f11",
+          "source-f12",
+          "source-f13",
+          "source-f14",
+          "source-f15",
+          "source-f16",
+          "source-f17",
+          "source-f18",
+          "source-f19"
+        ]
+      },
+      {
+        "id": "source-a02",
+        "action": "swapTrainingDay",
+        "facts": [
+          "source-f00",
+          "source-f01",
+          "source-f02",
+          "source-f03",
+          "source-f04",
+          "source-f05",
+          "source-f06",
+          "source-f07",
+          "source-f08",
+          "source-f09",
+          "source-f10",
+          "source-f11",
+          "source-f12",
+          "source-f13",
+          "source-f14",
+          "source-f15",
+          "source-f16",
+          "source-f17",
+          "source-f18",
+          "source-f19"
+        ]
+      },
+      {
+        "id": "source-a03",
+        "action": "swapTrainingDay",
+        "facts": [
+          "source-f00",
+          "source-f01",
+          "source-f02",
+          "source-f03",
+          "source-f04",
+          "source-f05",
+          "source-f06",
+          "source-f07",
+          "source-f08",
+          "source-f09",
+          "source-f10",
+          "source-f11",
+          "source-f12",
+          "source-f13",
+          "source-f14",
+          "source-f15",
+          "source-f16",
+          "source-f17",
+          "source-f18",
+          "source-f19"
+        ]
+      },
+      {
+        "id": "source-a04",
+        "action": "swapTrainingDay",
+        "facts": [
+          "source-f00",
+          "source-f01",
+          "source-f02",
+          "source-f03",
+          "source-f04",
+          "source-f05",
+          "source-f06",
+          "source-f07",
+          "source-f08",
+          "source-f09",
+          "source-f10",
+          "source-f11",
+          "source-f12",
+          "source-f13",
+          "source-f14",
+          "source-f15",
+          "source-f16",
+          "source-f17",
+          "source-f18",
+          "source-f19"
+        ]
+      },
+      {
+        "id": "source-a05",
+        "action": "swapTrainingDay",
+        "facts": [
+          "source-f00",
+          "source-f01",
+          "source-f02",
+          "source-f03",
+          "source-f04",
+          "source-f05",
+          "source-f06",
+          "source-f07",
+          "source-f08",
+          "source-f09",
+          "source-f10",
+          "source-f11",
+          "source-f12",
+          "source-f13",
+          "source-f14",
+          "source-f15",
+          "source-f16",
+          "source-f17",
+          "source-f18",
+          "source-f19"
+        ]
+      }
+    ],
+    "missing": [],
+    "requiredSourceFacts": [],
+    "requiredSourceActions": []
+  },
+  {
+    "id": "stress-5",
+    "category": "stress",
+    "scope": "today",
+    "sourceFacts": [
+      {
+        "id": "source-f00",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000000.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f01",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000001.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f02",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000002.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f03",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000003.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f04",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000004.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f05",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000005.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f06",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000006.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f07",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000007.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f08",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000008.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f09",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000009.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f10",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000010.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f11",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000011.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f12",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000012.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f13",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000013.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f14",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000014.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f15",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000015.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f16",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000016.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f17",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000017.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f18",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000018.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f19",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000019.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      }
+    ],
+    "sourceActions": [
+      {
+        "id": "source-a00",
+        "action": "swapTrainingDay",
+        "facts": [
+          "source-f00",
+          "source-f01",
+          "source-f02",
+          "source-f03",
+          "source-f04",
+          "source-f05",
+          "source-f06",
+          "source-f07",
+          "source-f08",
+          "source-f09",
+          "source-f10",
+          "source-f11",
+          "source-f12",
+          "source-f13",
+          "source-f14",
+          "source-f15",
+          "source-f16",
+          "source-f17",
+          "source-f18",
+          "source-f19"
+        ]
+      },
+      {
+        "id": "source-a01",
+        "action": "swapTrainingDay",
+        "facts": [
+          "source-f00",
+          "source-f01",
+          "source-f02",
+          "source-f03",
+          "source-f04",
+          "source-f05",
+          "source-f06",
+          "source-f07",
+          "source-f08",
+          "source-f09",
+          "source-f10",
+          "source-f11",
+          "source-f12",
+          "source-f13",
+          "source-f14",
+          "source-f15",
+          "source-f16",
+          "source-f17",
+          "source-f18",
+          "source-f19"
+        ]
+      },
+      {
+        "id": "source-a02",
+        "action": "swapTrainingDay",
+        "facts": [
+          "source-f00",
+          "source-f01",
+          "source-f02",
+          "source-f03",
+          "source-f04",
+          "source-f05",
+          "source-f06",
+          "source-f07",
+          "source-f08",
+          "source-f09",
+          "source-f10",
+          "source-f11",
+          "source-f12",
+          "source-f13",
+          "source-f14",
+          "source-f15",
+          "source-f16",
+          "source-f17",
+          "source-f18",
+          "source-f19"
+        ]
+      },
+      {
+        "id": "source-a03",
+        "action": "swapTrainingDay",
+        "facts": [
+          "source-f00",
+          "source-f01",
+          "source-f02",
+          "source-f03",
+          "source-f04",
+          "source-f05",
+          "source-f06",
+          "source-f07",
+          "source-f08",
+          "source-f09",
+          "source-f10",
+          "source-f11",
+          "source-f12",
+          "source-f13",
+          "source-f14",
+          "source-f15",
+          "source-f16",
+          "source-f17",
+          "source-f18",
+          "source-f19"
+        ]
+      },
+      {
+        "id": "source-a04",
+        "action": "swapTrainingDay",
+        "facts": [
+          "source-f00",
+          "source-f01",
+          "source-f02",
+          "source-f03",
+          "source-f04",
+          "source-f05",
+          "source-f06",
+          "source-f07",
+          "source-f08",
+          "source-f09",
+          "source-f10",
+          "source-f11",
+          "source-f12",
+          "source-f13",
+          "source-f14",
+          "source-f15",
+          "source-f16",
+          "source-f17",
+          "source-f18",
+          "source-f19"
+        ]
+      },
+      {
+        "id": "source-a05",
+        "action": "swapTrainingDay",
+        "facts": [
+          "source-f00",
+          "source-f01",
+          "source-f02",
+          "source-f03",
+          "source-f04",
+          "source-f05",
+          "source-f06",
+          "source-f07",
+          "source-f08",
+          "source-f09",
+          "source-f10",
+          "source-f11",
+          "source-f12",
+          "source-f13",
+          "source-f14",
+          "source-f15",
+          "source-f16",
+          "source-f17",
+          "source-f18",
+          "source-f19"
+        ]
+      },
+      {
+        "id": "source-a06",
+        "action": "swapTrainingDay",
+        "facts": [
+          "source-f00",
+          "source-f01",
+          "source-f02",
+          "source-f03",
+          "source-f04",
+          "source-f05",
+          "source-f06",
+          "source-f07",
+          "source-f08",
+          "source-f09",
+          "source-f10",
+          "source-f11",
+          "source-f12",
+          "source-f13",
+          "source-f14",
+          "source-f15",
+          "source-f16",
+          "source-f17",
+          "source-f18",
+          "source-f19"
+        ]
+      },
+      {
+        "id": "source-a07",
+        "action": "swapTrainingDay",
+        "facts": [
+          "source-f00",
+          "source-f01",
+          "source-f02",
+          "source-f03",
+          "source-f04",
+          "source-f05",
+          "source-f06",
+          "source-f07",
+          "source-f08",
+          "source-f09",
+          "source-f10",
+          "source-f11",
+          "source-f12",
+          "source-f13",
+          "source-f14",
+          "source-f15",
+          "source-f16",
+          "source-f17",
+          "source-f18",
+          "source-f19"
+        ]
+      },
+      {
+        "id": "source-a08",
+        "action": "swapTrainingDay",
+        "facts": [
+          "source-f00",
+          "source-f01",
+          "source-f02",
+          "source-f03",
+          "source-f04",
+          "source-f05",
+          "source-f06",
+          "source-f07",
+          "source-f08",
+          "source-f09",
+          "source-f10",
+          "source-f11",
+          "source-f12",
+          "source-f13",
+          "source-f14",
+          "source-f15",
+          "source-f16",
+          "source-f17",
+          "source-f18",
+          "source-f19"
+        ]
+      },
+      {
+        "id": "source-a09",
+        "action": "swapTrainingDay",
+        "facts": [
+          "source-f00",
+          "source-f01",
+          "source-f02",
+          "source-f03",
+          "source-f04",
+          "source-f05",
+          "source-f06",
+          "source-f07",
+          "source-f08",
+          "source-f09",
+          "source-f10",
+          "source-f11",
+          "source-f12",
+          "source-f13",
+          "source-f14",
+          "source-f15",
+          "source-f16",
+          "source-f17",
+          "source-f18",
+          "source-f19"
+        ]
+      },
+      {
+        "id": "source-a10",
+        "action": "swapTrainingDay",
+        "facts": [
+          "source-f00",
+          "source-f01",
+          "source-f02",
+          "source-f03",
+          "source-f04",
+          "source-f05",
+          "source-f06",
+          "source-f07",
+          "source-f08",
+          "source-f09",
+          "source-f10",
+          "source-f11",
+          "source-f12",
+          "source-f13",
+          "source-f14",
+          "source-f15",
+          "source-f16",
+          "source-f17",
+          "source-f18",
+          "source-f19"
+        ]
+      },
+      {
+        "id": "source-a11",
+        "action": "swapTrainingDay",
+        "facts": [
+          "source-f00",
+          "source-f01",
+          "source-f02",
+          "source-f03",
+          "source-f04",
+          "source-f05",
+          "source-f06",
+          "source-f07",
+          "source-f08",
+          "source-f09",
+          "source-f10",
+          "source-f11",
+          "source-f12",
+          "source-f13",
+          "source-f14",
+          "source-f15",
+          "source-f16",
+          "source-f17",
+          "source-f18",
+          "source-f19"
+        ]
+      }
+    ],
+    "missing": [],
+    "requiredSourceFacts": [],
+    "requiredSourceActions": []
+  },
+  {
+    "id": "stress-6",
+    "category": "stress",
+    "scope": "today",
+    "sourceFacts": [
+      {
+        "id": "source-f00",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000000.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f01",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000001.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f02",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000002.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f03",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000003.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f04",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000004.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f05",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000005.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f06",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000006.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f07",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000007.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f08",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000008.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f09",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000009.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f10",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000010.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f11",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000011.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f12",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000012.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f13",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000013.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f14",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000014.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f15",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000015.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f16",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000016.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f17",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000017.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f18",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000018.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f19",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000019.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f20",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000020.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      }
+    ],
+    "sourceActions": [
+      {
+        "id": "source-a00",
+        "action": "swapTrainingDay",
+        "facts": [
+          "source-f00",
+          "source-f01",
+          "source-f02",
+          "source-f03",
+          "source-f04",
+          "source-f05",
+          "source-f06",
+          "source-f07",
+          "source-f08",
+          "source-f09",
+          "source-f10",
+          "source-f11",
+          "source-f12",
+          "source-f13",
+          "source-f14",
+          "source-f15",
+          "source-f16",
+          "source-f17",
+          "source-f18",
+          "source-f19",
+          "source-f20"
+        ]
+      },
+      {
+        "id": "source-a01",
+        "action": "swapTrainingDay",
+        "facts": [
+          "source-f00",
+          "source-f01",
+          "source-f02",
+          "source-f03",
+          "source-f04",
+          "source-f05",
+          "source-f06",
+          "source-f07",
+          "source-f08",
+          "source-f09",
+          "source-f10",
+          "source-f11",
+          "source-f12",
+          "source-f13",
+          "source-f14",
+          "source-f15",
+          "source-f16",
+          "source-f17",
+          "source-f18",
+          "source-f19",
+          "source-f20"
+        ]
+      },
+      {
+        "id": "source-a02",
+        "action": "swapTrainingDay",
+        "facts": [
+          "source-f00",
+          "source-f01",
+          "source-f02",
+          "source-f03",
+          "source-f04",
+          "source-f05",
+          "source-f06",
+          "source-f07",
+          "source-f08",
+          "source-f09",
+          "source-f10",
+          "source-f11",
+          "source-f12",
+          "source-f13",
+          "source-f14",
+          "source-f15",
+          "source-f16",
+          "source-f17",
+          "source-f18",
+          "source-f19",
+          "source-f20"
+        ]
+      }
+    ],
+    "missing": [],
+    "requiredSourceFacts": [],
+    "requiredSourceActions": []
+  },
+  {
+    "id": "stress-7",
+    "category": "stress",
+    "scope": "today",
+    "sourceFacts": [
+      {
+        "id": "source-f00",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000000.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f01",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000001.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f02",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000002.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f03",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000003.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f04",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000004.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f05",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000005.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f06",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000006.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f07",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000007.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f08",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000008.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f09",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000009.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f10",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000010.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f11",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000011.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f12",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000012.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f13",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000013.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f14",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000014.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f15",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000015.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f16",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000016.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f17",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000017.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f18",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000018.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f19",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000019.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f20",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000020.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f21",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000021.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f22",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000022.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      },
+      {
+        "id": "source-f23",
+        "metric": "recommendation.alternative.12345678-1234-1234-1234-000000000023.quads",
+        "value": 33.333333333333336,
+        "unit": "score",
+        "quality": [
+          "insufficientHistory",
+          "estimated"
+        ]
+      }
+    ],
+    "sourceActions": [
+      {
+        "id": "source-a00",
+        "action": "swapTrainingDay",
+        "facts": [
+          "source-f00",
+          "source-f01",
+          "source-f02",
+          "source-f03",
+          "source-f04",
+          "source-f05",
+          "source-f06",
+          "source-f07",
+          "source-f08",
+          "source-f09",
+          "source-f10",
+          "source-f11",
+          "source-f12",
+          "source-f13",
+          "source-f14",
+          "source-f15",
+          "source-f16",
+          "source-f17",
+          "source-f18",
+          "source-f19",
+          "source-f20",
+          "source-f21",
+          "source-f22",
+          "source-f23"
+        ]
+      },
+      {
+        "id": "source-a01",
+        "action": "swapTrainingDay",
+        "facts": [
+          "source-f00",
+          "source-f01",
+          "source-f02",
+          "source-f03",
+          "source-f04",
+          "source-f05",
+          "source-f06",
+          "source-f07",
+          "source-f08",
+          "source-f09",
+          "source-f10",
+          "source-f11",
+          "source-f12",
+          "source-f13",
+          "source-f14",
+          "source-f15",
+          "source-f16",
+          "source-f17",
+          "source-f18",
+          "source-f19",
+          "source-f20",
+          "source-f21",
+          "source-f22",
+          "source-f23"
+        ]
+      },
+      {
+        "id": "source-a02",
+        "action": "swapTrainingDay",
+        "facts": [
+          "source-f00",
+          "source-f01",
+          "source-f02",
+          "source-f03",
+          "source-f04",
+          "source-f05",
+          "source-f06",
+          "source-f07",
+          "source-f08",
+          "source-f09",
+          "source-f10",
+          "source-f11",
+          "source-f12",
+          "source-f13",
+          "source-f14",
+          "source-f15",
+          "source-f16",
+          "source-f17",
+          "source-f18",
+          "source-f19",
+          "source-f20",
+          "source-f21",
+          "source-f22",
+          "source-f23"
+        ]
+      }
+    ],
+    "missing": [],
+    "requiredSourceFacts": [],
+    "requiredSourceActions": []
+  }
+]

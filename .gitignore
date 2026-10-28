@@ -10,3 +10,8 @@ __pycache__/
 
 # Generated local tooling
 .xcodegen/
+
+# Reproducible on-device AI build inputs (never commit weights/binaries)
+.local-ai-cache/
+Packages/TrainoteLlama/Artifacts/
+Models/*.gguf

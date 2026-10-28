@@ -8,6 +8,10 @@ options:
     iOS: "17.0"
   createIntermediateGroups: true
 
+packages:
+  TrainoteLlama:
+    path: Packages/TrainoteLlama
+
 settings:
   base:
     SWIFT_VERSION: "5.9"
@@ -26,6 +30,11 @@ targets:
       - path: Trainote/Resources
         buildPhase: resources
     settings:
+      configs:
+        Debug:
+          TRAINOTE_RULES_ONLY_BUILD: YES
+        Release:
+          TRAINOTE_RULES_ONLY_BUILD: NO
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.jerryszz.trainote
         PRODUCT_NAME: Trainote
@@ -41,6 +50,12 @@ targets:
         SUPPORTS_MACCATALYST: NO
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+    dependencies:
+      - package: TrainoteLlama
+    postBuildScripts:
+      - name: Verify and bundle on-device model
+        script: python3 "$SRCROOT/Scripts/on-device-ai/bundle-model.py"
+        basedOnDependencyAnalysis: false
     scheme:
       testTargets:
         - TrainoteTests

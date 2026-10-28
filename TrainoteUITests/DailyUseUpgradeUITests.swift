@@ -245,6 +245,10 @@ final class DailyUseUpgradeUITests: XCTestCase {
     app.terminate()
     app.launchArguments = ["-AppleLanguages", "(zh-Hans)", "-AppleLocale", "zh_CN", "-appearance.language", "zh-Hans", "-ui-testing-persistent"]
     app.launch()
+    // Exercise the real persisted acknowledgment instead of bypassing the notice.
+    let agree = app.buttons["notice.agree"]
+    if agree.waitForExistence(timeout: 3) { agree.tap() }
+    XCTAssertTrue(app.tabBars.buttons["训练"].waitForExistence(timeout: 5))
     app.tabBars.buttons["训练"].tap()
     if app.buttons["training.activeWorkout"].exists {
       app.buttons["training.activeWorkout"].tap()
@@ -266,6 +270,7 @@ final class DailyUseUpgradeUITests: XCTestCase {
     app.launch()
     let resume = app.buttons["today.startWorkout"]
     XCTAssertTrue(resume.waitForExistence(timeout: 5))
+    XCTAssertFalse(app.buttons["notice.agree"].exists)
     XCTAssertTrue(resume.label.contains("继续训练"))
     resume.tap()
     reveal(app.buttons["workout.details"])
