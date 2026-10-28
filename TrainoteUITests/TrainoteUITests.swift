@@ -246,6 +246,10 @@ final class TrainoteUITests: XCTestCase {
     app = XCUIApplication()
     app.launchArguments = ["-AppleLanguages", "(zh-Hans)", "-AppleLocale", "zh_CN", "-appearance.language", "zh-Hans", "-ui-testing-persistent"]
     app.launch()
+    // Persistent launches use the real notice store, including its first-launch gate.
+    let agree = app.buttons["notice.agree"]
+    if agree.waitForExistence(timeout: 3) { agree.tap() }
+    XCTAssertTrue(app.tabBars.buttons["饮食"].waitForExistence(timeout: 5))
     let uniqueName = "重启记录-\(UUID().uuidString.prefix(8))"
 
     openDirectFoodEditor()
@@ -253,6 +257,8 @@ final class TrainoteUITests: XCTestCase {
     app.buttons["nutrition.entry.save"].tap()
     app.terminate()
     app.launch()
+    XCTAssertTrue(app.tabBars.buttons["饮食"].waitForExistence(timeout: 5))
+    XCTAssertFalse(app.buttons["notice.agree"].exists)
     app.tabBars.buttons["饮食"].tap()
 
     XCTAssertTrue(

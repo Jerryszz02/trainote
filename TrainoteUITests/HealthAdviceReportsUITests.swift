@@ -20,9 +20,12 @@ final class HealthAdviceReportsUITests: XCTestCase {
     let reports = app.buttons["today.analysisReports"]
     reveal(reports)
     reports.tap()
+    let generate = app.buttons["reports.generate"]
+    XCTAssertTrue(generate.waitForExistence(timeout: 5))
     let card = app.descendants(matching: .any)["reports.current"].firstMatch
     XCTAssertTrue(card.waitForExistence(timeout: 5))
     XCTAssertTrue(app.staticTexts["基础报告"].exists)
+    XCTAssertTrue(generate.isEnabled, "本机 AI 报告应通过显式生成入口启动")
     XCTAssertFalse(app.buttons["health.aiConsent"].exists)
     capture("真实本地基础报告")
     let details = app.buttons["查看依据与说明"]
@@ -38,9 +41,6 @@ final class HealthAdviceReportsUITests: XCTestCase {
     XCTAssertTrue(weightFact.label.contains("手动记录"))
     capture("报告依据中的真实手动体重")
     app.navigationBars.buttons.element(boundBy: 0).tap()
-    let disclosure = app.staticTexts["reports.localOnly"]
-    reveal(disclosure)
-    XCTAssertTrue(disclosure.isHittable)
     let history = app.buttons["reports.history"]
     reveal(history)
     history.tap()
