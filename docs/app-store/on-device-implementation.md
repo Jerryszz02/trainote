@@ -2,6 +2,10 @@
 
 2026-10-27（Europe/London）。基线为计划 PR #20 合并提交 `2970459`；实施分支 `agent/trainote-local-ai`。本记录区分产品代码、本地测试、公开页面和仍需设备/账号的工作。App 尚未提交或公开分发。
 
+## 合并交付（2026-10-28）
+
+[PR #21](https://github.com/Jerryszz02/trainote/pull/21) 已 squash 合并为 `feeae40`。首次须知处理、报告断言及文本替换的 UI 回归问题在合并前修复；最终 [iOS CI](https://github.com/Jerryszz02/trainote/actions/runs/40713940437) 为 341 单元、54 UI 全部通过，[AI 服务检查](https://github.com/Jerryszz02/trainote/actions/runs/40713940805) 通过。2026-11-02 文档核查确认该实现已在默认分支；原实施分支与工作树已清理，模型和测试材料保留。下文保留 10 月 27 日本地实施证据，不代替真机性能、付费会员、TestFlight 或上架验收，本次未重新运行模型或应用测试。
+
 ## 已实现的行为
 
 - 内置 Qwen3-0.6B Q4_K_M，固定 llama.cpp b11912。模型从官方 BF16 直接转换，权重和二进制不入 Git；准备脚本、来源 revision、SHA-256 和许可入库。App 运行时不下载模型、不配置远端 transport、不发送模型 API 请求。

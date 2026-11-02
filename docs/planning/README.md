@@ -1,10 +1,10 @@
 # Trainote 规划索引
 
-## 当前首发实施（2026-10-27）
+## 当前首发实施（2026-11-02 核查）
 
-用户已确认仅美区、简体中文与 English、免费、面向普通用户公开下载，AI 继续从记录中挑选重点事实和候选建议。10 月 26 日授权实施注册付费会员前的全部工作：先试内置 0.6B，质量不足再评估 1B，加入首次隐私/使用须知、主动生成与独立开关，并准备发布资料。当前独立工作树已完成本机模型和须知接入、本地回归、无签名 Release 归档及 28 张中英双尺寸截图；PR CI、真机及发布者资料验收仍待完成。具体结果与边界见 [实施记录](../app-store/on-device-implementation.md)；云端不是默认前提。
+用户已确认仅美区、简体中文与 English、免费、面向普通用户公开下载，AI 继续从记录中挑选重点事实和候选建议。10 月 26 日授权实施注册付费会员前的全部工作：先试内置 0.6B，质量不足再评估 1B，加入首次隐私/使用须知、主动生成与独立开关，并准备发布资料。本机模型和须知已于 2026-10-28 经 [PR #21](https://github.com/Jerryszz02/trainote/pull/21) squash 合入默认分支 `feeae40`；合并前最终 iOS CI（341 单元、54 UI）及 AI 服务检查通过。本地回归、无签名 Release 归档和 28 张中英双尺寸截图是该次历史交付证据；真机与发布者资料验收仍待完成。本次仅核对文档、Git/PR 与历史交付记录，未重跑 App 测试。具体结果与边界见 [实施记录](../app-store/on-device-implementation.md)；云端不是默认前提。
 
-先读 [端侧报告与首次使用须知详细计划](on-device-ai-and-first-use-plan.md)，包含试验顺序、代码接入、首次须知流程和会员后续步骤。[美区首发计划与端侧 AI 调研](../app-store/us-launch-plan.md)继续维护整体范围、资料准备和最小维护方案；[发布清单](../app-store/release-checklist.md)保留历史证据与提交事项。本次 fetch 确认计划 PR #20 已合并，canonical `main` 与 `origin/main` 为 `2970459`，新实施分支为 `agent/trainote-local-ai`。应用未发布；中英隐私/支持静态页已公开并验证，手机当前不可连接，真机性能待验。
+先读 [端侧报告与首次使用须知详细计划](on-device-ai-and-first-use-plan.md)，包含试验顺序、代码接入、首次须知流程和会员后续步骤。[美区首发计划与端侧 AI 调研](../app-store/us-launch-plan.md)继续维护整体范围、资料准备和最小维护方案；[发布清单](../app-store/release-checklist.md)保留历史证据与提交事项。2026-11-02 fetch 确认 canonical `main` 与 `origin/main` 为 `feeae40`，计划 PR #20 与实现 PR #21 均已合并，原实现分支已清理。应用未发布；中英隐私/支持静态页的公开验证为 10 月 27 日历史记录，本次未复测页面或设备连接，真机性能仍待验。
 
 ## 项目是什么
 
@@ -18,9 +18,9 @@ Trainote 是一款以本地记录为基础的 iPhone 健身与饮食 App，记�
 
 ## 文档信息
 
-- 更新时间：2026-10-27（Europe/London）
+- 更新时间：2026-11-02（Europe/London）
 - 请求：按已批准详细计划完成注册付费会员前的开发和材料；账号付款、TestFlight 与 App Store 提交后续处理。
-- 工作模式：独立实施分支；真实合成模型评估、产品接入、首次须知、测试与商店准备。
+- 工作模式：合并后文档同步；核对 GitHub 合并/CI、当前默认分支与原始交付记录，保留模型评估和产品验收边界。
 - canonical 项目根目录：`/Users/jerryszz/Desktop/Projects/trainote`
 - 当前基线：计划 PR #20 已合并 `2970459`；实现、当前测试与公开页面状态以 [实施记录](../app-store/on-device-implementation.md) 为准。配对手机不可连接，未进行真机性能或用户数据操作。
 - 当前选型：Qwen3-0.6B Q4_K_M + llama.cpp b11912；0.6B/Q8 对照、范围修复与压力回退证据见 [模型评估](../app-store/on-device-model-evaluation.md)。未启用1B或远端服务。
